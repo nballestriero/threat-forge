@@ -1,19 +1,12 @@
 schema_version: 1
 graph_id: GRAPH-0001
 name: Project model graph
+macro_requirement_id: MR-0001
 
 nodes:
-  - id: MR-0000
-    type: MacroRequirement
-    label: Common governance
-
   - id: MR-0001
     type: MacroRequirement
     label: Project model governance
-
-  - id: ADR-0000
-    type: ADR
-    label: Common governance bootstrap
 
   - id: ADR-0001
     type: ADR
@@ -67,10 +60,6 @@ nodes:
     path: tools/docs/check-adr-registry-fields.mjs
 
 spo_relations:
-  - subject: ADR-0000
-    predicate: belongs_to
-    object: MR-0000
-
   - subject: ADR-0001
     predicate: belongs_to
     object: MR-0001

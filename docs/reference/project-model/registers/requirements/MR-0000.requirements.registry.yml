@@ -1,0 +1,10 @@
+schema_version: 1
+macro_requirement_id: MR-0000
+
+requirements:
+  - id: MR-0000REQ-0001
+    title: Governance dei controlli trasversali comuni
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0000
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0001_body.md

@@ -3,6 +3,10 @@ registry_id: graph-index
 project: threat-forge
 
 graphs:
+  - graph_id: GRAPH-0000
+    name: Common governance graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0000.graph.yml
+
   - graph_id: GRAPH-0001
     name: Project model graph
     path: docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml

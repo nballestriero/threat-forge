@@ -1,0 +1,30 @@
+schema_version: 1
+graph_id: GRAPH-0000
+name: Common governance graph
+macro_requirement_id: MR-0000
+
+nodes:
+  - id: MR-0000
+    type: MacroRequirement
+    label: Common governance
+
+  - id: ADR-0000
+    type: ADR
+    label: Common governance bootstrap
+
+  - id: MR-0000REQ-0001
+    type: Requirement
+    label: Governance dei controlli trasversali comuni
+
+spo_relations:
+  - subject: ADR-0000
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0001
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0000
+    predicate: justifies
+    object: MR-0000REQ-0001
