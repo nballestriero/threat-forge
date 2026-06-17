@@ -1,0 +1,10 @@
+{
+  "name": "threat-forge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:pages": "npm --prefix ./backend run docs:pages",
+    "context:zip": "node tools/context/create-handoff-zip.mjs"
+  }
+}

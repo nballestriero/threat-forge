@@ -1,0 +1,9 @@
+{
+  "name": "threat-forge-backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:pages": "node tools/render-project-model-pages.mjs"
+  }
+}
