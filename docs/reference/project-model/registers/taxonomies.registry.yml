@@ -54,9 +54,9 @@ taxonomies:
       description: Child requirement provides a control mechanism for a parent requirement.
 
   node_type:
-    - id: MacroArea
-      function: Represents a governed macro area and functional macro requirement.
-      description: Macro area node derived from the macro areas registry.
+    - id: MacroRequirement
+      function: Represents a governed top-level functional macro requirement.
+      description: Macro requirement node derived from the macro-requirements registry.
 
     - id: ADR
       function: Represents an architecture decision record.
@@ -80,12 +80,12 @@ taxonomies:
       description: The subject entity is described by the object document.
 
     - id: implements
-      function: Links a governed requirement to the macro area it implements.
+      function: Links a governed requirement to the macro requirement it implements.
       forward_label: implements
       inverse_label: implemented by
       subject_type: Requirement
-      object_type: MacroArea
-      description: The subject requirement contributes to or implements the target macro area.
+      object_type: MacroRequirement
+      description: The subject requirement contributes to or implements the target macro requirement.
 
     - id: specified_by
       function: Links a governed requirement to the ADR that specifies it.

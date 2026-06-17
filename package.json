@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "docs:pages": "npm --prefix ./backend run docs:pages",
-    "context:zip": "node tools/context/create-handoff-zip.mjs"
+    "context:zip": "node tools/context/create-handoff-zip.mjs",
+    "docs:graph-format": "node tools/docs/check-graph-format.mjs"
   }
 }
