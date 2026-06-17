@@ -16,6 +16,10 @@ nodes:
     type: ADR
     label: System-state control layer
 
+  - id: ADR-0002
+    type: ADR
+    label: Technical contracts near MR-0000 validators
+
   - id: MR-0000REQ-0001
     type: Requirement
     label: Governance dei controlli trasversali comuni
@@ -32,6 +36,19 @@ nodes:
     type: Requirement
     label: Identità ADR contestuale per macro-requirement
 
+  - id: MR-0000REQ-0005
+    type: Requirement
+    label: Collocazione dei contratti tecnici dei validator MR-0000
+
+  - id: MR-0000REQ-0006
+    type: Requirement
+    label: Refactor del validator del formato grafo sotto MR-0000
+
+  - id: TOOL-check-graph-format
+    type: Tool
+    label: Graph format checker
+    path: backend/tools/MR-0000/check-graph-format.mjs
+
   - id: TOOL-check-adr-registry-fields
     type: Tool
     label: ADR registry field checker
@@ -43,6 +60,10 @@ spo_relations:
     object: MR-0000
 
   - subject: ADR-0001
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0002
     predicate: belongs_to
     object: MR-0000
 
@@ -62,6 +83,14 @@ spo_relations:
     predicate: belongs_to
     object: MR-0000
 
+  - subject: MR-0000REQ-0005
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0006
+    predicate: belongs_to
+    object: MR-0000
+
   - subject: ADR-0000
     predicate: justifies
     object: MR-0000REQ-0001
@@ -77,6 +106,38 @@ spo_relations:
   - subject: ADR-0001
     predicate: justifies
     object: MR-0000REQ-0004
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0000REQ-0005
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0000REQ-0006
+
+  - subject: MR-0000REQ-0003
+    predicate: implemented_by
+    object: TOOL-check-graph-format
+
+  - subject: MR-0000REQ-0005
+    predicate: implemented_by
+    object: TOOL-check-graph-format
+
+  - subject: MR-0000REQ-0006
+    predicate: implemented_by
+    object: TOOL-check-graph-format
+
+  - subject: TOOL-check-graph-format
+    predicate: verifies
+    object: MR-0000REQ-0003
+
+  - subject: TOOL-check-graph-format
+    predicate: verifies
+    object: MR-0000REQ-0005
+
+  - subject: TOOL-check-graph-format
+    predicate: verifies
+    object: MR-0000REQ-0006
 
   - subject: MR-0000REQ-0004
     predicate: implemented_by

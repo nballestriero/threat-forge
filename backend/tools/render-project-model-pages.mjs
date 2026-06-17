@@ -10,8 +10,9 @@ const registersDir = path.join(projectModelDir, "registers");
 const outputDir = path.join(rootDir, "artifacts", "project-model");
 
 const taxonomiesPath = path.join(registersDir, "taxonomies.registry.yml");
-const graphPredicatesPath = path.join(registersDir, "graph", "spo-predicates.registry.yml");
-const graphNodeTypesPath = path.join(registersDir, "graph", "graph-node-types.registry.yml");
+const graphControlRegistriesDir = path.join(rootDir, "backend", "tools", "MR-0000", "registries");
+const graphPredicatesPath = path.join(graphControlRegistriesDir, "spo-predicates.registry.yml");
+const graphNodeTypesPath = path.join(graphControlRegistriesDir, "graph-node-types.registry.yml");
 const graphIndexPath = path.join(registersDir, "graph.index.yml");
 const macroRequirementsPath = path.join(registersDir, "macro-requirements.registry.yml");
 const requirementsDir = path.join(registersDir, "requirements");
@@ -1117,7 +1118,7 @@ function renderGraph(graphData) {
         <thead><tr><th>ID</th><th>Label</th><th>Type</th><th>Path</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead>
         <tbody>${nodeBody}</tbody>
       </table>`
-    : `<p class="empty">No graph nodes found. Check <code>docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml</code>.</p>`;
+    : `<p class="empty">No graph nodes found. Check <code>docs/reference/project-model/registers/graph.index.yml</code>.</p>`;
 
   const relationsTable = rows.length
     ? `<table>

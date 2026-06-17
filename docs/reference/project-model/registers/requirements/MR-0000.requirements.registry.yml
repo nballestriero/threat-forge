@@ -29,3 +29,17 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0004_body.md
+
+  - id: MR-0000REQ-0005
+    title: Collocazione dei contratti tecnici dei validator MR-0000
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0005_body.md
+
+  - id: MR-0000REQ-0006
+    title: Refactor del validator del formato grafo sotto MR-0000
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0006_body.md

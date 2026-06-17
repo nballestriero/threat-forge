@@ -11,7 +11,7 @@ Il requisito deriva dalla decisione `ADR-0002` e appartiene al macro-requisito `
 ## Regole
 
 - Il registro dei predicati SPO del grafo deve esistere in:
-  `docs/reference/project-model/registers/graph/spo-predicates.registry.yml`
+  `backend/tools/MR-0000/registries/spo-predicates.registry.yml`
 - Ogni predicato SPO ammesso deve avere un identificatore stabile.
 - Ogni predicato SPO deve dichiarare:
   - `function`;

@@ -18,7 +18,8 @@ Include:
 - validator comuni che applicano policy trasversali;
 - controlli di coerenza tra documentazione e codice;
 - controlli di coerenza tra ADR, requisiti, grafi, tool e verifiche;
-- regole di collocazione dei tool di governance per macro-requirement.
+- regole di collocazione dei tool di governance per macro-requirement;
+- contratti tecnici e registri tecnici stabili usati dai validator trasversali.
 
 ## Out of Scope
 
@@ -37,5 +38,7 @@ Non include:
 Una macro-area funzionale può definire una struttura o una convenzione, per esempio `MR-0001` può definire la struttura documentale canonica. `MR-0000` governa invece i controlli trasversali che verificano che quella struttura, e le sue relazioni con codice e tool, restino coerenti nel tempo.
 
 Un controllo comune deve dichiarare il proprio ambito tramite registry, policy o contratto controllato, non tramite archi ripetitivi verso ogni singolo record controllato.
+
+Quando un contratto tecnico o un registro tecnico è applicato direttamente da un validator MR-0000, la copia canonica del contratto deve stare vicino al validator sotto `backend/tools/MR-0000/`. La documentazione deve descrivere e referenziare il contratto, ma non deve essere l'unico luogo in cui vive la regola eseguibile.
 
 Gli artifact già esistenti restano dove sono fino a quando un requisito dedicato e il relativo grafo non ne autorizzano il refactor.

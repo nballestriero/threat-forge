@@ -52,7 +52,7 @@ nodes:
   - id: TOOL-check-graph-format
     type: Tool
     label: Graph format checker
-    path: tools/docs/check-graph-format.mjs
+    path: backend/tools/MR-0000/check-graph-format.mjs
 
   - id: TOOL-check-adr-registry-fields
     type: Tool

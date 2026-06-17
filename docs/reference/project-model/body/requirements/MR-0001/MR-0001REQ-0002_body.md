@@ -11,7 +11,7 @@ Il requisito deriva dalla decisione `ADR-0002` e appartiene al macro-requisito `
 ## Regole
 
 * Il registro dei tipi nodo del grafo deve esistere in:
-  `docs/reference/project-model/registers/graph/graph-node-types.registry.yml`
+  `backend/tools/MR-0000/registries/graph-node-types.registry.yml`
 * Il registro deve definire solo tipi nodo e relazioni di specializzazione tra tipi.
 * Il registro può distinguere tra tipi astratti e tipi concreti.
 * I tipi concreti possono dichiarare quali tipi astratti soddisfano.

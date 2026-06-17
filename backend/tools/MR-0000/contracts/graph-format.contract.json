@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "contract_id": "project-model-graph-format",
+  "description": "Minimal deterministic contract for project-model graph files.",
+  "graph_file": {
+    "required_fields": [
+      "schema_version",
+      "graph_id",
+      "name",
+      "nodes",
+      "spo_relations"
+    ],
+    "array_fields": [
+      "nodes",
+      "spo_relations"
+    ],
+    "allowed_fields": [
+      "schema_version",
+      "graph_id",
+      "name",
+      "macro_requirement_id",
+      "nodes",
+      "spo_relations"
+    ]
+  },
+  "node": {
+    "required_fields": [
+      "id",
+      "type"
+    ],
+    "allowed_fields": [
+      "id",
+      "type",
+      "label",
+      "macro_requirement_id",
+      "registry_path",
+      "body_path",
+      "path"
+    ],
+    "type_taxonomy": "node_type"
+  },
+  "spo_relation": {
+    "required_fields": [
+      "subject",
+      "predicate",
+      "object"
+    ],
+    "allowed_fields": [
+      "subject",
+      "predicate",
+      "object",
+      "description"
+    ],
+    "predicate_taxonomy": "spo_predicate"
+  }
+}
