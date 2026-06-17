@@ -10,3 +10,11 @@ decisions:
     date: 2026-06-17
     macro_requirement_id: MR-0001
     body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0001_body.md
+
+  - id: ADR-0002
+    title: Organizzazione dei registri, dei body e del formato grafo del project model
+    status: accepted
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0002_body.md
