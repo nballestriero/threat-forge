@@ -693,6 +693,62 @@ pre {
 .empty { color: var(--muted); font-style: italic; }
 .article-body h2 { margin-top: 0; }
 .article-body h3, .article-body h4 { margin-bottom: 8px; }
+
+.graph-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 12px 0;
+}
+.graph-toolbar button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+.graph-toolbar button[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(64, 179, 255, 0.18);
+}
+.graph-canvas {
+  width: 100%;
+  height: min(72vh, 760px);
+  min-height: 460px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--panel);
+  touch-action: none;
+}
+.graph-canvas svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+.graph-canvas svg.dragging { cursor: grabbing; }
+.graph-node circle {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2.5px;
+}
+.graph-node text { fill: var(--text); pointer-events: none; }
+.graph-node .node-id { font-weight: 700; font-size: 13px; }
+.graph-node .node-label { fill: var(--muted); font-size: 11px; }
+.graph-node .node-type { fill: var(--muted); font-size: 10px; }
+.graph-edge { stroke: var(--muted); stroke-width: 1.8px; fill: none; }
+.graph-edge.inverse.comparison { stroke-dasharray: 6 5; }
+.graph-edge-label {
+  fill: var(--text);
+  font-size: 11px;
+  paint-order: stroke;
+  stroke: var(--panel);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
 </style>
 </head>
 <body>
@@ -1030,6 +1086,7 @@ render();
 function renderGraph(graphData) {
   const nodes = graphData.nodes;
   const rows = graphData.relations;
+  const visualData = jsonForScript({ nodes, relations: rows });
 
   const nodeBody = nodes.map((node) => `
     <tr>
@@ -1049,6 +1106,7 @@ function renderGraph(graphData) {
       <td><code>${escapeHtml(row.predicate)}</code><br><span class="muted">${escapeHtml(row.forward_label)}</span></td>
       <td><code>${escapeHtml(row.object)}</code><br><span class="muted">${escapeHtml(row.object_label)}</span></td>
       <td><code>${escapeHtml(row.object_type)}</code></td>
+      <td>${escapeHtml(row.inverse_label)}</td>
       <td><code>${escapeHtml(row.graph_id)}</code></td>
       <td><code>${escapeHtml(row.macro_requirement_id)}</code></td>
       <td><code>${escapeHtml(row.source_file)}</code></td>
@@ -1063,7 +1121,7 @@ function renderGraph(graphData) {
 
   const relationsTable = rows.length
     ? `<table>
-        <thead><tr><th>Subject</th><th>Subject type</th><th>Predicate</th><th>Object</th><th>Object type</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead>
+        <thead><tr><th>Subject</th><th>Subject type</th><th>Predicate</th><th>Object</th><th>Object type</th><th>Inverse label</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead>
         <tbody>${relationBody}</tbody>
       </table>`
     : `<p class="empty">No SPO relations found. Check <code>spo_relations</code> in graph registry files.</p>`;
@@ -1081,6 +1139,34 @@ function renderGraph(graphData) {
 </section>
 
 <section class="card">
+  <h2>Visual graph</h2>
+  <p class="muted">Drag the canvas to pan. Use the mouse wheel or the buttons to zoom. Filter the rendered relation readings without changing the canonical graph data.</p>
+  <div class="graph-toolbar" aria-label="Graph relation reading filters">
+    <button type="button" id="canonicalOnly" aria-pressed="true">Canonical only</button>
+    <button type="button" id="inverseOnly" aria-pressed="false">Inverse only</button>
+    <button type="button" id="bothViews" aria-pressed="false">Canonical + inverse</button>
+    <span class="badge" id="graphMode">canonical only</span>
+    <span class="badge" id="visibleRelations"></span>
+  </div>
+  <div class="graph-toolbar" aria-label="Graph zoom controls">
+    <button type="button" id="zoomIn">Zoom in</button>
+    <button type="button" id="zoomOut">Zoom out</button>
+    <button type="button" id="zoomReset">Reset</button>
+    <span class="badge" id="zoomLevel">100%</span>
+  </div>
+  <div class="graph-canvas" id="graphCanvas">
+    <svg id="graphSvg" viewBox="0 0 1200 760" role="img" aria-label="Project model knowledge graph">
+      <defs>
+        <marker id="graphArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+        </marker>
+      </defs>
+      <g id="graphViewport"></g>
+    </svg>
+  </div>
+</section>
+
+<section class="card">
   <h2>Nodes</h2>
   ${nodesTable}
 </section>
@@ -1089,6 +1175,288 @@ function renderGraph(graphData) {
   <h2>SPO relations</h2>
   ${relationsTable}
 </section>
+<script>
+const graphData = ${visualData};
+const svg = document.getElementById("graphSvg");
+const viewport = document.getElementById("graphViewport");
+const zoomLevel = document.getElementById("zoomLevel");
+const graphMode = document.getElementById("graphMode");
+const visibleRelations = document.getElementById("visibleRelations");
+const canonicalOnlyButton = document.getElementById("canonicalOnly");
+const inverseOnlyButton = document.getElementById("inverseOnly");
+const bothViewsButton = document.getElementById("bothViews");
+const ns = "http://www.w3.org/2000/svg";
+const width = 1200;
+const height = 760;
+const nodeRadius = 58;
+let transform = { x: 0, y: 0, scale: 1 };
+let relationReadingFilter = "canonical";
+let dragStart = null;
+
+function setAttributes(element, attributes) {
+  for (const [key, value] of Object.entries(attributes)) {
+    element.setAttribute(key, String(value));
+  }
+  return element;
+}
+
+function appendSvg(parent, name, attributes = {}) {
+  const element = document.createElementNS(ns, name);
+  setAttributes(element, attributes);
+  parent.appendChild(element);
+  return element;
+}
+
+function renderTransform() {
+  viewport.setAttribute("transform", "translate(" + transform.x + " " + transform.y + ") scale(" + transform.scale + ")");
+  zoomLevel.textContent = Math.round(transform.scale * 100) + "%";
+}
+
+function typeRank(type) {
+  const ranks = { ADR: 0, MacroRequirement: 1, Requirement: 2, Tool: 3, Document: 4, Component: 5 };
+  return Object.prototype.hasOwnProperty.call(ranks, type) ? ranks[type] : 6;
+}
+
+function buildLayout(nodes) {
+  const orderedTypes = [...new Set(nodes.map((node) => node.type).sort((a, b) => typeRank(a) - typeRank(b) || a.localeCompare(b)))];
+  const groups = new Map(orderedTypes.map((type) => [type, []]));
+
+  for (const node of [...nodes].sort((a, b) => typeRank(a.type) - typeRank(b.type) || a.id.localeCompare(b.id))) {
+    groups.get(node.type).push(node);
+  }
+
+  const positions = new Map();
+  const left = 115;
+  const right = width - 115;
+  const top = 125;
+  const bottom = height - 110;
+  const xStep = orderedTypes.length > 1 ? (right - left) / (orderedTypes.length - 1) : 0;
+
+  orderedTypes.forEach((type, typeIndex) => {
+    const group = groups.get(type);
+    const yStep = group.length > 1 ? (bottom - top) / (group.length - 1) : 0;
+    group.forEach((node, nodeIndex) => {
+      positions.set(node.id, {
+        x: orderedTypes.length > 1 ? left + xStep * typeIndex : width / 2,
+        y: group.length > 1 ? top + yStep * nodeIndex : height / 2,
+      });
+    });
+  });
+
+  return positions;
+}
+
+function shortLabel(value, maxLength) {
+  const text = String(value ?? "");
+  return text.length > maxLength ? text.slice(0, maxLength - 1) + "…" : text;
+}
+
+function createCanonicalReading(relation) {
+  const canonicalLabel = relation.forward_label || relation.predicate;
+  const inverseLabel = relation.inverse_label || relation.predicate;
+
+  return {
+    source: relation.subject,
+    target: relation.object,
+    label: canonicalLabel,
+    readingType: "canonical",
+    title:
+      "canonical: " + relation.subject + " " + canonicalLabel + " " + relation.object +
+      " / inverse: " + relation.object + " " + inverseLabel + " " + relation.subject,
+  };
+}
+
+function createInverseReading(relation) {
+  const canonicalLabel = relation.forward_label || relation.predicate;
+  const inverseLabel = relation.inverse_label || relation.predicate;
+
+  return {
+    source: relation.object,
+    target: relation.subject,
+    label: inverseLabel,
+    readingType: "inverse",
+    title:
+      "inverse: " + relation.object + " " + inverseLabel + " " + relation.subject +
+      " / canonical: " + relation.subject + " " + canonicalLabel + " " + relation.object,
+  };
+}
+
+function buildRelationReadings(relations) {
+  return relations.flatMap((relation) => [
+    createCanonicalReading(relation),
+    createInverseReading(relation),
+  ]);
+}
+
+function getVisibleRelationReadings(relations) {
+  const allReadings = buildRelationReadings(relations);
+
+  if (relationReadingFilter === "both") {
+    return allReadings;
+  }
+
+  return allReadings.filter((reading) => reading.readingType === relationReadingFilter);
+}
+
+function setRelationReadingFilter(nextFilter) {
+  relationReadingFilter = nextFilter;
+  renderGraph();
+}
+
+function renderDirectionControls(visibleCount) {
+  canonicalOnlyButton.setAttribute("aria-pressed", relationReadingFilter === "canonical" ? "true" : "false");
+  inverseOnlyButton.setAttribute("aria-pressed", relationReadingFilter === "inverse" ? "true" : "false");
+  bothViewsButton.setAttribute("aria-pressed", relationReadingFilter === "both" ? "true" : "false");
+
+  const labelByFilter = {
+    canonical: "canonical only",
+    inverse: "inverse only",
+    both: "canonical + inverse",
+  };
+  graphMode.textContent = labelByFilter[relationReadingFilter] || relationReadingFilter;
+  visibleRelations.textContent = visibleCount + " rendered relation readings";
+}
+
+function clearGraph() {
+  while (viewport.firstChild) {
+    viewport.removeChild(viewport.firstChild);
+  }
+}
+
+function renderGraph() {
+  clearGraph();
+  const positions = buildLayout(graphData.nodes);
+  const visibleRelationReadings = getVisibleRelationReadings(graphData.relations);
+
+  const edgeLayer = appendSvg(viewport, "g", { "aria-label": "Relations" });
+  const labelLayer = appendSvg(viewport, "g", { "aria-label": "Relation labels" });
+  const nodeLayer = appendSvg(viewport, "g", { "aria-label": "Nodes" });
+
+  visibleRelationReadings.forEach((visualRelation, index) => {
+    const source = positions.get(visualRelation.source);
+    const target = positions.get(visualRelation.target);
+    if (!source || !target) return;
+
+    const dx = target.x - source.x;
+    const dy = target.y - source.y;
+    const length = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
+    const startX = source.x + (dx / length) * nodeRadius;
+    const startY = source.y + (dy / length) * nodeRadius;
+    const endX = target.x - (dx / length) * (nodeRadius + 10);
+    const endY = target.y - (dy / length) * (nodeRadius + 10);
+    const offsetBase = relationReadingFilter === "both" ? 20 : 14;
+    const offset = ((index % 5) - 2) * offsetBase;
+    const normalX = -dy / length;
+    const normalY = dx / length;
+    const controlX = (startX + endX) / 2 + normalX * offset;
+    const controlY = (startY + endY) / 2 + normalY * offset;
+    const labelX = (startX + endX + controlX) / 3;
+    const labelY = (startY + endY + controlY) / 3;
+    const comparisonClass = relationReadingFilter === "both" ? " comparison" : "";
+
+    const path = appendSvg(edgeLayer, "path", {
+      class: "graph-edge " + visualRelation.readingType + comparisonClass,
+      d: "M" + startX + "," + startY + " Q" + controlX + "," + controlY + " " + endX + "," + endY,
+      "marker-end": "url(#graphArrow)",
+      "data-reading-type": visualRelation.readingType,
+      "data-source": visualRelation.source,
+      "data-target": visualRelation.target,
+      "data-label": visualRelation.label,
+    });
+    const title = appendSvg(path, "title");
+    title.textContent = visualRelation.title;
+
+    const label = appendSvg(labelLayer, "text", {
+      class: "graph-edge-label " + visualRelation.readingType + comparisonClass,
+      x: labelX,
+      y: labelY,
+      "text-anchor": "middle",
+      "data-reading-type": visualRelation.readingType,
+      "data-source": visualRelation.source,
+      "data-target": visualRelation.target,
+    });
+    label.textContent = visualRelation.label;
+  });
+
+  graphData.nodes.forEach((node) => {
+    const position = positions.get(node.id);
+    if (!position) return;
+    const group = appendSvg(nodeLayer, "g", {
+      class: "graph-node",
+      transform: "translate(" + position.x + " " + position.y + ")",
+      tabindex: "0",
+    });
+    const title = appendSvg(group, "title");
+    title.textContent = node.id + " — " + node.label + " [" + node.type + "]";
+    appendSvg(group, "circle", { r: nodeRadius });
+    const idText = appendSvg(group, "text", { class: "node-id", y: -12, "text-anchor": "middle" });
+    idText.textContent = shortLabel(node.id, 22);
+    const labelText = appendSvg(group, "text", { class: "node-label", y: 8, "text-anchor": "middle" });
+    labelText.textContent = shortLabel(node.label, 28);
+    const typeText = appendSvg(group, "text", { class: "node-type", y: 27, "text-anchor": "middle" });
+    typeText.textContent = node.type;
+  });
+
+  renderDirectionControls(visibleRelationReadings.length);
+  renderTransform();
+}
+
+function zoomAt(scaleFactor, centerX = width / 2, centerY = height / 2) {
+  const nextScale = Math.max(0.35, Math.min(3.5, transform.scale * scaleFactor));
+  const ratio = nextScale / transform.scale;
+  transform.x = centerX - (centerX - transform.x) * ratio;
+  transform.y = centerY - (centerY - transform.y) * ratio;
+  transform.scale = nextScale;
+  renderTransform();
+}
+
+function resetZoom() {
+  transform = { x: 0, y: 0, scale: 1 };
+  renderTransform();
+}
+
+canonicalOnlyButton.addEventListener("click", () => setRelationReadingFilter("canonical"));
+inverseOnlyButton.addEventListener("click", () => setRelationReadingFilter("inverse"));
+bothViewsButton.addEventListener("click", () => setRelationReadingFilter("both"));
+
+document.getElementById("zoomIn").addEventListener("click", () => zoomAt(1.2));
+document.getElementById("zoomOut").addEventListener("click", () => zoomAt(1 / 1.2));
+document.getElementById("zoomReset").addEventListener("click", resetZoom);
+
+svg.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  const point = svg.createSVGPoint();
+  point.x = event.clientX;
+  point.y = event.clientY;
+  const svgPoint = point.matrixTransform(svg.getScreenCTM().inverse());
+  zoomAt(event.deltaY < 0 ? 1.12 : 1 / 1.12, svgPoint.x, svgPoint.y);
+}, { passive: false });
+
+svg.addEventListener("pointerdown", (event) => {
+  svg.setPointerCapture(event.pointerId);
+  svg.classList.add("dragging");
+  dragStart = { clientX: event.clientX, clientY: event.clientY, x: transform.x, y: transform.y };
+});
+
+svg.addEventListener("pointermove", (event) => {
+  if (!dragStart) return;
+  transform.x = dragStart.x + event.clientX - dragStart.clientX;
+  transform.y = dragStart.y + event.clientY - dragStart.clientY;
+  renderTransform();
+});
+
+svg.addEventListener("pointerup", () => {
+  svg.classList.remove("dragging");
+  dragStart = null;
+});
+
+svg.addEventListener("pointercancel", () => {
+  svg.classList.remove("dragging");
+  dragStart = null;
+});
+
+renderGraph();
+</script>
 `);
 }
 

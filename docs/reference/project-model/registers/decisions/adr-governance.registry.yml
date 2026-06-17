@@ -1,0 +1,130 @@
+schema_version: 1
+registry_id: adr-governance-registry
+name: ADR governance registry
+purpose: Defines controlled ADR registry fields and ADR body format rules for functional ADRs.
+
+adr_id_pattern: "^ADR-[0-9]{4}$"
+body_path_pattern: "^docs/reference/project-model/body/decisions/[A-Z0-9-]+/ADR-[0-9]{4}_body\.md$"
+
+decision_statuses:
+  - id: proposed
+    label: Proposed
+    description: Decision is being discussed and is not yet binding.
+
+  - id: accepted
+    label: Accepted
+    description: Decision is approved and binding.
+
+  - id: superseded
+    label: Superseded
+    description: Decision has been replaced by a later accepted decision.
+
+  - id: rejected
+    label: Rejected
+    description: Decision was considered and explicitly rejected.
+
+  - id: deprecated
+    label: Deprecated
+    description: Decision remains historically relevant but should not govern new work.
+
+
+decision_types:
+  - id: functional
+    label: Functional
+    description: Decision that governs functional project behavior, project model semantics, validation behavior, or user-visible workflow.
+
+  - id: structural
+    label: Structural
+    description: Decision that governs repository, documentation, register, graph, or artifact organization.
+
+  - id: operational
+    label: Operational
+    description: Decision that governs repeatable human or tool-assisted project workflow.
+
+
+adr_registry_fields:
+  - id: id
+    required: true
+    controlled: true
+    rule: must_match_adr_id_pattern
+    description: Stable unique ADR identifier.
+
+  - id: title
+    required: true
+    controlled: false
+    rule: must_be_non_empty_text
+    description: Human-readable ADR title.
+
+  - id: status
+    required: true
+    controlled: true
+    rule: must_exist_in_decision_statuses
+    description: ADR lifecycle status.
+
+  - id: decision_type
+    required: true
+    controlled: true
+    rule: must_exist_in_decision_types
+    description: Controlled ADR decision category.
+
+  - id: author
+    required: true
+    controlled: false
+    rule: must_be_non_empty_text
+    description: Human-readable decision author name.
+
+  - id: date
+    required: true
+    controlled: true
+    rule: must_be_iso_date
+    description: ADR decision date in YYYY-MM-DD format.
+
+  - id: macro_requirement_id
+    required: true
+    controlled: true
+    rule: must_reference_existing_macro_requirement
+    description: Macro-requirement scope that owns the decision.
+
+  - id: body_path
+    required: true
+    controlled: true
+    rule: must_match_body_path_pattern_and_exist
+    description: Markdown body file path for the ADR narrative.
+
+
+adr_body_sections:
+  - id: status
+    heading: Status
+    required: true
+    order: 1
+    description: States the ADR lifecycle status.
+
+  - id: context
+    heading: Context
+    required: true
+    order: 2
+    description: Explains the problem, constraints, and reasons for the decision.
+
+  - id: decision
+    heading: Decision
+    required: true
+    order: 3
+    description: Defines the accepted rule or design choice.
+
+  - id: scope
+    heading: Scope
+    required: true
+    order: 4
+    description: Defines where the decision applies and where it does not apply.
+
+  - id: consequences
+    heading: Consequences
+    required: true
+    order: 5
+    description: Lists positive and negative effects of the decision.
+
+  - id: follow_up
+    heading: Follow-up
+    required: true
+    order: 6
+    description: Lists required future requirements, graph updates, tools, or verification work.

@@ -58,3 +58,11 @@ spo_predicate:
     subject_type: ADR
     object_type: Requirement
     description: Decision provides rationale for a requirement.
+
+  - id: belongs_to
+    function: Links a governed entity to the macro requirement that owns its semantic scope.
+    forward_label: belongs to
+    inverse_label: contains
+    subject_type: GovernedEntity
+    object_type: MacroRequirement
+    description: The subject entity belongs to the semantic scope governed by the target macro requirement.

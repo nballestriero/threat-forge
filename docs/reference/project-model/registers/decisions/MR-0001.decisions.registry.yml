@@ -6,6 +6,7 @@ decisions:
   - id: ADR-0001
     title: Adozione del modello Diátaxis per l'organizzazione documentale
     status: accepted
+    decision_type: functional
     author: Nicolo Ballestriero
     date: 2026-06-17
     macro_requirement_id: MR-0001
@@ -14,6 +15,7 @@ decisions:
   - id: ADR-0002
     title: Organizzazione dei registri, dei body e del formato grafo del project model
     status: accepted
+    decision_type: functional
     author: Nicolo Ballestriero
     date: 2026-06-17
     macro_requirement_id: MR-0001
@@ -22,7 +24,17 @@ decisions:
   - id: ADR-0003
     title: Governance degli script e dei tool del repository
     status: accepted
+    decision_type: functional
     author: Nicolo Ballestriero
     date: 2026-06-17
     macro_requirement_id: MR-0001
     body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0003_body.md
+
+  - id: ADR-0004
+    title: Standard governance for ADR records and ADR body format
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0004_body.md
