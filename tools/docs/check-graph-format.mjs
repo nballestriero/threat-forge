@@ -3,6 +3,19 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+/**
+ * Deterministic project-model graph format checker.
+ *
+ * @implementsRequirement MR-0001REQ-0002
+ * @implementsRequirement MR-0001REQ-0003
+ * @derivedFromDecision ADR-0002
+ * @macroRequirement MR-0001
+ *
+ * This tool validates the governed graph format, the controlled graph node type
+ * registry, and the controlled SPO predicate registry. It intentionally does
+ * not create graph semantics and does not infer missing registry records.
+ */
+
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..", "..");
 const registersDir = path.join(rootDir, "docs", "reference", "project-model", "registers");
@@ -10,7 +23,6 @@ const graphRegistersDir = path.join(registersDir, "graph");
 
 const contractPath = path.join(registersDir, "graph-format.contract.json");
 const graphIndexPath = path.join(registersDir, "graph.index.yml");
-const taxonomiesPath = path.join(registersDir, "taxonomies.registry.yml");
 const graphNodeTypesPath = path.join(graphRegistersDir, "graph-node-types.registry.yml");
 const graphPredicatesPath = path.join(graphRegistersDir, "spo-predicates.registry.yml");
 
@@ -333,12 +345,51 @@ function validateGraphFile(graphEntry, contract, nodeTypeDefinitions, predicateD
   }
 }
 
+
+function validateNodeTypeRegistryEntries(nodeTypeEntries) {
+  const requiredFields = ["id", "abstract", "description"];
+  const allowedFields = new Set(["id", "abstract", "satisfies", "description"]);
+
+  for (const [index, entry] of nodeTypeEntries.entries()) {
+    const context = `graph node type #${index + 1}`;
+    validateRequiredFields(entry, requiredFields, context);
+    validateAllowedFields(entry, Array.from(allowedFields), context);
+
+    if (entry.abstract !== true && entry.abstract !== false) {
+      errors.push(`${context} abstract must be true or false.`);
+    }
+
+    if (entry.satisfies !== undefined && !Array.isArray(entry.satisfies)) {
+      errors.push(`${context} satisfies must be an array when present.`);
+    }
+  }
+}
+
+function validatePredicateRegistryEntries(predicateEntries) {
+  const requiredFields = [
+    "id",
+    "function",
+    "forward_label",
+    "inverse_label",
+    "subject_type",
+    "object_type",
+    "description",
+  ];
+  const allowedFields = new Set(requiredFields);
+
+  for (const [index, entry] of predicateEntries.entries()) {
+    const context = `SPO predicate #${index + 1}`;
+    validateRequiredFields(entry, requiredFields, context);
+    validateAllowedFields(entry, Array.from(allowedFields), context);
+  }
+}
+
 function main() {
   ensureFileExists(contractPath, "graph format contract");
   ensureFileExists(graphIndexPath, "graph index");
   ensureFileExists(graphNodeTypesPath, "graph node types registry");
 
-  const predicateRegistryPath = fs.existsSync(graphPredicatesPath) ? graphPredicatesPath : taxonomiesPath;
+  const predicateRegistryPath = graphPredicatesPath;
   ensureFileExists(predicateRegistryPath, "SPO predicates registry");
 
   if (errors.length) {
@@ -358,6 +409,9 @@ function main() {
   const allowedPredicates = collectIds(predicateEntries);
   const nodeTypeDefinitions = collectDefinitions(nodeTypeEntries);
   const predicateDefinitions = collectDefinitions(predicateEntries);
+
+  validateNodeTypeRegistryEntries(nodeTypeEntries);
+  validatePredicateRegistryEntries(predicateEntries);
 
   if (allowedNodeTypes.size === 0) {
     errors.push(`No node types found in registry: ${relativeProjectPath(graphNodeTypesPath)}`);

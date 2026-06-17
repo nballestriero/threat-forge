@@ -1,0 +1,60 @@
+schema_version: 1
+registry_id: spo-predicates-registry
+project: threat-forge
+
+spo_predicate:
+  - id: described_by
+    function: Links a governed model entity to the document that contains its body.
+    forward_label: described by
+    inverse_label: describes
+    subject_type: GovernedEntity
+    object_type: Document
+    description: The subject entity is described by the object document.
+
+  - id: implements
+    function: Links a governed requirement to the macro requirement it implements.
+    forward_label: implements
+    inverse_label: implemented by
+    subject_type: Requirement
+    object_type: MacroRequirement
+    description: The subject requirement contributes to or implements the target macro requirement.
+
+  - id: specified_by
+    function: Links a governed requirement to the ADR that specifies it.
+    forward_label: specified by
+    inverse_label: specifies
+    subject_type: Requirement
+    object_type: ADR
+    description: The subject requirement is specified by the object architecture decision record.
+
+  - id: implemented_by
+    function: Links a requirement to source files, commands, tools, or hooks.
+    forward_label: implemented by
+    inverse_label: implements
+    subject_type: Requirement
+    object_type: ImplementationArtifact
+    description: Requirement is implemented by a concrete project artifact.
+
+  - id: verifies
+    function: Links checks, tests, commands, or fixtures to the requirement they verify.
+    forward_label: verifies
+    inverse_label: verified by
+    subject_type: VerificationArtifact
+    object_type: Requirement
+    description: Verification artifact proves or checks a requirement.
+
+  - id: requires_component
+    function: Links a requirement to an architectural component.
+    forward_label: requires component
+    inverse_label: required by
+    subject_type: Requirement
+    object_type: Component
+    description: Requirement depends on a component existing or behaving in a defined way.
+
+  - id: justifies
+    function: Links a decision to the requirement it justifies.
+    forward_label: justifies
+    inverse_label: justified by
+    subject_type: ADR
+    object_type: Requirement
+    description: Decision provides rationale for a requirement.

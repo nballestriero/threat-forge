@@ -10,6 +10,8 @@ const registersDir = path.join(projectModelDir, "registers");
 const outputDir = path.join(rootDir, "artifacts", "project-model");
 
 const taxonomiesPath = path.join(registersDir, "taxonomies.registry.yml");
+const graphPredicatesPath = path.join(registersDir, "graph", "spo-predicates.registry.yml");
+const graphNodeTypesPath = path.join(registersDir, "graph", "graph-node-types.registry.yml");
 const graphIndexPath = path.join(registersDir, "graph.index.yml");
 const macroRequirementsPath = path.join(registersDir, "macro-requirements.registry.yml");
 const requirementsDir = path.join(registersDir, "requirements");
@@ -194,15 +196,54 @@ function resolveList(parsed, preferredKey, fallbackKey) {
 }
 
 function collectTaxonomies() {
-  const parsed = readYaml(taxonomiesPath);
-  const taxonomies = parsed.taxonomies && typeof parsed.taxonomies === "object" ? parsed.taxonomies : {};
   const rows = [];
 
-  for (const [group, entries] of Object.entries(taxonomies)) {
-    if (!Array.isArray(entries)) continue;
-    for (const entry of entries) {
+  if (fs.existsSync(taxonomiesPath)) {
+    const parsed = readYaml(taxonomiesPath);
+    const taxonomies = parsed.taxonomies && typeof parsed.taxonomies === "object" ? parsed.taxonomies : {};
+
+    for (const [group, entries] of Object.entries(taxonomies)) {
+      if (!Array.isArray(entries)) continue;
+      for (const entry of entries) {
+        rows.push({
+          group,
+          id: entry.id ?? "",
+          name: entry.name ?? "",
+          function: entry.function ?? "",
+          forward_label: entry.forward_label ?? "",
+          inverse_label: entry.inverse_label ?? "",
+          subject_type: entry.subject_type ?? "",
+          object_type: entry.object_type ?? "",
+          description: entry.description ?? "",
+          source_file: relativeProjectPath(taxonomiesPath),
+        });
+      }
+    }
+  }
+
+  if (fs.existsSync(graphNodeTypesPath)) {
+    const parsed = readYaml(graphNodeTypesPath);
+    for (const entry of resolveList(parsed, "node_type")) {
       rows.push({
-        group,
+        group: "node_type",
+        id: entry.id ?? "",
+        name: entry.name ?? "",
+        function: "",
+        forward_label: "",
+        inverse_label: "",
+        subject_type: "",
+        object_type: "",
+        description: entry.description ?? "",
+        source_file: relativeProjectPath(graphNodeTypesPath),
+      });
+    }
+  }
+
+  if (fs.existsSync(graphPredicatesPath)) {
+    const parsed = readYaml(graphPredicatesPath);
+    for (const entry of resolveList(parsed, "spo_predicate")) {
+      rows.push({
+        group: "spo_predicate",
         id: entry.id ?? "",
         name: entry.name ?? "",
         function: entry.function ?? "",
@@ -211,7 +252,7 @@ function collectTaxonomies() {
         subject_type: entry.subject_type ?? "",
         object_type: entry.object_type ?? "",
         description: entry.description ?? "",
-        source_file: relativeProjectPath(taxonomiesPath),
+        source_file: relativeProjectPath(graphPredicatesPath),
       });
     }
   }
@@ -447,6 +488,10 @@ function collectFiles() {
     { label: "Requirement registries", files: requirementRegistryFiles },
     { label: "Decision registries", files: decisionRegistryFiles },
     { label: "Graph index", files: fs.existsSync(graphIndexPath) ? [graphIndexPath] : [] },
+    {
+      label: "Graph control registries",
+      files: [graphNodeTypesPath, graphPredicatesPath].filter((filePath) => fs.existsSync(filePath)),
+    },
     { label: "Graph registries", files: graphFiles },
     { label: "Body files", files: bodyFiles },
   ];

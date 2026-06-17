@@ -46,6 +46,4 @@ node_type:
     satisfies:
       - ImplementationArtifact
       - VerificationArtifact
-    allowed_fields:
-      - path
     description: Concrete executable or script tool used to implement or verify project model requirements.
