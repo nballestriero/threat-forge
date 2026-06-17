@@ -11,3 +11,12 @@ decisions:
     date: 2026-06-17
     macro_requirement_id: MR-0000
     body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0000_body.md
+
+  - id: ADR-0001
+    title: MR-0000 come livello di controllo dello stato del sistema
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0000
+    body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0001_body.md

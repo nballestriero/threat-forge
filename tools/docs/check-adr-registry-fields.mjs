@@ -7,13 +7,17 @@ import { fileURLToPath } from "node:url";
  * Deterministic ADR registry field governance checker.
  *
  * @implementsRequirement MR-0001REQ-0004
+ * @implementsRequirement MR-0000REQ-0004
  * @derivedFromDecision ADR-0004
+ * @derivedFromDecision MR-0000/ADR-0001
  * @macroRequirement MR-0001
+ * @macroRequirement MR-0000
  *
  * This tool validates the structured fields of governed ADR registry records
  * against the ADR governance registry. It checks controlled field presence,
  * controlled value membership, identifier uniqueness, macro-requirement
- * references, normalized body paths, and unsupported fields. It intentionally
+ * references, macro-requirement-scoped ADR identity, normalized body paths,
+ * and unsupported fields. It intentionally
  * does not validate ADR Markdown body headings; body format validation belongs
  * to MR-0001REQ-0005 and must be implemented by a separate tool.
  */
@@ -263,16 +267,23 @@ function validateAdrRecord({ adr, registryPath, fieldDefinitions, allowedFieldId
     if (!isPresent(value)) continue;
 
     switch (field.rule) {
-      case "must_match_adr_id_pattern":
+      case "must_match_adr_id_pattern": {
         if (!adrIdPattern.test(String(value))) {
           errors.push(`${context} must match pattern ${adrIdPattern.source}.`);
         }
-        if (seenAdrIds.has(value)) {
-          errors.push(`${recordContext} duplicates ADR id ${value}.`);
+
+        const macroRequirementScope = isPresent(adr?.macro_requirement_id)
+          ? String(adr.macro_requirement_id)
+          : "<missing macro_requirement_id>";
+        const scopedAdrId = `${macroRequirementScope}/${value}`;
+
+        if (seenAdrIds.has(scopedAdrId)) {
+          errors.push(`${recordContext} duplicates ADR id ${value} within macro requirement ${macroRequirementScope}.`);
         } else {
-          seenAdrIds.add(value);
+          seenAdrIds.add(scopedAdrId);
         }
         break;
+      }
 
       case "must_be_non_empty_text":
         validateNonEmptyText(value, context);
@@ -429,6 +440,7 @@ function main() {
 
   console.log("ADR registry field check passed.");
   console.log("Implemented requirement: MR-0001REQ-0004");
+  console.log("Implemented requirement: MR-0000REQ-0004");
 }
 
 main();

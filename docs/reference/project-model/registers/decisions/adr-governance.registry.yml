@@ -47,7 +47,7 @@ adr_registry_fields:
     required: true
     controlled: true
     rule: must_match_adr_id_pattern
-    description: Stable unique ADR identifier.
+    description: Stable ADR identifier unique within the owning macro_requirement_id scope.
 
   - id: title
     required: true

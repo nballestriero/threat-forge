@@ -12,12 +12,37 @@ nodes:
     type: ADR
     label: Common governance bootstrap
 
+  - id: ADR-0001
+    type: ADR
+    label: System-state control layer
+
   - id: MR-0000REQ-0001
     type: Requirement
     label: Governance dei controlli trasversali comuni
 
+  - id: MR-0000REQ-0002
+    type: Requirement
+    label: Controllo di coerenza dello stato del sistema
+
+  - id: MR-0000REQ-0003
+    type: Requirement
+    label: Collocazione dei tool di governance per macro-requirement
+
+  - id: MR-0000REQ-0004
+    type: Requirement
+    label: Identità ADR contestuale per macro-requirement
+
+  - id: TOOL-check-adr-registry-fields
+    type: Tool
+    label: ADR registry field checker
+    path: tools/docs/check-adr-registry-fields.mjs
+
 spo_relations:
   - subject: ADR-0000
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0001
     predicate: belongs_to
     object: MR-0000
 
@@ -25,6 +50,38 @@ spo_relations:
     predicate: belongs_to
     object: MR-0000
 
+  - subject: MR-0000REQ-0002
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0003
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0004
+    predicate: belongs_to
+    object: MR-0000
+
   - subject: ADR-0000
     predicate: justifies
     object: MR-0000REQ-0001
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0000REQ-0002
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0000REQ-0003
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0000REQ-0004
+
+  - subject: MR-0000REQ-0004
+    predicate: implemented_by
+    object: TOOL-check-adr-registry-fields
+
+  - subject: TOOL-check-adr-registry-fields
+    predicate: verifies
+    object: MR-0000REQ-0004

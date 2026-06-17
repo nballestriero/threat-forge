@@ -8,15 +8,16 @@ The project model must validate the structured fields used by ADR registry recor
 
 Every functional ADR registry record must expose the required controlled fields defined by the ADR governance registry.
 
-The validation must ensure that ADR registry metadata is deterministic, complete, and cross-checked against existing project model records.
+The validation must ensure that ADR registry metadata is deterministic, complete, and cross-checked against existing project model records. ADR identity is contextual: the complete decision identity is `macro_requirement_id` + `id`.
 
 At minimum, the validation must check that:
 
-* each ADR id is unique within the governed ADR corpus;
+* each ADR id is unique within the owning macro-requirement scope;
 * each ADR id matches the controlled ADR identifier pattern;
 * each ADR status belongs to the controlled ADR status list;
 * each ADR decision type belongs to the controlled decision type list;
 * each ADR macro requirement reference points to an existing macro requirement;
+* duplicate ADR ids are allowed across different macro requirements when their `macro_requirement_id` values differ;
 * each ADR body path is present, normalized, and points to an existing Markdown body file;
 * unsupported fields are rejected or reported according to the ADR governance registry rules.
 
