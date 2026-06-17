@@ -6,15 +6,18 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..", "..");
 const registersDir = path.join(rootDir, "docs", "reference", "project-model", "registers");
+const graphRegistersDir = path.join(registersDir, "graph");
 
 const contractPath = path.join(registersDir, "graph-format.contract.json");
 const graphIndexPath = path.join(registersDir, "graph.index.yml");
 const taxonomiesPath = path.join(registersDir, "taxonomies.registry.yml");
+const graphNodeTypesPath = path.join(graphRegistersDir, "graph-node-types.registry.yml");
+const graphPredicatesPath = path.join(graphRegistersDir, "spo-predicates.registry.yml");
 
 const errors = [];
 
 function readText(filePath) {
-  return fs.readFileSync(filePath, "utf8");
+  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "");
 }
 
 function normalizeProjectPath(value) {
@@ -59,7 +62,7 @@ function countIndent(line) {
 function parseYaml(text) {
   const root = {};
   const stack = [{ indent: -1, value: root }];
-  const lines = String(text ?? "").replace(/\r\n/gu, "\n").split("\n");
+  const lines = String(text ?? "").replace(/^\uFEFF/u, "").replace(/\r\n/gu, "\n").split("\n");
 
   function getParent(indent) {
     while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
@@ -199,10 +202,47 @@ function validateArrayFields(object, arrayFields, context) {
   }
 }
 
-function collectTaxonomyIds(taxonomies, taxonomyName) {
-  const entries = taxonomies?.taxonomies?.[taxonomyName];
-  if (!Array.isArray(entries)) return new Set();
+function readRegistryEntries(registry, registryKey) {
+  if (Array.isArray(registry?.[registryKey])) return registry[registryKey];
+  if (Array.isArray(registry?.taxonomies?.[registryKey])) return registry.taxonomies[registryKey];
+  return [];
+}
+
+function collectIds(entries) {
   return new Set(entries.map((entry) => entry.id).filter(Boolean));
+}
+
+function collectDefinitions(entries) {
+  const definitions = new Map();
+  for (const entry of entries) {
+    if (!entry?.id) continue;
+    if (definitions.has(entry.id)) {
+      errors.push(`Duplicate registry id: ${entry.id}`);
+    }
+    definitions.set(entry.id, entry);
+  }
+  return definitions;
+}
+
+function typeSatisfies(actualType, expectedType, nodeTypeDefinitions, seen = new Set()) {
+  if (!isPresent(actualType) || !isPresent(expectedType)) return false;
+  if (actualType === expectedType) return true;
+  if (seen.has(actualType)) return false;
+
+  seen.add(actualType);
+  const definition = nodeTypeDefinitions.get(actualType);
+  const satisfiedTypes = Array.isArray(definition?.satisfies) ? definition.satisfies : [];
+
+  return satisfiedTypes.some((satisfiedType) =>
+    satisfiedType === expectedType || typeSatisfies(satisfiedType, expectedType, nodeTypeDefinitions, seen),
+  );
+}
+
+function allowedNodeFieldsFor(nodeType, contract, nodeTypeDefinitions) {
+  const baseFields = Array.isArray(contract.node.allowed_fields) ? contract.node.allowed_fields : [];
+  const definition = nodeTypeDefinitions.get(nodeType);
+  const typeFields = Array.isArray(definition?.allowed_fields) ? definition.allowed_fields : [];
+  return [...baseFields, ...typeFields];
 }
 
 function validateGraphIndex(graphIndex) {
@@ -218,7 +258,7 @@ function validateGraphIndex(graphIndex) {
   });
 }
 
-function validateGraphFile(graphEntry, contract, allowedNodeTypes, allowedPredicates) {
+function validateGraphFile(graphEntry, contract, nodeTypeDefinitions, predicateDefinitions) {
   const graphPath = resolveProjectPath(graphEntry.path);
   if (!ensureFileExists(graphPath, `graph file ${graphEntry.graph_id}`)) return;
 
@@ -234,18 +274,20 @@ function validateGraphFile(graphEntry, contract, allowedNodeTypes, allowedPredic
   }
 
   const nodeIds = new Set();
+  const nodeTypesById = new Map();
 
   for (const [index, node] of (Array.isArray(graph.nodes) ? graph.nodes : []).entries()) {
     const nodeContext = `${context} node #${index + 1}`;
     validateRequiredFields(node, contract.node.required_fields, nodeContext);
-    validateAllowedFields(node, contract.node.allowed_fields, nodeContext);
+    validateAllowedFields(node, allowedNodeFieldsFor(node?.type, contract, nodeTypeDefinitions), nodeContext);
 
     if (isPresent(node.id)) {
       if (nodeIds.has(node.id)) errors.push(`${nodeContext} duplicates node id: ${node.id}`);
       nodeIds.add(node.id);
+      nodeTypesById.set(node.id, node.type);
     }
 
-    if (isPresent(node.type) && !allowedNodeTypes.has(node.type)) {
+    if (isPresent(node.type) && !nodeTypeDefinitions.has(node.type)) {
       errors.push(`${nodeContext} uses unknown node type: ${node.type}`);
     }
   }
@@ -255,7 +297,9 @@ function validateGraphFile(graphEntry, contract, allowedNodeTypes, allowedPredic
     validateRequiredFields(relation, contract.spo_relation.required_fields, relationContext);
     validateAllowedFields(relation, contract.spo_relation.allowed_fields, relationContext);
 
-    if (isPresent(relation.predicate) && !allowedPredicates.has(relation.predicate)) {
+    const predicateDefinition = predicateDefinitions.get(relation.predicate);
+
+    if (isPresent(relation.predicate) && !predicateDefinition) {
       errors.push(`${relationContext} uses unknown predicate: ${relation.predicate}`);
     }
 
@@ -266,13 +310,36 @@ function validateGraphFile(graphEntry, contract, allowedNodeTypes, allowedPredic
     if (isPresent(relation.object) && !nodeIds.has(relation.object)) {
       errors.push(`${relationContext} references unknown object node: ${relation.object}`);
     }
+
+    if (predicateDefinition && nodeIds.has(relation.subject)) {
+      const actualSubjectType = nodeTypesById.get(relation.subject);
+      const expectedSubjectType = predicateDefinition.subject_type;
+      if (isPresent(expectedSubjectType) && !typeSatisfies(actualSubjectType, expectedSubjectType, nodeTypeDefinitions)) {
+        errors.push(
+          `${relationContext} subject ${relation.subject} type ${actualSubjectType} does not satisfy predicate subject_type ${expectedSubjectType}.`,
+        );
+      }
+    }
+
+    if (predicateDefinition && nodeIds.has(relation.object)) {
+      const actualObjectType = nodeTypesById.get(relation.object);
+      const expectedObjectType = predicateDefinition.object_type;
+      if (isPresent(expectedObjectType) && !typeSatisfies(actualObjectType, expectedObjectType, nodeTypeDefinitions)) {
+        errors.push(
+          `${relationContext} object ${relation.object} type ${actualObjectType} does not satisfy predicate object_type ${expectedObjectType}.`,
+        );
+      }
+    }
   }
 }
 
 function main() {
   ensureFileExists(contractPath, "graph format contract");
   ensureFileExists(graphIndexPath, "graph index");
-  ensureFileExists(taxonomiesPath, "taxonomies registry");
+  ensureFileExists(graphNodeTypesPath, "graph node types registry");
+
+  const predicateRegistryPath = fs.existsSync(graphPredicatesPath) ? graphPredicatesPath : taxonomiesPath;
+  ensureFileExists(predicateRegistryPath, "SPO predicates registry");
 
   if (errors.length) {
     for (const error of errors) console.error(`ERROR: ${error}`);
@@ -281,21 +348,27 @@ function main() {
 
   const contract = readJson(contractPath);
   const graphIndex = readYaml(graphIndexPath);
-  const taxonomies = readYaml(taxonomiesPath);
+  const graphNodeTypes = readYaml(graphNodeTypesPath);
+  const predicateRegistry = readYaml(predicateRegistryPath);
 
-  const allowedNodeTypes = collectTaxonomyIds(taxonomies, contract.node.type_taxonomy);
-  const allowedPredicates = collectTaxonomyIds(taxonomies, contract.spo_relation.predicate_taxonomy);
+  const nodeTypeEntries = readRegistryEntries(graphNodeTypes, contract.node.type_taxonomy);
+  const predicateEntries = readRegistryEntries(predicateRegistry, contract.spo_relation.predicate_taxonomy);
+
+  const allowedNodeTypes = collectIds(nodeTypeEntries);
+  const allowedPredicates = collectIds(predicateEntries);
+  const nodeTypeDefinitions = collectDefinitions(nodeTypeEntries);
+  const predicateDefinitions = collectDefinitions(predicateEntries);
 
   if (allowedNodeTypes.size === 0) {
-    errors.push(`No node types found in taxonomy: ${contract.node.type_taxonomy}`);
+    errors.push(`No node types found in registry: ${relativeProjectPath(graphNodeTypesPath)}`);
   }
 
   if (allowedPredicates.size === 0) {
-    errors.push(`No SPO predicates found in taxonomy: ${contract.spo_relation.predicate_taxonomy}`);
+    errors.push(`No SPO predicates found in registry: ${relativeProjectPath(predicateRegistryPath)}`);
   }
 
   for (const graphEntry of validateGraphIndex(graphIndex)) {
-    validateGraphFile(graphEntry, contract, allowedNodeTypes, allowedPredicates);
+    validateGraphFile(graphEntry, contract, nodeTypeDefinitions, predicateDefinitions);
   }
 
   if (errors.length) {

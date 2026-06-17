@@ -11,8 +11,6 @@ const outputDir = path.join(rootDir, "artifacts", "project-model");
 
 const taxonomiesPath = path.join(registersDir, "taxonomies.registry.yml");
 const graphIndexPath = path.join(registersDir, "graph.index.yml");
-const graphDir = path.join(registersDir, "graph");
-const graphPredicatesPath = path.join(graphDir, "spo-predicates.registry.yml");
 const macroRequirementsPath = path.join(registersDir, "macro-requirements.registry.yml");
 const requirementsDir = path.join(registersDir, "requirements");
 const decisionsDir = path.join(registersDir, "decisions");
@@ -221,37 +219,13 @@ function collectTaxonomies() {
   return rows;
 }
 
-function collectGraphPredicateRows() {
-  if (fs.existsSync(graphPredicatesPath)) {
-    const parsed = readYaml(graphPredicatesPath);
-    const predicates = Array.isArray(parsed.spo_predicate) ? parsed.spo_predicate : [];
-    return predicates.map((entry) => ({
-      group: "spo_predicate",
-      id: entry.id ?? "",
-      name: entry.name ?? "",
-      function: entry.function ?? "",
-      forward_label: entry.forward_label ?? "",
-      inverse_label: entry.inverse_label ?? "",
-      subject_type: entry.subject_type ?? "",
-      object_type: entry.object_type ?? "",
-      description: entry.description ?? "",
-      source_file: relativeProjectPath(graphPredicatesPath),
-    }));
-  }
-
-  return collectTaxonomies().filter((row) => row.group === "spo_predicate");
-}
-
 function collectPredicateLabels() {
   const labels = {};
-  for (const row of collectGraphPredicateRows()) {
+  for (const row of collectTaxonomies()) {
+    if (row.group !== "spo_predicate") continue;
     labels[row.id] = {
       forward_label: row.forward_label ?? "",
       inverse_label: row.inverse_label ?? "",
-      subject_type: row.subject_type ?? "",
-      object_type: row.object_type ?? "",
-      description: row.description ?? "",
-      source_file: row.source_file ?? "",
     };
   }
   return labels;
@@ -275,15 +249,14 @@ function collectGraphNodes() {
       const filePath = node.path ?? node.body_path ?? "";
       rows.push({
         id: node.id ?? "",
-        label: node.label ?? node.name ?? node.id ?? "",
         type: displayType,
         node_type: node.node_type ?? displayType,
-        description: node.description ?? "",
+        label: node.label ?? node.name ?? "",
         registry_path: node.registry_path ?? "",
         body_path: node.body_path ?? filePath,
         path: filePath,
         graph_id: graph.graph_id ?? graphEntry.graph_id ?? "",
-        macro_requirement_id: node.macro_requirement_id ?? graph.macro_requirement_id ?? graphEntry.macro_requirement_id ?? "",
+        macro_requirement_id: graph.macro_requirement_id ?? graphEntry.macro_requirement_id ?? "",
         source_file: relativeProjectPath(absolute),
       });
     }
@@ -408,45 +381,31 @@ function collectDecisions() {
 function collectGraphRelations() {
   const rows = [];
   const labels = collectPredicateLabels();
+  const nodesById = new Map(collectGraphNodes().map((node) => [node.id, node]));
 
   for (const graphEntry of collectGraphEntries()) {
     const absolute = resolveProjectPath(graphEntry.path);
     const graph = readYaml(absolute);
     const relations = Array.isArray(graph.spo_relations) ? graph.spo_relations : [];
-    const nodes = Array.isArray(graph.nodes) ? graph.nodes : [];
-    const nodeById = Object.fromEntries(nodes.map((node) => [node.id ?? "", node]));
 
     for (const relation of relations) {
-      const predicate = relation.predicate ?? "";
-      const predicateInfo = labels[predicate] ?? {};
       const subject = relation.subject ?? "";
       const object = relation.object ?? "";
-      const subjectNode = nodeById[subject] ?? {};
-      const objectNode = nodeById[object] ?? {};
-      const subjectType = subjectNode.type ?? subjectNode.node_type ?? "";
-      const objectType = objectNode.type ?? objectNode.node_type ?? "";
-
+      const predicate = relation.predicate ?? "";
+      const subjectNode = nodesById.get(subject);
+      const objectNode = nodesById.get(object);
       rows.push({
         subject,
-        subject_label: subjectNode.label ?? subjectNode.name ?? subject,
-        subject_type: subjectType,
+        subject_label: subjectNode?.label ?? "",
+        subject_type: subjectNode?.type ?? "",
         predicate,
-        forward_label: predicateInfo.forward_label ?? "",
-        inverse_label: predicateInfo.inverse_label ?? "",
-        predicate_subject_type: predicateInfo.subject_type ?? "",
-        predicate_object_type: predicateInfo.object_type ?? "",
-        predicate_description: predicateInfo.description ?? "",
+        forward_label: labels[predicate]?.forward_label ?? "",
+        inverse_label: labels[predicate]?.inverse_label ?? "",
         object,
-        object_label: objectNode.label ?? objectNode.name ?? object,
-        object_type: objectType,
+        object_label: objectNode?.label ?? "",
+        object_type: objectNode?.type ?? "",
         graph_id: graph.graph_id ?? graphEntry.graph_id ?? "",
-        macro_requirement_id:
-          relation.macro_requirement_id ??
-          subjectNode.macro_requirement_id ??
-          objectNode.macro_requirement_id ??
-          graph.macro_requirement_id ??
-          graphEntry.macro_requirement_id ??
-          "",
+        macro_requirement_id: graph.macro_requirement_id ?? graphEntry.macro_requirement_id ?? "",
         source_file: relativeProjectPath(absolute),
       });
     }
@@ -1026,110 +985,65 @@ render();
 function renderGraph(graphData) {
   const nodes = graphData.nodes;
   const rows = graphData.relations;
-  const macros = uniqueValues([...rows, ...nodes], "macro_requirement_id");
-  const predicates = uniqueValues(rows, "predicate");
-  const types = uniqueValues(nodes, "type");
-  const nodesData = jsonForScript(nodes);
-  const rowsData = jsonForScript(rows);
+
+  const nodeBody = nodes.map((node) => `
+    <tr>
+      <td><code>${escapeHtml(node.id)}</code></td>
+      <td>${escapeHtml(node.label)}</td>
+      <td><code>${escapeHtml(node.type)}</code></td>
+      <td><code>${escapeHtml(node.path)}</code></td>
+      <td><code>${escapeHtml(node.graph_id)}</code></td>
+      <td><code>${escapeHtml(node.macro_requirement_id)}</code></td>
+      <td><code>${escapeHtml(node.source_file)}</code></td>
+    </tr>`).join("");
+
+  const relationBody = rows.map((row) => `
+    <tr>
+      <td><code>${escapeHtml(row.subject)}</code><br><span class="muted">${escapeHtml(row.subject_label)}</span></td>
+      <td><code>${escapeHtml(row.subject_type)}</code></td>
+      <td><code>${escapeHtml(row.predicate)}</code><br><span class="muted">${escapeHtml(row.forward_label)}</span></td>
+      <td><code>${escapeHtml(row.object)}</code><br><span class="muted">${escapeHtml(row.object_label)}</span></td>
+      <td><code>${escapeHtml(row.object_type)}</code></td>
+      <td><code>${escapeHtml(row.graph_id)}</code></td>
+      <td><code>${escapeHtml(row.macro_requirement_id)}</code></td>
+      <td><code>${escapeHtml(row.source_file)}</code></td>
+    </tr>`).join("");
+
+  const nodesTable = nodes.length
+    ? `<table>
+        <thead><tr><th>ID</th><th>Label</th><th>Type</th><th>Path</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead>
+        <tbody>${nodeBody}</tbody>
+      </table>`
+    : `<p class="empty">No graph nodes found. Check <code>docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml</code>.</p>`;
+
+  const relationsTable = rows.length
+    ? `<table>
+        <thead><tr><th>Subject</th><th>Subject type</th><th>Predicate</th><th>Object</th><th>Object type</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead>
+        <tbody>${relationBody}</tbody>
+      </table>`
+    : `<p class="empty">No SPO relations found. Check <code>spo_relations</code> in graph registry files.</p>`;
 
   writePage("graph.html", "Graph SPO relations", `
-<section class="card">
-  <h2>Filters</h2>
-  <div class="filters">
-    <label>Text
-      <input id="textFilter" type="search" placeholder="Search nodes, subject, predicate, object">
-    </label>
-    <label>Macro requirement
-      <select id="macroFilter"><option value="">All macro requirements</option>${macros.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("")}</select>
-    </label>
-    <label>Predicate
-      <select id="predicateFilter"><option value="">All predicates</option>${predicates.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("")}</select>
-    </label>
-    <label>Node type
-      <select id="typeFilter"><option value="">All node types</option>${types.map((v) => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join("")}</select>
-    </label>
-  </div>
+<section class="grid">
+  <article class="card">
+    <h2>Graph nodes</h2>
+    <p class="count">${nodes.length}</p>
+  </article>
+  <article class="card">
+    <h2>SPO relations</h2>
+    <p class="count">${rows.length}</p>
+  </article>
 </section>
 
 <section class="card">
-  <h2>Nodes <span class="badge" id="nodeCount"></span></h2>
-  <div id="nodes"></div>
+  <h2>Nodes</h2>
+  ${nodesTable}
 </section>
 
 <section class="card">
-  <h2>SPO relations <span class="badge" id="relationCount"></span></h2>
-  <div id="relations"></div>
+  <h2>SPO relations</h2>
+  ${relationsTable}
 </section>
-
-<script>
-const nodes = ${nodesData};
-const rows = ${rowsData};
-function esc(value) {
-  return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-}
-function includesText(row, text) {
-  if (!text) return true;
-  return Object.values(row).join(" ").toLowerCase().includes(text.toLowerCase());
-}
-function render() {
-  const text = document.getElementById("textFilter").value.trim();
-  const macro = document.getElementById("macroFilter").value;
-  const predicate = document.getElementById("predicateFilter").value;
-  const type = document.getElementById("typeFilter").value;
-
-  const filteredNodes = nodes.filter((node) =>
-    includesText(node, text) &&
-    (!macro || node.macro_requirement_id === macro) &&
-    (!type || node.type === type)
-  );
-
-  const filteredRows = rows.filter((row) =>
-    includesText(row, text) &&
-    (!macro || row.macro_requirement_id === macro) &&
-    (!predicate || row.predicate === predicate)
-  );
-
-  document.getElementById("nodeCount").textContent = filteredNodes.length + " / " + nodes.length;
-  document.getElementById("relationCount").textContent = filteredRows.length + " / " + rows.length;
-
-  const nodeBody = filteredNodes.map((node) =>
-    "<tr>" +
-    "<td><code>" + esc(node.id) + "</code></td>" +
-    "<td>" + esc(node.label) + "</td>" +
-    "<td><code>" + esc(node.type) + "</code></td>" +
-    "<td><code>" + esc(node.body_path || node.path) + "</code></td>" +
-    "<td><code>" + esc(node.graph_id) + "</code></td>" +
-    "<td><code>" + esc(node.macro_requirement_id) + "</code></td>" +
-    "<td><code>" + esc(node.source_file) + "</code></td>" +
-    "</tr>"
-  ).join("");
-
-  document.getElementById("nodes").innerHTML = filteredNodes.length
-    ? "<table><thead><tr><th>ID</th><th>Label</th><th>Type</th><th>Body/path</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead><tbody>" + nodeBody + "</tbody></table>"
-    : "<p class=\"empty\">No graph nodes match the active filters.</p>";
-
-  const relationBody = filteredRows.map((row) =>
-    "<tr>" +
-    "<td><strong>" + esc(row.subject_label) + "</strong><br><code>" + esc(row.subject) + "</code><br><span class=\"badge\">" + esc(row.subject_type) + "</span></td>" +
-    "<td><code>" + esc(row.predicate) + "</code><br>" + esc(row.forward_label) + "</td>" +
-    "<td><strong>" + esc(row.object_label) + "</strong><br><code>" + esc(row.object) + "</code><br><span class=\"badge\">" + esc(row.object_type) + "</span></td>" +
-    "<td>" + esc(row.inverse_label) + "</td>" +
-    "<td><code>" + esc(row.predicate_subject_type) + "</code> → <code>" + esc(row.predicate_object_type) + "</code></td>" +
-    "<td><code>" + esc(row.graph_id) + "</code></td>" +
-    "<td><code>" + esc(row.macro_requirement_id) + "</code></td>" +
-    "<td><code>" + esc(row.source_file) + "</code></td>" +
-    "</tr>"
-  ).join("");
-
-  document.getElementById("relations").innerHTML = filteredRows.length
-    ? "<table><thead><tr><th>Subject</th><th>Predicate</th><th>Object</th><th>Inverse label</th><th>Predicate types</th><th>Graph ID</th><th>Macro requirement</th><th>Source</th></tr></thead><tbody>" + relationBody + "</tbody></table>"
-    : "<p class=\"empty\">No SPO relations match the active filters.</p>";
-}
-["textFilter","macroFilter","predicateFilter","typeFilter"].forEach((id) => {
-  document.getElementById(id).addEventListener(id === "textFilter" ? "input" : "change", render);
-});
-render();
-</script>
 `);
 }
 

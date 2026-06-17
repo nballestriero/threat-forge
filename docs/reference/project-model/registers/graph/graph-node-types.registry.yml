@@ -1,0 +1,51 @@
+schema_version: 1
+registry_id: graph-node-types-registry
+project: threat-forge
+
+node_type:
+  - id: GovernedEntity
+    abstract: true
+    description: Abstract category for governed project model entities that can be described by documents.
+
+  - id: MacroRequirement
+    abstract: false
+    satisfies:
+      - GovernedEntity
+    description: Concrete graph node for a governed top-level macro requirement.
+
+  - id: ADR
+    abstract: false
+    satisfies:
+      - GovernedEntity
+    description: Concrete graph node for a governed architecture decision record.
+
+  - id: Requirement
+    abstract: false
+    satisfies:
+      - GovernedEntity
+    description: Concrete graph node for a governed requirement.
+
+  - id: Document
+    abstract: false
+    description: Concrete graph node for a governed or referenced project model document.
+
+  - id: ImplementationArtifact
+    abstract: true
+    description: Abstract category for concrete project artifacts that implement governed requirements.
+
+  - id: VerificationArtifact
+    abstract: true
+    description: Abstract category for concrete project artifacts that verify governed requirements.
+
+  - id: Component
+    abstract: true
+    description: Abstract category for architectural components referenced by governed requirements.
+
+  - id: Tool
+    abstract: false
+    satisfies:
+      - ImplementationArtifact
+      - VerificationArtifact
+    allowed_fields:
+      - path
+    description: Concrete executable or script tool used to implement or verify project model requirements.
