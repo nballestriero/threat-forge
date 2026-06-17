@@ -20,8 +20,18 @@ At minimum, the validation must check that:
 * each ADR body path is present, normalized, and points to an existing Markdown body file;
 * unsupported fields are rejected or reported according to the ADR governance registry rules.
 
-## Verification expectation
+## Verification
 
-A future dedicated validator must check ADR registry field governance deterministically.
+The deterministic validator is implemented by:
 
-The validator must be introduced only after it is represented as a graph implementation and verification artifact for this requirement.
+```text
+tools/docs/check-adr-registry-fields.mjs
+```
+
+The validator must be executable through:
+
+```text
+npm run docs:adr-registry-fields
+```
+
+The project model graph must link this requirement to the validator with `implemented_by`, and must link the validator back to this requirement with `verifies`.

@@ -53,6 +53,11 @@ nodes:
     label: Graph format checker
     path: tools/docs/check-graph-format.mjs
 
+  - id: TOOL-check-adr-registry-fields
+    type: Tool
+    label: ADR registry field checker
+    path: tools/docs/check-adr-registry-fields.mjs
+
 spo_relations:
   - subject: ADR-0001
     predicate: belongs_to
@@ -133,3 +138,11 @@ spo_relations:
   - subject: TOOL-check-graph-format
     predicate: verifies
     object: MR-0001REQ-0003
+
+  - subject: MR-0001REQ-0004
+    predicate: implemented_by
+    object: TOOL-check-adr-registry-fields
+
+  - subject: TOOL-check-adr-registry-fields
+    predicate: verifies
+    object: MR-0001REQ-0004
