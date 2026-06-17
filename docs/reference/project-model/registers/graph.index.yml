@@ -1,0 +1,8 @@
+schema_version: 1
+registry_id: graph-index
+project: threat-forge
+
+graphs:
+  - graph_id: GRAPH-0001
+    name: Project model graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml

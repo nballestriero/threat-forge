@@ -1,0 +1,10 @@
+schema_version: 1
+macro_requirement_id: MR-0001
+
+requirements:
+  - id: MR-0001REQ-0001
+    title: Regole di Validazione Sintattica e Strutturale
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0001_body.md
