@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Derive the dedicated requirement for a shared Markdown body parser utility.
+Implement the shared Markdown body parser utility under `backend/tools/MR-0000/lib/markdown-body-parser.mjs`.
 
-This micropasso introduces a small, implementation-targetable requirement so future source-code JSDoc can reference a precise obligation instead of the broader body-validation behavior requirement.
+This micropasso introduces the reusable parser and a focused parser self-check so future ADR and Requirement body validators can share deterministic Markdown structure extraction.
 
-No parser code, ADR body validator, Requirement body validator, shared utility implementation, runner aggregation, or RTM generator is part of this micropasso.
+No ADR body validator, Requirement body validator, runner aggregation, body-format profile enforcement, or RTM generator is part of this micropasso.
 
 ## Completed Milestones
 
@@ -68,6 +68,7 @@ No parser code, ADR body validator, Requirement body validator, shared utility i
 - Derivation of foundational governance requirements for working plan coherence, canonical identity, graph views, LLM navigation, code RTM, and bidirectional graph/code traceability.
 - Declaration of append-first governance for protected project-model registries and graph records.
 - Schema-backed validation of the governed body-format registry with an AJV-backed checker.
+- Dedicated requirement for the shared Markdown body parser utility.
 
 ## Pending Decisions
 
@@ -77,7 +78,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 ## Pending Requirements
 
-Append-first governance requirements have been declared. The schema-backed body-format registry validator has been implemented. The current document step derives a precise parser-utility requirement before shared Markdown parser source files are introduced.
+Append-first governance requirements have been declared. The schema-backed body-format registry validator has been implemented. The shared Markdown parser requirement has been declared.
 
 ## Pending Implementations
 
@@ -85,7 +86,6 @@ No new implementation should start before the related requirements and graph rel
 
 Expected future implementation areas include:
 
-- shared Markdown body parser utility implementing `MR-0001REQ-0022`;
 - schema-backed structured registry/header validation support;
 - body-format registry schema checker;
 - ADR body format validator;
@@ -107,14 +107,17 @@ npm run docs:graph-format
 npm run docs:pages
 node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
+npm run docs:body-format-registry
+npm run docs:markdown-body-parser
 ```
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
-Additional gate now available:
+Additional gates now available:
 
 ```text
 npm run docs:body-format-registry
+npm run docs:markdown-body-parser
 ```
 
 ## Handoff Notes
@@ -132,10 +135,12 @@ npm run docs:graph-format
 npm run docs:pages
 node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
+npm run docs:body-format-registry
+npm run docs:markdown-body-parser
 ```
 
 ## Next Suggested Step
 
-After this requirement derivation micropasso, the next safe path is to implement the shared Markdown body parser utility against `MR-0001REQ-0022`, then use that utility from focused ADR and Requirement body validators.
+After this parser implementation micropasso, the next safe path is to derive or confirm specific requirements for ADR and Requirement body validators, then implement focused validators that consume the shared parser and the governed body-format registry.
 
 Do not implement ADR or Requirement body validators in a way that hardcodes body sections outside the governed body-format registry.

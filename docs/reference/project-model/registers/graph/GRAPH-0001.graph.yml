@@ -165,6 +165,16 @@ nodes:
     label: Body format registry schema checker
     path: backend/tools/MR-0000/check-body-format-registry.mjs
 
+  - id: SOURCE-markdown-body-parser
+    type: SourceModule
+    label: Shared Markdown body parser utility
+    path: backend/tools/MR-0000/lib/markdown-body-parser.mjs
+
+  - id: TOOL-check-markdown-body-parser
+    type: Tool
+    label: Markdown body parser self-check
+    path: backend/tools/MR-0000/check-markdown-body-parser.mjs
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -429,3 +439,10 @@ spo_relations:
     predicate: belongs_to
     object: MR-0001
 
+  - subject: MR-0001REQ-0022
+    predicate: implemented_by
+    object: SOURCE-markdown-body-parser
+
+  - subject: TOOL-check-markdown-body-parser
+    predicate: verifies
+    object: MR-0001REQ-0022

@@ -8,7 +8,8 @@
     "context:zip": "node tools/context/create-handoff-zip.mjs",
     "docs:graph-format": "node backend/tools/MR-0000/check-graph-format.mjs",
     "docs:adr-registry-fields": "node tools/docs/check-adr-registry-fields.mjs",
-    "docs:body-format-registry": "node backend/tools/MR-0000/check-body-format-registry.mjs"
+    "docs:body-format-registry": "node backend/tools/MR-0000/check-body-format-registry.mjs",
+    "docs:markdown-body-parser": "node backend/tools/MR-0000/check-markdown-body-parser.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0"
