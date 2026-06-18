@@ -44,6 +44,27 @@ nodes:
     type: Requirement
     label: Refactor del validator del formato grafo sotto MR-0000
 
+
+  - id: ADR-0003
+    type: ADR
+    label: System-state runner and top-down traversal
+
+  - id: MR-0000REQ-0007
+    type: Requirement
+    label: Runner unico MR-0000 per i gate di coerenza
+
+  - id: MR-0000REQ-0008
+    type: Requirement
+    label: Traversal canonico top-down del project model
+
+  - id: MR-0000REQ-0009
+    type: Requirement
+    label: Discovery dei file governati tramite registry e path
+
+  - id: MR-0000REQ-0010
+    type: Requirement
+    label: Orchestrazione dei validator specializzati
+
   - id: TOOL-check-graph-format
     type: Tool
     label: Graph format checker
@@ -64,6 +85,26 @@ spo_relations:
     object: MR-0000
 
   - subject: ADR-0002
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0003
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0007
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0008
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0009
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0010
     predicate: belongs_to
     object: MR-0000
 
@@ -114,6 +155,22 @@ spo_relations:
   - subject: ADR-0002
     predicate: justifies
     object: MR-0000REQ-0006
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0007
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0008
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0009
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0010
 
   - subject: MR-0000REQ-0003
     predicate: implemented_by

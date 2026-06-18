@@ -43,3 +43,31 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0002
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0006_body.md
+
+  - id: MR-0000REQ-0007
+    title: Runner unico MR-0000 per i gate di coerenza del project model
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0007_body.md
+
+  - id: MR-0000REQ-0008
+    title: Traversal canonico top-down del project model
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0008_body.md
+
+  - id: MR-0000REQ-0009
+    title: Discovery dei file governati tramite registry e path dichiarati
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0009_body.md
+
+  - id: MR-0000REQ-0010
+    title: Orchestrazione dei validator specializzati per formati canonici e coerenza codice-documentazione
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0010_body.md
