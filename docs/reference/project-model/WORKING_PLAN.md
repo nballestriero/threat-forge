@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Declare append-first governance for protected project-model registries and graph records.
+Validate the governed body-format registry through schema-backed deterministic checks.
 
-This micropasso introduces the decision and small requirements that require canonical registries and graph files to evolve primarily through additions. It also declares that modifications and deletions of protected records must require explicit confirmation before a future validator accepts them.
+This micropasso introduces an explicit JSON Schema contract and a small AJV-backed checker for `docs/reference/project-model/registers/body-formats.registry.yml`. It validates the registry structure before ADR and Requirement body validators consume body-format profiles.
 
-No append-first validator, confirmation mechanism, baseline comparison tool, runner update, or source-code implementation is part of this micropasso.
+No ADR body parser, Requirement body parser, shared Markdown section parser, append-first guard, runner aggregation, or RTM generator is part of this micropasso.
 
 ## Completed Milestones
 
@@ -66,6 +66,7 @@ No append-first validator, confirmation mechanism, baseline comparison tool, run
 - Derivation of atomic requirement-model and common body-format requirements.
 - Introduction of the governed body-format registry and milestone tag `project-model-body-format-registry-complete`.
 - Derivation of foundational governance requirements for working plan coherence, canonical identity, graph views, LLM navigation, code RTM, and bidirectional graph/code traceability.
+- Declaration of append-first governance for protected project-model registries and graph records.
 
 ## Pending Decisions
 
@@ -75,9 +76,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 ## Pending Requirements
 
-Append-first governance requirements are being declared in the current micropasso.
-
-After this micropasso, the project model will also contain requirements for append-first protected record evolution, explicit confirmation of modifications/deletions, and a future deterministic append-first guard.
+Append-first governance requirements have been declared. The current implementation work targets schema-backed validation for the governed body-format registry.
 
 ## Pending Implementations
 
@@ -87,6 +86,7 @@ Expected future implementation areas include:
 
 - shared Markdown section parsing utilities;
 - schema-backed structured registry/header validation support;
+- body-format registry schema checker;
 - ADR body format validator;
 - Requirement registry field validator;
 - Requirement body format validator;
@@ -110,6 +110,12 @@ npm run docs:adr-registry-fields
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
+Current new gate under implementation:
+
+```text
+npm run docs:body-format-registry
+```
+
 ## Handoff Notes
 
 For handoff, verify live repository state with Git commands rather than relying on this file for dynamic facts.
@@ -129,8 +135,6 @@ npm run docs:adr-registry-fields
 
 ## Next Suggested Step
 
-After this append-first governance micropasso, choose one governed implementation path and keep it small.
+After this schema-backed body-format registry validation micropasso, the next safe path is to introduce shared Markdown section parsing behavior or a first body validator that consumes `body-formats.registry.yml`.
 
-The safest next implementation path remains schema-backed validation for `body-formats.registry.yml`, because the registry exists and `MR-0001REQ-0011` authorizes schema-backed validation.
-
-Do not implement ADR or Requirement body validators before the shared parsing/profile/schema path is governed.
+Do not implement ADR or Requirement body validators in a way that hardcodes body sections outside the governed body-format registry.

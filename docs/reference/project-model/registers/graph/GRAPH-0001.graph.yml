@@ -155,6 +155,11 @@ nodes:
     label: ADR registry field checker
     path: tools/docs/check-adr-registry-fields.mjs
 
+  - id: TOOL-check-body-format-registry
+    type: Tool
+    label: Body format registry schema checker
+    path: backend/tools/MR-0000/check-body-format-registry.mjs
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -403,3 +408,11 @@ spo_relations:
   - subject: ADR-0008
     predicate: justifies
     object: MR-0001REQ-0021
+  - subject: MR-0001REQ-0011
+    predicate: implemented_by
+    object: TOOL-check-body-format-registry
+
+  - subject: TOOL-check-body-format-registry
+    predicate: verifies
+    object: MR-0001REQ-0011
+

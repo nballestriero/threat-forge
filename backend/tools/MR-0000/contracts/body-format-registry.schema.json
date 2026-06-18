@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://threat-forge.local/schemas/body-format-registry.schema.json",
+  "title": "Threat Forge Body Format Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "registry_id", "project", "body_format_profiles"],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "registry_id": {
+      "type": "string",
+      "const": "body-formats-registry"
+    },
+    "project": {
+      "type": "string",
+      "const": "threat-forge"
+    },
+    "body_format_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/bodyFormatProfile"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "sectionList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      },
+      "uniqueItems": true
+    },
+    "bodyFormatProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "document_kind",
+        "version",
+        "purpose",
+        "applies_to",
+        "h1_rule",
+        "required_sections",
+        "required_section_order",
+        "optional_sections",
+        "allow_extra_sections",
+        "validation_severity"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+        },
+        "document_kind": {
+          "type": "string",
+          "enum": ["adr", "requirement"]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "purpose": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "applies_to": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["registry_kind", "record_type"],
+              "properties": {
+                "registry_kind": {
+                  "type": "string",
+                  "const": "decision-registry"
+                },
+                "record_type": {
+                  "type": "string",
+                  "const": "adr"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["registry_kind", "requirement_type"],
+              "properties": {
+                "registry_kind": {
+                  "type": "string",
+                  "const": "requirement-registry"
+                },
+                "requirement_type": {
+                  "type": "string",
+                  "enum": ["functional", "specialized"]
+                }
+              }
+            }
+          ]
+        },
+        "h1_rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pattern", "description"],
+          "properties": {
+            "pattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "description": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        "required_sections": {
+          "$ref": "#/$defs/sectionList"
+        },
+        "required_section_order": {
+          "$ref": "#/$defs/sectionList"
+        },
+        "optional_sections": {
+          "$ref": "#/$defs/sectionList"
+        },
+        "allow_extra_sections": {
+          "type": "boolean"
+        },
+        "validation_severity": {
+          "type": "string",
+          "enum": ["error", "warning", "note"]
+        }
+      }
+    }
+  }
+}
