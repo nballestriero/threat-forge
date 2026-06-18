@@ -49,6 +49,10 @@ nodes:
     type: ADR
     label: System-state runner and top-down traversal
 
+  - id: ADR-0004
+    type: ADR
+    label: Governed workflow and handoff working plan
+
   - id: MR-0000REQ-0007
     type: Requirement
     label: Runner unico MR-0000 per i gate di coerenza
@@ -91,6 +95,10 @@ spo_relations:
   - subject: MR-0000
     predicate: has_decision
     object: ADR-0003
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0004
 
   - subject: MR-0000REQ-0007
     predicate: belongs_to

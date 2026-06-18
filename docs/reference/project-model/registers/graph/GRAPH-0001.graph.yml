@@ -24,6 +24,22 @@ nodes:
     type: ADR
     label: ADR records and body format governance
 
+  - id: ADR-0005
+    type: ADR
+    label: Canonical project model identity and ID namespace rules
+
+  - id: ADR-0006
+    type: ADR
+    label: Canonical ADR and Requirement document format governance
+
+  - id: ADR-0007
+    type: ADR
+    label: Knowledge graph as GraphRAG and derived view substrate
+
+  - id: ADR-0008
+    type: ADR
+    label: Code RTM derived from knowledge graph
+
   - id: MR-0001REQ-0001
     type: Requirement
     label: Validazione della struttura documentale canonica
@@ -75,6 +91,22 @@ spo_relations:
   - subject: MR-0001
     predicate: has_decision
     object: ADR-0004
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0005
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0006
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0007
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0008
 
   - subject: MR-0001REQ-0001
     predicate: belongs_to
