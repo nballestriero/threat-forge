@@ -36,3 +36,51 @@ requirements:
     priority: medium
     derived_from_decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0005_body.md
+
+  - id: MR-0001REQ-0006
+    title: Atomic requirement records
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0006_body.md
+
+  - id: MR-0001REQ-0007
+    title: Specialized child requirement model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0007_body.md
+
+  - id: MR-0001REQ-0008
+    title: Independent requirement bodies for functional and specialized requirements
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0008_body.md
+
+  - id: MR-0001REQ-0009
+    title: Governed body format registry
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0009_body.md
+
+  - id: MR-0001REQ-0010
+    title: Shared Markdown section parsing and body validation behavior
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0010_body.md
+
+  - id: MR-0001REQ-0011
+    title: Schema-backed structured registry and header validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0011_body.md

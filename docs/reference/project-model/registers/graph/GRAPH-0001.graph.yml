@@ -68,6 +68,31 @@ nodes:
     type: Requirement
     label: Validazione del formato body delle ADR funzionali
 
+
+  - id: MR-0001REQ-0006
+    type: Requirement
+    label: Atomic requirement records
+
+  - id: MR-0001REQ-0007
+    type: Requirement
+    label: Specialized child requirement model
+
+  - id: MR-0001REQ-0008
+    type: Requirement
+    label: Independent requirement bodies for functional and specialized requirements
+
+  - id: MR-0001REQ-0009
+    type: Requirement
+    label: Governed body format registry
+
+  - id: MR-0001REQ-0010
+    type: Requirement
+    label: Shared Markdown section parsing and body validation behavior
+
+  - id: MR-0001REQ-0011
+    type: Requirement
+    label: Schema-backed structured registry and header validation
+
   - id: TOOL-check-MR-0001REQ-0001
     type: Tool
     label: Docs structure checker
@@ -144,6 +169,30 @@ spo_relations:
     predicate: belongs_to
     object: MR-0001
 
+  - subject: MR-0001REQ-0006
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0007
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0008
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0009
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0010
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0011
+    predicate: belongs_to
+    object: MR-0001
+
   - subject: ADR-0001
     predicate: justifies
     object: MR-0001REQ-0001
@@ -163,6 +212,30 @@ spo_relations:
   - subject: ADR-0004
     predicate: justifies
     object: MR-0001REQ-0005
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0001REQ-0006
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0001REQ-0007
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0001REQ-0008
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0001REQ-0009
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0001REQ-0010
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0001REQ-0011
 
   - subject: MR-0001REQ-0001
     predicate: implemented_by

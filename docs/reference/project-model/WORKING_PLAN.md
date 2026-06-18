@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Declare the requirement model and body-format validator architecture decisions.
+Derive small requirement records from the accepted requirement-model and common body-format architecture decisions.
 
-This micropasso records that requirements must be small and atomic, that specialized non-functional/control requirements are first-class child requirements of functional requirements, and that body-format validation should be driven by governed profiles and shared validation utilities.
+This micropasso adds atomic requirements for requirement granularity, specialized child requirements, independent requirement bodies, governed body-format profiles, shared Markdown body validation behavior, and schema-backed structured registry/header validation.
 
-No requirement records, validator, shared utility, dependency change, runner, RTM generator, graph-view generator, or methodology-specific analysis implementation is part of this micropasso.
+No validator, shared utility, dependency change, runner, RTM generator, graph-view generator, body-format registry file, or methodology-specific analysis implementation is part of this micropasso.
 
 ## Completed Milestones
 
@@ -62,25 +62,23 @@ No requirement records, validator, shared utility, dependency change, runner, RT
 - Project-model graph HTML layout improvement.
 - Tag expected for completed top-down graph alignment: `project-model-top-down-graph-alignment-complete`.
 - Declaration of foundational decisions for workflow, identity, canonical document formats, graph views, LLM navigation, and code RTM.
+- Declaration of requirement-model and common body-format validator architecture decisions.
 
 ## Pending Decisions
 
-After this micropasso is applied, the currently planned requirement-model and common body-format architecture decisions should be represented by ADRs.
+The requirement-model and common body-format architecture decisions are now represented by ADRs.
 
 Any new decision must be added to the relevant decision registry and graph before derived requirements or implementation work starts.
 
 ## Pending Requirements
 
-Requirements must be derived next for:
+Requirement-model and common body-format architecture requirements are being derived in the current micropasso.
+
+Requirements still need to be derived for:
 
 - working plan coherence and handoff usage;
 - canonical identity resolution;
-- functional requirement registry field governance;
-- specialized child requirement registry field governance;
-- Requirement body format governance for both functional and specialized requirements;
-- body format registry governance;
-- shared Markdown section parsing utilities;
-- schema-backed structured registry/header validation using AJV or an equivalent governed JSON Schema validator;
+- canonical ADR body format validation based on the body-format registry;
 - graph view profile governance;
 - governed LLM project navigation guide;
 - code RTM generation;
@@ -136,6 +134,8 @@ npm run docs:adr-registry-fields
 
 ## Next Suggested Step
 
-After this ADR declaration micropasso, derive small atomic requirements from the accepted decisions and update the graph with `ADR -> justifies -> REQ` and `REQ -> belongs_to -> MR` relations.
+After this requirement derivation micropasso, choose one governed implementation path and keep it small.
 
-Start with requirement-model and body-format architecture requirements before implementing validators or shared utilities.
+The safest next path is to introduce the governed body-format registry requirement implementation only after the requirement graph is committed, then use later micropassi for shared Markdown parsing utilities, schema-backed validation support, and focused ADR/Requirement body validators.
+
+Alternatively, derive the remaining requirement batches for working plan coherence, identity resolution, graph views, LLM guidance, and code RTM before introducing new files or code.
