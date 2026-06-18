@@ -46,11 +46,13 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Derive small requirement records from the accepted requirement-model and common body-format architecture decisions.
+Introduce the governed body-format registry required by `MR-0001REQ-0009`.
 
-This micropasso adds atomic requirements for requirement granularity, specialized child requirements, independent requirement bodies, governed body-format profiles, shared Markdown body validation behavior, and schema-backed structured registry/header validation.
+This micropasso creates the canonical registry that declares initial body-format profiles for functional ADR bodies, functional Requirement bodies, and specialized child Requirement bodies.
 
-No validator, shared utility, dependency change, runner, RTM generator, graph-view generator, body-format registry file, or methodology-specific analysis implementation is part of this micropasso.
+It also records the registry as a graph implementation artifact for `MR-0001REQ-0009`.
+
+No validator, shared Markdown parsing utility, AJV dependency, schema file, runner, RTM generator, graph-view generator, or methodology-specific analysis implementation is part of this micropasso.
 
 ## Completed Milestones
 
@@ -63,6 +65,7 @@ No validator, shared utility, dependency change, runner, RTM generator, graph-vi
 - Tag expected for completed top-down graph alignment: `project-model-top-down-graph-alignment-complete`.
 - Declaration of foundational decisions for workflow, identity, canonical document formats, graph views, LLM navigation, and code RTM.
 - Declaration of requirement-model and common body-format validator architecture decisions.
+- Derivation of atomic requirement-model and common body-format requirements.
 
 ## Pending Decisions
 
@@ -90,7 +93,6 @@ No new implementation should start before the related requirements and graph rel
 
 Expected future implementation areas include:
 
-- body format registry;
 - shared Markdown section parsing utilities;
 - schema-backed structured registry/header validation support;
 - ADR body format validator;
@@ -136,6 +138,9 @@ npm run docs:adr-registry-fields
 
 After this requirement derivation micropasso, choose one governed implementation path and keep it small.
 
-The safest next path is to introduce the governed body-format registry requirement implementation only after the requirement graph is committed, then use later micropassi for shared Markdown parsing utilities, schema-backed validation support, and focused ADR/Requirement body validators.
+After this body-format registry micropasso, the safest next path is either:
 
-Alternatively, derive the remaining requirement batches for working plan coherence, identity resolution, graph views, LLM guidance, and code RTM before introducing new files or code.
+1. derive the remaining requirement batches for working plan coherence, identity resolution, graph views, LLM guidance, and code RTM before introducing more implementation artifacts; or
+2. continue the body-format validation path by deriving/implementing the schema-backed profile validation and shared Markdown parsing utilities required by `MR-0001REQ-0010` and `MR-0001REQ-0011`.
+
+Do not implement ADR or Requirement body validators before the shared parsing/profile/schema path is governed.

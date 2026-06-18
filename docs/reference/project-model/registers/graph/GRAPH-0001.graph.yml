@@ -93,6 +93,11 @@ nodes:
     type: Requirement
     label: Schema-backed structured registry and header validation
 
+  - id: REGISTRY-body-formats
+    type: Registry
+    label: Governed body format registry
+    path: docs/reference/project-model/registers/body-formats.registry.yml
+
   - id: TOOL-check-MR-0001REQ-0001
     type: Tool
     label: Docs structure checker
@@ -268,3 +273,12 @@ spo_relations:
   - subject: TOOL-check-adr-registry-fields
     predicate: verifies
     object: MR-0001REQ-0004
+
+  - subject: MR-0001REQ-0009
+    predicate: implemented_by
+    object: REGISTRY-body-formats
+
+  - subject: REGISTRY-body-formats
+    predicate: belongs_to
+    object: MR-0001
+

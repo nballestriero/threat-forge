@@ -41,6 +41,13 @@ node_type:
     abstract: true
     description: Abstract category for architectural components referenced by governed requirements.
 
+  - id: Registry
+    abstract: false
+    satisfies:
+      - ImplementationArtifact
+      - GovernedEntity
+    description: Concrete governed registry file used as a project-model implementation artifact.
+
   - id: Tool
     abstract: false
     satisfies:

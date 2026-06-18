@@ -1,0 +1,90 @@
+schema_version: 1
+registry_id: body-formats-registry
+project: threat-forge
+
+body_format_profiles:
+  - id: adr-functional-decision-body
+    document_kind: adr
+    version: 1
+    purpose: Canonical Markdown body format for functional ADR records.
+    applies_to:
+      registry_kind: decision-registry
+      record_type: adr
+    h1_rule:
+      pattern: "^# ADR-[0-9]{4} .+"
+      description: The body must start with an H1 containing the ADR id and title.
+    required_sections:
+      - Status
+      - Context
+      - Decision
+      - Scope
+      - Consequences
+      - Follow-up
+    required_section_order:
+      - Status
+      - Context
+      - Decision
+      - Scope
+      - Consequences
+      - Follow-up
+    optional_sections: []
+    allow_extra_sections: false
+    validation_severity: error
+
+  - id: requirement-functional-body
+    document_kind: requirement
+    version: 1
+    purpose: Canonical Markdown body format for functional requirement records.
+    applies_to:
+      registry_kind: requirement-registry
+      requirement_type: functional
+    h1_rule:
+      pattern: "^# MR-[0-9]{4}REQ-[0-9]{4} .+"
+      description: The body must start with an H1 containing the functional requirement id and title.
+    required_sections:
+      - Intent
+      - Requirement
+      - Scope
+      - Rules
+      - Acceptance Criteria
+      - Verification Expectation
+    required_section_order:
+      - Intent
+      - Requirement
+      - Scope
+      - Rules
+      - Acceptance Criteria
+      - Verification Expectation
+    optional_sections: []
+    allow_extra_sections: false
+    validation_severity: error
+
+  - id: requirement-specialized-body
+    document_kind: requirement
+    version: 1
+    purpose: Canonical Markdown body format for specialized child requirement records.
+    applies_to:
+      registry_kind: requirement-registry
+      requirement_type: specialized
+    h1_rule:
+      pattern: "^# MR-[0-9]{4}REQ-[0-9]{4}[A-Z]+-[0-9]{4} .+"
+      description: The body must start with an H1 containing the specialized child requirement id and title.
+    required_sections:
+      - Intent
+      - Parent Functional Requirement
+      - Specialized Requirement
+      - Scope
+      - Rules
+      - Acceptance Criteria
+      - Verification Expectation
+    required_section_order:
+      - Intent
+      - Parent Functional Requirement
+      - Specialized Requirement
+      - Scope
+      - Rules
+      - Acceptance Criteria
+      - Verification Expectation
+    optional_sections: []
+    allow_extra_sections: false
+    validation_severity: error
