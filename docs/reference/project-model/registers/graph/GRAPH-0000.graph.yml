@@ -69,6 +69,20 @@ nodes:
     type: Requirement
     label: Orchestrazione dei validator specializzati
 
+
+
+  - id: MR-0000REQ-0011
+    type: Requirement
+    label: Governed working plan artifact
+
+  - id: MR-0000REQ-0012
+    type: Requirement
+    label: Working plan coherence rules
+
+  - id: MR-0000REQ-0013
+    type: Requirement
+    label: Handoff state verification procedure
+
   - id: TOOL-check-graph-format
     type: Tool
     label: Graph format checker
@@ -211,3 +225,28 @@ spo_relations:
   - subject: TOOL-check-adr-registry-fields
     predicate: verifies
     object: MR-0000REQ-0004
+
+  - subject: MR-0000REQ-0011
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0012
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0013
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0000REQ-0011
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0000REQ-0012
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0000REQ-0013
+

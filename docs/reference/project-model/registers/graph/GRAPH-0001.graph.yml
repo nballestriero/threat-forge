@@ -93,6 +93,48 @@ nodes:
     type: Requirement
     label: Schema-backed structured registry and header validation
 
+
+
+  - id: MR-0001REQ-0012
+    type: Requirement
+    label: Canonical ADR identity resolution
+
+  - id: MR-0001REQ-0013
+    type: Requirement
+    label: Project model ID collision detection
+
+  - id: MR-0001REQ-0014
+    type: Requirement
+    label: Canonical Requirement registry and body format validation
+
+  - id: MR-0001REQ-0015
+    type: Requirement
+    label: Governed document body orphan detection
+
+  - id: MR-0001REQ-0016
+    type: Requirement
+    label: Governed graph view profiles
+
+  - id: MR-0001REQ-0017
+    type: Requirement
+    label: Governed LLM project navigation guide
+
+  - id: MR-0001REQ-0018
+    type: Requirement
+    label: GraphRAG traversal rules for project exploration
+
+  - id: MR-0001REQ-0019
+    type: Requirement
+    label: Code RTM generation from knowledge graph
+
+  - id: MR-0001REQ-0020
+    type: Requirement
+    label: Code traceability declarations in source artifacts
+
+  - id: MR-0001REQ-0021
+    type: Requirement
+    label: Bidirectional graph-to-code traceability validation
+
   - id: REGISTRY-body-formats
     type: Registry
     label: Governed body format registry
@@ -282,3 +324,82 @@ spo_relations:
     predicate: belongs_to
     object: MR-0001
 
+  - subject: MR-0001REQ-0012
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0013
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0014
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0015
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0016
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0017
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0018
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0019
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0020
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0021
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0001REQ-0012
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0001REQ-0013
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0001REQ-0014
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0001REQ-0015
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0001REQ-0016
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0001REQ-0017
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0001REQ-0018
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0001REQ-0019
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0001REQ-0020
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0001REQ-0021

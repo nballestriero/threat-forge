@@ -46,13 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Introduce the governed body-format registry required by `MR-0001REQ-0009`.
+Derive the remaining foundational requirements from `MR-0000/ADR-0004` and `MR-0001/ADR-0005` through `MR-0001/ADR-0008`.
 
-This micropasso creates the canonical registry that declares initial body-format profiles for functional ADR bodies, functional Requirement bodies, and specialized child Requirement bodies.
+This micropasso adds small, verifiable Requirement records and bodies for working plan coherence, canonical identity, canonical document body validation, graph views, LLM navigation, GraphRAG traversal, code RTM generation, and bidirectional graph/code traceability.
 
-It also records the registry as a graph implementation artifact for `MR-0001REQ-0009`.
-
-No validator, shared Markdown parsing utility, AJV dependency, schema file, runner, RTM generator, graph-view generator, or methodology-specific analysis implementation is part of this micropasso.
+No validator, shared Markdown parsing utility, AJV dependency, schema file, runner, RTM generator, graph-view generator, LLM guide, source-code scanner, or methodology-specific analysis implementation is part of this micropasso.
 
 ## Completed Milestones
 
@@ -66,6 +64,7 @@ No validator, shared Markdown parsing utility, AJV dependency, schema file, runn
 - Declaration of foundational decisions for workflow, identity, canonical document formats, graph views, LLM navigation, and code RTM.
 - Declaration of requirement-model and common body-format validator architecture decisions.
 - Derivation of atomic requirement-model and common body-format requirements.
+- Introduction of the governed body-format registry and milestone tag `project-model-body-format-registry-complete`.
 
 ## Pending Decisions
 
@@ -75,17 +74,9 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 ## Pending Requirements
 
-Requirement-model and common body-format architecture requirements are being derived in the current micropasso.
+The remaining foundational requirements are being derived in the current micropasso.
 
-Requirements still need to be derived for:
-
-- working plan coherence and handoff usage;
-- canonical identity resolution;
-- canonical ADR body format validation based on the body-format registry;
-- graph view profile governance;
-- governed LLM project navigation guide;
-- code RTM generation;
-- bidirectional graph/code traceability checks.
+After this micropasso, requirement derivation for working plan coherence, identity resolution, graph views, LLM guidance, code RTM, and bidirectional graph/code traceability will be represented in the project model.
 
 ## Pending Implementations
 
@@ -138,9 +129,6 @@ npm run docs:adr-registry-fields
 
 After this requirement derivation micropasso, choose one governed implementation path and keep it small.
 
-After this body-format registry micropasso, the safest next path is either:
-
-1. derive the remaining requirement batches for working plan coherence, identity resolution, graph views, LLM guidance, and code RTM before introducing more implementation artifacts; or
-2. continue the body-format validation path by deriving/implementing the schema-backed profile validation and shared Markdown parsing utilities required by `MR-0001REQ-0010` and `MR-0001REQ-0011`.
+The safest next implementation path is to continue the body-format validation line by adding schema-backed validation for `body-formats.registry.yml`, because the registry now exists and `MR-0001REQ-0011` already authorizes schema-backed validation.
 
 Do not implement ADR or Requirement body validators before the shared parsing/profile/schema path is governed.

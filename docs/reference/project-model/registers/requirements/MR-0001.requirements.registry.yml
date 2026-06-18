@@ -84,3 +84,83 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0010
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0011_body.md
+
+  - id: MR-0001REQ-0012
+    title: Canonical ADR identity resolution
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0012_body.md
+
+  - id: MR-0001REQ-0013
+    title: Project model ID collision detection
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0013_body.md
+
+  - id: MR-0001REQ-0014
+    title: Canonical Requirement registry and body format validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0014_body.md
+
+  - id: MR-0001REQ-0015
+    title: Governed document body orphan detection
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0015_body.md
+
+  - id: MR-0001REQ-0016
+    title: Governed graph view profiles
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0016_body.md
+
+  - id: MR-0001REQ-0017
+    title: Governed LLM project navigation guide
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0017_body.md
+
+  - id: MR-0001REQ-0018
+    title: GraphRAG traversal rules for project exploration
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0018_body.md
+
+  - id: MR-0001REQ-0019
+    title: Code RTM generation from knowledge graph
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0019_body.md
+
+  - id: MR-0001REQ-0020
+    title: Code traceability declarations in source artifacts
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0020_body.md
+
+  - id: MR-0001REQ-0021
+    title: Bidirectional graph-to-code traceability validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0021_body.md

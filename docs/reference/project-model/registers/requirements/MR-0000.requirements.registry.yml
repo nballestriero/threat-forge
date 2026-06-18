@@ -71,3 +71,27 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0010_body.md
+
+  - id: MR-0000REQ-0011
+    title: Governed working plan artifact
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0011_body.md
+
+  - id: MR-0000REQ-0012
+    title: Working plan coherence rules
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0012_body.md
+
+  - id: MR-0000REQ-0013
+    title: Handoff state verification procedure
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0013_body.md
