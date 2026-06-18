@@ -66,3 +66,11 @@ spo_predicate:
     subject_type: GovernedEntity
     object_type: MacroRequirement
     description: The subject entity belongs to the semantic scope governed by the target macro requirement.
+
+  - id: has_decision
+    function: Links a macro requirement to one of its architecture decisions for top-down traversal.
+    forward_label: has decision
+    inverse_label: decision of
+    subject_type: MacroRequirement
+    object_type: ADR
+    description: The subject macro requirement owns the target decision as part of its governed decision set.
