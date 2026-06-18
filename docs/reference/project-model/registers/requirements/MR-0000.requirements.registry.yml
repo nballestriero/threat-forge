@@ -95,3 +95,27 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0013_body.md
+
+  - id: MR-0000REQ-0014
+    title: Append-first evolution for protected project-model records
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0014_body.md
+
+  - id: MR-0000REQ-0015
+    title: Explicit confirmation for protected record modifications and deletions
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0015_body.md
+
+  - id: MR-0000REQ-0016
+    title: Deterministic append-first guard for canonical registries and graph files
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0016_body.md

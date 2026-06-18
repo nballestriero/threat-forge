@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Derive the remaining foundational requirements from `MR-0000/ADR-0004` and `MR-0001/ADR-0005` through `MR-0001/ADR-0008`.
+Declare append-first governance for protected project-model registries and graph records.
 
-This micropasso adds small, verifiable Requirement records and bodies for working plan coherence, canonical identity, canonical document body validation, graph views, LLM navigation, GraphRAG traversal, code RTM generation, and bidirectional graph/code traceability.
+This micropasso introduces the decision and small requirements that require canonical registries and graph files to evolve primarily through additions. It also declares that modifications and deletions of protected records must require explicit confirmation before a future validator accepts them.
 
-No validator, shared Markdown parsing utility, AJV dependency, schema file, runner, RTM generator, graph-view generator, LLM guide, source-code scanner, or methodology-specific analysis implementation is part of this micropasso.
+No append-first validator, confirmation mechanism, baseline comparison tool, runner update, or source-code implementation is part of this micropasso.
 
 ## Completed Milestones
 
@@ -65,6 +65,7 @@ No validator, shared Markdown parsing utility, AJV dependency, schema file, runn
 - Declaration of requirement-model and common body-format validator architecture decisions.
 - Derivation of atomic requirement-model and common body-format requirements.
 - Introduction of the governed body-format registry and milestone tag `project-model-body-format-registry-complete`.
+- Derivation of foundational governance requirements for working plan coherence, canonical identity, graph views, LLM navigation, code RTM, and bidirectional graph/code traceability.
 
 ## Pending Decisions
 
@@ -74,9 +75,9 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 ## Pending Requirements
 
-The remaining foundational requirements are being derived in the current micropasso.
+Append-first governance requirements are being declared in the current micropasso.
 
-After this micropasso, requirement derivation for working plan coherence, identity resolution, graph views, LLM guidance, code RTM, and bidirectional graph/code traceability will be represented in the project model.
+After this micropasso, the project model will also contain requirements for append-first protected record evolution, explicit confirmation of modifications/deletions, and a future deterministic append-first guard.
 
 ## Pending Implementations
 
@@ -89,6 +90,7 @@ Expected future implementation areas include:
 - ADR body format validator;
 - Requirement registry field validator;
 - Requirement body format validator;
+- append-first protected record guard;
 - working plan coherence checker;
 - graph view profile validator or renderer;
 - LLM guide document;
@@ -127,8 +129,8 @@ npm run docs:adr-registry-fields
 
 ## Next Suggested Step
 
-After this requirement derivation micropasso, choose one governed implementation path and keep it small.
+After this append-first governance micropasso, choose one governed implementation path and keep it small.
 
-The safest next implementation path is to continue the body-format validation line by adding schema-backed validation for `body-formats.registry.yml`, because the registry now exists and `MR-0001REQ-0011` already authorizes schema-backed validation.
+The safest next implementation path remains schema-backed validation for `body-formats.registry.yml`, because the registry exists and `MR-0001REQ-0011` authorizes schema-backed validation.
 
 Do not implement ADR or Requirement body validators before the shared parsing/profile/schema path is governed.

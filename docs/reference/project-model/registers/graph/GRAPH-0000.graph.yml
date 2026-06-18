@@ -93,6 +93,23 @@ nodes:
     label: ADR registry field checker
     path: tools/docs/check-adr-registry-fields.mjs
 
+
+  - id: ADR-0005
+    type: ADR
+    label: Append-first governance for canonical registries and graph records
+
+  - id: MR-0000REQ-0014
+    type: Requirement
+    label: Append-first evolution for protected project-model records
+
+  - id: MR-0000REQ-0015
+    type: Requirement
+    label: Explicit confirmation for protected record modifications and deletions
+
+  - id: MR-0000REQ-0016
+    type: Requirement
+    label: Deterministic append-first guard for canonical registries and graph files
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -250,3 +267,30 @@ spo_relations:
     predicate: justifies
     object: MR-0000REQ-0013
 
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0005
+
+  - subject: MR-0000REQ-0014
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0015
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0016
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0000REQ-0014
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0000REQ-0015
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0000REQ-0016
