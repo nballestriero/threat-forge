@@ -164,3 +164,11 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0008
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0021_body.md
+
+  - id: MR-0001REQ-0022
+    title: Shared Markdown body parser utility
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0022_body.md

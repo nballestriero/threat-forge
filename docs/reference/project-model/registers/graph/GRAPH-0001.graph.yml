@@ -135,6 +135,11 @@ nodes:
     type: Requirement
     label: Bidirectional graph-to-code traceability validation
 
+  - id: MR-0001REQ-0022
+    type: Requirement
+    label: Shared Markdown body parser utility
+
+
   - id: REGISTRY-body-formats
     type: Registry
     label: Governed body format registry
@@ -415,4 +420,12 @@ spo_relations:
   - subject: TOOL-check-body-format-registry
     predicate: verifies
     object: MR-0001REQ-0011
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0001REQ-0022
+
+  - subject: MR-0001REQ-0022
+    predicate: belongs_to
+    object: MR-0001
 
