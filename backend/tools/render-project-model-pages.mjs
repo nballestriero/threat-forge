@@ -716,8 +716,8 @@ pre {
 }
 .graph-canvas {
   width: 100%;
-  height: min(72vh, 760px);
-  min-height: 460px;
+  height: min(82vh, 920px);
+  min-height: 560px;
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
@@ -1156,7 +1156,7 @@ function renderGraph(graphData) {
     <span class="badge" id="zoomLevel">100%</span>
   </div>
   <div class="graph-canvas" id="graphCanvas">
-    <svg id="graphSvg" viewBox="0 0 1200 760" role="img" aria-label="Project model knowledge graph">
+    <svg id="graphSvg" viewBox="0 0 2200 1250" role="img" aria-label="Project model knowledge graph">
       <defs>
         <marker id="graphArrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
           <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
@@ -1187,9 +1187,9 @@ const canonicalOnlyButton = document.getElementById("canonicalOnly");
 const inverseOnlyButton = document.getElementById("inverseOnly");
 const bothViewsButton = document.getElementById("bothViews");
 const ns = "http://www.w3.org/2000/svg";
-const width = 1200;
-const height = 760;
-const nodeRadius = 58;
+const width = 2200;
+const height = 1250;
+const nodeRadius = 50;
 let transform = { x: 0, y: 0, scale: 1 };
 let relationReadingFilter = "canonical";
 let dragStart = null;
@@ -1214,35 +1214,77 @@ function renderTransform() {
 }
 
 function typeRank(type) {
-  const ranks = { ADR: 0, MacroRequirement: 1, Requirement: 2, Tool: 3, Document: 4, Component: 5 };
+  const ranks = {
+    MacroRequirement: 0,
+    ADR: 1,
+    Requirement: 2,
+    Tool: 3,
+    Contract: 4,
+    Registry: 4,
+    Document: 5,
+    Component: 5,
+  };
   return Object.prototype.hasOwnProperty.call(ranks, type) ? ranks[type] : 6;
 }
 
-function buildLayout(nodes) {
-  const orderedTypes = [...new Set(nodes.map((node) => node.type).sort((a, b) => typeRank(a) - typeRank(b) || a.localeCompare(b)))];
-  const groups = new Map(orderedTypes.map((type) => [type, []]));
+function visualNodeKey(node) {
+  return [node.graph_id || node.macro_requirement_id || "graph", node.id].join("::");
+}
 
-  for (const node of [...nodes].sort((a, b) => typeRank(a.type) - typeRank(b.type) || a.id.localeCompare(b.id))) {
-    groups.get(node.type).push(node);
+function visualRelationEndpointKey(relation, endpointId) {
+  return [relation.graph_id || relation.macro_requirement_id || "graph", endpointId].join("::");
+}
+
+function compareGraphNodes(a, b) {
+  return (a.macro_requirement_id || "").localeCompare(b.macro_requirement_id || "") ||
+    (a.graph_id || "").localeCompare(b.graph_id || "") ||
+    a.id.localeCompare(b.id);
+}
+
+function layerY(rank) {
+  const rows = {
+    0: 120,
+    1: 350,
+    2: 660,
+    3: 970,
+    4: 1125,
+    5: 1125,
+  };
+  return rows[rank] || 1125;
+}
+
+/**
+ * Builds a deterministic layered graph layout for the project model HTML page.
+ *
+ * Traceability:
+ * - Macro requirement: MR-0000
+ * - Origin ADR: MR-0000/ADR-0001
+ * - Implements requirement: MR-0000REQ-0002
+ */
+function buildLayout(nodes) {
+  const groups = new Map();
+
+  for (const node of [...nodes].sort((a, b) => typeRank(a.type) - typeRank(b.type) || compareGraphNodes(a, b))) {
+    const rank = typeRank(node.type);
+    if (!groups.has(rank)) groups.set(rank, []);
+    groups.get(rank).push(node);
   }
 
   const positions = new Map();
-  const left = 115;
-  const right = width - 115;
-  const top = 125;
-  const bottom = height - 110;
-  const xStep = orderedTypes.length > 1 ? (right - left) / (orderedTypes.length - 1) : 0;
+  const left = 120;
+  const right = width - 120;
 
-  orderedTypes.forEach((type, typeIndex) => {
-    const group = groups.get(type);
-    const yStep = group.length > 1 ? (bottom - top) / (group.length - 1) : 0;
-    group.forEach((node, nodeIndex) => {
-      positions.set(node.id, {
-        x: orderedTypes.length > 1 ? left + xStep * typeIndex : width / 2,
-        y: group.length > 1 ? top + yStep * nodeIndex : height / 2,
+  for (const [rank, group] of [...groups.entries()].sort((a, b) => a[0] - b[0])) {
+    const sorted = [...group].sort(compareGraphNodes);
+    const step = sorted.length > 1 ? (right - left) / (sorted.length - 1) : 0;
+
+    sorted.forEach((node, index) => {
+      positions.set(visualNodeKey(node), {
+        x: sorted.length > 1 ? left + step * index : width / 2,
+        y: layerY(rank),
       });
     });
-  });
+  }
 
   return positions;
 }
@@ -1259,6 +1301,8 @@ function createCanonicalReading(relation) {
   return {
     source: relation.subject,
     target: relation.object,
+    sourceKey: visualRelationEndpointKey(relation, relation.subject),
+    targetKey: visualRelationEndpointKey(relation, relation.object),
     label: canonicalLabel,
     readingType: "canonical",
     title:
@@ -1274,6 +1318,8 @@ function createInverseReading(relation) {
   return {
     source: relation.object,
     target: relation.subject,
+    sourceKey: visualRelationEndpointKey(relation, relation.object),
+    targetKey: visualRelationEndpointKey(relation, relation.subject),
     label: inverseLabel,
     readingType: "inverse",
     title:
@@ -1334,8 +1380,8 @@ function renderGraph() {
   const nodeLayer = appendSvg(viewport, "g", { "aria-label": "Nodes" });
 
   visibleRelationReadings.forEach((visualRelation, index) => {
-    const source = positions.get(visualRelation.source);
-    const target = positions.get(visualRelation.target);
+    const source = positions.get(visualRelation.sourceKey);
+    const target = positions.get(visualRelation.targetKey);
     if (!source || !target) return;
 
     const dx = target.x - source.x;
@@ -1380,7 +1426,7 @@ function renderGraph() {
   });
 
   graphData.nodes.forEach((node) => {
-    const position = positions.get(node.id);
+    const position = positions.get(visualNodeKey(node));
     if (!position) return;
     const group = appendSvg(nodeLayer, "g", {
       class: "graph-node",
