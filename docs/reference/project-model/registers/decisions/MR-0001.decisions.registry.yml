@@ -74,3 +74,21 @@ decisions:
     date: 2026-06-18
     macro_requirement_id: MR-0001
     body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0008_body.md
+
+  - id: ADR-0009
+    title: Atomic functional and linked specialized requirement model
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0009_body.md
+
+  - id: ADR-0010
+    title: Common body format registry and validator architecture
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0010_body.md

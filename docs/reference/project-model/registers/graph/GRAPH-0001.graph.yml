@@ -40,6 +40,14 @@ nodes:
     type: ADR
     label: Code RTM derived from knowledge graph
 
+  - id: ADR-0009
+    type: ADR
+    label: Atomic functional and linked specialized requirement model
+
+  - id: ADR-0010
+    type: ADR
+    label: Common body format registry and validator architecture
+
   - id: MR-0001REQ-0001
     type: Requirement
     label: Validazione della struttura documentale canonica
@@ -107,6 +115,14 @@ spo_relations:
   - subject: MR-0001
     predicate: has_decision
     object: ADR-0008
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0009
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0010
 
   - subject: MR-0001REQ-0001
     predicate: belongs_to
