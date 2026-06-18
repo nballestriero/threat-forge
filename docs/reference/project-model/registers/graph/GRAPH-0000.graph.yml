@@ -76,26 +76,21 @@ nodes:
     path: tools/docs/check-adr-registry-fields.mjs
 
 spo_relations:
-  - subject: ADR-0000
-    predicate: belongs_to
-    object: MR-0000
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0000
 
-  - subject: ADR-0001
-    predicate: belongs_to
-    object: MR-0000
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0001
 
-  - subject: ADR-0002
-    predicate: belongs_to
-    object: MR-0000
-
-  - subject: ADR-0003
-    predicate: belongs_to
-    object: MR-0000
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0002
 
   - subject: MR-0000
     predicate: has_decision
     object: ADR-0003
-    description: Transitional top-down relation introduced before migrating all MR-to-ADR ownership edges.
 
   - subject: MR-0000REQ-0007
     predicate: belongs_to
