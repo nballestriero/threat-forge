@@ -110,6 +110,10 @@ nodes:
     type: Requirement
     label: Deterministic append-first guard for canonical registries and graph files
 
+  - id: MR-0000REQ-0016GOV-0001
+    type: Requirement
+    label: Append-first semantic diff and confirmation manifest guard
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -294,3 +298,12 @@ spo_relations:
   - subject: ADR-0005
     predicate: justifies
     object: MR-0000REQ-0016
+
+  - subject: MR-0000REQ-0016GOV-0001
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0000REQ-0016GOV-0001
+

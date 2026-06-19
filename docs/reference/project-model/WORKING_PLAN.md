@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Define the focused Requirement body format validator requirement.
+Define the focused append-first protected record guard requirement.
 
-This micropasso introduces `MR-0001REQ-0024` so future Requirement body validation code can reference a small, direct requirement in JSDoc or equivalent governed source metadata.
+This micropasso introduces `MR-0000REQ-0016GOV-0001` as a specialized child requirement of `MR-0000REQ-0016` so the future append-first guard implementation can reference a precise requirement in JSDoc or equivalent governed source metadata.
 
-It does not implement the Requirement body validator yet. The future implementation should consume the governed body-format registry and the shared Markdown parser, as the ADR body validator already does.
+It does not implement the append-first guard yet. The future implementation should compare protected records semantically, allow append additions by default, and require explicit confirmation manifests for protected modifications or deletions.
 
 ## Completed Milestones
 
@@ -72,6 +72,7 @@ It does not implement the Requirement body validator yet. The future implementat
 - Implementation of the shared Markdown body parser utility and its focused self-check.
 - Dedicated requirement for the ADR body format validator.
 - Implementation of the ADR body format validator and alignment of existing MR-0001 ADR bodies with the canonical ADR body sections.
+- Implementation of the Requirement body format validator and alignment of existing Requirement bodies with the canonical Requirement body sections.
 
 ## Pending Decisions
 
@@ -86,6 +87,8 @@ Append-first governance requirements have been declared. The schema-backed body-
 The ADR body format validator requirement has been declared and implemented.
 
 The Requirement body format validator requirement has been declared and implemented.
+
+The focused append-first protected record guard requirement is now being declared as a specialized child of `MR-0000REQ-0016`.
 
 ## Pending Implementations
 
@@ -152,6 +155,6 @@ npm run docs:requirement-body-format
 
 ## Next Suggested Step
 
-After this Requirement body validator micropasso, the next safe path is to define the next focused requirement before implementing additional validators or runners. Candidate next steps are Requirement registry field validation, append-first protected record guard, or a governed runner that only orchestrates already-specialized checks.
+After this append-first guard requirement micropasso, the next safe path is to implement the append-first protected record guard as a small MR-0000 tool or to define any additional focused requirement needed for confirmation manifests.
 
-Do not expand Requirement body validation into registry field validation, append-first enforcement, graph-view generation, RTM generation, or LLM guide generation without a dedicated requirement and graph link.
+Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. The first implementation should only compare protected registry and graph records semantically and enforce explicit confirmation for modifications and deletions.

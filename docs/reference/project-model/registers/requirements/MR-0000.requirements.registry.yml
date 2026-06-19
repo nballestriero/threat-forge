@@ -119,3 +119,13 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0005
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0016_body.md
+
+  - id: MR-0000REQ-0016GOV-0001
+    title: Append-first semantic diff and confirmation manifest guard
+    type: specialized
+    parent_requirement_id: MR-0000REQ-0016
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0016GOV-0001_body.md
+
