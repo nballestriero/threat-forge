@@ -101,6 +101,8 @@ The coverage is intentionally local and deterministic: it proves the guard rejec
 - Code traceability negative fixtures, pushed as `4b3cb73`.
 - Requirement registry field negative fixtures, pushed as `355b68f`.
 - Repository operation governance guard, pushed as `8e15f5e`.
+- Repository operation governance negative fixtures, pushed as `4106c52`.
+- Direct Git exception policy requirement, pending current micropasso.
 
 ## Pending Decisions
 
@@ -120,7 +122,7 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`. The focused negative-fixture coverage requirement for the repository operation governance guard exists as `MR-0000REQ-0007GOV-0004`.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`. The focused negative-fixture coverage requirement for the repository operation governance guard exists as `MR-0000REQ-0007GOV-0004`. The direct Git operation exception policy exists as `MR-0000REQ-0007GOV-0005`: routine commits and pushes must use the governed runner, while direct Git is reserved for bootstrap, recovery, or emergency maintenance.
 
 The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. The Requirement governance registry provides controlled Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules. The corresponding validator has been implemented as `backend/tools/MR-0000/check-requirement-registry-fields.mjs`.
 
@@ -164,6 +166,19 @@ Future gates should be added only after their requirements, graph relations, and
 
 The current gate list already includes ADR registry fields, Requirement registry fields, code traceability, repository operation governance, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
 
+## Routine Repository Operation Policy
+
+Routine governed repository changes must use the governed local operation path:
+
+```text
+npm run repo:check
+npm run repo:commit-push -- "<message>"
+```
+
+Direct `git commit` or `git push` is reserved for bootstrap, runner recovery, or documented emergency maintenance where the governed runner cannot be used safely.
+
+Handoff instructions should prefer the governed commands above and should explain any direct Git exception.
+
 ## Handoff Notes
 
 For handoff, verify live repository state with Git commands rather than relying on this file for dynamic facts.
@@ -193,11 +208,12 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After repository operation governance negative fixtures are committed, the next safe micropasso is to decide whether to add a lightweight direct-Git bypass policy or move toward derived graph/RTM views.
+After the direct Git exception policy is committed, the next safe micropasso is to decide whether to consolidate this milestone with a tag/handoff or move toward derived graph/RTM views.
 
 Expected next micropasso options:
 
-1. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
-2. start a derived graph/RTM view only after the current validator hardening is complete.
+1. create a milestone tag and handoff ZIP after the current repository-operation governance hardening block;
+2. start a derived graph/RTM view only after the current validator hardening is complete;
+3. document an LLM operating guide that references the governed repository operation path.
 
 Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.

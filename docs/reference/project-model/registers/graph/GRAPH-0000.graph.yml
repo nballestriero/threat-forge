@@ -155,6 +155,10 @@ nodes:
     type: Requirement
     label: Repository operation governance negative fixture coverage
 
+  - id: MR-0000REQ-0007GOV-0005
+    type: Requirement
+    label: Direct Git operation exception policy
+
   - id: TOOL-check-governed-repository-operation
     type: Tool
     label: Governed repository operation checker
@@ -465,4 +469,12 @@ spo_relations:
   - subject: TOOL-check-governed-repository-operation
     predicate: verifies
     object: MR-0000REQ-0007GOV-0004
+
+  - subject: MR-0000REQ-0007GOV-0005
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0007GOV-0005
 
