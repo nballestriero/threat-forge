@@ -173,3 +173,12 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0007GOV-0003_body.md
+  - id: MR-0000REQ-0007GOV-0004
+    title: Repository operation governance negative fixture coverage
+    type: specialized
+    parent_requirement_id: MR-0000REQ-0007
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0007GOV-0004_body.md
+

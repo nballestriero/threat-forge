@@ -151,6 +151,10 @@ nodes:
     type: Requirement
     label: Governed repository operation command anti-regression guard
 
+  - id: MR-0000REQ-0007GOV-0004
+    type: Requirement
+    label: Repository operation governance negative fixture coverage
+
   - id: TOOL-check-governed-repository-operation
     type: Tool
     label: Governed repository operation checker
@@ -445,3 +449,20 @@ spo_relations:
   - subject: TOOL-check-governed-repository-operation
     predicate: verifies
     object: MR-0000REQ-0007GOV-0003
+
+  - subject: MR-0000REQ-0007GOV-0004
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0007GOV-0004
+
+  - subject: MR-0000REQ-0007GOV-0004
+    predicate: implemented_by
+    object: TOOL-check-governed-repository-operation
+
+  - subject: TOOL-check-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0007GOV-0004
+
