@@ -119,6 +119,10 @@ nodes:
     label: Append-first protected record checker
     path: backend/tools/MR-0000/check-append-first-records.mjs
 
+  - id: MR-0000REQ-0015GOV-0001
+    type: Requirement
+    label: Append-first protected change confirmation manifest
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -319,3 +323,12 @@ spo_relations:
   - subject: TOOL-check-append-first-records
     predicate: verifies
     object: MR-0000REQ-0016GOV-0001
+
+  - subject: MR-0000REQ-0015GOV-0001
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0000REQ-0015GOV-0001
+

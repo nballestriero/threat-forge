@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Implement the focused append-first protected record guard.
+Define the focused confirmation-manifest requirement for append-first protected changes.
 
-This micropasso implements `MR-0000REQ-0016GOV-0001` with a small MR-0000 tool that compares protected registry and graph records semantically against Git `HEAD`. The first implementation allows append additions by default and blocks protected record modifications or deletions.
+This micropasso derives a specialized child requirement from `MR-0000REQ-0015` so future code can implement confirmation manifests with precise JSDoc traceability.
 
-It does not yet implement confirmation manifests. A future micropasso may add explicit confirmation records for intentional protected modifications or deletions.
+It remains document-only: no manifest parser, schema, bypass behavior, or append-first guard acceptance logic is introduced in this step.
 
 ## Completed Milestones
 
@@ -74,6 +74,7 @@ It does not yet implement confirmation manifests. A future micropasso may add ex
 - Implementation of the ADR body format validator and alignment of existing MR-0001 ADR bodies with the canonical ADR body sections.
 - Implementation of the Requirement body format validator and alignment of existing Requirement bodies with the canonical Requirement body sections.
 - Dedicated specialized requirement for the append-first protected record guard.
+- Implementation of the append-first protected record guard as a fail-closed semantic diff for protected records.
 
 ## Pending Decisions
 
@@ -89,7 +90,9 @@ The ADR body format validator requirement has been declared and implemented.
 
 The Requirement body format validator requirement has been declared and implemented.
 
-The focused append-first protected record guard requirement has been declared and is being implemented as a small semantic diff tool.
+The focused append-first protected record guard requirement has been declared and implemented as a small semantic diff tool.
+
+A focused confirmation-manifest requirement is being declared so future modifications or deletions of protected records can be authorized without disabling the append-first guard.
 
 ## Pending Implementations
 
@@ -100,7 +103,7 @@ Expected future implementation areas include:
 - schema-backed structured registry/header validation support;
 - body-format registry schema checker;
 - Requirement registry field validator;
-- append-first protected record guard;
+- append-first confirmation-manifest support;
 - working plan coherence checker;
 - graph view profile validator or renderer;
 - LLM guide document;
@@ -159,6 +162,6 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-After this append-first guard implementation, the next safe path is to define a focused requirement for confirmation manifests or to introduce a small confirmation-manifest schema before allowing intentional protected modifications and deletions.
+After this confirmation-manifest requirement, the next safe path is to introduce a small schema or parser for confirmation manifests before allowing intentional protected modifications and deletions.
 
-Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. The first guard remains limited to semantic record comparison and fail-closed protection for modifications and deletions.
+Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
