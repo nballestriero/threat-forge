@@ -193,6 +193,20 @@ nodes:
     type: Requirement
     label: Requirement body format validator
 
+
+  - id: MR-0001REQ-0025
+    type: Requirement
+    label: Requirement governance registry
+
+  - id: MR-0001REQ-0025GOV-0001
+    type: Requirement
+    label: Requirement controlled value validation
+
+  - id: REGISTRY-requirement-governance
+    type: Registry
+    label: Requirement governance registry
+    path: docs/reference/project-model/registers/requirements/requirement-governance.registry.yml
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -496,3 +510,32 @@ spo_relations:
   - subject: TOOL-check-requirement-body-format
     predicate: verifies
     object: MR-0001REQ-0024
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0001REQ-0025
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0001REQ-0025GOV-0001
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0001REQ-0025
+
+  - subject: MR-0001REQ-0025
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0025GOV-0001
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: REGISTRY-requirement-governance
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0025
+    predicate: implemented_by
+    object: REGISTRY-requirement-governance
+

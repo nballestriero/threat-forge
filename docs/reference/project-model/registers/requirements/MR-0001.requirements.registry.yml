@@ -188,3 +188,20 @@ requirements:
     derived_from_decision_id: ADR-0006
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0024_body.md
 
+
+  - id: MR-0001REQ-0025
+    title: Requirement governance registry
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025_body.md
+
+  - id: MR-0001REQ-0025GOV-0001
+    title: Requirement controlled value validation
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    parent_requirement_id: MR-0001REQ-0025
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025GOV-0001_body.md

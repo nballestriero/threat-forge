@@ -30,6 +30,7 @@ The project has established:
 - governed body-format profiles for stable ADR and Requirement bodies.
 - append-first protection for canonical project-model registries and graph records.
 - self-contained append-first confirmation manifests for explicitly reviewed protected modifications and deletions.
+- governed Requirement status, type, and specialized family taxonomies as the future source for Requirement registry field validation.
 
 The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. Future methodology families may include STRIDE, PASTA, and STRIDE-AI, but methodology-specific implementation is not in the current scope.
 
@@ -43,18 +44,19 @@ The immediate governance themes are now:
 
 1. working plan and handoff coherence;
 2. canonical identity and namespace rules;
-3. a single MR-0000 project-model gate runner that orchestrates existing gates without duplicating their logic;
+3. the governed MR-0000 repository operation runner as the preferred local check/commit/push path;
 4. schema-backed structured registry/header validation support;
-5. knowledge graph exploration, GraphRAG-like navigation, and derived graph views;
-6. code RTM derived from the knowledge graph.
+5. controlled Requirement lifecycle, type, and specialized-family validation;
+6. knowledge graph exploration, GraphRAG-like navigation, and derived graph views;
+7. code RTM derived from the knowledge graph.
 
 ## Current Micropasso
 
-Introduce the governed MR-0000 repository operation runner as the preferred local path for checking, committing, and pushing project-model changes.
+Declare the governed Requirement taxonomy baseline before implementing stricter Requirement registry validation.
 
-This micropasso adds the focused specialized requirement `MR-0000REQ-0007GOV-0002`, then implements a thin runner that executes the existing gates before staging, committing, and pushing changes through Git.
+This micropasso introduces `docs/reference/project-model/registers/requirements/requirement-governance.registry.yml`, adds `MR-0001REQ-0025` for the Requirement governance registry, and adds `MR-0001REQ-0025GOV-0001` for future controlled-value validation of Requirement status, type, and specialized suffix families.
 
-The runner must remain a wrapper around existing validators and must not duplicate their validation logic.
+The micropasso is document-only. It must not implement the Requirement registry validator yet.
 
 ## Completed Milestones
 
@@ -86,6 +88,7 @@ The runner must remain a wrapper around existing validators and must not duplica
 - Completion tag on `addeb37`: `project-model-document-format-and-append-first-controls-complete`.
 - Working-plan alignment after append-first milestone, pushed as `591bf1d`.
 - Focused MR-0000 gate runner requirement, pushed as `968c1b9`.
+- Governed commit-push repository operation runner, pushed as `fb8de83`.
 
 ## Pending Decisions
 
@@ -105,7 +108,9 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement now exists as `MR-0000REQ-0007GOV-0002`; the repository operation runner implementation must cite both specialized requirements.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements.
+
+The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. These requirements prepare enforcement for Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules.
 
 ## Pending Implementations
 
@@ -113,8 +118,8 @@ No new implementation should start before the related requirements and graph rel
 
 Expected future implementation areas include:
 
-- a governed MR-0000 repository operation runner that invokes the existing document-governance gates and then stages, commits, and pushes changes only after the gates pass, satisfying `MR-0000REQ-0007GOV-0001` and `MR-0000REQ-0007GOV-0002`;
 - schema-backed structured registry/header validation support;
+- Requirement governance registry validator for lifecycle status, requirement type, specialized suffix family, and specialized parent consistency;
 - Requirement registry field validator;
 - working plan coherence checker;
 - graph view profile validator or renderer;
@@ -141,7 +146,7 @@ npm run repo:check
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
-The current gate list already includes the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
+The current gate list already includes the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone. Requirement governance taxonomy enforcement is declared but not yet implemented as a gate.
 
 ## Handoff Notes
 
@@ -169,12 +174,12 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After this runner exists, handoff instructions should prefer the governed command instead of direct `git commit` and `git push` commands, so the gate sequence is harder to bypass accidentally.
+After this taxonomy baseline is committed, the next safe micropasso is to introduce a focused Requirement registry validator requirement/tool path that consumes `requirement-governance.registry.yml` and rejects uncontrolled Requirement statuses, uncontrolled Requirement types, unknown specialized suffix families, and specialized-parent mismatches.
 
 Expected next micropasso options:
 
-1. add negative/self-check coverage for the governed runner behavior if needed;
-2. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
-3. continue with schema-backed structured registry/header validation support.
+1. implement a focused `docs:requirement-registry-fields` validator backed by the Requirement governance registry;
+2. add negative fixtures for unknown status, unknown type, unknown specialized suffix, and invalid specialized parent;
+3. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery.
 
 Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
