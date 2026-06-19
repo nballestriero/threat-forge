@@ -212,6 +212,11 @@ nodes:
     label: Requirement registry field checker
     path: backend/tools/MR-0000/check-requirement-registry-fields.mjs
 
+  - id: TOOL-check-code-traceability
+    type: Tool
+    label: Code traceability checker
+    path: backend/tools/MR-0000/check-code-traceability.mjs
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -480,6 +485,10 @@ spo_relations:
     predicate: implemented_by
     object: SOURCE-markdown-body-parser
 
+  - subject: MR-0001REQ-0022
+    predicate: implemented_by
+    object: TOOL-check-markdown-body-parser
+
   - subject: TOOL-check-markdown-body-parser
     predicate: verifies
     object: MR-0001REQ-0022
@@ -551,4 +560,19 @@ spo_relations:
   - subject: TOOL-check-requirement-registry-fields
     predicate: verifies
     object: MR-0001REQ-0025GOV-0001
+  - subject: MR-0001REQ-0020
+    predicate: implemented_by
+    object: TOOL-check-code-traceability
+
+  - subject: MR-0001REQ-0021
+    predicate: implemented_by
+    object: TOOL-check-code-traceability
+
+  - subject: TOOL-check-code-traceability
+    predicate: verifies
+    object: MR-0001REQ-0020
+
+  - subject: TOOL-check-code-traceability
+    predicate: verifies
+    object: MR-0001REQ-0021
 

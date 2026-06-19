@@ -9,6 +9,8 @@ import Ajv from "ajv";
  * @file Append-first semantic guard for governed project-model records.
  *
  * @implementsRequirement MR-0000REQ-0016GOV-0001
+ * @implementsRequirement MR-0000REQ-0015GOV-0001
+ * @implementsRequirement MR-0000REQ-0015GOV-0002
  * @derivedFromDecision MR-0000/ADR-0005
  * @macroRequirement MR-0000
  *

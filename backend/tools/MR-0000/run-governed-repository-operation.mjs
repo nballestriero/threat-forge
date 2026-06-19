@@ -45,6 +45,7 @@ const gateCommands = [
   },
   { label: "ADR registry fields", command: "npm", args: ["run", "docs:adr-registry-fields"] },
   { label: "Requirement registry fields", command: "npm", args: ["run", "docs:requirement-registry-fields"] },
+  { label: "Code traceability", command: "npm", args: ["run", "docs:code-traceability"] },
   { label: "Body format registry", command: "npm", args: ["run", "docs:body-format-registry"] },
   { label: "Markdown body parser", command: "npm", args: ["run", "docs:markdown-body-parser"] },
   { label: "ADR body format", command: "npm", args: ["run", "docs:adr-body-format"] },
