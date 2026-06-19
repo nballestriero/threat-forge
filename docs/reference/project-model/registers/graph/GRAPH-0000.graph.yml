@@ -123,6 +123,11 @@ nodes:
     type: Requirement
     label: Append-first protected change confirmation manifest
 
+
+  - id: MR-0000REQ-0015GOV-0002
+    type: Requirement
+    label: Self-contained append-first confirmation manifest storage model
+
   - id: SCHEMA-append-first-confirmation-manifest
     type: SchemaContract
     label: Append-first confirmation manifest schema
@@ -344,3 +349,12 @@ spo_relations:
   - subject: SCHEMA-append-first-confirmation-manifest
     predicate: belongs_to
     object: MR-0000
+
+  - subject: MR-0000REQ-0015GOV-0002
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0000REQ-0015GOV-0002
+

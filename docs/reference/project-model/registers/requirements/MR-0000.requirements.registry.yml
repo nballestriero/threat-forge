@@ -137,3 +137,12 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0005
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0015GOV-0001_body.md
+
+  - id: MR-0000REQ-0015GOV-0002
+    title: Self-contained append-first confirmation manifest storage model
+    type: specialized
+    parent_requirement_id: MR-0000REQ-0015
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0015GOV-0002_body.md

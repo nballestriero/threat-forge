@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Define the append-first confirmation manifest format contract.
+Clarify the append-first confirmation manifest storage model.
 
-This micropasso introduces a schema contract for the confirmation manifest required by `MR-0000REQ-0015GOV-0001`, and links that contract in `GRAPH-0000` as the implementation artifact for the manifest format.
+This micropasso declares that confirmation manifests are self-contained governed YAML operational records discovered from a declared directory and validated against the canonical confirmation-manifest schema.
 
-It remains structural: no manifest parser, AJV validation command, bypass behavior, or append-first guard acceptance logic is introduced in this step.
+It explicitly avoids a separate manifest registry and separate Markdown body for each manifest, preventing duplicate canonical sources for the same confirmation. No manifest parser, AJV validation command, bypass behavior, or append-first guard acceptance logic is introduced in this step.
 
 ## Completed Milestones
 
@@ -76,6 +76,7 @@ It remains structural: no manifest parser, AJV validation command, bypass behavi
 - Dedicated specialized requirement for the append-first protected record guard.
 - Implementation of the append-first protected record guard as a fail-closed semantic diff for protected records.
 - Dedicated specialized requirement for append-first protected change confirmation manifests.
+- Confirmation-manifest schema contract for the self-contained YAML manifest format.
 
 ## Pending Decisions
 
@@ -93,7 +94,7 @@ The Requirement body format validator requirement has been declared and implemen
 
 The focused append-first protected record guard requirement has been declared and implemented as a small semantic diff tool.
 
-The focused confirmation-manifest requirement has been declared. A schema contract for the confirmation manifest format is being introduced before the append-first guard accepts any protected `modify` or `delete` change.
+The focused confirmation-manifest requirement has been declared. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model is being clarified as self-contained YAML records before the append-first guard accepts any protected `modify` or `delete` change.
 
 ## Pending Implementations
 
@@ -163,6 +164,6 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-After this confirmation-manifest schema contract, the next safe path is to add a small validator for confirmation manifests or update the append-first guard to validate and match manifests against protected `modify` and `delete` changes.
+After this self-contained confirmation-manifest storage clarification, the next safe path is to add a small validator for confirmation manifests or update the append-first guard to validate and match manifests against protected `modify` and `delete` changes.
 
 Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
