@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0007
+name: Identity, user and access management graph
+macro_requirement_id: MR-0007
+
+nodes:
+  - id: MR-0007
+    type: MacroRequirement
+    label: Identity, user and access management
+
+spo_relations: []

@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0004
+name: Base threat analysis model graph
+macro_requirement_id: MR-0004
+
+nodes:
+  - id: MR-0004
+    type: MacroRequirement
+    label: Base threat analysis model
+
+spo_relations: []

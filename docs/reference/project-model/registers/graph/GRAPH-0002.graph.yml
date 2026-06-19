@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0002
+name: Reusable interface framework graph
+macro_requirement_id: MR-0002
+
+nodes:
+  - id: MR-0002
+    type: MacroRequirement
+    label: Reusable interface framework
+
+spo_relations: []

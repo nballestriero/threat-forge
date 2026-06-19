@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0008
+name: Logging, audit and evidence trail graph
+macro_requirement_id: MR-0008
+
+nodes:
+  - id: MR-0008
+    type: MacroRequirement
+    label: Logging, audit and evidence trail
+
+spo_relations: []

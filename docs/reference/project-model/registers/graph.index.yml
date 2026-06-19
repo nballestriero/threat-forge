@@ -10,3 +10,31 @@ graphs:
   - graph_id: GRAPH-0001
     name: Project model graph
     path: docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml
+
+  - graph_id: GRAPH-0002
+    name: Reusable interface framework graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0002.graph.yml
+
+  - graph_id: GRAPH-0003
+    name: Project and child project management graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0003.graph.yml
+
+  - graph_id: GRAPH-0004
+    name: Base threat analysis model graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0004.graph.yml
+
+  - graph_id: GRAPH-0005
+    name: STRIDE threat analysis overlay graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0005.graph.yml
+
+  - graph_id: GRAPH-0006
+    name: STRIDE-AI threat analysis overlay graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0006.graph.yml
+
+  - graph_id: GRAPH-0007
+    name: Identity, user and access management graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0007.graph.yml
+
+  - graph_id: GRAPH-0008
+    name: Logging, audit and evidence trail graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0008.graph.yml

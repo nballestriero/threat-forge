@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0003
+name: Project and child project management graph
+macro_requirement_id: MR-0003
+
+nodes:
+  - id: MR-0003
+    type: MacroRequirement
+    label: Project and child project management
+
+spo_relations: []

@@ -23,6 +23,7 @@ The project has established:
 
 - `MR-0000` as the common system-state and consistency-control area.
 - `MR-0001` as the governed documentation and traceability area.
+- `MR-0002` through `MR-0008` as distinct product macro-areas for reusable interfaces, project management, base threat analysis, STRIDE, STRIDE-AI, users/access, and logging/audit.
 - top-down project-model graph traversal using `MR -> has_decision -> ADR`.
 - graph relations for `ADR -> justifies -> REQ`, `REQ -> implemented_by -> TOOL`, and `TOOL -> verifies -> REQ`.
 - dedicated MR-0000 placement for graph format validation tooling and its technical contracts.
@@ -38,11 +39,11 @@ The project has established:
 - an anti-regression guard for the canonical governed repository operation commands and runner path.
 - negative fixture coverage for representative invalid repository operation governance states.
 
-The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. Future methodology families may include STRIDE, PASTA, and STRIDE-AI, but methodology-specific implementation is not in the current scope.
+The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. The product macro-area roadmap now separates reusable interfaces, child project management, base threat analysis, STRIDE overlay analysis, STRIDE-AI overlay analysis, identity/access management, and logging/audit so that each domain can receive its own ADRs, requirements, graph, implementation artifacts, and validators.
 
 ## Active Objective
 
-Stabilize the foundational governance substrate before implementing more validators or analysis workflows.
+Define the product macro-area roadmap before starting reusable interfaces, child project management, or threat-analysis method work.
 
 The document-format and append-first foundation has been completed and tagged as `project-model-document-format-and-append-first-controls-complete`.
 
@@ -58,11 +59,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Add negative fixture coverage for the governed repository operation guard.
+Define the product macro-requirement area roadmap.
 
-This micropasso adds a specialized governance requirement under `MR-0000REQ-0007` and extends `docs:repo-operation-governance` so representative invalid command, runner, gate-sequence, and graph-traceability states fail closed in isolated fixtures.
+This micropasso creates the document-level boundaries for `MR-0002` through `MR-0008` without introducing ADRs, functional requirements, runtime code, UI components, or threat-analysis method logic inside those areas.
 
-The coverage is intentionally local and deterministic: it proves the guard rejects common accidental regressions without claiming to replace remote branch protection or emergency manual Git recovery.
+The scope is intentionally limited: each macro-area gets a registry entry, body, empty decision registry, empty requirement registry, and minimal graph anchor so future work can start from a governed boundary instead of being folded incorrectly into `MR-0001`.
 
 ## Completed Milestones
 
@@ -102,7 +103,9 @@ The coverage is intentionally local and deterministic: it proves the guard rejec
 - Requirement registry field negative fixtures, pushed as `355b68f`.
 - Repository operation governance guard, pushed as `8e15f5e`.
 - Repository operation governance negative fixtures, pushed as `4106c52`.
-- Direct Git exception policy requirement, pending current micropasso.
+- Direct Git exception policy requirement, pushed as `fcf25b3`.
+- Milestone tag `project-model-governed-operations-and-traceability-complete` created on `fcf25b3` and pushed.
+- Product macro-area roadmap opened for reusable interfaces, child project management, base threat analysis, STRIDE, STRIDE-AI, identity/access management, and logging/audit.
 
 ## Pending Decisions
 
@@ -130,16 +133,34 @@ The code traceability declaration requirement already exists as `MR-0001REQ-0020
 
 The Requirement governance registry requirement exists as `MR-0001REQ-0025`. The focused specialized Requirement registry field validation requirement exists as `MR-0001REQ-0025GOV-0001`. The focused specialized negative-fixture coverage requirement for Requirement registry field validation exists as `MR-0001REQ-0025GOV-0002`.
 
+The product macro-area roadmap is now split across distinct macro requirements:
+
+- `MR-0002` — Reusable Interface Framework;
+- `MR-0003` — Project and Child Project Management;
+- `MR-0004` — Base Threat Analysis Model;
+- `MR-0005` — STRIDE Threat Analysis Overlay;
+- `MR-0006` — STRIDE-AI Threat Analysis Overlay;
+- `MR-0007` — Identity, User and Access Management;
+- `MR-0008` — Logging, Audit and Evidence Trail.
+
+These macro-areas currently define boundaries only. Future work must add ADRs and small requirements inside the relevant macro-area before implementation.
+
 ## Pending Implementations
 
 No new implementation should start before the related requirements and graph relations exist.
 
 Expected future implementation areas include:
 
-- schema-backed structured registry/header validation support;
+- reusable Project Model Explorer interfaces under `MR-0002`;
+- governed project and child project management under `MR-0003`;
+- base threat-analysis model contracts under `MR-0004`;
+- STRIDE overlay contracts under `MR-0005`;
+- STRIDE-AI overlay contracts under `MR-0006`;
+- identity, user, and access-management foundations under `MR-0007`;
+- logging, audit, and evidence trail foundations under `MR-0008`;
 - working plan coherence checker;
 - graph view profile validator or renderer;
-- LLM guide document;
+- LLM and programmer guide documents;
 - code RTM generator.
 
 ## Pending Validators / Gates
@@ -208,12 +229,12 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After the direct Git exception policy is committed, the next safe micropasso is to decide whether to consolidate this milestone with a tag/handoff or move toward derived graph/RTM views.
+The next safe micropasso after the macro-area roadmap is to open `MR-0002` operationally with an ADR and small requirement for reusable interface architecture.
 
 Expected next micropasso options:
 
-1. create a milestone tag and handoff ZIP after the current repository-operation governance hardening block;
-2. start a derived graph/RTM view only after the current validator hardening is complete;
-3. document an LLM operating guide that references the governed repository operation path.
+1. create `MR-0002/ADR-0001` for reusable interface architecture using backend Node.js, Zod contracts, OpenAPI HTTP contracts, factory/composition root, Controller → Service → Port → Adapter layering, middleware for cross-cutting backend concerns, and React frontend components isolated through view models and client ports;
+2. derive a small `MR-0002REQ-0001` requirement for the reusable Project Model / Graph / Documentation Explorer module boundary;
+3. then derive separate programmer and LLM operating guides for interface work before implementation.
 
-Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
+Do not put reusable interface requirements into `MR-0001`; `MR-0001` remains the project-model/documentation governance source consumed by future interface modules. Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.

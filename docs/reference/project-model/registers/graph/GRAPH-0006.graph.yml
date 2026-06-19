@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0006
+name: STRIDE-AI threat analysis overlay graph
+macro_requirement_id: MR-0006
+
+nodes:
+  - id: MR-0006
+    type: MacroRequirement
+    label: STRIDE-AI threat analysis overlay
+
+spo_relations: []
