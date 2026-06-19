@@ -147,6 +147,15 @@ nodes:
     label: Governed repository operation runner
     path: backend/tools/MR-0000/run-governed-repository-operation.mjs
 
+  - id: MR-0000REQ-0007GOV-0003
+    type: Requirement
+    label: Governed repository operation command anti-regression guard
+
+  - id: TOOL-check-governed-repository-operation
+    type: Tool
+    label: Governed repository operation checker
+    path: backend/tools/MR-0000/check-governed-repository-operation.mjs
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -420,3 +429,19 @@ spo_relations:
   - subject: TOOL-run-governed-repository-operation
     predicate: verifies
     object: MR-0000REQ-0007GOV-0002
+
+  - subject: MR-0000REQ-0007GOV-0003
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0007GOV-0003
+
+  - subject: MR-0000REQ-0007GOV-0003
+    predicate: implemented_by
+    object: TOOL-check-governed-repository-operation
+
+  - subject: TOOL-check-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0007GOV-0003

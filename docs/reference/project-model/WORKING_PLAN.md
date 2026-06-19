@@ -35,6 +35,7 @@ The project has established:
 - deterministic bidirectional graph/source-code traceability validation for governed code artifacts that declare implemented requirements.
 - negative fixture coverage for representative invalid graph/source-code traceability states.
 - negative fixture coverage for representative invalid Requirement registry field states.
+- an anti-regression guard for the canonical governed repository operation commands and runner path.
 
 The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. Future methodology families may include STRIDE, PASTA, and STRIDE-AI, but methodology-specific implementation is not in the current scope.
 
@@ -56,11 +57,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Add negative fixture coverage for the Requirement registry field validator.
+Add an anti-regression guard for the governed repository operation runner and canonical `repo:*` commands.
 
-This micropasso adds a specialized governance requirement under `MR-0001REQ-0025` and extends `backend/tools/MR-0000/check-requirement-registry-fields.mjs` so `npm run docs:requirement-registry-fields` proves representative invalid Requirement registry states fail closed.
+This micropasso adds a specialized governance requirement under `MR-0000REQ-0007` and introduces a focused validator that verifies `repo:check`, `repo:commit-push`, the MR-0000 runner path, required runner gate references, and graph traceability for the guard itself remain wired.
 
-The fixtures must cover unknown status, unknown type, unregistered specialized suffix, missing specialized parent, unknown specialized parent, and specialized parent pointing to another specialized requirement.
+The guard is intentionally lightweight: it protects the local governed workflow from accidental command or runner drift, without claiming to replace remote branch protection or emergency manual Git recovery.
 
 ## Completed Milestones
 
@@ -97,6 +98,7 @@ The fixtures must cover unknown status, unknown type, unregistered specialized s
 - Requirement registry field validator, pushed as `e1a4c7b`.
 - Bidirectional code traceability validator, pushed as `d540e9c`.
 - Code traceability negative fixtures, pushed as `4b3cb73`.
+- Requirement registry field negative fixtures, pushed as `355b68f`.
 
 ## Pending Decisions
 
@@ -116,7 +118,7 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`.
 
 The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. The Requirement governance registry provides controlled Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules. The corresponding validator has been implemented as `backend/tools/MR-0000/check-requirement-registry-fields.mjs`.
 
@@ -147,6 +149,7 @@ node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
 npm run docs:requirement-registry-fields
 npm run docs:code-traceability
+npm run docs:repo-operation-governance
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
@@ -157,7 +160,7 @@ npm run repo:check
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
-The current gate list already includes ADR registry fields, Requirement registry fields, code traceability, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
+The current gate list already includes ADR registry fields, Requirement registry fields, code traceability, repository operation governance, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
 
 ## Handoff Notes
 
@@ -176,6 +179,7 @@ node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
 npm run docs:requirement-registry-fields
 npm run docs:code-traceability
+npm run docs:repo-operation-governance
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
@@ -187,13 +191,13 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After the Requirement registry field negative fixtures are committed, the next safe micropasso is to decide whether to harden the governed runner itself, add a lightweight direct-Git bypass policy, or move toward derived graph/RTM views.
+After the repository operation anti-regression guard is committed, the next safe micropasso is to decide whether to add a lightweight direct-Git bypass policy, create fixture coverage for the runner guard, or move toward derived graph/RTM views.
 
 Expected next micropasso options:
 
 1. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
-2. add a regression guard that verifies `repo:check`, `repo:commit-push`, and their runner path remain present;
-3. add negative fixtures for `docs:requirement-registry-fields` edge cases not covered by the initial fixture set, if needed;
+2. add fixture coverage for the repository operation anti-regression guard, if needed;
+3. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
 4. start a derived graph/RTM view only after the current validator hardening is complete.
 
 Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
