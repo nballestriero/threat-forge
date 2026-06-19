@@ -24,6 +24,7 @@ The project has established:
 - `MR-0000` as the common system-state and consistency-control area.
 - `MR-0001` as the governed documentation and traceability area.
 - `MR-0002` through `MR-0008` as distinct product macro-areas for reusable interfaces, project management, base threat analysis, STRIDE, STRIDE-AI, users/access, and logging/audit.
+- `MR-0003` as the child-project management area responsible for making child projects analyzable Doc-as-Code workspaces rather than unconstrained repositories.
 - top-down project-model graph traversal using `MR -> has_decision -> ADR`.
 - graph relations for `ADR -> justifies -> REQ`, `REQ -> implemented_by -> TOOL`, and `TOOL -> verifies -> REQ`.
 - dedicated MR-0000 placement for graph format validation tooling and its technical contracts.
@@ -41,29 +42,31 @@ The project has established:
 
 The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. The product macro-area roadmap now separates reusable interfaces, child project management, base threat analysis, STRIDE overlay analysis, STRIDE-AI overlay analysis, identity/access management, and logging/audit so that each domain can receive its own ADRs, requirements, graph, implementation artifacts, and validators.
 
+Child projects must produce analyzable documentation, not only human-readable documentation. Threat-forge must provide the Doc-as-Code structure, reuse the same governance models and tool patterns it uses to control itself, and impose governed gates before routine child-project commit/push operations so projects are built documentation-first and security-first. Threat-forge itself must also be analyzable through its own future threat-analysis model.
+
 ## Active Objective
 
-Define the product macro-area roadmap before starting reusable interfaces, child project management, or threat-analysis method work.
+Define the child-project analyzable documentation contract before starting reusable interfaces, child-project scaffolding, or threat-analysis method implementation.
 
-The document-format and append-first foundation has been completed and tagged as `project-model-document-format-and-append-first-controls-complete`.
+The governed operations and traceability milestone has been completed and tagged as `project-model-governed-operations-and-traceability-complete`.
+
+The product macro-area roadmap has been opened through `MR-0002` to `MR-0008`. The immediate focus is now `MR-0003`: child projects must be created and maintained as governed Doc-as-Code workspaces whose documentation can be validated and consumed by future base threat analysis.
 
 The immediate governance themes are now:
 
-1. working plan and handoff coherence;
-2. canonical identity and namespace rules;
-3. the governed MR-0000 repository operation runner as the preferred local check/commit/push path;
-4. schema-backed structured registry/header validation support;
-5. controlled Requirement lifecycle, type, and specialized-family validation;
-6. knowledge graph exploration, GraphRAG-like navigation, and derived graph views;
-7. code RTM derived from the knowledge graph.
+1. child-project analyzable documentation profiles;
+2. child-project governed check/commit/push gates;
+3. security-analysis readiness from Doc-as-Code creation;
+4. threat-forge self-analysis using the same model it applies to child projects;
+5. reusable interface architecture and implementation guides after the child-project contract is explicit.
 
 ## Current Micropasso
 
-Define the product macro-requirement area roadmap.
+Define the `MR-0003` child-project analyzable documentation contract.
 
-This micropasso creates the document-level boundaries for `MR-0002` through `MR-0008` without introducing ADRs, functional requirements, runtime code, UI components, or threat-analysis method logic inside those areas.
+This micropasso adds `MR-0003/ADR-0001` and small derived requirements that make the product intent explicit: child projects are not arbitrary repositories inspected after the fact; they are governed Doc-as-Code workspaces that threat-forge can validate and later analyze for security.
 
-The scope is intentionally limited: each macro-area gets a registry entry, body, empty decision registry, empty requirement registry, and minimal graph anchor so future work can start from a governed boundary instead of being folded incorrectly into `MR-0001`.
+The scope is intentionally document-only: no child-project scaffolder, runtime adapter, UI, base threat-analysis implementation, STRIDE logic, or STRIDE-AI logic is introduced in this step.
 
 ## Completed Milestones
 
@@ -105,7 +108,7 @@ The scope is intentionally limited: each macro-area gets a registry entry, body,
 - Repository operation governance negative fixtures, pushed as `4106c52`.
 - Direct Git exception policy requirement, pushed as `fcf25b3`.
 - Milestone tag `project-model-governed-operations-and-traceability-complete` created on `fcf25b3` and pushed.
-- Product macro-area roadmap opened for reusable interfaces, child project management, base threat analysis, STRIDE, STRIDE-AI, identity/access management, and logging/audit.
+- Product macro-area roadmap opened for reusable interfaces, child project management, base threat analysis, STRIDE, STRIDE-AI, identity/access management, and logging/audit, pushed as `1f5c3e6`.
 
 ## Pending Decisions
 
@@ -144,6 +147,15 @@ The product macro-area roadmap is now split across distinct macro requirements:
 - `MR-0008` — Logging, Audit and Evidence Trail.
 
 These macro-areas currently define boundaries only. Future work must add ADRs and small requirements inside the relevant macro-area before implementation.
+
+`MR-0003/ADR-0001` defines child projects as analyzable Doc-as-Code workspaces. The first derived requirements are:
+
+- `MR-0003REQ-0001` — Child project analyzable documentation profile;
+- `MR-0003REQ-0002` — Child project governed commit-push gates;
+- `MR-0003REQ-0003` — Child project security-analysis readiness from Doc-as-Code creation;
+- `MR-0003REQ-0004` — Threat-forge self-analysis as a governed project.
+
+These requirements define the documentation and governance contract only. Future implementation must still introduce child-project scaffolding, adapters, and validators through separate ADRs and requirements.
 
 ## Pending Implementations
 
@@ -229,12 +241,11 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-The next safe micropasso after the macro-area roadmap is to open `MR-0002` operationally with an ADR and small requirement for reusable interface architecture.
+After the child-project analyzable documentation contract is committed, the next safe micropassi are:
 
-Expected next micropasso options:
+1. create the programmer implementation guide for reusable interface/backend modules, covering Node.js, Zod contracts, OpenAPI HTTP contracts, factory/composition root, Controller → Service → Port → Adapter layering, middleware boundaries, and React frontend integration;
+2. create the LLM operating guide for governed interface and child-project work, ensuring LLM-assisted changes start from ADRs, requirements, graph updates, traceability, and gates;
+3. open `MR-0002` operationally with an ADR and small requirement for reusable interface architecture;
+4. later connect `MR-0003` child-project profiles to `MR-0004` base threat-analysis inputs.
 
-1. create `MR-0002/ADR-0001` for reusable interface architecture using backend Node.js, Zod contracts, OpenAPI HTTP contracts, factory/composition root, Controller → Service → Port → Adapter layering, middleware for cross-cutting backend concerns, and React frontend components isolated through view models and client ports;
-2. derive a small `MR-0002REQ-0001` requirement for the reusable Project Model / Graph / Documentation Explorer module boundary;
-3. then derive separate programmer and LLM operating guides for interface work before implementation.
-
-Do not put reusable interface requirements into `MR-0001`; `MR-0001` remains the project-model/documentation governance source consumed by future interface modules. Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
+Do not implement child-project runtime scaffolding, Project Model Explorer UI, base threat analysis, STRIDE, or STRIDE-AI until the relevant ADRs, requirements, graph relations, and guide constraints exist.
