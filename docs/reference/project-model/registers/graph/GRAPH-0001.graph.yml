@@ -217,6 +217,10 @@ nodes:
     label: Code traceability checker
     path: backend/tools/MR-0000/check-code-traceability.mjs
 
+  - id: MR-0001REQ-0021GOV-0001
+    type: Requirement
+    label: Code traceability negative fixture coverage
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -576,3 +580,18 @@ spo_relations:
     predicate: verifies
     object: MR-0001REQ-0021
 
+  - subject: MR-0001REQ-0021GOV-0001
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0001REQ-0021GOV-0001
+
+  - subject: MR-0001REQ-0021GOV-0001
+    predicate: implemented_by
+    object: TOOL-check-code-traceability
+
+  - subject: TOOL-check-code-traceability
+    predicate: verifies
+    object: MR-0001REQ-0021GOV-0001

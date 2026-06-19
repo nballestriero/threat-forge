@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -8,6 +10,7 @@ import { fileURLToPath } from "node:url";
  *
  * @implementsRequirement MR-0001REQ-0020
  * @implementsRequirement MR-0001REQ-0021
+ * @implementsRequirement MR-0001REQ-0021GOV-0001
  * @derivedFromDecision MR-0001/ADR-0008
  * @macroRequirement MR-0001
  * @macroRequirement MR-0000
@@ -18,6 +21,8 @@ import { fileURLToPath } from "node:url";
  * mirrored by an `@implementsRequirement` declaration in the referenced source
  * file, and every source-code `@implementsRequirement` declaration must point
  * back to a graph implementation relation for the same source path.
+ * Negative fixtures prove that representative invalid graph/code states fail
+ * closed and emit expected diagnostics.
  *
  * Side effects: reads project-model Requirement registries, graph registries,
  * and repository source files; writes diagnostics to stdout/stderr; exits
@@ -26,8 +31,12 @@ import { fileURLToPath } from "node:url";
  * RTM reports, or replace future richer code/documentation traceability views.
  */
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(scriptDir, "..", "..", "..");
+const scriptPath = fileURLToPath(import.meta.url);
+const scriptDir = path.dirname(scriptPath);
+const defaultRootDir = path.resolve(scriptDir, "..", "..", "..");
+const rootDir = process.env.TF_CODE_TRACEABILITY_ROOT
+  ? path.resolve(process.env.TF_CODE_TRACEABILITY_ROOT)
+  : defaultRootDir;
 const projectModelDir = path.join(rootDir, "docs", "reference", "project-model");
 const registersDir = path.join(projectModelDir, "registers");
 const requirementsDir = path.join(registersDir, "requirements");
@@ -35,7 +44,14 @@ const graphIndexPath = path.join(registersDir, "graph.index.yml");
 
 const codeArtifactTypes = new Set(["Tool", "SourceModule"]);
 const codeExtensions = new Set([".js", ".jsx", ".mjs", ".ts", ".tsx"]);
-const sourceScanRoots = ["backend/tools", "tools/docs"];
+const sourceScanRoots = (process.env.TF_CODE_TRACEABILITY_SOURCE_ROOTS ?? "backend/tools,tools/docs")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+const negativeFixturesDir = process.env.TF_CODE_TRACEABILITY_NEGATIVE_FIXTURES_DIR
+  ? path.resolve(process.env.TF_CODE_TRACEABILITY_NEGATIVE_FIXTURES_DIR)
+  : path.join(scriptDir, "fixtures", "code-traceability", "negative");
+const skipNegativeFixtures = process.env.TF_CODE_TRACEABILITY_SKIP_NEGATIVE_FIXTURES === "1";
 const errors = [];
 
 /**
@@ -489,12 +505,100 @@ function validateCodeToGraph(requirementIds, pathToNodeIds, implementationRelati
   }
 }
 
+
+/**
+ * Safely writes fixture files under a temporary root.
+ *
+ * @param {string} tempRoot - Temporary repository root.
+ * @param {Record<string, string>} files - Repository-relative fixture files.
+ * @returns {void}
+ */
+function writeFixtureFiles(tempRoot, files) {
+  for (const [projectPath, contents] of Object.entries(files ?? {})) {
+    const normalizedPath = normalizeProjectPath(projectPath);
+    const targetPath = path.resolve(tempRoot, normalizedPath);
+    if (!targetPath.startsWith(tempRoot + path.sep)) {
+      throw new Error(`Fixture file escapes temporary root: ${projectPath}`);
+    }
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    fs.writeFileSync(targetPath, String(contents ?? ""), "utf8");
+  }
+}
+
+/**
+ * Runs a single negative fixture through this same checker in an isolated tree.
+ *
+ * @param {string} fixturePath - Fixture JSON path.
+ * @returns {{ passed: boolean, id: string, diagnostic?: string }} Fixture result.
+ */
+function runNegativeFixture(fixturePath) {
+  const fixture = JSON.parse(readText(fixturePath));
+  const fixtureId = String(fixture.id ?? path.basename(fixturePath, ".json"));
+  const expectedDiagnostic = String(fixture.expectedDiagnostic ?? "").trim();
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), `tf-code-traceability-${fixtureId}-`));
+
+  try {
+    writeFixtureFiles(tempRoot, fixture.files ?? {});
+    const result = spawnSync(process.execPath, [scriptPath], {
+      cwd: tempRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      env: {
+        ...process.env,
+        TF_CODE_TRACEABILITY_ROOT: tempRoot,
+        TF_CODE_TRACEABILITY_SKIP_NEGATIVE_FIXTURES: "1",
+        TF_CODE_TRACEABILITY_SOURCE_ROOTS: String(fixture.sourceRoots ?? sourceScanRoots.join(",")),
+      },
+    });
+
+    const combinedOutput = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+    if (result.status === 0) {
+      return { passed: false, id: fixtureId, diagnostic: "fixture unexpectedly passed" };
+    }
+    if (expectedDiagnostic && !combinedOutput.includes(expectedDiagnostic)) {
+      return {
+        passed: false,
+        id: fixtureId,
+        diagnostic: `expected diagnostic fragment was not found: ${expectedDiagnostic}`,
+      };
+    }
+    return { passed: true, id: fixtureId };
+  } finally {
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Proves representative invalid graph/code traceability states fail closed.
+ *
+ * @returns {number} Number of negative fixtures executed.
+ */
+function validateNegativeFixtures() {
+  if (skipNegativeFixtures || !fs.existsSync(negativeFixturesDir)) return 0;
+
+  const fixturePaths = fs
+    .readdirSync(negativeFixturesDir)
+    .filter((name) => name.endsWith(".json"))
+    .sort()
+    .map((name) => path.join(negativeFixturesDir, name));
+
+  for (const fixturePath of fixturePaths) {
+    const result = runNegativeFixture(fixturePath);
+    if (!result.passed) {
+      errors.push(`Negative fixture ${result.id} failed: ${result.diagnostic}`);
+    }
+  }
+
+  return fixturePaths.length;
+}
+
 const requirementIds = loadRequirementIds();
 const { nodesById, implementationRelations, implementedByByNode } = loadGraphTraceability();
 const pathToNodeIds = buildCodePathIndex(nodesById);
 
 validateGraphToCode(nodesById, implementedByByNode);
 validateCodeToGraph(requirementIds, pathToNodeIds, implementationRelations);
+const negativeFixtureCount = validateNegativeFixtures();
 
 if (errors.length > 0) {
   console.error("Code traceability check failed.");
@@ -507,5 +611,7 @@ if (errors.length > 0) {
 console.log("Code traceability check passed.");
 console.log("Implemented requirement: MR-0001REQ-0020");
 console.log("Implemented requirement: MR-0001REQ-0021");
+console.log("Implemented requirement: MR-0001REQ-0021GOV-0001");
 console.log(`Graph code artifact nodes: ${pathToNodeIds.size}`);
 console.log(`Source roots: ${sourceScanRoots.join(", ")}`);
+console.log(`Negative fixtures: ${negativeFixtureCount}`);

@@ -1,0 +1,11 @@
+{
+  "id": "code-declares-unknown-requirement",
+  "description": "Source declares a requirement id that is not present in governed Requirement registries.",
+  "expectedDiagnostic": "declares unknown @implementsRequirement MR-0001REQ-9999",
+  "files": {
+    "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml": "schema_version: 1\nmacro_requirement_id: MR-0001\nrequirements:\n  - id: MR-0001REQ-0021\n    title: Bidirectional graph-to-code traceability validation\n    type: functional\n    status: approved\n    priority: high\n    derived_from_decision_id: ADR-0008\n    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0021_body.md\n",
+    "docs/reference/project-model/registers/graph.index.yml": "schema_version: 1\ngraphs:\n  - id: GRAPH-0001\n    path: docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml\n",
+    "docs/reference/project-model/registers/graph/GRAPH-0001.graph.yml": "schema_version: 1\ngraph_id: GRAPH-0001\nname: Fixture graph\nmacro_requirement_id: MR-0001\nnodes:\n  - id: MR-0001REQ-0021\n    type: Requirement\n    label: Bidirectional graph-to-code traceability validation\n  - id: MR-0001REQ-9999\n    type: Requirement\n    label: Unknown fixture requirement\n  - id: TOOL-fixture\n    type: Tool\n    label: Fixture tool\n    path: backend/tools/fixture-tool.mjs\nspo_relations:\n  - subject: MR-0001REQ-9999\n    predicate: implemented_by\n    object: TOOL-fixture\n",
+    "backend/tools/fixture-tool.mjs": "#!/usr/bin/env node\n/**\n * Fixture tool.\n *\n * @implementsRequirement MR-0001REQ-9999\n */\nconsole.log(\"fixture\");\n"
+  }
+}

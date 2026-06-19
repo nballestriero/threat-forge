@@ -33,6 +33,7 @@ The project has established:
 - governed Requirement status, type, and specialized family taxonomies as the source for Requirement registry field validation.
 - deterministic Requirement registry field validation for controlled status, type, specialized suffix family, parent functional consistency, and body path/ADR references.
 - deterministic bidirectional graph/source-code traceability validation for governed code artifacts that declare implemented requirements.
+- negative fixture coverage for representative invalid graph/source-code traceability states.
 
 The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. Future methodology families may include STRIDE, PASTA, and STRIDE-AI, but methodology-specific implementation is not in the current scope.
 
@@ -54,11 +55,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Implement the bidirectional graph/source-code traceability checker for governed code artifacts.
+Add negative fixture coverage for the bidirectional graph/source-code traceability checker.
 
-This micropasso introduces `backend/tools/MR-0000/check-code-traceability.mjs`, adds `npm run docs:code-traceability`, and wires the new gate into `npm run repo:check` / `npm run repo:commit-push`.
+This micropasso adds a specialized governance requirement under `MR-0001REQ-0021` and extends `backend/tools/MR-0000/check-code-traceability.mjs` so `npm run docs:code-traceability` proves representative invalid traceability states fail closed.
 
-The checker must compare both directions: graph `Requirement implemented_by Tool/SourceModule` relations must be mirrored by source-code `@implementsRequirement` declarations, and every source-code `@implementsRequirement` declaration must resolve back to a graph implementation relation for the same source path.
+The fixtures must cover graph-to-code missing `@implementsRequirement`, code-to-graph missing `implemented_by`, unknown source requirement ids, and missing graph code artifact paths.
 
 ## Completed Milestones
 
@@ -93,6 +94,7 @@ The checker must compare both directions: graph `Requirement implemented_by Tool
 - Governed commit-push repository operation runner, pushed as `fb8de83`.
 - Requirement governance taxonomy baseline, pushed as `22702bc`.
 - Requirement registry field validator, pushed as `e1a4c7b`.
+- Bidirectional code traceability validator, pushed as `d540e9c`.
 
 ## Pending Decisions
 
@@ -116,7 +118,7 @@ The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. T
 
 The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. The Requirement governance registry provides controlled Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules. The corresponding validator has been implemented as `backend/tools/MR-0000/check-requirement-registry-fields.mjs`.
 
-The code traceability declaration requirement already exists as `MR-0001REQ-0020`, and the bidirectional graph/code traceability requirement already exists as `MR-0001REQ-0021`.
+The code traceability declaration requirement already exists as `MR-0001REQ-0020`, and the bidirectional graph/code traceability requirement already exists as `MR-0001REQ-0021`. The focused specialized negative-fixture coverage requirement exists as `MR-0001REQ-0021GOV-0001`.
 
 ## Pending Implementations
 
@@ -182,13 +184,13 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After this validator is committed, the next safe micropasso is to add negative fixtures for the two newest validators: Requirement registry field validation and code traceability validation.
+After the code traceability negative fixtures are committed, the next safe micropasso is to add negative fixtures for `docs:requirement-registry-fields`, covering unknown status, unknown type, invalid specialized suffix, missing parent, and invalid parent cases.
 
 Expected next micropasso options:
 
-1. add negative fixtures for `docs:code-traceability`, covering graph-to-code missing tags and code-to-graph missing relations;
-2. add negative fixtures for `docs:requirement-registry-fields`;
-3. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
-4. add a regression guard that verifies `repo:check`, `repo:commit-push`, and their runner path remain present.
+1. add negative fixtures for `docs:requirement-registry-fields`;
+2. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
+3. add a regression guard that verifies `repo:check`, `repo:commit-push`, and their runner path remain present;
+4. start a derived graph/RTM view only after the current validator hardening is complete.
 
 Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.

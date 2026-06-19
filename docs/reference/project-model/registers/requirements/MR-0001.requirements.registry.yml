@@ -205,3 +205,12 @@ requirements:
     derived_from_decision_id: ADR-0009
     parent_requirement_id: MR-0001REQ-0025
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025GOV-0001_body.md
+
+  - id: MR-0001REQ-0021GOV-0001
+    title: Code traceability negative fixture coverage
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    parent_requirement_id: MR-0001REQ-0021
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0021GOV-0001_body.md
