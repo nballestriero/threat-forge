@@ -50,11 +50,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Declare the focused specialized requirement for the concrete MR-0000 project-model gate runner.
+Introduce the governed MR-0000 repository operation runner as the preferred local path for checking, committing, and pushing project-model changes.
 
-This micropasso reuses existing runner decision `MR-0000/ADR-0003` and parent requirement `MR-0000REQ-0007`, adds the specialized child requirement `MR-0000REQ-0007GOV-0001`, and connects it in `GRAPH-0000` before any runner source file is introduced.
+This micropasso adds the focused specialized requirement `MR-0000REQ-0007GOV-0002`, then implements a thin runner that executes the existing gates before staging, committing, and pushing changes through Git.
 
-The next implementation block should introduce only the thin runner tool that satisfies this focused requirement, without duplicating existing validator logic.
+The runner must remain a wrapper around existing validators and must not duplicate their validation logic.
 
 ## Completed Milestones
 
@@ -85,6 +85,7 @@ The next implementation block should introduce only the thin runner tool that sa
 - Implementation of append-first confirmation-manifest discovery, schema validation, and matching for protected `modify` and `delete` changes.
 - Completion tag on `addeb37`: `project-model-document-format-and-append-first-controls-complete`.
 - Working-plan alignment after append-first milestone, pushed as `591bf1d`.
+- Focused MR-0000 gate runner requirement, pushed as `968c1b9`.
 
 ## Pending Decisions
 
@@ -104,7 +105,7 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized runner requirement now exists as `MR-0000REQ-0007GOV-0001`; the next runner implementation must cite it.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement now exists as `MR-0000REQ-0007GOV-0002`; the repository operation runner implementation must cite both specialized requirements.
 
 ## Pending Implementations
 
@@ -112,7 +113,7 @@ No new implementation should start before the related requirements and graph rel
 
 Expected future implementation areas include:
 
-- a thin MR-0000 project-model gate runner that invokes the existing document-governance gates without duplicating validation logic, satisfying `MR-0000REQ-0007GOV-0001`;
+- a governed MR-0000 repository operation runner that invokes the existing document-governance gates and then stages, commits, and pushes changes only after the gates pass, satisfying `MR-0000REQ-0007GOV-0001` and `MR-0000REQ-0007GOV-0002`;
 - schema-backed structured registry/header validation support;
 - Requirement registry field validator;
 - working plan coherence checker;
@@ -135,11 +136,12 @@ npm run docs:markdown-body-parser
 npm run docs:adr-body-format
 npm run docs:requirement-body-format
 npm run docs:append-first
+npm run repo:check
 ```
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
-The current gate list already includes the body-format registry, shared Markdown parser, ADR body format, Requirement body format, and append-first checks introduced in the completed milestone.
+The current gate list already includes the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
 
 ## Handoff Notes
 
@@ -165,15 +167,14 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-The next safe path is to implement the first thin MR-0000 project-model gate runner against `MR-0000REQ-0007GOV-0001`.
+The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-Expected next micropasso chain:
+After this runner exists, handoff instructions should prefer the governed command instead of direct `git commit` and `git push` commands, so the gate sequence is harder to bypass accidentally.
 
-1. add the runner source file under `backend/tools/MR-0000/`;
-2. include JSDoc traceability to `MR-0000REQ-0007GOV-0001`, `MR-0000/ADR-0003`, and `MR-0000`;
-3. orchestrate existing gate commands without duplicating validator logic;
-4. add graph relations from the focused requirement to the runner tool and from the runner tool back to the requirement as verification;
-5. add or update the package command only if the implementation micropasso also declares the corresponding graph relation;
-6. run the existing gates and the new runner command.
+Expected next micropasso options:
+
+1. add negative/self-check coverage for the governed runner behavior if needed;
+2. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
+3. continue with schema-backed structured registry/header validation support.
 
 Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.

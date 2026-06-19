@@ -12,7 +12,9 @@
     "docs:markdown-body-parser": "node backend/tools/MR-0000/check-markdown-body-parser.mjs",
     "docs:adr-body-format": "node backend/tools/MR-0000/check-adr-body-format.mjs",
     "docs:requirement-body-format": "node backend/tools/MR-0000/check-requirement-body-format.mjs",
-    "docs:append-first": "node backend/tools/MR-0000/check-append-first-records.mjs"
+    "docs:append-first": "node backend/tools/MR-0000/check-append-first-records.mjs",
+    "repo:check": "node backend/tools/MR-0000/run-governed-repository-operation.mjs --check",
+    "repo:commit-push": "node backend/tools/MR-0000/run-governed-repository-operation.mjs --commit-push"
   },
   "dependencies": {
     "ajv": "^8.20.0"

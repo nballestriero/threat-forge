@@ -137,6 +137,16 @@ nodes:
     type: Requirement
     label: Thin MR-0000 project-model gate runner orchestration
 
+
+  - id: MR-0000REQ-0007GOV-0002
+    type: Requirement
+    label: Governed commit-push execution path for project-model changes
+
+  - id: TOOL-run-governed-repository-operation
+    type: Tool
+    label: Governed repository operation runner
+    path: backend/tools/MR-0000/run-governed-repository-operation.mjs
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -387,3 +397,26 @@ spo_relations:
     predicate: justifies
     object: MR-0000REQ-0007GOV-0001
 
+  - subject: MR-0000REQ-0007GOV-0002
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0007GOV-0002
+
+  - subject: MR-0000REQ-0007GOV-0001
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: MR-0000REQ-0007GOV-0002
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0007GOV-0001
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0007GOV-0002
