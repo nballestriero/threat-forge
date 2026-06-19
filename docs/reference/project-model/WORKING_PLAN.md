@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Implement the shared Markdown body parser utility under `backend/tools/MR-0000/lib/markdown-body-parser.mjs`.
+Define a specific requirement for the future ADR body format validator.
 
-This micropasso introduces the reusable parser and a focused parser self-check so future ADR and Requirement body validators can share deterministic Markdown structure extraction.
+This micropasso narrows the existing canonical document-format requirements into a small validator requirement that future source-code JSDoc can reference directly.
 
-No ADR body validator, Requirement body validator, runner aggregation, body-format profile enforcement, or RTM generator is part of this micropasso.
+No ADR body validator implementation, Requirement body validator implementation, runner aggregation, or RTM generator is part of this micropasso.
 
 ## Completed Milestones
 
@@ -69,6 +69,7 @@ No ADR body validator, Requirement body validator, runner aggregation, body-form
 - Declaration of append-first governance for protected project-model registries and graph records.
 - Schema-backed validation of the governed body-format registry with an AJV-backed checker.
 - Dedicated requirement for the shared Markdown body parser utility.
+- Implementation of the shared Markdown body parser utility and its focused self-check.
 
 ## Pending Decisions
 
@@ -78,7 +79,9 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 ## Pending Requirements
 
-Append-first governance requirements have been declared. The schema-backed body-format registry validator has been implemented. The shared Markdown parser requirement has been declared.
+Append-first governance requirements have been declared. The schema-backed body-format registry validator has been implemented. The shared Markdown parser requirement has been declared and implemented.
+
+The current requirement derivation target is the ADR body format validator requirement.
 
 ## Pending Implementations
 
@@ -141,6 +144,6 @@ npm run docs:markdown-body-parser
 
 ## Next Suggested Step
 
-After this parser implementation micropasso, the next safe path is to derive or confirm specific requirements for ADR and Requirement body validators, then implement focused validators that consume the shared parser and the governed body-format registry.
+After this ADR body validator requirement micropasso, the next safe path is to implement `backend/tools/MR-0000/check-adr-body-format.mjs` as a focused validator that consumes the shared Markdown parser and the governed body-format registry.
 
 Do not implement ADR or Requirement body validators in a way that hardcodes body sections outside the governed body-format registry.

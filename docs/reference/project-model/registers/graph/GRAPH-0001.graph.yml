@@ -139,6 +139,10 @@ nodes:
     type: Requirement
     label: Shared Markdown body parser utility
 
+  - id: MR-0001REQ-0023
+    type: Requirement
+    label: ADR body format validator
+
 
   - id: REGISTRY-body-formats
     type: Registry
@@ -446,3 +450,11 @@ spo_relations:
   - subject: TOOL-check-markdown-body-parser
     predicate: verifies
     object: MR-0001REQ-0022
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0001REQ-0023
+
+  - subject: MR-0001REQ-0023
+    predicate: belongs_to
+    object: MR-0001

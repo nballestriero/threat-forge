@@ -172,3 +172,12 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0010
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0022_body.md
+
+  - id: MR-0001REQ-0023
+    title: ADR body format validator
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0023_body.md
+
