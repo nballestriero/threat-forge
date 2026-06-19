@@ -221,6 +221,10 @@ nodes:
     type: Requirement
     label: Code traceability negative fixture coverage
 
+  - id: MR-0001REQ-0025GOV-0002
+    type: Requirement
+    label: Requirement registry field negative fixture coverage
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -595,3 +599,19 @@ spo_relations:
   - subject: TOOL-check-code-traceability
     predicate: verifies
     object: MR-0001REQ-0021GOV-0001
+
+  - subject: MR-0001REQ-0025GOV-0002
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0001REQ-0025GOV-0002
+
+  - subject: MR-0001REQ-0025GOV-0002
+    predicate: implemented_by
+    object: TOOL-check-requirement-registry-fields
+
+  - subject: TOOL-check-requirement-registry-fields
+    predicate: verifies
+    object: MR-0001REQ-0025GOV-0002

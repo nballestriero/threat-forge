@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -7,6 +9,7 @@ import { fileURLToPath } from "node:url";
  * @file Deterministic Requirement registry field governance checker.
  *
  * @implementsRequirement MR-0001REQ-0025GOV-0001
+ * @implementsRequirement MR-0001REQ-0025GOV-0002
  * @derivedFromDecision MR-0001/ADR-0009
  * @macroRequirement MR-0001
  * @macroRequirement MR-0000
@@ -24,13 +27,21 @@ import { fileURLToPath } from "node:url";
  * Markdown body structure, or generate artifacts.
  */
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(scriptDir, "..", "..", "..");
+const scriptPath = fileURLToPath(import.meta.url);
+const scriptDir = path.dirname(scriptPath);
+const defaultRootDir = path.resolve(scriptDir, "..", "..", "..");
+const rootDir = process.env.TF_REQUIREMENT_REGISTRY_FIELDS_ROOT
+  ? path.resolve(process.env.TF_REQUIREMENT_REGISTRY_FIELDS_ROOT)
+  : defaultRootDir;
 const projectModelDir = path.join(rootDir, "docs", "reference", "project-model");
 const registersDir = path.join(projectModelDir, "registers");
 const requirementsDir = path.join(registersDir, "requirements");
 const decisionsDir = path.join(registersDir, "decisions");
 const requirementGovernancePath = path.join(requirementsDir, "requirement-governance.registry.yml");
+const negativeFixturesDir = process.env.TF_REQUIREMENT_REGISTRY_FIELDS_NEGATIVE_FIXTURES_DIR
+  ? path.resolve(process.env.TF_REQUIREMENT_REGISTRY_FIELDS_NEGATIVE_FIXTURES_DIR)
+  : path.join(scriptDir, "fixtures", "requirement-registry-fields", "negative");
+const skipNegativeFixtures = process.env.TF_REQUIREMENT_REGISTRY_FIELDS_SKIP_NEGATIVE_FIXTURES === "1";
 
 const errors = [];
 
@@ -626,6 +637,92 @@ function validateRequirementRecord(entry, governance, requirementsById, adrIdsBy
   }
 }
 
+
+/**
+ * Safely writes fixture files under a temporary root.
+ *
+ * @param {string} tempRoot - Temporary repository root.
+ * @param {Record<string, string>} files - Repository-relative fixture files.
+ * @returns {void}
+ */
+function writeFixtureFiles(tempRoot, files) {
+  for (const [projectPath, contents] of Object.entries(files ?? {})) {
+    const normalizedPath = normalizeProjectPath(projectPath);
+    const targetPath = path.resolve(tempRoot, normalizedPath);
+    if (!targetPath.startsWith(tempRoot + path.sep)) {
+      throw new Error(`Fixture file escapes temporary root: ${projectPath}`);
+    }
+    fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    fs.writeFileSync(targetPath, String(contents ?? ""), "utf8");
+  }
+}
+
+/**
+ * Runs one negative Requirement registry field fixture through this checker in an isolated tree.
+ *
+ * @param {string} fixturePath - Fixture JSON path.
+ * @returns {{ passed: boolean, id: string, diagnostic?: string }} Fixture result.
+ */
+function runNegativeFixture(fixturePath) {
+  const fixture = JSON.parse(readText(fixturePath));
+  const fixtureId = String(fixture.id ?? path.basename(fixturePath, ".json"));
+  const expectedDiagnostic = String(fixture.expectedDiagnostic ?? "").trim();
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), `tf-requirement-registry-fields-${fixtureId}-`));
+
+  try {
+    writeFixtureFiles(tempRoot, fixture.files ?? {});
+    const result = spawnSync(process.execPath, [scriptPath], {
+      cwd: tempRoot,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      env: {
+        ...process.env,
+        TF_REQUIREMENT_REGISTRY_FIELDS_ROOT: tempRoot,
+        TF_REQUIREMENT_REGISTRY_FIELDS_SKIP_NEGATIVE_FIXTURES: "1",
+      },
+    });
+
+    const combinedOutput = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+    if (result.status === 0) {
+      return { passed: false, id: fixtureId, diagnostic: "fixture unexpectedly passed" };
+    }
+    if (expectedDiagnostic && !combinedOutput.includes(expectedDiagnostic)) {
+      return {
+        passed: false,
+        id: fixtureId,
+        diagnostic: `expected diagnostic fragment was not found: ${expectedDiagnostic}`,
+      };
+    }
+    return { passed: true, id: fixtureId };
+  } finally {
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Proves representative invalid Requirement registry field states fail closed.
+ *
+ * @returns {number} Number of negative fixtures executed.
+ */
+function validateNegativeFixtures() {
+  if (skipNegativeFixtures || !fs.existsSync(negativeFixturesDir)) return 0;
+
+  const fixturePaths = fs
+    .readdirSync(negativeFixturesDir)
+    .filter((name) => name.endsWith(".json"))
+    .sort()
+    .map((name) => path.join(negativeFixturesDir, name));
+
+  for (const fixturePath of fixturePaths) {
+    const result = runNegativeFixture(fixturePath);
+    if (!result.passed) {
+      errors.push(`Negative fixture ${result.id} failed: ${result.diagnostic}`);
+    }
+  }
+
+  return fixturePaths.length;
+}
+
 const governance = readRequirementGovernance();
 const adrIdsByMacro = buildAdrIndex();
 const { records, requirementsById } = readRequirementRecords();
@@ -633,6 +730,8 @@ const { records, requirementsById } = readRequirementRecords();
 for (const entry of records) {
   validateRequirementRecord(entry, governance, requirementsById, adrIdsByMacro);
 }
+
+const negativeFixtureCount = validateNegativeFixtures();
 
 if (errors.length > 0) {
   console.error("Requirement registry field check failed.");
@@ -644,4 +743,6 @@ if (errors.length > 0) {
 
 console.log("Requirement registry field check passed.");
 console.log("Implemented requirement: MR-0001REQ-0025GOV-0001");
+console.log("Implemented requirement: MR-0001REQ-0025GOV-0002");
 console.log(`Registry: ${relativeProjectPath(requirementGovernancePath)}`);
+console.log(`Negative fixtures: ${negativeFixtureCount}`);
