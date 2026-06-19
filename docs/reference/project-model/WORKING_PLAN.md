@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Define a specific requirement for the future ADR body format validator.
+Implement the focused ADR body format validator.
 
-This micropasso narrows the existing canonical document-format requirements into a small validator requirement that future source-code JSDoc can reference directly.
+This micropasso introduces `backend/tools/MR-0000/check-adr-body-format.mjs` so ADR bodies are checked against the governed `adr-functional-decision-body` profile.
 
-No ADR body validator implementation, Requirement body validator implementation, runner aggregation, or RTM generator is part of this micropasso.
+It also aligns pre-existing MR-0001 ADR bodies with the canonical body sections so the new gate can run deterministically over all registered ADRs. Requirement body validation, runner aggregation, and RTM generation remain out of scope.
 
 ## Completed Milestones
 
@@ -70,6 +70,7 @@ No ADR body validator implementation, Requirement body validator implementation,
 - Schema-backed validation of the governed body-format registry with an AJV-backed checker.
 - Dedicated requirement for the shared Markdown body parser utility.
 - Implementation of the shared Markdown body parser utility and its focused self-check.
+- Dedicated requirement for the ADR body format validator.
 
 ## Pending Decisions
 
@@ -81,7 +82,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Append-first governance requirements have been declared. The schema-backed body-format registry validator has been implemented. The shared Markdown parser requirement has been declared and implemented.
 
-The current requirement derivation target is the ADR body format validator requirement.
+The ADR body format validator requirement has been declared. The current implementation target is the focused ADR body format validator.
 
 ## Pending Implementations
 
@@ -91,7 +92,6 @@ Expected future implementation areas include:
 
 - schema-backed structured registry/header validation support;
 - body-format registry schema checker;
-- ADR body format validator;
 - Requirement registry field validator;
 - Requirement body format validator;
 - append-first protected record guard;
@@ -112,6 +112,7 @@ node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
+npm run docs:adr-body-format
 ```
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
@@ -121,6 +122,7 @@ Additional gates now available:
 ```text
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
+npm run docs:adr-body-format
 ```
 
 ## Handoff Notes
@@ -140,6 +142,7 @@ node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
+npm run docs:adr-body-format
 ```
 
 ## Next Suggested Step

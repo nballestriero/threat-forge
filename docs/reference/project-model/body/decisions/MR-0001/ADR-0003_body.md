@@ -55,3 +55,38 @@ This decision applies to executable repository tooling, including scripts under 
 ```text
 tools/**
 backend/tools/**
+```
+
+In scope:
+
+- executable project-model validators;
+- renderers and generators that affect governed artifacts;
+- handoff or packaging tools that affect governed workflows;
+- source-level traceability declarations for governed tools.
+
+Out of scope:
+
+- implementing all future tool traceability validators in this decision;
+- changing application runtime behavior unrelated to governed project-model workflows;
+- replacing human review with autonomous code changes.
+
+## Consequences
+
+### Positive consequences
+
+* Tool behavior becomes explainable through ADRs and requirements.
+* Future LLM-assisted development has explicit boundaries for code changes.
+* The knowledge graph can show which tools implement and verify which requirements.
+* Reviewers can reject executable changes that lack governed traceability.
+
+### Negative consequences
+
+* Even small tools require a decision and requirement trail before implementation.
+* Some quick automation changes will need to be split into small governed micropassi.
+* Existing tools may need incremental backfill of source-level traceability.
+
+## Follow-up
+
+1. Keep new tool implementations linked to requirements and graph relations before merge.
+2. Add deterministic checks for source-level JSDoc traceability after the source traceability model is stable.
+3. Ensure future runners orchestrate focused validators instead of hiding tool logic inside a mega-runner.

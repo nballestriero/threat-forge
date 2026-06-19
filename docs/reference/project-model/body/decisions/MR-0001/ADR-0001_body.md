@@ -1,12 +1,16 @@
-# ADR-0001: Adozione del Modello Diátaxis
+# ADR-0001 — Adozione del Modello Diátaxis
 
-## 1. Contest (Contesto)
+## Status
+
+Accepted.
+
+## Context
 
 La documentazione tecnica del progetto deve essere stabile, leggibile e facile da navigare per nuovi membri del team, revisori e strumenti automatici. Gli utenti del progetto devono poter distinguere rapidamente una guida passo-passo da un riferimento tecnico, da un tutorial e da una spiegazione architetturale.
 
 Abbiamo bisogno di una struttura rigida e chiara per organizzare i contenuti all'interno della cartella `/docs`.
 
-## 2. Decision (Decisione)
+## Decision
 
 Decidiamo di adottare formalmente il framework **Diátaxis** per tutta la documentazione di progetto.
 
@@ -17,11 +21,21 @@ Questo comporta che:
 - I documenti `reference` conterranno registry, schemi, tassonomie e formati tecnici governati.
 - I documenti `explanation` conterranno contesto, principi, teoria, architettura e design rationale.
 
-## 3. Status (Stato)
+## Scope
 
-**Accepted**.
+In scope:
 
-## 4. Consequences (Conseguenze)
+- organizzazione dei documenti stabili sotto `docs/` secondo le quattro categorie Diátaxis;
+- separazione tra contenuti operativi, reference tecnica e spiegazioni architetturali;
+- uso della struttura documentale come base per futuri controlli deterministici.
+
+Out of scope:
+
+- implementare in questa decisione tutti i validator documentali futuri;
+- definire il formato interno di ogni registro governato;
+- modellare la tracciabilità completa dei requisiti e dei tool.
+
+## Consequences
 
 ### Conseguenze Positive (Benefici)
 
@@ -35,3 +49,9 @@ Questo comporta che:
 - Sarà necessario classificare ogni nuovo documento prima del merge.
 - Il team dovrà rispettare regole più rigide nella produzione documentale.
 - Eventuali documenti scritti fuori struttura dovranno essere spostati o riformulati.
+
+## Follow-up
+
+1. Mantenere la struttura Diátaxis come vincolo documentale del project model.
+2. Collegare i futuri controlli di struttura documentale ai requisiti e al knowledge graph.
+3. Evitare che nuovi documenti canonici siano introdotti fuori dalla struttura governata.

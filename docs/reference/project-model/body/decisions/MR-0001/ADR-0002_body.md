@@ -44,7 +44,7 @@ MR-0001
 
 The term `area` must not be used in canonical file names, IDs, registry names, or model fields.
 
-## Registry responsibilities
+### Registry responsibilities
 
 A registry is a governed list of compact headers.
 
@@ -62,7 +62,7 @@ A registry must not contain long prose, full rationale, detailed acceptance crit
 
 Those contents belong in body files.
 
-## Body responsibilities
+### Body responsibilities
 
 A body file is the long-form document associated with a registry record.
 
@@ -82,7 +82,7 @@ A body file is not a registry.
 
 A body file must not create new governed identities that are absent from the corresponding registry.
 
-## Root macro-requirements registry
+### Root macro-requirements registry
 
 The root macro-requirements registry is:
 
@@ -100,7 +100,7 @@ For macro-requirement `MR-0001`, the body path is derived as:
 docs/reference/project-model/body/macro-requirements/MR-0001_body.md
 ```
 
-## Derived ADR registry naming
+### Derived ADR registry naming
 
 Each macro-requirement may have its own ADR registry.
 
@@ -152,7 +152,7 @@ The ADR body directory is derived from:
 docs/reference/project-model/body/decisions/<macro_requirement_id>/
 ```
 
-## Derived requirements registry naming
+### Derived requirements registry naming
 
 Each macro-requirement may have its own requirements registry.
 
@@ -221,7 +221,7 @@ The requirement body directory is derived from:
 docs/reference/project-model/body/requirements/<macro_requirement_id>/
 ```
 
-## Graph file organization
+### Graph file organization
 
 Graph files are separate governed model files.
 
@@ -251,7 +251,7 @@ Only semantic project model entities should appear as graph nodes.
 
 Registry files and body files are sources read by tooling, but they are not themselves semantic graph nodes unless a later ADR explicitly changes that rule.
 
-## Requirement header and body constraints
+### Requirement header and body constraints
 
 Requirement headers must remain compact.
 
@@ -261,7 +261,7 @@ SPO-style relations must not be embedded inside requirement headers or requireme
 
 Semantic relations belong in graph files when the graph model is intentionally introduced or extended.
 
-## Tooling consequence
+### Tooling consequence
 
 The project model renderer may read registries and body files to generate HTML pages.
 
@@ -272,6 +272,21 @@ The graph format checker must not infer new registry records.
 The graph format checker must not create semantic meaning that is absent from the governed model files.
 
 The graph format checker only validates graph file shape and basic consistency according to its current contract.
+
+## Scope
+
+In scope:
+
+- root and derived registry organization;
+- registry/body separation;
+- deterministic file naming for macro-requirements, ADRs, requirements, and graph files;
+- keeping graph files separate from registries and long-form body content.
+
+Out of scope:
+
+- implementing every future project-model validator in this decision;
+- introducing detailed graph traversal semantics beyond the initial organization rules;
+- changing existing project source-code architecture.
 
 ## Consequences
 
@@ -295,3 +310,9 @@ Adding a new requirement under a macro-requirement requires:
 3. a compact derivation field when the requirement is derived from an ADR.
 
 This avoids mixed registries, uncontrolled naming, and hidden long-form content inside compact model headers.
+
+## Follow-up
+
+1. Keep future project-model records aligned with registry/body separation.
+2. Add deterministic validators only after corresponding ADRs, requirements, and graph relations exist.
+3. Preserve graph files as semantic relationship files, not as replacement registries.

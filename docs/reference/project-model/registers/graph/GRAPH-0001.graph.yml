@@ -179,6 +179,11 @@ nodes:
     label: Markdown body parser self-check
     path: backend/tools/MR-0000/check-markdown-body-parser.mjs
 
+  - id: TOOL-check-adr-body-format
+    type: Tool
+    label: ADR body format checker
+    path: backend/tools/MR-0000/check-adr-body-format.mjs
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -458,3 +463,11 @@ spo_relations:
   - subject: MR-0001REQ-0023
     predicate: belongs_to
     object: MR-0001
+  - subject: MR-0001REQ-0023
+    predicate: implemented_by
+    object: TOOL-check-adr-body-format
+
+  - subject: TOOL-check-adr-body-format
+    predicate: verifies
+    object: MR-0001REQ-0023
+
