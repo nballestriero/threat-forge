@@ -223,3 +223,29 @@ requirements:
     derived_from_decision_id: ADR-0009
     parent_requirement_id: MR-0001REQ-0025
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025GOV-0002_body.md
+
+  - id: MR-0001REQ-0026
+    title: Governed development guide Diátaxis placement
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026_body.md
+
+  - id: MR-0001REQ-0026GOV-0001
+    title: Programmer governed development guide
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    parent_requirement_id: MR-0001REQ-0026
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026GOV-0001_body.md
+
+  - id: MR-0001REQ-0026GOV-0002
+    title: LLM governed development guide
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    parent_requirement_id: MR-0001REQ-0026
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026GOV-0002_body.md

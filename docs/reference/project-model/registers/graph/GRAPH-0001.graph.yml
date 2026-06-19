@@ -225,6 +225,32 @@ nodes:
     type: Requirement
     label: Requirement registry field negative fixture coverage
 
+  - id: ADR-0011
+    type: ADR
+    label: Diátaxis placement for governed development guides
+
+  - id: MR-0001REQ-0026
+    type: Requirement
+    label: Governed development guide Diátaxis placement
+
+  - id: MR-0001REQ-0026GOV-0001
+    type: Requirement
+    label: Programmer governed development guide
+
+  - id: MR-0001REQ-0026GOV-0002
+    type: Requirement
+    label: LLM governed development guide
+
+  - id: DOC-programmer-governed-development-guide
+    type: Document
+    label: Programmer governed development guide
+    path: docs/how-to/governed-development/programmer-governed-development-guide.md
+
+  - id: DOC-llm-governed-development-guide
+    type: Document
+    label: LLM governed development guide
+    path: docs/how-to/governed-development/llm-governed-development-guide.md
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -615,3 +641,40 @@ spo_relations:
   - subject: TOOL-check-requirement-registry-fields
     predicate: verifies
     object: MR-0001REQ-0025GOV-0002
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0011
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0001REQ-0026
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0001REQ-0026GOV-0001
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0001REQ-0026GOV-0002
+
+  - subject: MR-0001REQ-0026
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0026GOV-0001
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0026GOV-0002
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0026GOV-0001
+    predicate: described_by
+    object: DOC-programmer-governed-development-guide
+
+  - subject: MR-0001REQ-0026GOV-0002
+    predicate: described_by
+    object: DOC-llm-governed-development-guide
+

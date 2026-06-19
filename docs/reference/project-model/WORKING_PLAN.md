@@ -25,6 +25,7 @@ The project has established:
 - `MR-0001` as the governed documentation and traceability area.
 - `MR-0002` through `MR-0008` as distinct product macro-areas for reusable interfaces, project management, base threat analysis, STRIDE, STRIDE-AI, users/access, and logging/audit.
 - `MR-0003` as the child-project management area responsible for making child projects analyzable Doc-as-Code workspaces rather than unconstrained repositories.
+- `MR-0001/ADR-0011` as the decision that governed development guides belong in the Diátaxis `docs/how-to/` space, while ADRs and Requirements remain reference/project-model governance artifacts.
 - top-down project-model graph traversal using `MR -> has_decision -> ADR`.
 - graph relations for `ADR -> justifies -> REQ`, `REQ -> implemented_by -> TOOL`, and `TOOL -> verifies -> REQ`.
 - dedicated MR-0000 placement for graph format validation tooling and its technical contracts.
@@ -46,27 +47,27 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-Define the child-project analyzable documentation contract before starting reusable interfaces, child-project scaffolding, or threat-analysis method implementation.
+Define governed development how-to guides in the correct Diátaxis space before starting reusable interfaces, child-project scaffolding, or threat-analysis method implementation.
 
 The governed operations and traceability milestone has been completed and tagged as `project-model-governed-operations-and-traceability-complete`.
 
-The product macro-area roadmap has been opened through `MR-0002` to `MR-0008`. The immediate focus is now `MR-0003`: child projects must be created and maintained as governed Doc-as-Code workspaces whose documentation can be validated and consumed by future base threat analysis.
+The product macro-area roadmap has been opened through `MR-0002` to `MR-0008`. The immediate focus is now `MR-0001`: place programmer and LLM governed-development guides in the Diátaxis how-to space while keeping ADRs and Requirements as reference/project-model governance artifacts.
 
 The immediate governance themes are now:
 
-1. child-project analyzable documentation profiles;
-2. child-project governed check/commit/push gates;
-3. security-analysis readiness from Doc-as-Code creation;
-4. threat-forge self-analysis using the same model it applies to child projects;
-5. reusable interface architecture and implementation guides after the child-project contract is explicit.
+1. Diátaxis-correct placement of governed programmer and LLM guides;
+2. clear separation between ADRs, Requirements, reference material, how-to guides, tutorials, and explanations;
+3. programmer instructions for the governed ADR → requirement → graph → implementation → verification → commit/push workflow;
+4. LLM instructions for source-of-truth reading, macro-requirement selection, traceability, and handoff discipline;
+5. reusable interface architecture after the guide placement and baseline guide content are explicit.
 
 ## Current Micropasso
 
-Define the `MR-0003` child-project analyzable documentation contract.
+Define Diátaxis-correct governed development guides under `MR-0001`.
 
-This micropasso adds `MR-0003/ADR-0001` and small derived requirements that make the product intent explicit: child projects are not arbitrary repositories inspected after the fact; they are governed Doc-as-Code workspaces that threat-forge can validate and later analyze for security.
+This micropasso adds `MR-0001/ADR-0011` and small derived requirements that make the documentation placement explicit: programmer and LLM operating guidance belongs in `docs/how-to/governed-development/`, not inside ADR bodies, Requirement bodies, registries, or project-model reference folders.
 
-The scope is intentionally document-only: no child-project scaffolder, runtime adapter, UI, base threat-analysis implementation, STRIDE logic, or STRIDE-AI logic is introduced in this step.
+The scope is intentionally document-only: no guide validator, reusable interface module, backend service, frontend component, child-project scaffolder, base threat-analysis implementation, STRIDE logic, or STRIDE-AI logic is introduced in this step.
 
 ## Completed Milestones
 
@@ -109,6 +110,7 @@ The scope is intentionally document-only: no child-project scaffolder, runtime a
 - Direct Git exception policy requirement, pushed as `fcf25b3`.
 - Milestone tag `project-model-governed-operations-and-traceability-complete` created on `fcf25b3` and pushed.
 - Product macro-area roadmap opened for reusable interfaces, child project management, base threat analysis, STRIDE, STRIDE-AI, identity/access management, and logging/audit, pushed as `1f5c3e6`.
+- Child-project analyzable documentation contract, pushed as `372051b`.
 
 ## Pending Decisions
 
@@ -157,6 +159,14 @@ These macro-areas currently define boundaries only. Future work must add ADRs an
 
 These requirements define the documentation and governance contract only. Future implementation must still introduce child-project scaffolding, adapters, and validators through separate ADRs and requirements.
 
+`MR-0001/ADR-0011` defines Diátaxis-correct placement for governed development guides. The first derived guide-placement requirements are:
+
+- `MR-0001REQ-0026` — Governed development guide Diátaxis placement;
+- `MR-0001REQ-0026GOV-0001` — Programmer governed development guide;
+- `MR-0001REQ-0026GOV-0002` — LLM governed development guide.
+
+The guide documents live in `docs/how-to/governed-development/` and are referenced from `GRAPH-0001` as `Document` nodes.
+
 ## Pending Implementations
 
 No new implementation should start before the related requirements and graph relations exist.
@@ -172,7 +182,7 @@ Expected future implementation areas include:
 - logging, audit, and evidence trail foundations under `MR-0008`;
 - working plan coherence checker;
 - graph view profile validator or renderer;
-- LLM and programmer guide documents;
+- future body-format or placement validator for governed how-to guides if guide conventions require deterministic enforcement;
 - code RTM generator.
 
 ## Pending Validators / Gates
@@ -241,11 +251,10 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After the child-project analyzable documentation contract is committed, the next safe micropassi are:
+After the governed development guides are committed, the next safe micropassi are:
 
-1. create the programmer implementation guide for reusable interface/backend modules, covering Node.js, Zod contracts, OpenAPI HTTP contracts, factory/composition root, Controller → Service → Port → Adapter layering, middleware boundaries, and React frontend integration;
-2. create the LLM operating guide for governed interface and child-project work, ensuring LLM-assisted changes start from ADRs, requirements, graph updates, traceability, and gates;
-3. open `MR-0002` operationally with an ADR and small requirement for reusable interface architecture;
-4. later connect `MR-0003` child-project profiles to `MR-0004` base threat-analysis inputs.
+1. open `MR-0002` operationally with an ADR and small requirement for reusable interface architecture, covering Node.js, Zod contracts, OpenAPI HTTP contracts, factory/composition root, Controller → Service → Port → Adapter layering, middleware boundaries, React frontend integration, and reusable view-model/client-port boundaries;
+2. define the first Project Model Explorer view-model/API boundary without implementing a full UI;
+3. later connect `MR-0003` child-project profiles to `MR-0004` base threat-analysis inputs.
 
 Do not implement child-project runtime scaffolding, Project Model Explorer UI, base threat analysis, STRIDE, or STRIDE-AI until the relevant ADRs, requirements, graph relations, and guide constraints exist.
