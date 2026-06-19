@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://threat-forge.local/schemas/MR-0000/append-first-confirmation-manifest.schema.json",
+  "title": "Append-first protected change confirmation manifest",
+  "description": "Schema contract for manifests that explicitly authorize intentional modify/delete changes to append-first protected project-model records.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "confirmation_id",
+    "reason",
+    "approved_by",
+    "approved",
+    "confirmed_changes"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Schema version for this confirmation manifest format."
+    },
+    "confirmation_id": {
+      "type": "string",
+      "pattern": "^CHANGE-[0-9]{8}-[a-z0-9-]+$",
+      "description": "Stable manifest identifier, for example CHANGE-20260619-align-requirement-title."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 12,
+      "description": "Human-readable reason explaining why the protected modify/delete change is intentional."
+    },
+    "approved_by": {
+      "type": "string",
+      "enum": ["human"],
+      "description": "Explicit human approval marker. Automated approval is not sufficient for protected non-append changes."
+    },
+    "approved": {
+      "type": "boolean",
+      "const": true,
+      "description": "Must be true to mark the confirmation as intentionally approved."
+    },
+    "confirmed_changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/confirmedChange" },
+      "description": "Specific protected modify/delete changes authorized by this manifest."
+    }
+  },
+  "$defs": {
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\\\]+(/[^\\\\]+)*$",
+      "description": "Repository-relative path using forward slashes."
+    },
+    "changedField": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Protected field name or dotted field path affected by a modify change."
+    },
+    "recordIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": ["record_id"],
+          "properties": {
+            "record_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Logical record identifier used by the append-first guard."
+            }
+          }
+        },
+        {
+          "required": ["subject", "predicate", "object"],
+          "properties": {
+            "subject": {
+              "type": "string",
+              "minLength": 1,
+              "description": "SPO relation subject."
+            },
+            "predicate": {
+              "type": "string",
+              "minLength": 1,
+              "description": "SPO relation predicate."
+            },
+            "object": {
+              "type": "string",
+              "minLength": 1,
+              "description": "SPO relation object."
+            }
+          }
+        }
+      ],
+      "description": "Logical identity of the protected record or graph SPO relation."
+    },
+    "confirmedChange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_path",
+        "collection",
+        "record_identity",
+        "change_type"
+      ],
+      "properties": {
+        "source_path": { "$ref": "#/$defs/projectPath" },
+        "collection": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Protected collection name as used by the append-first guard, such as requirements, decisions, nodes, or spo_relations."
+        },
+        "record_identity": { "$ref": "#/$defs/recordIdentity" },
+        "change_type": {
+          "type": "string",
+          "enum": ["modify", "delete"],
+          "description": "Protected non-append change type authorized by this entry."
+        },
+        "fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/changedField" },
+          "uniqueItems": true,
+          "description": "Affected protected fields for modify changes. Omit or leave empty for delete changes."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "change_type": { "const": "modify" } },
+            "required": ["change_type"]
+          },
+          "then": {
+            "required": ["fields"],
+            "properties": {
+              "fields": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

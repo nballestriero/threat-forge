@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Define the focused confirmation-manifest requirement for append-first protected changes.
+Define the append-first confirmation manifest format contract.
 
-This micropasso derives a specialized child requirement from `MR-0000REQ-0015` so future code can implement confirmation manifests with precise JSDoc traceability.
+This micropasso introduces a schema contract for the confirmation manifest required by `MR-0000REQ-0015GOV-0001`, and links that contract in `GRAPH-0000` as the implementation artifact for the manifest format.
 
-It remains document-only: no manifest parser, schema, bypass behavior, or append-first guard acceptance logic is introduced in this step.
+It remains structural: no manifest parser, AJV validation command, bypass behavior, or append-first guard acceptance logic is introduced in this step.
 
 ## Completed Milestones
 
@@ -75,6 +75,7 @@ It remains document-only: no manifest parser, schema, bypass behavior, or append
 - Implementation of the Requirement body format validator and alignment of existing Requirement bodies with the canonical Requirement body sections.
 - Dedicated specialized requirement for the append-first protected record guard.
 - Implementation of the append-first protected record guard as a fail-closed semantic diff for protected records.
+- Dedicated specialized requirement for append-first protected change confirmation manifests.
 
 ## Pending Decisions
 
@@ -92,7 +93,7 @@ The Requirement body format validator requirement has been declared and implemen
 
 The focused append-first protected record guard requirement has been declared and implemented as a small semantic diff tool.
 
-A focused confirmation-manifest requirement is being declared so future modifications or deletions of protected records can be authorized without disabling the append-first guard.
+The focused confirmation-manifest requirement has been declared. A schema contract for the confirmation manifest format is being introduced before the append-first guard accepts any protected `modify` or `delete` change.
 
 ## Pending Implementations
 
@@ -103,7 +104,7 @@ Expected future implementation areas include:
 - schema-backed structured registry/header validation support;
 - body-format registry schema checker;
 - Requirement registry field validator;
-- append-first confirmation-manifest support;
+- append-first confirmation-manifest schema validation and guard acceptance support;
 - working plan coherence checker;
 - graph view profile validator or renderer;
 - LLM guide document;
@@ -162,6 +163,6 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-After this confirmation-manifest requirement, the next safe path is to introduce a small schema or parser for confirmation manifests before allowing intentional protected modifications and deletions.
+After this confirmation-manifest schema contract, the next safe path is to add a small validator for confirmation manifests or update the append-first guard to validate and match manifests against protected `modify` and `delete` changes.
 
 Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
