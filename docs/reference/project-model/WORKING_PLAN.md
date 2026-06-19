@@ -27,6 +27,9 @@ The project has established:
 - graph relations for `ADR -> justifies -> REQ`, `REQ -> implemented_by -> TOOL`, and `TOOL -> verifies -> REQ`.
 - dedicated MR-0000 placement for graph format validation tooling and its technical contracts.
 - initial ADR registry field governance.
+- governed body-format profiles for stable ADR and Requirement bodies.
+- append-first protection for canonical project-model registries and graph records.
+- self-contained append-first confirmation manifests for explicitly reviewed protected modifications and deletions.
 
 The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. Future methodology families may include STRIDE, PASTA, and STRIDE-AI, but methodology-specific implementation is not in the current scope.
 
@@ -34,23 +37,24 @@ The current strategic direction is to build a governance substrate for future se
 
 Stabilize the foundational governance substrate before implementing more validators or analysis workflows.
 
-The immediate governance themes are:
+The document-format and append-first foundation has been completed and tagged as `project-model-document-format-and-append-first-controls-complete`.
+
+The immediate governance themes are now:
 
 1. working plan and handoff coherence;
 2. canonical identity and namespace rules;
-3. canonical ADR and Requirement document formats;
-4. atomic functional and linked specialized requirement modeling;
-5. common body format profiles and uniform validator architecture;
-6. knowledge graph exploration, GraphRAG-like navigation, and derived graph views;
-7. code RTM derived from the knowledge graph.
+3. a single MR-0000 project-model gate runner that orchestrates existing gates without duplicating their logic;
+4. schema-backed structured registry/header validation support;
+5. knowledge graph exploration, GraphRAG-like navigation, and derived graph views;
+6. code RTM derived from the knowledge graph.
 
 ## Current Micropasso
 
-Clarify the append-first confirmation manifest storage model.
+Align the working plan after the completed document-format and append-first controls milestone.
 
-This micropasso declares that confirmation manifests are self-contained governed YAML operational records discovered from a declared directory and validated against the canonical confirmation-manifest schema.
+This micropasso records the verified semantic transition from confirmation-manifest implementation to the next governance block. It does not introduce new ADRs, requirements, graph records, tools, validators, or source code.
 
-It explicitly avoids a separate manifest registry and separate Markdown body for each manifest, preventing duplicate canonical sources for the same confirmation. No manifest parser, AJV validation command, bypass behavior, or append-first guard acceptance logic is introduced in this step.
+The next implementation block should remain focused on the existing MR-0000 runner decision and requirement, with one additional small specialized requirement before any runner source file is introduced.
 
 ## Completed Milestones
 
@@ -77,6 +81,9 @@ It explicitly avoids a separate manifest registry and separate Markdown body for
 - Implementation of the append-first protected record guard as a fail-closed semantic diff for protected records.
 - Dedicated specialized requirement for append-first protected change confirmation manifests.
 - Confirmation-manifest schema contract for the self-contained YAML manifest format.
+- Clarification that confirmation manifests are self-contained YAML operational records without a separate registry or body Markdown document.
+- Implementation of append-first confirmation-manifest discovery, schema validation, and matching for protected `modify` and `delete` changes.
+- Completion tag on `addeb37`: `project-model-document-format-and-append-first-controls-complete`.
 
 ## Pending Decisions
 
@@ -94,7 +101,9 @@ The Requirement body format validator requirement has been declared and implemen
 
 The focused append-first protected record guard requirement has been declared and implemented as a small semantic diff tool.
 
-The focused confirmation-manifest requirement has been declared. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard is being updated to discover, validate, and match confirmation manifests against protected `modify` or `delete` changes.
+The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
+
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. Before introducing the runner implementation, add a smaller specialized requirement that defines the concrete orchestration behavior and failure semantics for the first operational runner.
 
 ## Pending Implementations
 
@@ -102,8 +111,8 @@ No new implementation should start before the related requirements and graph rel
 
 Expected future implementation areas include:
 
+- a thin MR-0000 project-model gate runner that invokes the existing document-governance gates without duplicating validation logic;
 - schema-backed structured registry/header validation support;
-- body-format registry schema checker;
 - Requirement registry field validator;
 - working plan coherence checker;
 - graph view profile validator or renderer;
@@ -129,15 +138,7 @@ npm run docs:append-first
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
-Additional gates now available:
-
-```text
-npm run docs:body-format-registry
-npm run docs:markdown-body-parser
-npm run docs:adr-body-format
-npm run docs:requirement-body-format
-npm run docs:append-first
-```
+The current gate list already includes the body-format registry, shared Markdown parser, ADR body format, Requirement body format, and append-first checks introduced in the completed milestone.
 
 ## Handoff Notes
 
@@ -163,6 +164,14 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-After confirmation-manifest support is committed, the next safe path is to decide whether to tag the document-format and append-first foundation, then continue with either Requirement registry field validation, working-plan coherence validation, or graph view profile requirements.
+The next safe path is to add one focused specialized requirement for the concrete MR-0000 project-model gate runner, deriving it from the existing runner decision and broad runner requirement.
+
+Expected next micropasso chain:
+
+1. reuse existing runner ADR/decision `MR-0000/ADR-0003`;
+2. derive a small specialized requirement from `MR-0000REQ-0007`;
+3. update `GRAPH-0000` with the logical requirement relation;
+4. do not introduce runner source code yet;
+5. run the existing gates.
 
 Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
