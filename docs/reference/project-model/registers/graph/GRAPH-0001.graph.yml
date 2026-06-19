@@ -207,6 +207,11 @@ nodes:
     label: Requirement governance registry
     path: docs/reference/project-model/registers/requirements/requirement-governance.registry.yml
 
+  - id: TOOL-check-requirement-registry-fields
+    type: Tool
+    label: Requirement registry field checker
+    path: backend/tools/MR-0000/check-requirement-registry-fields.mjs
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -538,4 +543,12 @@ spo_relations:
   - subject: MR-0001REQ-0025
     predicate: implemented_by
     object: REGISTRY-requirement-governance
+
+  - subject: MR-0001REQ-0025GOV-0001
+    predicate: implemented_by
+    object: TOOL-check-requirement-registry-fields
+
+  - subject: TOOL-check-requirement-registry-fields
+    predicate: verifies
+    object: MR-0001REQ-0025GOV-0001
 

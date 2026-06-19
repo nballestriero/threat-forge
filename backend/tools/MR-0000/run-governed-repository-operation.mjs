@@ -44,6 +44,7 @@ const gateCommands = [
     args: ["tools/docs/check-docs-structure.mjs"],
   },
   { label: "ADR registry fields", command: "npm", args: ["run", "docs:adr-registry-fields"] },
+  { label: "Requirement registry fields", command: "npm", args: ["run", "docs:requirement-registry-fields"] },
   { label: "Body format registry", command: "npm", args: ["run", "docs:body-format-registry"] },
   { label: "Markdown body parser", command: "npm", args: ["run", "docs:markdown-body-parser"] },
   { label: "ADR body format", command: "npm", args: ["run", "docs:adr-body-format"] },

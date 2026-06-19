@@ -30,7 +30,8 @@ The project has established:
 - governed body-format profiles for stable ADR and Requirement bodies.
 - append-first protection for canonical project-model registries and graph records.
 - self-contained append-first confirmation manifests for explicitly reviewed protected modifications and deletions.
-- governed Requirement status, type, and specialized family taxonomies as the future source for Requirement registry field validation.
+- governed Requirement status, type, and specialized family taxonomies as the source for Requirement registry field validation.
+- deterministic Requirement registry field validation for controlled status, type, specialized suffix family, parent functional consistency, and body path/ADR references.
 
 The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. Future methodology families may include STRIDE, PASTA, and STRIDE-AI, but methodology-specific implementation is not in the current scope.
 
@@ -52,11 +53,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Declare the governed Requirement taxonomy baseline before implementing stricter Requirement registry validation.
+Implement the focused Requirement registry field validator backed by the governed Requirement taxonomy.
 
-This micropasso introduces `docs/reference/project-model/registers/requirements/requirement-governance.registry.yml`, adds `MR-0001REQ-0025` for the Requirement governance registry, and adds `MR-0001REQ-0025GOV-0001` for future controlled-value validation of Requirement status, type, and specialized suffix families.
+This micropasso introduces `backend/tools/MR-0000/check-requirement-registry-fields.mjs`, adds `npm run docs:requirement-registry-fields`, and wires the new gate into `npm run repo:check` / `npm run repo:commit-push`.
 
-The micropasso is document-only. It must not implement the Requirement registry validator yet.
+The validator must consume `docs/reference/project-model/registers/requirements/requirement-governance.registry.yml` rather than hardcoding Requirement lifecycle statuses, Requirement types, or specialized suffix families.
 
 ## Completed Milestones
 
@@ -89,6 +90,7 @@ The micropasso is document-only. It must not implement the Requirement registry 
 - Working-plan alignment after append-first milestone, pushed as `591bf1d`.
 - Focused MR-0000 gate runner requirement, pushed as `968c1b9`.
 - Governed commit-push repository operation runner, pushed as `fb8de83`.
+- Requirement governance taxonomy baseline, pushed as `22702bc`.
 
 ## Pending Decisions
 
@@ -110,7 +112,7 @@ The focused confirmation-manifest requirement has been declared and implemented.
 
 The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements.
 
-The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. These requirements prepare enforcement for Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules.
+The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. The Requirement governance registry provides controlled Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules.
 
 ## Pending Implementations
 
@@ -119,8 +121,7 @@ No new implementation should start before the related requirements and graph rel
 Expected future implementation areas include:
 
 - schema-backed structured registry/header validation support;
-- Requirement governance registry validator for lifecycle status, requirement type, specialized suffix family, and specialized parent consistency;
-- Requirement registry field validator;
+- negative fixtures for Requirement governance registry field validation;
 - working plan coherence checker;
 - graph view profile validator or renderer;
 - LLM guide document;
@@ -136,6 +137,7 @@ npm run docs:graph-format
 npm run docs:pages
 node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
+npm run docs:requirement-registry-fields
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
@@ -146,7 +148,7 @@ npm run repo:check
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
 
-The current gate list already includes the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone. Requirement governance taxonomy enforcement is declared but not yet implemented as a gate.
+The current gate list already includes ADR registry fields, Requirement registry fields, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
 
 ## Handoff Notes
 
@@ -163,6 +165,7 @@ npm run docs:graph-format
 npm run docs:pages
 node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
+npm run docs:requirement-registry-fields
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
@@ -174,12 +177,12 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After this taxonomy baseline is committed, the next safe micropasso is to introduce a focused Requirement registry validator requirement/tool path that consumes `requirement-governance.registry.yml` and rejects uncontrolled Requirement statuses, uncontrolled Requirement types, unknown specialized suffix families, and specialized-parent mismatches.
+After this validator is committed, the next safe micropasso is to add negative fixtures for the Requirement registry field validator, covering unknown status, unknown type, unknown specialized suffix, missing/unknown parent, specialized parent pointing to another specialized requirement, and same-macro parent violations.
 
 Expected next micropasso options:
 
-1. implement a focused `docs:requirement-registry-fields` validator backed by the Requirement governance registry;
-2. add negative fixtures for unknown status, unknown type, unknown specialized suffix, and invalid specialized parent;
-3. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery.
+1. add negative fixtures for `docs:requirement-registry-fields`;
+2. introduce a lightweight policy note that direct Git commit/push is reserved for bootstrap or emergency recovery;
+3. add a regression guard that verifies `repo:check`, `repo:commit-push`, and their runner path remain present.
 
 Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
