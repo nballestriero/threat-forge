@@ -38,3 +38,7 @@ graphs:
   - graph_id: GRAPH-0008
     name: Logging, audit and evidence trail graph
     path: docs/reference/project-model/registers/graph/GRAPH-0008.graph.yml
+
+  - graph_id: GRAPH-0009
+    name: Reporting, dashboards and product intelligence graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0009.graph.yml

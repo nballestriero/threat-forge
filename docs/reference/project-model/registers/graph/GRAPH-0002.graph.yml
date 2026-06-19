@@ -8,4 +8,63 @@ nodes:
     type: MacroRequirement
     label: Reusable interface framework
 
-spo_relations: []
+  - id: ADR-0001
+    type: ADR
+    label: Reusable application architecture for backend and frontend modules
+
+  - id: MR-0002REQ-0001
+    type: Requirement
+    label: Backend application module architecture
+
+  - id: MR-0002REQ-0002
+    type: Requirement
+    label: Frontend application shell and API boundary
+
+  - id: MR-0002REQ-0003
+    type: Requirement
+    label: Protected route and page guard mechanism
+
+  - id: MR-0002REQ-0004
+    type: Requirement
+    label: Cross-cutting HTTP middleware boundary
+
+spo_relations:
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0001
+
+  - subject: ADR-0001
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0001
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0002
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0003
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0004
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0002REQ-0001
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0002REQ-0002
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0002REQ-0003
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0002REQ-0004

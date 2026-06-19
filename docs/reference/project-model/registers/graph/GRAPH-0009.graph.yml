@@ -1,0 +1,11 @@
+schema_version: 1
+graph_id: GRAPH-0009
+name: Reporting, dashboards and product intelligence graph
+macro_requirement_id: MR-0009
+
+nodes:
+  - id: MR-0009
+    type: MacroRequirement
+    label: Reporting, dashboards and product intelligence
+
+spo_relations: []

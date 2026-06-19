@@ -2,4 +2,12 @@ schema_version: 1
 registry_id: MR-0002-decisions-registry
 macro_requirement_id: MR-0002
 
-decisions: []
+decisions:
+  - id: ADR-0001
+    title: Reusable application architecture for backend and frontend modules
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-19
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0001_body.md

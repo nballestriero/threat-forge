@@ -23,7 +23,7 @@ The project has established:
 
 - `MR-0000` as the common system-state and consistency-control area.
 - `MR-0001` as the governed documentation and traceability area.
-- `MR-0002` through `MR-0008` as distinct product macro-areas for reusable interfaces, project management, base threat analysis, STRIDE, STRIDE-AI, users/access, and logging/audit.
+- `MR-0002` through `MR-0009` as distinct product macro-areas for reusable interfaces, project management, base threat analysis, STRIDE, STRIDE-AI, users/access, logging/audit, and general reporting.
 - `MR-0003` as the child-project management area responsible for making child projects analyzable Doc-as-Code workspaces rather than unconstrained repositories.
 - `MR-0001/ADR-0011` as the decision that governed development guides belong in the Diátaxis `docs/how-to/` space, while ADRs and Requirements remain reference/project-model governance artifacts.
 - top-down project-model graph traversal using `MR -> has_decision -> ADR`.
@@ -41,33 +41,33 @@ The project has established:
 - an anti-regression guard for the canonical governed repository operation commands and runner path.
 - negative fixture coverage for representative invalid repository operation governance states.
 
-The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. The product macro-area roadmap now separates reusable interfaces, child project management, base threat analysis, STRIDE overlay analysis, STRIDE-AI overlay analysis, identity/access management, and logging/audit so that each domain can receive its own ADRs, requirements, graph, implementation artifacts, and validators.
+The current strategic direction is to build a governance substrate for future security and threat-modeling analyses over GitHub projects created through threat-forge. The product macro-area roadmap now separates reusable interfaces, child project management, base threat analysis, STRIDE overlay analysis, STRIDE-AI overlay analysis, identity/access management, logging/audit, and general reporting so that each domain can receive its own ADRs, requirements, graph, implementation artifacts, and validators.
 
 Child projects must produce analyzable documentation, not only human-readable documentation. Threat-forge must provide the Doc-as-Code structure, reuse the same governance models and tool patterns it uses to control itself, and impose governed gates before routine child-project commit/push operations so projects are built documentation-first and security-first. Threat-forge itself must also be analyzable through its own future threat-analysis model.
 
 ## Active Objective
 
-Define governed development how-to guides in the correct Diátaxis space before starting reusable interfaces, child-project scaffolding, or threat-analysis method implementation.
+Close the final document-only architecture baseline before tagging and handing off the current governance/product-area planning milestone.
 
 The governed operations and traceability milestone has been completed and tagged as `project-model-governed-operations-and-traceability-complete`.
 
-The product macro-area roadmap has been opened through `MR-0002` to `MR-0008`. The immediate focus is now `MR-0001`: place programmer and LLM governed-development guides in the Diátaxis how-to space while keeping ADRs and Requirements as reference/project-model governance artifacts.
+The product macro-area roadmap has been opened through `MR-0002` to `MR-0008`, and governed development guides have been placed under the Diátaxis `docs/how-to/` space. The immediate focus is now a final document-only closure step: add `MR-0009` for general reporting and open `MR-0002` with the baseline reusable application architecture ADR and small requirements.
 
 The immediate governance themes are now:
 
-1. Diátaxis-correct placement of governed programmer and LLM guides;
-2. clear separation between ADRs, Requirements, reference material, how-to guides, tutorials, and explanations;
-3. programmer instructions for the governed ADR → requirement → graph → implementation → verification → commit/push workflow;
-4. LLM instructions for source-of-truth reading, macro-requirement selection, traceability, and handoff discipline;
-5. reusable interface architecture after the guide placement and baseline guide content are explicit.
+1. `MR-0009` as the reporting, dashboard, and product-intelligence macro-area for general threat-forge and child-project status reports;
+2. `MR-0002/ADR-0001` as the reusable application architecture decision for backend and frontend modules;
+3. small `MR-0002` requirements for backend module architecture, frontend application/API boundary, protected route/page-guard mechanics, and middleware boundaries;
+4. clear separation between reusable application mechanics in `MR-0002` and domain semantics in `MR-0003` through `MR-0009`;
+5. milestone handoff after successful governed verification and tag.
 
 ## Current Micropasso
 
-Define Diátaxis-correct governed development guides under `MR-0001`.
+Define the final document-only product architecture closure before tag and handoff.
 
-This micropasso adds `MR-0001/ADR-0011` and small derived requirements that make the documentation placement explicit: programmer and LLM operating guidance belongs in `docs/how-to/governed-development/`, not inside ADR bodies, Requirement bodies, registries, or project-model reference folders.
+This micropasso adds `MR-0009` as a distinct reporting/dashboard/product-intelligence macro-area and opens `MR-0002` with `ADR-0001` plus small architecture requirements.
 
-The scope is intentionally document-only: no guide validator, reusable interface module, backend service, frontend component, child-project scaffolder, base threat-analysis implementation, STRIDE logic, or STRIDE-AI logic is introduced in this step.
+The scope is intentionally document-only: no guide validator, reusable interface module, backend service, frontend component, protected-route implementation, child-project scaffolder, reporting engine, base threat-analysis implementation, STRIDE logic, or STRIDE-AI logic is introduced in this step.
 
 ## Completed Milestones
 
@@ -111,6 +111,7 @@ The scope is intentionally document-only: no guide validator, reusable interface
 - Milestone tag `project-model-governed-operations-and-traceability-complete` created on `fcf25b3` and pushed.
 - Product macro-area roadmap opened for reusable interfaces, child project management, base threat analysis, STRIDE, STRIDE-AI, identity/access management, and logging/audit, pushed as `1f5c3e6`.
 - Child-project analyzable documentation contract, pushed as `372051b`.
+- Diátaxis governed development guides, pushed as `8741a75`.
 
 ## Pending Decisions
 
@@ -146,9 +147,10 @@ The product macro-area roadmap is now split across distinct macro requirements:
 - `MR-0005` — STRIDE Threat Analysis Overlay;
 - `MR-0006` — STRIDE-AI Threat Analysis Overlay;
 - `MR-0007` — Identity, User and Access Management;
-- `MR-0008` — Logging, Audit and Evidence Trail.
+- `MR-0008` — Logging, Audit and Evidence Trail;
+- `MR-0009` — Reporting, Dashboards and Product Intelligence.
 
-These macro-areas currently define boundaries only. Future work must add ADRs and small requirements inside the relevant macro-area before implementation.
+These macro-areas define boundaries. `MR-0002` now also has a baseline architecture ADR and small requirements. Other macro-areas still require ADRs and small requirements before implementation.
 
 `MR-0003/ADR-0001` defines child projects as analyzable Doc-as-Code workspaces. The first derived requirements are:
 
@@ -167,19 +169,31 @@ These requirements define the documentation and governance contract only. Future
 
 The guide documents live in `docs/how-to/governed-development/` and are referenced from `GRAPH-0001` as `Document` nodes.
 
+`MR-0002/ADR-0001` defines the reusable application architecture for backend and frontend modules. The first derived architecture requirements are:
+
+- `MR-0002REQ-0001` — Backend application module architecture;
+- `MR-0002REQ-0002` — Frontend application shell and API boundary;
+- `MR-0002REQ-0003` — Protected route and page guard mechanism;
+- `MR-0002REQ-0004` — Cross-cutting HTTP middleware boundary.
+
+These requirements define the application architecture contract only. Future implementation must still introduce source layout, OpenAPI contracts, Zod schemas, route/controller/service/port/adapter modules, frontend shell components, and middleware through separate implementation micropassi with code traceability.
+
+`MR-0009` now defines the boundary for general reporting, dashboards, and product intelligence. It currently has no ADR or operational requirements beyond the macro-area definition.
+
 ## Pending Implementations
 
 No new implementation should start before the related requirements and graph relations exist.
 
 Expected future implementation areas include:
 
-- reusable Project Model Explorer interfaces under `MR-0002`;
+- reusable application architecture, Project Model Explorer interfaces, frontend shell, API boundaries, protected route mechanics, and middleware templates under `MR-0002`;
 - governed project and child project management under `MR-0003`;
 - base threat-analysis model contracts under `MR-0004`;
 - STRIDE overlay contracts under `MR-0005`;
 - STRIDE-AI overlay contracts under `MR-0006`;
 - identity, user, and access-management foundations under `MR-0007`;
 - logging, audit, and evidence trail foundations under `MR-0008`;
+- general reporting, dashboards, export, and product-intelligence foundations under `MR-0009`;
 - working plan coherence checker;
 - graph view profile validator or renderer;
 - future body-format or placement validator for governed how-to guides if guide conventions require deterministic enforcement;
@@ -251,10 +265,18 @@ npm run docs:append-first
 
 The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
 
-After the governed development guides are committed, the next safe micropassi are:
+After this final document-only closure step is committed, create a milestone tag and hand off from a clean working tree.
 
-1. open `MR-0002` operationally with an ADR and small requirement for reusable interface architecture, covering Node.js, Zod contracts, OpenAPI HTTP contracts, factory/composition root, Controller → Service → Port → Adapter layering, middleware boundaries, React frontend integration, and reusable view-model/client-port boundaries;
-2. define the first Project Model Explorer view-model/API boundary without implementing a full UI;
+Recommended tag name:
+
+```text
+product-areas-and-development-guides-complete
+```
+
+The next safe implementation-planning micropassi after handoff are:
+
+1. define the first Project Model Explorer view-model/API boundary under `MR-0002` without implementing a full UI;
+2. define source layout and OpenAPI/Zod contract placement for the first reusable backend/frontend slice;
 3. later connect `MR-0003` child-project profiles to `MR-0004` base threat-analysis inputs.
 
-Do not implement child-project runtime scaffolding, Project Model Explorer UI, base threat analysis, STRIDE, or STRIDE-AI until the relevant ADRs, requirements, graph relations, and guide constraints exist.
+Do not implement child-project runtime scaffolding, Project Model Explorer UI, reporting dashboards, base threat analysis, STRIDE, or STRIDE-AI until the relevant ADRs, requirements, graph relations, and guide constraints exist.
