@@ -180,4 +180,11 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0006
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0023_body.md
+  - id: MR-0001REQ-0024
+    title: Requirement body format validator
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0024_body.md
 

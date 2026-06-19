@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Implement the focused ADR body format validator.
+Define the focused Requirement body format validator requirement.
 
-This micropasso introduces `backend/tools/MR-0000/check-adr-body-format.mjs` so ADR bodies are checked against the governed `adr-functional-decision-body` profile.
+This micropasso introduces `MR-0001REQ-0024` so future Requirement body validation code can reference a small, direct requirement in JSDoc or equivalent governed source metadata.
 
-It also aligns pre-existing MR-0001 ADR bodies with the canonical body sections so the new gate can run deterministically over all registered ADRs. Requirement body validation, runner aggregation, and RTM generation remain out of scope.
+It does not implement the Requirement body validator yet. The future implementation should consume the governed body-format registry and the shared Markdown parser, as the ADR body validator already does.
 
 ## Completed Milestones
 
@@ -71,6 +71,7 @@ It also aligns pre-existing MR-0001 ADR bodies with the canonical body sections 
 - Dedicated requirement for the shared Markdown body parser utility.
 - Implementation of the shared Markdown body parser utility and its focused self-check.
 - Dedicated requirement for the ADR body format validator.
+- Implementation of the ADR body format validator and alignment of existing MR-0001 ADR bodies with the canonical ADR body sections.
 
 ## Pending Decisions
 
@@ -82,7 +83,9 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Append-first governance requirements have been declared. The schema-backed body-format registry validator has been implemented. The shared Markdown parser requirement has been declared and implemented.
 
-The ADR body format validator requirement has been declared. The current implementation target is the focused ADR body format validator.
+The ADR body format validator requirement has been declared and implemented.
+
+The Requirement body format validator requirement is now being declared so the future validator can point to a focused requirement.
 
 ## Pending Implementations
 
@@ -147,6 +150,6 @@ npm run docs:adr-body-format
 
 ## Next Suggested Step
 
-After this ADR body validator requirement micropasso, the next safe path is to implement `backend/tools/MR-0000/check-adr-body-format.mjs` as a focused validator that consumes the shared Markdown parser and the governed body-format registry.
+After this Requirement body validator requirement micropasso, the next safe path is to implement `backend/tools/MR-0000/check-requirement-body-format.mjs` as a focused validator that consumes the shared Markdown parser and the governed body-format registry.
 
-Do not implement ADR or Requirement body validators in a way that hardcodes body sections outside the governed body-format registry.
+Do not implement Requirement body validation in a way that hardcodes body sections outside the governed body-format registry.
