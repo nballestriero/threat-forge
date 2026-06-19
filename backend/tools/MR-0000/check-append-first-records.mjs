@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import Ajv from "ajv";
 
 /**
  * @file Append-first semantic guard for governed project-model records.
@@ -17,7 +18,7 @@ import { fileURLToPath } from "node:url";
  * diffs, so whitespace, comments, and line-ending differences do not count as
  * protected record changes. New protected records are allowed by default;
  * modifications and deletions of existing protected records fail closed until a
- * future confirmation-manifest workflow is introduced.
+ * matching, schema-valid confirmation manifest authorizes the exact protected change.
  *
  * Side effects: reads protected registry and graph files from the working tree
  * and from Git `HEAD`; writes diagnostics to stdout/stderr; exits with a
@@ -28,7 +29,14 @@ import { fileURLToPath } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..", "..", "..");
-const implementedRequirementId = "MR-0000REQ-0016GOV-0001";
+const implementedRequirementIds = [
+  "MR-0000REQ-0016GOV-0001",
+  "MR-0000REQ-0015GOV-0001",
+  "MR-0000REQ-0015GOV-0002",
+];
+const confirmationManifestDirectory = "docs/reference/project-model/change-confirmations";
+const confirmationManifestSchemaPath =
+  "backend/tools/MR-0000/contracts/append-first-confirmation-manifest.schema.json";
 
 const protectedSourceSpecs = [
   {
@@ -90,6 +98,7 @@ const errors = [];
 const additions = [];
 const modifications = [];
 const deletions = [];
+const consumedConfirmationKeys = new Set();
 
 /**
  * Reads UTF-8 text from a file while stripping a possible byte-order mark.
@@ -412,6 +421,20 @@ function recordSignature(record) {
 }
 
 /**
+ * Lists the top-level fields whose semantic values changed between records.
+ *
+ * @param {Record<string, unknown>} baseRecord - Record from Git HEAD.
+ * @param {Record<string, unknown>} currentRecord - Current working-tree record.
+ * @returns {string[]} Sorted changed top-level field names.
+ */
+function changedTopLevelFields(baseRecord, currentRecord) {
+  const fieldNames = new Set([...Object.keys(baseRecord ?? {}), ...Object.keys(currentRecord ?? {})]);
+  return [...fieldNames]
+    .filter((fieldName) => recordSignature(baseRecord?.[fieldName]) !== recordSignature(currentRecord?.[fieldName]))
+    .sort((left, right) => left.localeCompare(right));
+}
+
+/**
  * Indexes protected records for a source path and collection specification.
  *
  * @param {string} text - YAML text.
@@ -482,7 +505,11 @@ function compareProtectedSource(spec, projectPath) {
 
     const currentRecord = currentRecords.get(recordId);
     if (recordSignature(baseRecord) !== recordSignature(currentRecord)) {
-      modifications.push({ projectPath, recordId });
+      modifications.push({
+        projectPath,
+        recordId,
+        fields: changedTopLevelFields(baseRecord, currentRecord),
+      });
     }
   }
 
@@ -493,7 +520,179 @@ function compareProtectedSource(spec, projectPath) {
   }
 }
 
+/**
+ * Formats AJV validation errors for diagnostics.
+ *
+ * @param {Array<object>|null|undefined} validationErrors - AJV error list.
+ * @returns {string} Human-readable validation error summary.
+ */
+function formatAjvErrors(validationErrors) {
+  return (validationErrors ?? [])
+    .map((validationError) => {
+      const instancePath = validationError.instancePath || "/";
+      return `${instancePath} ${validationError.message}`;
+    })
+    .join("; ");
+}
+
+/**
+ * Loads a JSON schema contract from a repository-relative path.
+ *
+ * @param {string} projectPath - Repository-relative schema path.
+ * @returns {Record<string, unknown>|null} Parsed schema object, or null on error.
+ */
+function loadJsonSchema(projectPath) {
+  try {
+    return JSON.parse(readText(resolveProjectPath(projectPath)));
+  } catch (error) {
+    errors.push(`Unable to load JSON schema ${projectPath}: ${error.message}`);
+    return null;
+  }
+}
+
+/**
+ * Lists YAML confirmation manifests from the canonical self-contained storage directory.
+ *
+ * @returns {string[]} Repository-relative manifest paths.
+ */
+function listConfirmationManifestPaths() {
+  return listWorkingFiles(resolveProjectPath(confirmationManifestDirectory))
+    .filter((projectPath) => /\.ya?ml$/u.test(projectPath))
+    .sort((left, right) => left.localeCompare(right));
+}
+
+/**
+ * Converts a manifest record_identity object to the append-first guard identity suffix.
+ *
+ * @param {Record<string, unknown>} recordIdentityValue - Manifest record identity.
+ * @returns {string} Logical identity suffix used by the append-first guard.
+ */
+function manifestRecordIdentity(recordIdentityValue) {
+  if (recordIdentityValue?.record_id) return String(recordIdentityValue.record_id);
+  return [recordIdentityValue?.subject, recordIdentityValue?.predicate, recordIdentityValue?.object]
+    .map((value) => String(value ?? ""))
+    .join("|");
+}
+
+/**
+ * Builds the matching key for a manifest confirmed change.
+ *
+ * @param {Record<string, unknown>} change - Parsed manifest confirmed change.
+ * @returns {string} Stable protected change key.
+ */
+function manifestChangeKey(change) {
+  const sourcePath = normalizeProjectPath(change.source_path);
+  const recordIdentityValue = manifestRecordIdentity(change.record_identity ?? {});
+  return `${sourcePath}#${change.collection}:${recordIdentityValue}#${change.change_type}`;
+}
+
+/**
+ * Builds the matching key for an actual protected change.
+ *
+ * @param {object} change - Actual protected change.
+ * @param {"modify"|"delete"} changeType - Protected change type.
+ * @returns {string} Stable protected change key.
+ */
+function actualChangeKey(change, changeType) {
+  return `${change.projectPath}#${change.recordId}#${changeType}`;
+}
+
+/**
+ * Loads and validates self-contained confirmation manifests.
+ *
+ * @param {Set<string>} headPaths - Git HEAD path set.
+ * @returns {{confirmationsByKey: Map<string, object>, activeConfirmationKeys: Set<string>, manifestCount: number}} Loaded confirmation data.
+ */
+function loadConfirmationManifests(headPaths) {
+  const schema = loadJsonSchema(confirmationManifestSchemaPath);
+  const confirmationsByKey = new Map();
+  const activeConfirmationKeys = new Set();
+  const confirmationIds = new Set();
+  const manifestPaths = listConfirmationManifestPaths();
+
+  if (!schema) return { confirmationsByKey, activeConfirmationKeys, manifestCount: manifestPaths.length };
+
+  const ajv = new Ajv({ allErrors: true, strict: false });
+  const validateManifest = ajv.compile(schema);
+
+  for (const projectPath of manifestPaths) {
+    let manifest;
+    try {
+      manifest = parseYaml(readText(resolveProjectPath(projectPath)));
+    } catch (error) {
+      errors.push(`Unable to parse confirmation manifest ${projectPath}: ${error.message}`);
+      continue;
+    }
+
+    if (!validateManifest(manifest)) {
+      errors.push(`Invalid confirmation manifest ${projectPath}: ${formatAjvErrors(validateManifest.errors)}`);
+      continue;
+    }
+
+    if (confirmationIds.has(manifest.confirmation_id)) {
+      errors.push(`Duplicate confirmation_id in manifest: ${manifest.confirmation_id}`);
+      continue;
+    }
+    confirmationIds.add(manifest.confirmation_id);
+
+    const currentText = readText(resolveProjectPath(projectPath));
+    const headText = headPaths.has(projectPath) ? readHeadText(projectPath) : null;
+    const isActiveManifest = headText !== currentText;
+
+    for (const change of manifest.confirmed_changes ?? []) {
+      const key = manifestChangeKey(change);
+      if (confirmationsByKey.has(key)) {
+        errors.push(`Duplicate confirmed protected change in manifests: ${key}`);
+        continue;
+      }
+      confirmationsByKey.set(key, { manifestPath: projectPath, manifest, change });
+      if (isActiveManifest) activeConfirmationKeys.add(key);
+    }
+  }
+
+  return { confirmationsByKey, activeConfirmationKeys, manifestCount: manifestPaths.length };
+}
+
+/**
+ * Returns true when two string arrays contain the same sorted values.
+ *
+ * @param {string[]} left - Left values.
+ * @param {string[]} right - Right values.
+ * @returns {boolean} True when arrays match exactly.
+ */
+function sameStringSet(left, right) {
+  return JSON.stringify([...left].sort()) === JSON.stringify([...right].sort());
+}
+
+/**
+ * Applies confirmation manifests to a protected modify/delete change.
+ *
+ * @param {object} change - Actual protected change.
+ * @param {"modify"|"delete"} changeType - Protected change type.
+ * @param {Map<string, object>} confirmationsByKey - Confirmation entries keyed by actual change.
+ * @returns {boolean} True when the change is explicitly confirmed.
+ */
+function isChangeConfirmed(change, changeType, confirmationsByKey) {
+  const key = actualChangeKey(change, changeType);
+  const confirmation = confirmationsByKey.get(key);
+  if (!confirmation) return false;
+
+  if (changeType === "modify") {
+    const confirmedFields = (confirmation.change.fields ?? []).map(String);
+    if (!sameStringSet(change.fields ?? [], confirmedFields)) {
+      errors.push(
+        `Confirmation field mismatch for ${key}: actual fields [${(change.fields ?? []).join(", ")}], manifest fields [${confirmedFields.join(", ")}]`,
+      );
+      return false;
+    }
+  }
+
+  consumedConfirmationKeys.add(key);
+  return true;
+}
+
 const headPaths = listHeadPaths();
+const { confirmationsByKey, activeConfirmationKeys, manifestCount } = loadConfirmationManifests(headPaths);
 let protectedSourceCount = 0;
 
 for (const spec of protectedSourceSpecs) {
@@ -505,11 +704,21 @@ for (const spec of protectedSourceSpecs) {
 }
 
 for (const change of modifications) {
-  errors.push(`Protected record modified without confirmation: ${change.projectPath}#${change.recordId}`);
+  if (!isChangeConfirmed(change, "modify", confirmationsByKey)) {
+    errors.push(`Protected record modified without confirmation: ${change.projectPath}#${change.recordId}`);
+  }
 }
 
 for (const change of deletions) {
-  errors.push(`Protected record deleted without confirmation: ${change.projectPath}#${change.recordId}`);
+  if (!isChangeConfirmed(change, "delete", confirmationsByKey)) {
+    errors.push(`Protected record deleted without confirmation: ${change.projectPath}#${change.recordId}`);
+  }
+}
+
+for (const key of activeConfirmationKeys) {
+  if (!consumedConfirmationKeys.has(key)) {
+    errors.push(`Active confirmation manifest entry does not match any current protected change: ${key}`);
+  }
 }
 
 if (errors.length > 0) {
@@ -517,12 +726,18 @@ if (errors.length > 0) {
   for (const error of errors) {
     console.error(`- ${error}`);
   }
-  console.error(`Implemented requirement: ${implementedRequirementId}`);
+  for (const requirementId of implementedRequirementIds) {
+    console.error(`Implemented requirement: ${requirementId}`);
+  }
   process.exit(1);
 }
 
 console.log("Append-first protected record check passed.");
-console.log(`Implemented requirement: ${implementedRequirementId}`);
+for (const requirementId of implementedRequirementIds) {
+  console.log(`Implemented requirement: ${requirementId}`);
+}
 console.log("Mode: working tree vs HEAD");
 console.log(`Protected sources: ${protectedSourceCount}`);
 console.log(`Allowed additions detected: ${additions.length}`);
+console.log(`Confirmation manifests discovered: ${manifestCount}`);
+console.log(`Confirmed protected changes consumed: ${consumedConfirmationKeys.size}`);

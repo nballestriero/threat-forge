@@ -94,7 +94,7 @@ The Requirement body format validator requirement has been declared and implemen
 
 The focused append-first protected record guard requirement has been declared and implemented as a small semantic diff tool.
 
-The focused confirmation-manifest requirement has been declared. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model is being clarified as self-contained YAML records before the append-first guard accepts any protected `modify` or `delete` change.
+The focused confirmation-manifest requirement has been declared. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard is being updated to discover, validate, and match confirmation manifests against protected `modify` or `delete` changes.
 
 ## Pending Implementations
 
@@ -105,7 +105,6 @@ Expected future implementation areas include:
 - schema-backed structured registry/header validation support;
 - body-format registry schema checker;
 - Requirement registry field validator;
-- append-first confirmation-manifest schema validation and guard acceptance support;
 - working plan coherence checker;
 - graph view profile validator or renderer;
 - LLM guide document;
@@ -164,6 +163,6 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-After this self-contained confirmation-manifest storage clarification, the next safe path is to add a small validator for confirmation manifests or update the append-first guard to validate and match manifests against protected `modify` and `delete` changes.
+After confirmation-manifest support is committed, the next safe path is to decide whether to tag the document-format and append-first foundation, then continue with either Requirement registry field validation, working-plan coherence validation, or graph view profile requirements.
 
 Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.

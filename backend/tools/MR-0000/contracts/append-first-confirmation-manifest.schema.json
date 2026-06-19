@@ -31,7 +31,9 @@
     },
     "approved_by": {
       "type": "string",
-      "enum": ["human"],
+      "enum": [
+        "human"
+      ],
       "description": "Explicit human approval marker. Automated approval is not sufficient for protected non-append changes."
     },
     "approved": {
@@ -42,7 +44,9 @@
     "confirmed_changes": {
       "type": "array",
       "minItems": 1,
-      "items": { "$ref": "#/$defs/confirmedChange" },
+      "items": {
+        "$ref": "#/$defs/confirmedChange"
+      },
       "description": "Specific protected modify/delete changes authorized by this manifest."
     }
   },
@@ -61,35 +65,63 @@
     "recordIdentity": {
       "type": "object",
       "additionalProperties": false,
+      "properties": {
+        "record_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Logical record identifier used by the append-first guard."
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SPO relation subject."
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SPO relation predicate."
+        },
+        "object": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SPO relation object."
+        }
+      },
       "oneOf": [
         {
-          "required": ["record_id"],
-          "properties": {
-            "record_id": {
-              "type": "string",
-              "minLength": 1,
-              "description": "Logical record identifier used by the append-first guard."
-            }
+          "required": [
+            "record_id"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "subject"
+                ]
+              },
+              {
+                "required": [
+                  "predicate"
+                ]
+              },
+              {
+                "required": [
+                  "object"
+                ]
+              }
+            ]
           }
         },
         {
-          "required": ["subject", "predicate", "object"],
-          "properties": {
-            "subject": {
-              "type": "string",
-              "minLength": 1,
-              "description": "SPO relation subject."
-            },
-            "predicate": {
-              "type": "string",
-              "minLength": 1,
-              "description": "SPO relation predicate."
-            },
-            "object": {
-              "type": "string",
-              "minLength": 1,
-              "description": "SPO relation object."
-            }
+          "required": [
+            "subject",
+            "predicate",
+            "object"
+          ],
+          "not": {
+            "required": [
+              "record_id"
+            ]
           }
         }
       ],
@@ -105,21 +137,30 @@
         "change_type"
       ],
       "properties": {
-        "source_path": { "$ref": "#/$defs/projectPath" },
+        "source_path": {
+          "$ref": "#/$defs/projectPath"
+        },
         "collection": {
           "type": "string",
           "minLength": 1,
           "description": "Protected collection name as used by the append-first guard, such as requirements, decisions, nodes, or spo_relations."
         },
-        "record_identity": { "$ref": "#/$defs/recordIdentity" },
+        "record_identity": {
+          "$ref": "#/$defs/recordIdentity"
+        },
         "change_type": {
           "type": "string",
-          "enum": ["modify", "delete"],
+          "enum": [
+            "modify",
+            "delete"
+          ],
           "description": "Protected non-append change type authorized by this entry."
         },
         "fields": {
           "type": "array",
-          "items": { "$ref": "#/$defs/changedField" },
+          "items": {
+            "$ref": "#/$defs/changedField"
+          },
           "uniqueItems": true,
           "description": "Affected protected fields for modify changes. Omit or leave empty for delete changes."
         }
@@ -127,13 +168,23 @@
       "allOf": [
         {
           "if": {
-            "properties": { "change_type": { "const": "modify" } },
-            "required": ["change_type"]
+            "properties": {
+              "change_type": {
+                "const": "modify"
+              }
+            },
+            "required": [
+              "change_type"
+            ]
           },
           "then": {
-            "required": ["fields"],
+            "required": [
+              "fields"
+            ],
             "properties": {
-              "fields": { "minItems": 1 }
+              "fields": {
+                "minItems": 1
+              }
             }
           }
         }
