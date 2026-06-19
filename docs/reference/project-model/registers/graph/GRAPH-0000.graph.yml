@@ -133,6 +133,10 @@ nodes:
     label: Append-first confirmation manifest schema
     path: backend/tools/MR-0000/contracts/append-first-confirmation-manifest.schema.json
 
+  - id: MR-0000REQ-0007GOV-0001
+    type: Requirement
+    label: Thin MR-0000 project-model gate runner orchestration
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -374,3 +378,12 @@ spo_relations:
   - subject: TOOL-check-append-first-records
     predicate: verifies
     object: MR-0000REQ-0015GOV-0002
+
+  - subject: MR-0000REQ-0007GOV-0001
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0000REQ-0007GOV-0001
+

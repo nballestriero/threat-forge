@@ -50,11 +50,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Align the working plan after the completed document-format and append-first controls milestone.
+Declare the focused specialized requirement for the concrete MR-0000 project-model gate runner.
 
-This micropasso records the verified semantic transition from confirmation-manifest implementation to the next governance block. It does not introduce new ADRs, requirements, graph records, tools, validators, or source code.
+This micropasso reuses existing runner decision `MR-0000/ADR-0003` and parent requirement `MR-0000REQ-0007`, adds the specialized child requirement `MR-0000REQ-0007GOV-0001`, and connects it in `GRAPH-0000` before any runner source file is introduced.
 
-The next implementation block should remain focused on the existing MR-0000 runner decision and requirement, with one additional small specialized requirement before any runner source file is introduced.
+The next implementation block should introduce only the thin runner tool that satisfies this focused requirement, without duplicating existing validator logic.
 
 ## Completed Milestones
 
@@ -84,6 +84,7 @@ The next implementation block should remain focused on the existing MR-0000 runn
 - Clarification that confirmation manifests are self-contained YAML operational records without a separate registry or body Markdown document.
 - Implementation of append-first confirmation-manifest discovery, schema validation, and matching for protected `modify` and `delete` changes.
 - Completion tag on `addeb37`: `project-model-document-format-and-append-first-controls-complete`.
+- Working-plan alignment after append-first milestone, pushed as `591bf1d`.
 
 ## Pending Decisions
 
@@ -103,7 +104,7 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. Before introducing the runner implementation, add a smaller specialized requirement that defines the concrete orchestration behavior and failure semantics for the first operational runner.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized runner requirement now exists as `MR-0000REQ-0007GOV-0001`; the next runner implementation must cite it.
 
 ## Pending Implementations
 
@@ -111,7 +112,7 @@ No new implementation should start before the related requirements and graph rel
 
 Expected future implementation areas include:
 
-- a thin MR-0000 project-model gate runner that invokes the existing document-governance gates without duplicating validation logic;
+- a thin MR-0000 project-model gate runner that invokes the existing document-governance gates without duplicating validation logic, satisfying `MR-0000REQ-0007GOV-0001`;
 - schema-backed structured registry/header validation support;
 - Requirement registry field validator;
 - working plan coherence checker;
@@ -164,14 +165,15 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-The next safe path is to add one focused specialized requirement for the concrete MR-0000 project-model gate runner, deriving it from the existing runner decision and broad runner requirement.
+The next safe path is to implement the first thin MR-0000 project-model gate runner against `MR-0000REQ-0007GOV-0001`.
 
 Expected next micropasso chain:
 
-1. reuse existing runner ADR/decision `MR-0000/ADR-0003`;
-2. derive a small specialized requirement from `MR-0000REQ-0007`;
-3. update `GRAPH-0000` with the logical requirement relation;
-4. do not introduce runner source code yet;
-5. run the existing gates.
+1. add the runner source file under `backend/tools/MR-0000/`;
+2. include JSDoc traceability to `MR-0000REQ-0007GOV-0001`, `MR-0000/ADR-0003`, and `MR-0000`;
+3. orchestrate existing gate commands without duplicating validator logic;
+4. add graph relations from the focused requirement to the runner tool and from the runner tool back to the requirement as verification;
+5. add or update the package command only if the implementation micropasso also declares the corresponding graph relation;
+6. run the existing gates and the new runner command.
 
-Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.
+Do not expand the runner into an RTM generator, graph-view generator, LLM guide workflow, or replacement for specialized validators. Confirmation manifest support must remain limited to specific, reviewable authorization of protected `modify` and `delete` changes.

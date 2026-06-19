@@ -146,3 +146,13 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0005
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0015GOV-0002_body.md
+
+  - id: MR-0000REQ-0007GOV-0001
+    title: Thin MR-0000 project-model gate runner orchestration
+    type: specialized
+    parent_requirement_id: MR-0000REQ-0007
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0007GOV-0001_body.md
+
