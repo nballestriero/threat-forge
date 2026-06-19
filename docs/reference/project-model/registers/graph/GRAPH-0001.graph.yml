@@ -183,6 +183,12 @@ nodes:
     type: Tool
     label: ADR body format checker
     path: backend/tools/MR-0000/check-adr-body-format.mjs
+
+  - id: TOOL-check-requirement-body-format
+    type: Tool
+    label: Requirement body format checker
+    path: backend/tools/MR-0000/check-requirement-body-format.mjs
+
   - id: MR-0001REQ-0024
     type: Requirement
     label: Requirement body format validator
@@ -481,3 +487,12 @@ spo_relations:
     predicate: belongs_to
     object: MR-0001
 
+
+
+  - subject: MR-0001REQ-0024
+    predicate: implemented_by
+    object: TOOL-check-requirement-body-format
+
+  - subject: TOOL-check-requirement-body-format
+    predicate: verifies
+    object: MR-0001REQ-0024

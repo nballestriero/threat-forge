@@ -85,7 +85,7 @@ Append-first governance requirements have been declared. The schema-backed body-
 
 The ADR body format validator requirement has been declared and implemented.
 
-The Requirement body format validator requirement is now being declared so the future validator can point to a focused requirement.
+The Requirement body format validator requirement has been declared and implemented.
 
 ## Pending Implementations
 
@@ -96,7 +96,6 @@ Expected future implementation areas include:
 - schema-backed structured registry/header validation support;
 - body-format registry schema checker;
 - Requirement registry field validator;
-- Requirement body format validator;
 - append-first protected record guard;
 - working plan coherence checker;
 - graph view profile validator or renderer;
@@ -116,6 +115,7 @@ npm run docs:adr-registry-fields
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
+npm run docs:requirement-body-format
 ```
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
@@ -126,6 +126,7 @@ Additional gates now available:
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
+npm run docs:requirement-body-format
 ```
 
 ## Handoff Notes
@@ -146,10 +147,11 @@ npm run docs:adr-registry-fields
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
+npm run docs:requirement-body-format
 ```
 
 ## Next Suggested Step
 
-After this Requirement body validator requirement micropasso, the next safe path is to implement `backend/tools/MR-0000/check-requirement-body-format.mjs` as a focused validator that consumes the shared Markdown parser and the governed body-format registry.
+After this Requirement body validator micropasso, the next safe path is to define the next focused requirement before implementing additional validators or runners. Candidate next steps are Requirement registry field validation, append-first protected record guard, or a governed runner that only orchestrates already-specialized checks.
 
-Do not implement Requirement body validation in a way that hardcodes body sections outside the governed body-format registry.
+Do not expand Requirement body validation into registry field validation, append-first enforcement, graph-view generation, RTM generation, or LLM guide generation without a dedicated requirement and graph link.
