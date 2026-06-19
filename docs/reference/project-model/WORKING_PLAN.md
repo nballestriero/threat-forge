@@ -46,11 +46,11 @@ The immediate governance themes are:
 
 ## Current Micropasso
 
-Define the focused append-first protected record guard requirement.
+Implement the focused append-first protected record guard.
 
-This micropasso introduces `MR-0000REQ-0016GOV-0001` as a specialized child requirement of `MR-0000REQ-0016` so the future append-first guard implementation can reference a precise requirement in JSDoc or equivalent governed source metadata.
+This micropasso implements `MR-0000REQ-0016GOV-0001` with a small MR-0000 tool that compares protected registry and graph records semantically against Git `HEAD`. The first implementation allows append additions by default and blocks protected record modifications or deletions.
 
-It does not implement the append-first guard yet. The future implementation should compare protected records semantically, allow append additions by default, and require explicit confirmation manifests for protected modifications or deletions.
+It does not yet implement confirmation manifests. A future micropasso may add explicit confirmation records for intentional protected modifications or deletions.
 
 ## Completed Milestones
 
@@ -73,6 +73,7 @@ It does not implement the append-first guard yet. The future implementation shou
 - Dedicated requirement for the ADR body format validator.
 - Implementation of the ADR body format validator and alignment of existing MR-0001 ADR bodies with the canonical ADR body sections.
 - Implementation of the Requirement body format validator and alignment of existing Requirement bodies with the canonical Requirement body sections.
+- Dedicated specialized requirement for the append-first protected record guard.
 
 ## Pending Decisions
 
@@ -88,7 +89,7 @@ The ADR body format validator requirement has been declared and implemented.
 
 The Requirement body format validator requirement has been declared and implemented.
 
-The focused append-first protected record guard requirement is now being declared as a specialized child of `MR-0000REQ-0016`.
+The focused append-first protected record guard requirement has been declared and is being implemented as a small semantic diff tool.
 
 ## Pending Implementations
 
@@ -119,6 +120,7 @@ npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
 npm run docs:requirement-body-format
+npm run docs:append-first
 ```
 
 Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
@@ -130,6 +132,7 @@ npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
 npm run docs:requirement-body-format
+npm run docs:append-first
 ```
 
 ## Handoff Notes
@@ -151,10 +154,11 @@ npm run docs:body-format-registry
 npm run docs:markdown-body-parser
 npm run docs:adr-body-format
 npm run docs:requirement-body-format
+npm run docs:append-first
 ```
 
 ## Next Suggested Step
 
-After this append-first guard requirement micropasso, the next safe path is to implement the append-first protected record guard as a small MR-0000 tool or to define any additional focused requirement needed for confirmation manifests.
+After this append-first guard implementation, the next safe path is to define a focused requirement for confirmation manifests or to introduce a small confirmation-manifest schema before allowing intentional protected modifications and deletions.
 
-Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. The first implementation should only compare protected registry and graph records semantically and enforce explicit confirmation for modifications and deletions.
+Do not expand the append-first guard into a general runner, RTM generator, graph-view generator, or LLM guide workflow. The first guard remains limited to semantic record comparison and fail-closed protection for modifications and deletions.
