@@ -47,28 +47,30 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-Continue the document-first product architecture work after the threat-analysis foundation milestone.
+Continue the document-first product architecture work after the threat-analysis foundation milestone and the Base Analysis logical-storage boundary.
 
 The milestone `project-model-threat-analysis-foundation-complete` is expected to be closed on `82cc093` and should be verified with live Git commands during handoff. That milestone established the Project Model Explorer boundary, graph vocabulary readiness, Base Threat Analysis canonical model, STRIDE overlay boundary, and STRIDE-AI overlay boundary.
 
-The immediate focus is now the Base Analysis persistence boundary: analysis instances, candidates, reviews, snapshots, stale status and DFD working state are dynamic application data, while ADRs, requirements, taxonomies, graph rules and contracts remain governed documentation.
+The Base Analysis direction is now intentionally parked as a remembered architecture track: analysis instances, candidates, reviews, snapshots, stale status and DFD working state are dynamic application data persisted behind an `AnalysisStorePort`; SQLite may be the first adapter, but the storage implementation must remain replaceable. This track should resume later with Base Analysis command/query contracts, storage-port operations, schema/adapter design and threat-analysis runtime/API slices.
+
+The immediate product focus is now to prepare the first read-only Governance Console implementation for visualizing governed documentation and graphs. This should start with a minimal access/visibility model decision before UI/API implementation, so that even the first read-only Project Model Explorer does not hard-code who can see dashboards, project-model records, graphs, threat-analysis navigation, reports or user-management areas.
 
 The immediate governance themes are now:
 
-1. define Base Analysis logical records before storage-specific schemas;
-2. separate governed documentation contracts from dynamic analysis application state;
-3. persist Base Analysis state behind service-facing storage ports;
-4. permit SQLite as a first replaceable adapter without making it the canonical domain model;
-5. preserve source, taxonomy, review and evidence links needed for reproducibility, audit and stale detection;
-6. keep controllers, UI components and analysis services decoupled from concrete storage adapters.
+1. preserve the deferred Base Analysis command/query/storage direction in this plan so it is not lost while UI work starts;
+2. decide the minimal MR-0007 access model needed before Project Model Explorer API/UI work;
+3. define read-only Project Model Explorer UI slices under MR-0002 after access visibility is clear;
+4. define read-only OpenAPI/view-model contracts before React components read project-model data;
+5. keep the first UI read-only and backed by backend services/adapters, not direct frontend reads of YAML, Markdown, Git, filesystem, registries or graph files;
+6. postpone Base Analysis runtime storage, SQLite schema, command/query handlers and analysis editor implementation until after the documentation/graph explorer foundation is visible.
 
 ## Current Micropasso
 
-Define the Base Analysis logical record model and storage boundary as a document-only slice.
+Align the working plan after the Base Analysis logical record/storage boundary and before the first Project Model Explorer UI/API implementation sequence.
 
-This micropasso adds `MR-0004/ADR-0005` with small requirements for logical analysis records, dynamic analysis storage boundaries, storage-port abstraction, replaceable first storage adapters and source/evidence linkage.
+This micropasso records the intended sequencing only: first decide the minimum identity/access visibility contract, then define the read-only Project Model Explorer UI slice, then define its API/view-model contract, then define and implement the first backend/frontend read-only slice.
 
-The scope is intentionally document-only: no SQLite schema, migrations, storage adapter, OpenAPI files, Zod schemas, backend controllers, frontend components, Base Analysis runtime editor, report export or CI/CD gate implementation are introduced in this step.
+The scope is intentionally working-plan only: no new ADR, Requirement, graph relation, OpenAPI file, Zod schema, backend code, frontend component, user-management runtime, SQLite schema or Base Analysis command/query contract is introduced in this step.
 
 ## Completed Milestones
 
@@ -118,12 +120,17 @@ The scope is intentionally document-only: no SQLite schema, migrations, storage 
 - Versioned threat-analysis lifecycle and CI/CD integration, pushed as `457b94a`.
 - Controlled taxonomy value metadata model, pushed as `c785535`.
 - Domain-neutral Base Analysis taxonomies and governed extension model, pushed as `565d05e`.
+- Base Analysis logical records and storage boundary, pushed as `3e1de42`.
 
 ## Pending Decisions
 
 The requirement-model and common body-format architecture decisions are now represented by ADRs.
 
 Any new decision must be added to the relevant decision registry and graph before derived requirements or implementation work starts.
+
+Before implementing the first Governance Console interfaces and APIs, decide the minimum MR-0007 identity/access visibility model needed by read-only navigation. This does not need to implement login or full user management yet, but it should define at least the project/workspace membership concept, initial role set, initial read/navigation permissions, and the rule that menu/API visibility is derived from authenticated user context plus workspace type.
+
+The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
 ## Pending Requirements
 
@@ -189,6 +196,14 @@ These requirements define the application architecture contract only. Future imp
 ## Pending Implementations
 
 No new implementation should start before the related requirements and graph relations exist.
+
+Preferred near-term implementation sequence before code:
+
+1. MR-0007 document-only access/visibility model for read-only Governance Console navigation.
+2. MR-0002 read-only Project Model Explorer UI slice.
+3. MR-0002/MR-0001 read-only Project Model Explorer API/view-model contract for governed documentation and graph data.
+4. MR-0002 first implementation slice for backend project-model reader service/API adapter and frontend read-only documentation/graph explorer.
+5. Resume the deferred MR-0004 Base Analysis command/query/storage track when the visible documentation/graph explorer foundation exists.
 
 Expected future implementation areas include:
 
