@@ -97,3 +97,35 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0012_body.md
+
+  - id: MR-0002REQ-0013
+    title: Project Model Explorer aggregate browsing endpoint
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0013_body.md
+
+  - id: MR-0002REQ-0014
+    title: Project Model Explorer governed entity detail endpoint
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0014_body.md
+
+  - id: MR-0002REQ-0015
+    title: Project Model Explorer graph relation filtering endpoint
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0015_body.md
+
+  - id: MR-0002REQ-0016
+    title: Project Model Explorer guided traversal and data-flow traceability contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0016_body.md
