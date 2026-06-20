@@ -281,3 +281,32 @@ The next safe implementation-planning micropassi after handoff are:
 3. later connect `MR-0003` child-project profiles to `MR-0004` base threat-analysis inputs.
 
 Do not implement child-project runtime scaffolding, Project Model Explorer UI, reporting dashboards, base threat analysis, STRIDE, or STRIDE-AI until the relevant ADRs, requirements, graph relations, and guide constraints exist.
+
+
+## Security-analysis-ready Project Knowledge Pipeline Micropasso
+
+This document-only micropasso defines how governed project documentation and graph relations must prepare future security analysis before any runtime analysis implementation exists.
+
+The intended pipeline is:
+
+```text
+governed documentation and project graph
+→ security-analysis-ready project knowledge
+→ candidate Actor / Component / Data Resource / Boundary identification
+→ candidate Data Flow identification
+→ human/governed review of candidates
+→ DFD derived from accepted inventory and flows
+→ versioned Base Analysis snapshot
+→ STRIDE, STRIDE-AI and future methodology overlays
+```
+
+The DFD is not the first input. It is a derived representation created after assets, explicit boundaries and candidate flows have been identified and reviewed.
+
+This micropasso adds:
+
+- `MR-0001REQ-0031` to require project documentation and graph relations to accumulate security-analysis-ready knowledge;
+- `MR-0004/ADR-0002` to define the Base Analysis pipeline from project knowledge to versioned snapshot;
+- `MR-0004REQ-0005` through `MR-0004REQ-0008` to govern project knowledge collection, candidate review, DFD derivation and Base Analysis versioning;
+- `MR-0009/ADR-0001` and `MR-0009REQ-0001` to introduce readiness reporting for this pipeline.
+
+The next safe design step after this micropasso is to define the controlled Base Threat Analysis taxonomy/registry and the first example project-knowledge-to-base-analysis mapping. Do not implement extraction, DFD rendering, STRIDE, STRIDE-AI, readiness scoring or runtime reporting before their ADRs, requirements, graph relations and contracts exist.

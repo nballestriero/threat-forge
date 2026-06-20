@@ -1,4 +1,11 @@
 schema_version: 1
 macro_requirement_id: MR-0009
 
-requirements: []
+requirements:
+  - id: MR-0009REQ-0001
+    title: Threat Analysis readiness report
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0009/MR-0009REQ-0001_body.md

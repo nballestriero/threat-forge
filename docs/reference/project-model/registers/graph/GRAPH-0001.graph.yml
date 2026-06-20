@@ -271,6 +271,11 @@ nodes:
     type: Requirement
     label: Security-analysis readiness boundary for graph vocabulary
 
+
+  - id: MR-0001REQ-0031
+    type: Requirement
+    label: Security-analysis-ready project knowledge graph
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -732,5 +737,14 @@ spo_relations:
     object: MR-0001
 
   - subject: MR-0001REQ-0030
+    predicate: belongs_to
+    object: MR-0001
+
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0001REQ-0031
+
+  - subject: MR-0001REQ-0031
     predicate: belongs_to
     object: MR-0001

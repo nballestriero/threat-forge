@@ -285,3 +285,12 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0012
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0030_body.md
+
+
+  - id: MR-0001REQ-0031
+    title: Security-analysis-ready project knowledge graph
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0031_body.md

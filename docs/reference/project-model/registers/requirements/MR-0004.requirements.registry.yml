@@ -33,3 +33,36 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0004_body.md
+
+
+  - id: MR-0004REQ-0005
+    title: Governed project knowledge collection for Base Analysis
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0005_body.md
+
+  - id: MR-0004REQ-0006
+    title: Candidate base element review lifecycle
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0006_body.md
+
+  - id: MR-0004REQ-0007
+    title: DFD derivation after accepted base inventory
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0007_body.md
+
+  - id: MR-0004REQ-0008
+    title: Versioned Base Analysis snapshot for overlays
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0008_body.md

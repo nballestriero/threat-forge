@@ -8,4 +8,28 @@ nodes:
     type: MacroRequirement
     label: Reporting, dashboards and product intelligence
 
-spo_relations: []
+
+  - id: ADR-0001
+    type: ADR
+    label: Threat Analysis readiness reporting boundary
+
+  - id: MR-0009REQ-0001
+    type: Requirement
+    label: Threat Analysis readiness report
+
+spo_relations:
+  - subject: MR-0009
+    predicate: has_decision
+    object: ADR-0001
+
+  - subject: ADR-0001
+    predicate: belongs_to
+    object: MR-0009
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0009REQ-0001
+
+  - subject: MR-0009REQ-0001
+    predicate: belongs_to
+    object: MR-0009

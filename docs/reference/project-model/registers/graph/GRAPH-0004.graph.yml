@@ -28,6 +28,27 @@ nodes:
     type: Requirement
     label: Methodology overlay immutability boundary
 
+
+  - id: ADR-0002
+    type: ADR
+    label: Security-analysis-ready project knowledge and Base Analysis pipeline
+
+  - id: MR-0004REQ-0005
+    type: Requirement
+    label: Governed project knowledge collection for Base Analysis
+
+  - id: MR-0004REQ-0006
+    type: Requirement
+    label: Candidate base element review lifecycle
+
+  - id: MR-0004REQ-0007
+    type: Requirement
+    label: DFD derivation after accepted base inventory
+
+  - id: MR-0004REQ-0008
+    type: Requirement
+    label: Versioned Base Analysis snapshot for overlays
+
 spo_relations:
   - subject: MR-0004
     predicate: has_decision
@@ -68,3 +89,44 @@ spo_relations:
   - subject: ADR-0001
     predicate: justifies
     object: MR-0004REQ-0004
+
+
+  - subject: MR-0004
+    predicate: has_decision
+    object: ADR-0002
+
+  - subject: ADR-0002
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0004REQ-0005
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0004REQ-0006
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0004REQ-0007
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0004REQ-0008
+
+  - subject: MR-0004REQ-0005
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0006
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0007
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0008
+    predicate: belongs_to
+    object: MR-0004
