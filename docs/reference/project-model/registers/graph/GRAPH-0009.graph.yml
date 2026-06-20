@@ -17,6 +17,18 @@ nodes:
     type: Requirement
     label: Threat Analysis readiness report
 
+  - id: ADR-0002
+    type: ADR
+    label: CI/CD security analysis reporting and policy gate boundary
+
+  - id: MR-0009REQ-0002
+    type: Requirement
+    label: CI/CD threat analysis status report
+
+  - id: MR-0009REQ-0003
+    type: Requirement
+    label: Security analysis policy gate outcome reporting
+
 spo_relations:
   - subject: MR-0009
     predicate: has_decision
@@ -31,5 +43,29 @@ spo_relations:
     object: MR-0009REQ-0001
 
   - subject: MR-0009REQ-0001
+    predicate: belongs_to
+    object: MR-0009
+
+  - subject: MR-0009
+    predicate: has_decision
+    object: ADR-0002
+
+  - subject: ADR-0002
+    predicate: belongs_to
+    object: MR-0009
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0009REQ-0002
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0009REQ-0003
+
+  - subject: MR-0009REQ-0002
+    predicate: belongs_to
+    object: MR-0009
+
+  - subject: MR-0009REQ-0003
     predicate: belongs_to
     object: MR-0009

@@ -49,6 +49,26 @@ nodes:
     type: Requirement
     label: Versioned Base Analysis snapshot for overlays
 
+  - id: ADR-0003
+    type: ADR
+    label: Versioned threat analysis lifecycle and CI/CD stale detection
+
+  - id: MR-0004REQ-0009
+    type: Requirement
+    label: Versioned analysis source snapshot boundary
+
+  - id: MR-0004REQ-0010
+    type: Requirement
+    label: Base Analysis lifecycle and stale status model
+
+  - id: MR-0004REQ-0011
+    type: Requirement
+    label: Security-relevant change detection inputs
+
+  - id: MR-0004REQ-0012
+    type: Requirement
+    label: Base Analysis rebase and supersede lifecycle
+
 spo_relations:
   - subject: MR-0004
     predicate: has_decision
@@ -128,5 +148,45 @@ spo_relations:
     object: MR-0004
 
   - subject: MR-0004REQ-0008
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004
+    predicate: has_decision
+    object: ADR-0003
+
+  - subject: ADR-0003
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0004REQ-0009
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0004REQ-0010
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0004REQ-0011
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0004REQ-0012
+
+  - subject: MR-0004REQ-0009
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0010
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0011
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0012
     predicate: belongs_to
     object: MR-0004

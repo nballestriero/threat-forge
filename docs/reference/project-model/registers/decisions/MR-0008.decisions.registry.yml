@@ -2,4 +2,12 @@ schema_version: 1
 registry_id: MR-0008-decisions-registry
 macro_requirement_id: MR-0008
 
-decisions: []
+decisions:
+  - id: ADR-0001
+    title: Threat analysis lifecycle audit and evidence trail
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-20
+    macro_requirement_id: MR-0008
+    body_path: docs/reference/project-model/body/decisions/MR-0008/ADR-0001_body.md

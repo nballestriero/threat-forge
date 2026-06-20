@@ -28,6 +28,18 @@ nodes:
     type: Requirement
     label: STRIDE-AI candidate output review contract
 
+  - id: ADR-0002
+    type: ADR
+    label: STRIDE-AI overlay lifecycle and stale base handling
+
+  - id: MR-0006REQ-0005
+    type: Requirement
+    label: STRIDE-AI overlay BaseAnalysisVersion binding
+
+  - id: MR-0006REQ-0006
+    type: Requirement
+    label: STRIDE-AI overlay stale and reviewed-output policy
+
 spo_relations:
   - subject: MR-0006
     predicate: has_decision
@@ -68,3 +80,27 @@ spo_relations:
   - subject: ADR-0001
     predicate: justifies
     object: MR-0006REQ-0004
+
+  - subject: MR-0006
+    predicate: has_decision
+    object: ADR-0002
+
+  - subject: ADR-0002
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0006REQ-0005
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0006REQ-0006
+
+  - subject: MR-0006REQ-0005
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: MR-0006REQ-0006
+    predicate: belongs_to
+    object: MR-0006

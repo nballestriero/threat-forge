@@ -1,4 +1,19 @@
 schema_version: 1
 macro_requirement_id: MR-0008
 
-requirements: []
+requirements:
+  - id: MR-0008REQ-0001
+    title: Threat analysis lifecycle audit event trail
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0008/MR-0008REQ-0001_body.md
+
+  - id: MR-0008REQ-0002
+    title: Threat analysis evidence and review record retention
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0008/MR-0008REQ-0002_body.md

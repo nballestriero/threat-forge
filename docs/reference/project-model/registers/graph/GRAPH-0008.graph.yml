@@ -8,4 +8,40 @@ nodes:
     type: MacroRequirement
     label: Logging, audit and evidence trail
 
-spo_relations: []
+  - id: ADR-0001
+    type: ADR
+    label: Threat analysis lifecycle audit and evidence trail
+
+  - id: MR-0008REQ-0001
+    type: Requirement
+    label: Threat analysis lifecycle audit event trail
+
+  - id: MR-0008REQ-0002
+    type: Requirement
+    label: Threat analysis evidence and review record retention
+
+spo_relations:
+
+  - subject: MR-0008
+    predicate: has_decision
+    object: ADR-0001
+
+  - subject: ADR-0001
+    predicate: belongs_to
+    object: MR-0008
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0008REQ-0001
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0008REQ-0002
+
+  - subject: MR-0008REQ-0001
+    predicate: belongs_to
+    object: MR-0008
+
+  - subject: MR-0008REQ-0002
+    predicate: belongs_to
+    object: MR-0008

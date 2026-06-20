@@ -66,3 +66,36 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0002
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0008_body.md
+
+
+  - id: MR-0004REQ-0009
+    title: Versioned analysis source snapshot boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0009_body.md
+
+  - id: MR-0004REQ-0010
+    title: Base Analysis lifecycle and stale status model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0010_body.md
+
+  - id: MR-0004REQ-0011
+    title: Security-relevant change detection inputs
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0011_body.md
+
+  - id: MR-0004REQ-0012
+    title: Base Analysis rebase and supersede lifecycle
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0012_body.md

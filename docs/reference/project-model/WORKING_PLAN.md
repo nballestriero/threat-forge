@@ -310,3 +310,30 @@ This micropasso adds:
 - `MR-0009/ADR-0001` and `MR-0009REQ-0001` to introduce readiness reporting for this pipeline.
 
 The next safe design step after this micropasso is to define the controlled Base Threat Analysis taxonomy/registry and the first example project-knowledge-to-base-analysis mapping. Do not implement extraction, DFD rendering, STRIDE, STRIDE-AI, readiness scoring or runtime reporting before their ADRs, requirements, graph relations and contracts exist.
+
+
+## Versioned Threat Analysis Lifecycle and CI/CD Integration Micropasso
+
+This document-only micropasso defines how threat analysis remains useful while code, documentation, graph records and contracts continue to evolve.
+
+The intended lifecycle is:
+
+```text
+governed project state at commit/snapshot N
+→ BaseAnalysisVersion-N consolidated against that snapshot
+→ STRIDE/STRIDE-AI overlays reference BaseAnalysisVersion-N
+→ project evolves through governed commits and future CI/CD
+→ security-relevant changes are detected
+→ analysis records become current, stale_warning, stale_blocking, requires_review, requires_rebase, superseded or not_applicable according to policy
+→ reports and future gates explain the outcome with evidence
+```
+
+This micropasso adds:
+
+- `MR-0004/ADR-0003` and `MR-0004REQ-0009` through `MR-0004REQ-0012` for source snapshots, Base Analysis lifecycle, security-relevant change inputs and rebase/supersede semantics;
+- `MR-0005/ADR-0002` and `MR-0005REQ-0005` through `MR-0005REQ-0006` for STRIDE overlay BaseAnalysisVersion binding and stale/rebase handling;
+- `MR-0006/ADR-0002` and `MR-0006REQ-0005` through `MR-0006REQ-0006` for STRIDE-AI overlay binding, stale handling and reviewed AI output policy;
+- `MR-0008/ADR-0001` and `MR-0008REQ-0001` through `MR-0008REQ-0002` for lifecycle audit events and evidence retention;
+- `MR-0009/ADR-0002` and `MR-0009REQ-0002` through `MR-0009REQ-0003` for CI/CD security analysis status reporting and policy gate outcome reporting.
+
+No CI/CD gate, stale detector, policy engine, analysis runtime, report payload, dashboard or UI is implemented by this step. The next safe design step is to define a controlled Base Threat Analysis taxonomy/registry or a minimal lifecycle/status taxonomy before any runtime implementation.
