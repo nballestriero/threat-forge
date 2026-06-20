@@ -121,6 +121,7 @@ The scope is intentionally working-plan only: no new ADR, Requirement, graph rel
 - Controlled taxonomy value metadata model, pushed as `c785535`.
 - Domain-neutral Base Analysis taxonomies and governed extension model, pushed as `565d05e`.
 - Base Analysis logical records and storage boundary, pushed as `3e1de42`.
+- Working-plan alignment before Project Model Explorer UI, pushed as `8411ec5`.
 
 ## Pending Decisions
 
@@ -128,7 +129,7 @@ The requirement-model and common body-format architecture decisions are now repr
 
 Any new decision must be added to the relevant decision registry and graph before derived requirements or implementation work starts.
 
-Before implementing the first Governance Console interfaces and APIs, decide the minimum MR-0007 identity/access visibility model needed by read-only navigation. This does not need to implement login or full user management yet, but it should define at least the project/workspace membership concept, initial role set, initial read/navigation permissions, and the rule that menu/API visibility is derived from authenticated user context plus workspace type.
+Before implementing the first Governance Console interfaces and APIs, define the minimum MR-0007 identity/access visibility model needed by read-only navigation. The initial policy may grant read-only Governance Console visibility to an authenticated `registered_user`, but menu, route and API visibility must still flow through a capability/access-policy boundary so future dynamic RBAC can replace the bootstrap rule without hardcoded React role checks.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -199,7 +200,7 @@ No new implementation should start before the related requirements and graph rel
 
 Preferred near-term implementation sequence before code:
 
-1. MR-0007 document-only access/visibility model for read-only Governance Console navigation.
+1. MR-0007 document-only initial registered-user access policy and future dynamic RBAC boundary.
 2. MR-0002 read-only Project Model Explorer UI slice.
 3. MR-0002/MR-0001 read-only Project Model Explorer API/view-model contract for governed documentation and graph data.
 4. MR-0002 first implementation slice for backend project-model reader service/API adapter and frontend read-only documentation/graph explorer.

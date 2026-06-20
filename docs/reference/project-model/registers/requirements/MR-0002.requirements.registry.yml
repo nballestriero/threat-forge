@@ -165,3 +165,11 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0005
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0020_body.md
+
+  - id: MR-0002REQ-0021
+    title: Capability-driven menu and route visibility mechanics
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0021_body.md

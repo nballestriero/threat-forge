@@ -11,3 +11,12 @@ decisions:
     date: 2026-06-20
     macro_requirement_id: MR-0007
     body_path: docs/reference/project-model/body/decisions/MR-0007/ADR-0001_body.md
+
+  - id: ADR-0002
+    title: Initial registered-user access policy and future dynamic RBAC boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-20
+    macro_requirement_id: MR-0007
+    body_path: docs/reference/project-model/body/decisions/MR-0007/ADR-0002_body.md

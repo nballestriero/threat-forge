@@ -28,6 +28,22 @@ nodes:
   - id: MR-0007REQ-0004
     type: Requirement
     label: Access-controlled navigation and route decisions
+
+  - id: ADR-0002
+    type: ADR
+    label: Initial registered-user access policy and future dynamic RBAC boundary
+
+  - id: MR-0007REQ-0005
+    type: Requirement
+    label: Initial registered-user read-only access policy
+
+  - id: MR-0007REQ-0006
+    type: Requirement
+    label: Access policy and capability decision boundary
+
+  - id: MR-0007REQ-0007
+    type: Requirement
+    label: Future dynamic RBAC configurability boundary
 spo_relations:
   - subject: MR-0007
     predicate: has_decision
@@ -68,3 +84,36 @@ spo_relations:
   - subject: ADR-0001
     predicate: justifies
     object: MR-0007REQ-0004
+
+  - subject: MR-0007
+    predicate: has_decision
+    object: ADR-0002
+
+  - subject: ADR-0002
+    predicate: belongs_to
+    object: MR-0007
+
+  - subject: MR-0007REQ-0005
+    predicate: belongs_to
+    object: MR-0007
+
+  - subject: MR-0007REQ-0006
+    predicate: belongs_to
+    object: MR-0007
+
+  - subject: MR-0007REQ-0007
+    predicate: belongs_to
+    object: MR-0007
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0007REQ-0005
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0007REQ-0006
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0007REQ-0007
+
