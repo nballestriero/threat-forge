@@ -33,3 +33,35 @@ requirements:
     priority: medium
     derived_from_decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0004_body.md
+
+  - id: MR-0002REQ-0005
+    title: Project Model Explorer read-only API boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0005_body.md
+
+  - id: MR-0002REQ-0006
+    title: Project Model Explorer normalized view model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0006_body.md
+
+  - id: MR-0002REQ-0007
+    title: Project Model Explorer source access isolation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0007_body.md
+
+  - id: MR-0002REQ-0008
+    title: Project Model Explorer UI state boundary
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0008_body.md
