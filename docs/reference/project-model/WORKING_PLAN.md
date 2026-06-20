@@ -51,24 +51,24 @@ Continue the document-first product architecture work after the threat-analysis 
 
 The milestone `project-model-threat-analysis-foundation-complete` is expected to be closed on `82cc093` and should be verified with live Git commands during handoff. That milestone established the Project Model Explorer boundary, graph vocabulary readiness, Base Threat Analysis canonical model, STRIDE overlay boundary, and STRIDE-AI overlay boundary.
 
-The immediate focus is now the reusable Governance Console and access model concept: the same console must serve the threat-forge platform workspace and governed child project workspaces, while adapting navigation based on workspace type, user permissions, and capabilities.
+The immediate focus is now the Base Analysis persistence boundary: analysis instances, candidates, reviews, snapshots, stale status and DFD working state are dynamic application data, while ADRs, requirements, taxonomies, graph rules and contracts remain governed documentation.
 
 The immediate governance themes are now:
 
-1. workspace-aware Governance Console shell under `MR-0002`;
-2. `Child Projects` navigation available only for the platform workspace;
-3. no nested child project workspaces under `MR-0003`;
-4. first-level `Threat Analysis` navigation for both platform and child project workspaces;
-5. threat-forge self-analysis through the same analysis navigation model used by child projects;
-6. identity, membership, role, permission, and access-decision boundaries under `MR-0007`.
+1. define Base Analysis logical records before storage-specific schemas;
+2. separate governed documentation contracts from dynamic analysis application state;
+3. persist Base Analysis state behind service-facing storage ports;
+4. permit SQLite as a first replaceable adapter without making it the canonical domain model;
+5. preserve source, taxonomy, review and evidence links needed for reproducibility, audit and stale detection;
+6. keep controllers, UI components and analysis services decoupled from concrete storage adapters.
 
 ## Current Micropasso
 
-Define the workspace-aware Governance Console and initial identity/access boundary as a document-only slice.
+Define the Base Analysis logical record model and storage boundary as a document-only slice.
 
-This micropasso adds `MR-0002/ADR-0005` with small shell/navigation requirements, adds the `MR-0003` no-nested-child-project requirement, and opens `MR-0007` with its first identity/access ADR plus small requirements for session, membership, role/permission matrix, and access-controlled navigation.
+This micropasso adds `MR-0004/ADR-0005` with small requirements for logical analysis records, dynamic analysis storage boundaries, storage-port abstraction, replaceable first storage adapters and source/evidence linkage.
 
-The scope is intentionally document-only: no OpenAPI files, Zod schemas, backend controllers, frontend routes, React components, identity provider adapters, child-project runtime, Base Analysis runtime, STRIDE runtime, STRIDE-AI runtime, reports, or audit implementation are introduced in this step.
+The scope is intentionally document-only: no SQLite schema, migrations, storage adapter, OpenAPI files, Zod schemas, backend controllers, frontend components, Base Analysis runtime editor, report export or CI/CD gate implementation are introduced in this step.
 
 ## Completed Milestones
 
@@ -113,6 +113,11 @@ The scope is intentionally document-only: no OpenAPI files, Zod schemas, backend
 - Product macro-area roadmap opened for reusable interfaces, child project management, base threat analysis, STRIDE, STRIDE-AI, identity/access management, and logging/audit, pushed as `1f5c3e6`.
 - Child-project analyzable documentation contract, pushed as `372051b`.
 - Diátaxis governed development guides, pushed as `8741a75`.
+- Workspace-aware Governance Console, pushed as `d1ca9dd`.
+- Security-analysis-ready project knowledge pipeline, pushed as `b5c7bc4`.
+- Versioned threat-analysis lifecycle and CI/CD integration, pushed as `457b94a`.
+- Controlled taxonomy value metadata model, pushed as `c785535`.
+- Domain-neutral Base Analysis taxonomies and governed extension model, pushed as `565d05e`.
 
 ## Pending Decisions
 

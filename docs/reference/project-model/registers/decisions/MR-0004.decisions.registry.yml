@@ -41,3 +41,12 @@ decisions:
     date: 2026-06-20
     macro_requirement_id: MR-0004
     body_path: docs/reference/project-model/body/decisions/MR-0004/ADR-0004_body.md
+
+  - id: ADR-0005
+    title: Base Analysis logical records and storage boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-20
+    macro_requirement_id: MR-0004
+    body_path: docs/reference/project-model/body/decisions/MR-0004/ADR-0005_body.md

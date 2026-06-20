@@ -144,3 +144,47 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0017_body.md
+
+  - id: MR-0004REQ-0018
+    title: Base Analysis logical record model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0018_body.md
+
+
+  - id: MR-0004REQ-0019
+    title: Dynamic analysis data storage boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0019_body.md
+
+
+  - id: MR-0004REQ-0020
+    title: Analysis storage port abstraction
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0020_body.md
+
+
+  - id: MR-0004REQ-0021
+    title: Replaceable first storage adapter constraint
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0021_body.md
+
+
+  - id: MR-0004REQ-0022
+    title: Analysis record source and evidence linkage
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0022_body.md

@@ -98,6 +98,31 @@ nodes:
     label: Governed taxonomy metadata registry
     path: docs/reference/project-model/registers/taxonomies.registry.yml
 
+
+  - id: ADR-0005
+    type: ADR
+    label: Base Analysis logical records and storage boundary
+
+  - id: MR-0004REQ-0018
+    type: Requirement
+    label: Base Analysis logical record model
+
+  - id: MR-0004REQ-0019
+    type: Requirement
+    label: Dynamic analysis data storage boundary
+
+  - id: MR-0004REQ-0020
+    type: Requirement
+    label: Analysis storage port abstraction
+
+  - id: MR-0004REQ-0021
+    type: Requirement
+    label: Replaceable first storage adapter constraint
+
+  - id: MR-0004REQ-0022
+    type: Requirement
+    label: Analysis record source and evidence linkage
+
 spo_relations:
   - subject: MR-0004
     predicate: has_decision
@@ -280,3 +305,50 @@ spo_relations:
     predicate: implemented_by
     object: REGISTRY-taxonomies
 
+  - subject: MR-0004
+    predicate: has_decision
+    object: ADR-0005
+
+  - subject: ADR-0005
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0004REQ-0018
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0004REQ-0019
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0004REQ-0020
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0004REQ-0021
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0004REQ-0022
+
+  - subject: MR-0004REQ-0018
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0019
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0020
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0021
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0022
+    predicate: belongs_to
+    object: MR-0004
