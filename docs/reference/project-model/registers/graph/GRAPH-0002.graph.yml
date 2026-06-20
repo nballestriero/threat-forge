@@ -141,6 +141,38 @@ nodes:
   - id: MR-0002REQ-0027
     type: Requirement
     label: Read-only Graph Explorer layout and interaction pattern
+  - id: ADR-0007
+    type: ADR
+    label: Project Model Explorer read-only API and view-model contract
+
+  - id: MR-0002REQ-0028
+    type: Requirement
+    label: Project Model Explorer read-only API contract boundary
+
+  - id: MR-0002REQ-0029
+    type: Requirement
+    label: Project Model Explorer overview view-model
+
+  - id: MR-0002REQ-0030
+    type: Requirement
+    label: Governed entity collection view-model
+
+  - id: MR-0002REQ-0031
+    type: Requirement
+    label: Governed entity detail view-model
+
+  - id: MR-0002REQ-0032
+    type: Requirement
+    label: Graph Explorer read-only view-model
+
+  - id: MR-0002REQ-0033
+    type: Requirement
+    label: Taxonomy Explorer read-only view-model
+
+  - id: MR-0002REQ-0034
+    type: Requirement
+    label: Capability-aware navigation view-model
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -406,3 +438,66 @@ spo_relations:
     predicate: justifies
     object: MR-0002REQ-0027
 
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0007
+
+  - subject: ADR-0007
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0028
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0029
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0030
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0031
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0032
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0033
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0034
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0028
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0029
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0030
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0031
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0032
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0033
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0002REQ-0034

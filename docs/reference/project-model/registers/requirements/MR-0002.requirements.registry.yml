@@ -221,3 +221,59 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0006
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0027_body.md
+
+  - id: MR-0002REQ-0028
+    title: Project Model Explorer read-only API contract boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0028_body.md
+
+  - id: MR-0002REQ-0029
+    title: Project Model Explorer overview view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0029_body.md
+
+  - id: MR-0002REQ-0030
+    title: Governed entity collection view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0030_body.md
+
+  - id: MR-0002REQ-0031
+    title: Governed entity detail view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0031_body.md
+
+  - id: MR-0002REQ-0032
+    title: Graph Explorer read-only view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0032_body.md
+
+  - id: MR-0002REQ-0033
+    title: Taxonomy Explorer read-only view-model
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0033_body.md
+
+  - id: MR-0002REQ-0034
+    title: Capability-aware navigation view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0034_body.md
