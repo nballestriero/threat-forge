@@ -65,3 +65,35 @@ requirements:
     priority: medium
     derived_from_decision_id: ADR-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0008_body.md
+
+  - id: MR-0002REQ-0009
+    title: Canonical OpenAPI contract location
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0009_body.md
+
+  - id: MR-0002REQ-0010
+    title: Backend Zod runtime contract ownership
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0010_body.md
+
+  - id: MR-0002REQ-0011
+    title: Backend feature source layout and composition boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0011_body.md
+
+  - id: MR-0002REQ-0012
+    title: Frontend feature source layout and API client boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0012_body.md
