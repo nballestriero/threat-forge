@@ -69,6 +69,35 @@ nodes:
     type: Requirement
     label: Base Analysis rebase and supersede lifecycle
 
+  - id: ADR-0004
+    type: ADR
+    label: Domain-neutral Base Analysis taxonomies and extension model
+
+  - id: MR-0004REQ-0013
+    type: Requirement
+    label: Domain-neutral Base Analysis taxonomy model
+
+  - id: MR-0004REQ-0014
+    type: Requirement
+    label: Universal Base Analysis primitive taxonomies
+
+  - id: MR-0004REQ-0015
+    type: Requirement
+    label: Domain and methodology specialization boundary
+
+  - id: MR-0004REQ-0016
+    type: Requirement
+    label: Governed custom taxonomy extension model
+
+  - id: MR-0004REQ-0017
+    type: Requirement
+    label: Taxonomy mapping and version binding for analysis snapshots
+
+  - id: REGISTRY-taxonomies
+    type: Registry
+    label: Governed taxonomy metadata registry
+    path: docs/reference/project-model/registers/taxonomies.registry.yml
+
 spo_relations:
   - subject: MR-0004
     predicate: has_decision
@@ -190,3 +219,64 @@ spo_relations:
   - subject: MR-0004REQ-0012
     predicate: belongs_to
     object: MR-0004
+
+  - subject: MR-0004
+    predicate: has_decision
+    object: ADR-0004
+
+  - subject: ADR-0004
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0004REQ-0013
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0004REQ-0014
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0004REQ-0015
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0004REQ-0016
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0004REQ-0017
+
+  - subject: MR-0004REQ-0013
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0014
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0015
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0016
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0017
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: REGISTRY-taxonomies
+    predicate: belongs_to
+    object: MR-0004
+
+  - subject: MR-0004REQ-0014
+    predicate: implemented_by
+    object: REGISTRY-taxonomies
+
+  - subject: MR-0004REQ-0016
+    predicate: implemented_by
+    object: REGISTRY-taxonomies
+

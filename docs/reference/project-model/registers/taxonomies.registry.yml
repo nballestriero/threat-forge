@@ -81,3 +81,715 @@ taxonomies:
       name: AI context flow color token
       function: Example semantic color token for AI prompt, context, retrieval or agent-task flows in future STRIDE-AI views.
       description: This token makes AI-related flows visually distinguishable without making color itself part of the security-analysis semantics.
+
+  base_actor_kind:
+    - id: human_actor
+      name: Human actor
+      function: Represents a person who initiates actions, performs work, reviews decisions or interacts with a governed system.
+      description: Use this value for humans such as operators, administrators, business users, reviewers, maintainers, field workers or project stakeholders across any domain.
+      ui:
+        icon_token: actor.human
+        color_token: base.actor.human
+        graph_shape_token: actor
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Human actors are common sources of intent, authority, misuse, error and accountability questions.
+
+    - id: organization_actor
+      name: Organization actor
+      function: Represents an organization, team, supplier, regulator or business unit that owns, operates or interacts with the governed project.
+      description: Use this value when the relevant actor is an organizational party rather than an individual person or technical identity.
+      ui:
+        icon_token: actor.organization
+        color_token: base.actor.organization
+        graph_shape_token: actor
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Organization actors help identify responsibility, ownership, trust and contractual boundaries.
+
+    - id: automated_actor
+      name: Automated actor
+      function: Represents an automated process, scheduler, workflow, job, agent or controller that initiates actions without direct human input at each step.
+      description: Use this value for automation across software, industrial, operational, IoT, CI/CD, monitoring or AI-assisted contexts.
+      ui:
+        icon_token: actor.automated
+        color_token: base.actor.automated
+        graph_shape_token: actor
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Automated actors are important for authorization, command origin, safety, auditability and failure-mode analysis.
+
+    - id: external_system_actor
+      name: External system actor
+      function: Represents a system outside the governed analysis boundary that exchanges data, sends commands, receives outputs or participates in workflows.
+      description: Use this value for external services, partner systems, upstream/downstream systems, physical infrastructure controllers or third-party integrations.
+      ui:
+        icon_token: actor.external_system
+        color_token: base.actor.external
+        graph_shape_token: actor
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: External systems often imply trust, organization, environment or control boundary crossings.
+
+    - id: service_identity
+      name: Service identity
+      function: Represents a non-human identity used to authenticate automation, integration, service-to-service communication or controlled operations.
+      description: Use this value for identities such as service accounts, machine identities, API clients, device identities, integration credentials or agent identities.
+      ui:
+        icon_token: actor.service_identity
+        color_token: base.actor.service_identity
+        graph_shape_token: actor
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Service identities are relevant for spoofing, privilege, credential, accountability and cross-boundary flow analysis.
+
+  base_component_kind:
+    - id: interaction_surface
+      name: Interaction surface
+      function: Represents an interface through which actors observe, control, request or operate the governed system.
+      description: Use this value for user interfaces, control panels, operator consoles, APIs exposed to users, CLIs, forms, physical panels or other interaction points.
+      ui:
+        icon_token: component.interaction_surface
+        color_token: base.component.interaction_surface
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Interaction surfaces are common entry points for requests, commands, misuse, authorization checks and human error.
+
+    - id: processing_unit
+      name: Processing unit
+      function: Represents a logical or physical unit that processes, computes, evaluates, transforms or decides over inputs.
+      description: Use this value for application services, business logic, algorithms, processors, analysis engines, embedded logic, rule engines or other processing blocks.
+      ui:
+        icon_token: component.processing_unit
+        color_token: base.component.processing
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Processing units are relevant for tampering, correctness, availability, validation and transformation analysis.
+
+    - id: control_unit
+      name: Control unit
+      function: Represents a unit that controls behavior, commands operations, orchestrates actions or influences physical, operational or automated state.
+      description: Use this value for controllers, workflow orchestrators, automation controllers, PLC-like units, policy controllers, schedulers or command dispatchers.
+      ui:
+        icon_token: component.control_unit
+        color_token: base.component.control
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Control units are important for command integrity, authorization, safety, operational impact and elevation-of-privilege analysis.
+
+    - id: storage_unit
+      name: Storage unit
+      function: Represents a component that stores, retains, serves, indexes or persists resources.
+      description: Use this value for databases, repositories, archives, logs, object stores, file stores, knowledge stores, registers or physical stores when modeled as components.
+      ui:
+        icon_token: component.storage_unit
+        color_token: base.component.storage
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Storage units are relevant for disclosure, tampering, retention, availability, evidence and integrity analysis.
+
+    - id: communication_endpoint
+      name: Communication endpoint
+      function: Represents a component endpoint that sends, receives, brokers, routes or terminates communication.
+      description: Use this value for network endpoints, message brokers, gateways, bus endpoints, protocol endpoints, webhooks, field communication endpoints or API gateways.
+      ui:
+        icon_token: component.communication_endpoint
+        color_token: base.component.communication
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Communication endpoints are important for boundary crossings, interception, spoofing, availability and protocol trust assumptions.
+
+    - id: integration_adapter
+      name: Integration adapter
+      function: Represents a component that adapts one system, protocol, resource, tool or environment to another.
+      description: Use this value for connectors, adapters, bridges, device adapters, file adapters, API adapters, protocol translators or other integration boundaries.
+      ui:
+        icon_token: component.integration_adapter
+        color_token: base.component.integration
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Integration adapters are relevant for trust translation, validation, data transformation and dependency analysis.
+
+    - id: execution_environment
+      name: Execution environment
+      function: Represents an environment that hosts, runs, executes or schedules components, tools, automation, processes or operational logic.
+      description: Use this value for runtime environments, hosts, containers, model execution environments, automation platforms, field controllers or operational execution contexts.
+      ui:
+        icon_token: component.execution_environment
+        color_token: base.component.execution
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Execution environments are relevant for isolation, privilege, availability, operational dependency and runtime boundary analysis.
+
+    - id: physical_or_operational_unit
+      name: Physical or operational unit
+      function: Represents a physical, operational, mechanical, electrical, environmental or process unit that participates in the governed system.
+      description: Use this value for pumps, valves, turbines, sensors, machines, production lines, field devices, operational stations or non-software units without making the base taxonomy domain-specific.
+      ui:
+        icon_token: component.physical_or_operational
+        color_token: base.component.physical_operational
+        graph_shape_token: component
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Physical or operational units allow cyber-physical and operational systems to be represented without adding domain-specific values to the base taxonomy.
+
+  base_resource_kind:
+    - id: information_resource
+      name: Information resource
+      function: Represents information that is read, written, transferred, transformed, stored or disclosed.
+      description: Use this value for data records, measurements, documents, logs, messages, business data, sensor data, user data or other information-bearing resources.
+      ui:
+        icon_token: resource.information
+        color_token: base.resource.information
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Information resources are central to confidentiality, integrity, privacy and traceability analysis.
+
+    - id: configuration_resource
+      name: Configuration resource
+      function: Represents configuration, policy, thresholds, parameters, schedules or setup values that influence behavior.
+      description: Use this value for access policies, irrigation schedules, alarm thresholds, feature flags, deployment configuration, control parameters or system settings.
+      ui:
+        icon_token: resource.configuration
+        color_token: base.resource.configuration
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Configuration resources are important for tampering, misconfiguration, operational safety and change-control analysis.
+
+    - id: credential_or_secret
+      name: Credential or secret
+      function: Represents authentication material, authorization material, cryptographic material or other secrets.
+      description: Use this value for passwords, tokens, keys, certificates, device secrets, service credentials or sensitive bootstrap material.
+      ui:
+        icon_token: resource.credential
+        color_token: base.resource.credential
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Credentials and secrets are important for spoofing, elevation of privilege, disclosure and lateral movement analysis.
+
+    - id: operational_resource
+      name: Operational resource
+      function: Represents operational state, process state, workflow state, availability or operating capacity that the project must preserve or control.
+      description: Use this value for system state, workflow state, plant state, service availability, production state, irrigation state or other operationally meaningful resources.
+      ui:
+        icon_token: resource.operational
+        color_token: base.resource.operational
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Operational resources connect security analysis to business, safety, availability and mission impact.
+
+    - id: physical_resource
+      name: Physical resource
+      function: Represents a physical asset, material, environmental resource or real-world quantity relevant to the governed system.
+      description: Use this value for water, energy, fuel, equipment, crops, physical devices, materials, environmental state or other real-world resources.
+      ui:
+        icon_token: resource.physical
+        color_token: base.resource.physical
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Physical resources allow analysis of operational and cyber-physical consequences without domain-specific base values.
+
+    - id: contract_resource
+      name: Contract resource
+      function: Represents a governed specification, interface contract, protocol contract, schema or expected behavior definition.
+      description: Use this value for API contracts, data schemas, protocol specifications, operational procedures, interface definitions or governed agreement records.
+      ui:
+        icon_token: resource.contract
+        color_token: base.resource.contract
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Contract resources support validation, compatibility, boundary and stale-change analysis.
+
+    - id: evidence_resource
+      name: Evidence resource
+      function: Represents retained evidence that supports review, audit, verification, compliance, lifecycle decisions or security findings.
+      description: Use this value for gate output, test results, approvals, review decisions, finding evidence, audit events, CI/CD reports or operational records.
+      ui:
+        icon_token: resource.evidence
+        color_token: base.resource.evidence
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Evidence resources support repudiation analysis, auditability, assurance and lifecycle governance.
+
+    - id: knowledge_resource
+      name: Knowledge resource
+      function: Represents structured or unstructured knowledge used to understand, govern, analyze or reason about the project.
+      description: Use this value for governed documentation, project graphs, registries, analysis corpora, knowledge bases, indexed knowledge or reviewable knowledge artifacts.
+      ui:
+        icon_token: resource.knowledge
+        color_token: base.resource.knowledge
+        graph_shape_token: resource
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Knowledge resources are important when documentation, graphs, model context or analysis inputs affect security decisions.
+
+  base_boundary_kind:
+    - id: trust_boundary
+      name: Trust boundary
+      function: Represents a change in trust assumptions between actors, components, resources, organizations or environments.
+      description: Use this value when crossing the boundary changes what can be trusted, authenticated, authorized, validated or assumed safe.
+      ui:
+        icon_token: boundary.trust
+        color_token: base.boundary.trust
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Trust boundaries are central to spoofing, tampering, disclosure and privilege analysis.
+
+    - id: control_boundary
+      name: Control boundary
+      function: Represents a change in control authority, command responsibility, decision rights or operational authority.
+      description: Use this value for human-to-automation, software-to-actuator, organization-to-operator, policy-to-action or controller-to-process transitions.
+      ui:
+        icon_token: boundary.control
+        color_token: base.boundary.control
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Control boundaries are important for authorization, safety, command integrity and privilege analysis.
+
+    - id: process_boundary
+      name: Process boundary
+      function: Represents a change between independently executing processes, workflows, jobs, services or operational steps.
+      description: Use this value for runtime processes, manual process steps, automation stages, service boundaries, jobs, tool invocations or workflow phases.
+      ui:
+        icon_token: boundary.process
+        color_token: base.boundary.process
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Process boundaries help identify handoffs, validation points, failure modes and accountability gaps.
+
+    - id: environment_boundary
+      name: Environment boundary
+      function: Represents a change in deployment, physical, logical, network, operational or execution environment.
+      description: Use this value for cloud-to-on-premise, field-to-control-room, container-to-host, lab-to-production or plant-to-external-environment transitions.
+      ui:
+        icon_token: boundary.environment
+        color_token: base.boundary.environment
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Environment boundaries are important for exposure, dependency, resilience and operational assumptions.
+
+    - id: organization_boundary
+      name: Organization boundary
+      function: Represents a change in organizational ownership, responsibility, contract, supplier or regulatory control.
+      description: Use this value for company-to-supplier, operator-to-maintainer, platform-to-customer, regulator-to-operator or partner-system boundaries.
+      ui:
+        icon_token: boundary.organization
+        color_token: base.boundary.organization
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Organization boundaries help analyze ownership, liability, access control, evidence and trust delegation.
+
+    - id: workspace_boundary
+      name: Workspace boundary
+      function: Represents a change in governed project, workspace, tenant, child-project or analysis scope.
+      description: Use this value for platform-to-child-project, project-to-project, tenant-to-tenant or workspace-specific data and permission boundaries.
+      ui:
+        icon_token: boundary.workspace
+        color_token: base.boundary.workspace
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Workspace boundaries support cross-project leakage, membership, scope and governance analysis.
+
+    - id: data_classification_boundary
+      name: Data classification boundary
+      function: Represents a change in sensitivity, classification, handling rule, retention rule or allowed disclosure.
+      description: Use this value for public-to-confidential, governed-to-generated, personal-to-anonymized, operational-to-audit or restricted-to-shared transitions.
+      ui:
+        icon_token: boundary.data_classification
+        color_token: base.boundary.data_classification
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Data classification boundaries are important for disclosure, privacy, evidence and handling-rule analysis.
+
+    - id: governance_boundary
+      name: Governance boundary
+      function: Represents a change between governed, candidate, generated, reviewed, accepted or rejected states of project knowledge or analysis output.
+      description: Use this value for transitions such as unreviewed AI output to reviewed record, candidate finding to accepted finding, or proposed change to governed registry record.
+      ui:
+        icon_token: boundary.governance
+        color_token: base.boundary.governance
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Governance boundaries protect canonical records from unreviewed, generated, stale or unsupported inputs.
+
+    - id: physical_boundary
+      name: Physical boundary
+      function: Represents a real-world physical, environmental, site, device, material or operational boundary.
+      description: Use this value for plant-to-field, device-to-environment, machine-to-human, water-system-to-land, energy-system-to-grid or other physical transitions.
+      ui:
+        icon_token: boundary.physical
+        color_token: base.boundary.physical
+        graph_shape_token: boundary
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Physical boundaries allow the base model to support cyber-physical, industrial, environmental and operational systems.
+
+  base_flow_kind:
+    - id: request_flow
+      name: Request flow
+      function: Represents a request for information, service, action, approval, operation or behavior.
+      description: Use this value when an actor or component asks another element to perform, return, approve or start something.
+      ui:
+        icon_token: flow.request
+        color_token: base.flow.request
+        graph_edge_style_token: flow.solid
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Request flows are common places for authentication, authorization, validation and misuse analysis.
+
+    - id: command_flow
+      name: Command flow
+      function: Represents an instruction intended to change state, control behavior, trigger an action or alter an operational condition.
+      description: Use this value for control commands, administrative commands, actuator commands, workflow commands, deployments or governed operation commands.
+      ui:
+        icon_token: flow.command
+        color_token: base.flow.command
+        graph_edge_style_token: flow.solid
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Command flows are important for tampering, privilege, safety, operational impact and audit analysis.
+
+    - id: data_transfer_flow
+      name: Data transfer flow
+      function: Represents movement of information or resource state between elements.
+      description: Use this value for message exchange, file transfer, API payload movement, sensor data transfer, business data transfer or state replication.
+      ui:
+        icon_token: flow.data_transfer
+        color_token: base.flow.data_transfer
+        graph_edge_style_token: flow.solid
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Data transfer flows are important for disclosure, integrity, validation, trust and boundary analysis.
+
+    - id: read_flow
+      name: Read flow
+      function: Represents access that reads, observes, retrieves, queries or measures a resource without directly changing it.
+      description: Use this value for document reads, sensor reads, queries, lookups, observations, audit reads or retrieval from a knowledge or storage resource.
+      ui:
+        icon_token: flow.read
+        color_token: base.flow.read
+        graph_edge_style_token: flow.dashed
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Read flows are relevant for disclosure, privacy, evidence and retrieval analysis.
+
+    - id: write_flow
+      name: Write flow
+      function: Represents access that creates, changes, appends, deletes, persists or overwrites a resource.
+      description: Use this value for registry writes, configuration changes, data persistence, command output, project model changes or operational state writes.
+      ui:
+        icon_token: flow.write
+        color_token: base.flow.write
+        graph_edge_style_token: flow.solid
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Write flows are important for tampering, integrity, authorization, rollback and auditability.
+
+    - id: control_flow
+      name: Control flow
+      function: Represents a flow that controls operational behavior, process execution, automation or physical state.
+      description: Use this value for controller-to-device, policy-to-operation, scheduler-to-task, workflow-to-step or automation-to-action flows.
+      ui:
+        icon_token: flow.control
+        color_token: base.flow.control
+        graph_edge_style_token: flow.solid
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Control flows are important for operational safety, command integrity, privilege and availability analysis.
+
+    - id: event_flow
+      name: Event flow
+      function: Represents a notification, signal, event, alarm, state change or asynchronous communication.
+      description: Use this value for monitoring events, alarms, lifecycle events, webhooks, pub/sub messages, sensor events or governance events.
+      ui:
+        icon_token: flow.event
+        color_token: base.flow.event
+        graph_edge_style_token: flow.dashed
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Event flows support monitoring, audit, repudiation, availability and response analysis.
+
+    - id: measurement_flow
+      name: Measurement flow
+      function: Represents observation or measurement of physical, operational, environmental or system state.
+      description: Use this value for sensor measurements, telemetry, health checks, status reads, environmental readings, production metrics or system observations.
+      ui:
+        icon_token: flow.measurement
+        color_token: base.flow.measurement
+        graph_edge_style_token: flow.dashed
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Measurement flows are important for integrity, spoofing, safety, monitoring and operational decision analysis.
+
+    - id: validation_flow
+      name: Validation flow
+      function: Represents deterministic, human, procedural or automated checking of a resource, input, output, evidence or state.
+      description: Use this value for schema validation, quality checks, policy checks, safety checks, review steps, gates, inspections or acceptance checks.
+      ui:
+        icon_token: flow.validation
+        color_token: base.flow.validation
+        graph_edge_style_token: flow.dashed
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Validation flows are important for trust, integrity, governance, evidence and CI/CD policy analysis.
+
+    - id: automation_flow
+      name: Automation flow
+      function: Represents a flow triggered or executed by automation, scheduling, orchestration, agents or unattended operations.
+      description: Use this value for jobs, CI/CD actions, scheduled controls, automatic irrigation, industrial automation, agent workflows or automated project governance.
+      ui:
+        icon_token: flow.automation
+        color_token: base.flow.automation
+        graph_edge_style_token: flow.solid
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Automation flows are relevant for command origin, privilege, accountability, safety and failure-mode analysis.
+
+    - id: evidence_flow
+      name: Evidence flow
+      function: Represents movement, creation, retention or review of evidence used for audit, verification, lifecycle or governance decisions.
+      description: Use this value for test result capture, audit logging, review approval, finding evidence, CI/CD reporting or governance evidence retention.
+      ui:
+        icon_token: flow.evidence
+        color_token: base.flow.evidence
+        graph_edge_style_token: flow.dashed
+      security_analysis:
+        applies_to:
+          - base_analysis
+        analysis_hint: Evidence flows support non-repudiation, auditability, assurance and closure of findings or requirements.
+
+  base_analysis_status:
+    - id: draft
+      name: Draft
+      function: Indicates a Base Analysis is being prepared and can contain incomplete or unreviewed elements.
+      description: Use this status before the analysis is ready for governed review.
+      ui:
+        icon_token: status.draft
+        color_token: status.draft
+
+    - id: ready_for_review
+      name: Ready for review
+      function: Indicates a Base Analysis has enough candidate inventory, flows and rationale to be reviewed.
+      description: Use this status when the analysis is not yet consolidated but is prepared for authorized review.
+      ui:
+        icon_token: status.review
+        color_token: status.review
+
+    - id: consolidated
+      name: Consolidated
+      function: Indicates a Base Analysis has been reviewed, accepted and versioned for overlay use.
+      description: Use this status when the analysis can be referenced by STRIDE, STRIDE-AI, PASTA or future overlays.
+      ui:
+        icon_token: status.consolidated
+        color_token: status.ok
+
+    - id: stale_warning
+      name: Stale warning
+      function: Indicates relevant changes may make the analysis outdated but policy does not require blocking progression.
+      description: Use this status when review should be prompted but the current policy treats the stale condition as non-blocking.
+      ui:
+        icon_token: status.warning
+        color_token: status.warning
+
+    - id: stale_blocking
+      name: Stale blocking
+      function: Indicates relevant changes make the analysis too outdated for gated progression under current policy.
+      description: Use this status when CI/CD or governed operations must block until review, rebase or supersede occurs.
+      ui:
+        icon_token: status.blocking
+        color_token: status.error
+
+    - id: requires_review
+      name: Requires review
+      function: Indicates a lifecycle, taxonomy, evidence or source-snapshot change requires human or governed review.
+      description: Use this status when an explicit review decision is needed before the analysis can be treated as current.
+      ui:
+        icon_token: status.review_required
+        color_token: status.warning
+
+    - id: requires_rebase
+      name: Requires rebase
+      function: Indicates the analysis must be rebased to a newer source or taxonomy snapshot.
+      description: Use this status when the previous analysis remains auditable but cannot represent the current project state without rebase work.
+      ui:
+        icon_token: status.rebase
+        color_token: status.warning
+
+    - id: superseded
+      name: Superseded
+      function: Indicates a newer Base Analysis version replaces this one for current analysis and policy purposes.
+      description: Use this status while retaining the old version for audit and reproducibility.
+      ui:
+        icon_token: status.superseded
+        color_token: status.inactive
+
+    - id: archived
+      name: Archived
+      function: Indicates the analysis is retained for history or audit but is no longer active for new overlays or policy decisions.
+      description: Use this status when the analysis should remain readable but not current.
+      ui:
+        icon_token: status.archived
+        color_token: status.inactive
+
+  base_candidate_review_status:
+    - id: candidate
+      name: Candidate
+      function: Indicates an element was discovered, proposed, imported or manually created but has not been accepted or rejected.
+      description: Use this status for candidate actors, components, resources, boundaries or flows before governed review.
+      ui:
+        icon_token: review.candidate
+        color_token: review.candidate
+
+    - id: accepted
+      name: Accepted
+      function: Indicates the candidate was reviewed and accepted into the Base Analysis inventory or flow model.
+      description: Use this status only when the acceptance decision has sufficient traceability or review evidence.
+      ui:
+        icon_token: review.accepted
+        color_token: status.ok
+
+    - id: rejected
+      name: Rejected
+      function: Indicates the candidate was reviewed and rejected as incorrect, unsupported, duplicate, irrelevant or out of scope.
+      description: Use this status to preserve review traceability without adding the candidate to the accepted base inventory.
+      ui:
+        icon_token: review.rejected
+        color_token: status.error
+
+    - id: needs_more_evidence
+      name: Needs more evidence
+      function: Indicates the candidate may be valid but lacks enough source traceability, review context or evidence for acceptance.
+      description: Use this status when further documentation, graph links, source evidence or reviewer input is required.
+      ui:
+        icon_token: review.needs_evidence
+        color_token: status.warning
+
+    - id: duplicate
+      name: Duplicate
+      function: Indicates the candidate duplicates another accepted or pending element and should be merged, linked or discarded.
+      description: Use this status when a candidate should not create a new canonical base element because an equivalent element already exists.
+      ui:
+        icon_token: review.duplicate
+        color_token: status.inactive
+
+    - id: proposed_base_correction
+      name: Proposed base correction
+      function: Indicates the candidate was proposed as a correction from an overlay, finding, review or stale analysis process.
+      description: Use this status when a methodology or lifecycle process identifies a possible base model correction that must be reviewed before changing the base.
+      ui:
+        icon_token: review.base_correction
+        color_token: status.review
+
+  taxonomy_extension_scope:
+    - id: global
+      name: Global taxonomy scope
+      function: Identifies a canonical or platform-level taxonomy governed by threat-forge itself.
+      description: Use this scope for taxonomy records intended to apply across workspaces and child projects.
+
+    - id: domain_profile
+      name: Domain profile taxonomy scope
+      function: Identifies a reusable domain-specialization taxonomy such as industrial control, irrigation, energy system, business application or AI/RAG system profile.
+      description: Use this scope for reusable domain profiles that specialize base values without changing the canonical base taxonomy.
+
+    - id: methodology_overlay
+      name: Methodology overlay taxonomy scope
+      function: Identifies a taxonomy owned by a security, safety, privacy, compliance or risk methodology.
+      description: Use this scope for STRIDE, STRIDE-AI, PASTA and future methodology-specific values.
+
+    - id: workspace
+      name: Workspace taxonomy scope
+      function: Identifies a taxonomy extension scoped to a governed workspace.
+      description: Use this scope when the taxonomy applies to a platform or child-project workspace but is not globally canonical.
+
+    - id: project
+      name: Project taxonomy scope
+      function: Identifies a taxonomy extension scoped to one governed child project.
+      description: Use this scope for user-defined or project-specific vocabulary such as irrigation equipment, plant assets, business domains or local operational categories.
+
+  taxonomy_extension_status:
+    - id: draft
+      name: Draft extension
+      function: Indicates a taxonomy extension is being prepared and is not yet accepted for governed analysis use.
+      description: Draft extensions may contain candidate values and must not be used as accepted analysis classification sources.
+
+    - id: approved
+      name: Approved extension
+      function: Indicates a taxonomy extension has been reviewed and can be used for governed classification according to its scope.
+      description: Approved extensions may be bound to future analysis snapshots and overlays.
+
+    - id: deprecated
+      name: Deprecated extension
+      function: Indicates a taxonomy extension remains readable but should not be used for new analysis records.
+      description: Deprecated extensions may continue to support historical snapshots until superseded or archived.
+
+    - id: archived
+      name: Archived extension
+      function: Indicates a taxonomy extension is retained for history or audit but is no longer active.
+      description: Archived extensions are retained to preserve reproducibility of historical analysis records.

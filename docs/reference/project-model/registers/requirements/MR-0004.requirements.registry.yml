@@ -99,3 +99,48 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0012_body.md
+
+
+  - id: MR-0004REQ-0013
+    title: Domain-neutral Base Analysis taxonomy model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0013_body.md
+
+
+  - id: MR-0004REQ-0014
+    title: Universal Base Analysis primitive taxonomies
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0014_body.md
+
+
+  - id: MR-0004REQ-0015
+    title: Domain and methodology specialization boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0015_body.md
+
+
+  - id: MR-0004REQ-0016
+    title: Governed custom taxonomy extension model
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0016_body.md
+
+
+  - id: MR-0004REQ-0017
+    title: Taxonomy mapping and version binding for analysis snapshots
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004REQ-0017_body.md
