@@ -276,6 +276,27 @@ nodes:
     type: Requirement
     label: Security-analysis-ready project knowledge graph
 
+  - id: ADR-0013
+    type: ADR
+    label: Controlled taxonomy value metadata and semantic UI tokens
+
+  - id: MR-0001REQ-0032
+    type: Requirement
+    label: Controlled taxonomy value metadata model
+
+  - id: MR-0001REQ-0033
+    type: Requirement
+    label: Mandatory taxonomy value descriptions
+
+  - id: MR-0001REQ-0034
+    type: Requirement
+    label: Semantic UI metadata tokens for taxonomy values
+
+  - id: REGISTRY-taxonomies
+    type: Registry
+    label: Governed taxonomy metadata registry
+    path: docs/reference/project-model/registers/taxonomies.registry.yml
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -748,3 +769,52 @@ spo_relations:
   - subject: MR-0001REQ-0031
     predicate: belongs_to
     object: MR-0001
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0013
+
+  - subject: ADR-0013
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: ADR-0013
+    predicate: justifies
+    object: MR-0001REQ-0032
+
+  - subject: ADR-0013
+    predicate: justifies
+    object: MR-0001REQ-0033
+
+  - subject: ADR-0013
+    predicate: justifies
+    object: MR-0001REQ-0034
+
+  - subject: MR-0001REQ-0032
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0033
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0034
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: REGISTRY-taxonomies
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0032
+    predicate: implemented_by
+    object: REGISTRY-taxonomies
+
+  - subject: MR-0001REQ-0033
+    predicate: implemented_by
+    object: REGISTRY-taxonomies
+
+  - subject: MR-0001REQ-0034
+    predicate: implemented_by
+    object: REGISTRY-taxonomies
+

@@ -111,3 +111,13 @@ decisions:
     date: 2026-06-20
     macro_requirement_id: MR-0001
     body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0012_body.md
+
+
+  - id: ADR-0013
+    title: Controlled taxonomy value metadata and semantic UI tokens
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-20
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0013_body.md

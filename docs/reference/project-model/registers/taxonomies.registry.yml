@@ -1,0 +1,83 @@
+schema_version: 1
+registry_id: taxonomies-registry
+name: Governed taxonomy metadata registry
+purpose: Defines controlled taxonomy value metadata fields and semantic UI metadata token fields for future project-model, Base Analysis, STRIDE and STRIDE-AI taxonomies.
+
+taxonomies:
+  taxonomy_value_metadata_field:
+    - id: id
+      name: Identifier
+      function: Stable machine-readable value used in registries, graph records, contracts, reports and future APIs.
+      description: Every taxonomy value must have a stable identifier. The identifier is the semantic key and must not encode presentation colors or mutable UI wording.
+
+    - id: label
+      name: Label
+      function: Human-readable display name used by project-model pages, future APIs and UI components.
+      description: Every taxonomy value must have a concise label that can be shown in tables, filters, graph legends and detail views.
+
+    - id: description
+      name: Description
+      function: Explains the meaning, intended use and governance impact of the taxonomy value.
+      description: Every taxonomy value must include a description so humans, deterministic tools and future LLM-assisted workflows can distinguish similar values safely.
+
+    - id: function
+      name: Function
+      function: Summarizes the operational purpose of the taxonomy value when the value controls behavior, validation, reporting or lifecycle decisions.
+      description: Function is recommended for controlled values that drive gates, reports, status transitions, graph semantics or analysis behavior.
+
+    - id: ui
+      name: UI metadata
+      function: Optional semantic presentation hints for graph legends, filters, badges and future Governance Console views.
+      description: UI metadata must use semantic tokens such as color_token, icon_token, graph_shape_token or graph_edge_style_token rather than raw colors or theme-specific values.
+
+    - id: security_analysis
+      name: Security analysis metadata
+      function: Optional hints that explain how the taxonomy value is useful to Base Analysis, STRIDE, STRIDE-AI or future security methodologies.
+      description: Security analysis metadata may identify applicable methodologies, typical concerns or analysis hints, but it must not replace reviewed findings or methodology-specific overlay results.
+
+  taxonomy_ui_metadata_field:
+    - id: icon_token
+      name: Icon token
+      function: Semantic icon key that future UI themes can map to actual icon components.
+      description: Use icon tokens for visual consistency without coupling domain taxonomy records to a concrete frontend icon library.
+
+    - id: color_token
+      name: Color token
+      function: Semantic color key that future UI themes can map to accessible light, dark and high-contrast palettes.
+      description: Use color tokens instead of raw hexadecimal colors so taxonomy semantics stay stable while UI themes can evolve.
+
+    - id: graph_shape_token
+      name: Graph shape token
+      function: Semantic graph node shape key for future graph legends and Project Model Explorer rendering.
+      description: Use shape tokens to express node presentation intent without hardcoding a specific graph-rendering library.
+
+    - id: graph_edge_style_token
+      name: Graph edge style token
+      function: Semantic edge style key for future DFD, project-model and analysis graph rendering.
+      description: Use edge style tokens for flow, relation and boundary visualization while keeping taxonomy records independent from renderer-specific styles.
+
+  semantic_ui_color_token_example:
+    - id: actor.human
+      name: Human actor color token
+      function: Example semantic color token for human actors in future Base Analysis views.
+      description: This token shows how a domain taxonomy value can refer to a stable semantic color role without specifying a concrete color value.
+
+    - id: component.backend
+      name: Backend component color token
+      function: Example semantic color token for backend service components in future Base Analysis and Project Model Explorer views.
+      description: This token is a UI semantic role. The actual color must be supplied by a future theme registry or frontend theme, not by the domain taxonomy.
+
+    - id: data.contract
+      name: Data contract color token
+      function: Example semantic color token for API contracts, schemas and payload contract artifacts.
+      description: This token supports consistent filtering and legends for contract-related data resources without coupling taxonomy governance to one visual palette.
+
+    - id: boundary.trust
+      name: Trust boundary color token
+      function: Example semantic color token for explicit trust boundaries in future Base Analysis and DFD views.
+      description: This token supports boundary visualization while preserving accessibility and theme independence.
+
+    - id: flow.ai_context
+      name: AI context flow color token
+      function: Example semantic color token for AI prompt, context, retrieval or agent-task flows in future STRIDE-AI views.
+      description: This token makes AI-related flows visually distinguishable without making color itself part of the security-analysis semantics.

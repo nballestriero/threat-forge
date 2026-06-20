@@ -337,3 +337,30 @@ This micropasso adds:
 - `MR-0009/ADR-0002` and `MR-0009REQ-0002` through `MR-0009REQ-0003` for CI/CD security analysis status reporting and policy gate outcome reporting.
 
 No CI/CD gate, stale detector, policy engine, analysis runtime, report payload, dashboard or UI is implemented by this step. The next safe design step is to define a controlled Base Threat Analysis taxonomy/registry or a minimal lifecycle/status taxonomy before any runtime implementation.
+
+
+## Controlled Taxonomy Value Metadata Micropasso
+
+This document-only micropasso defines how future governed taxonomy values must describe themselves before Base Analysis, STRIDE, STRIDE-AI, reporting or UI contracts depend on them.
+
+The intended model is:
+
+```text
+taxonomy value
+→ stable id
+→ display label/name
+→ mandatory description
+→ optional function
+→ optional semantic UI metadata tokens
+→ optional security-analysis hints
+```
+
+This micropasso adds:
+
+- `MR-0001/ADR-0013` to define controlled taxonomy value metadata and semantic UI tokens;
+- `MR-0001REQ-0032` to require a predictable taxonomy value metadata model;
+- `MR-0001REQ-0033` to require descriptions for controlled taxonomy values;
+- `MR-0001REQ-0034` to allow semantic UI metadata tokens without coupling domain taxonomy records to concrete UI colors or libraries;
+- `docs/reference/project-model/registers/taxonomies.registry.yml` as the first governed taxonomy metadata registry, containing metadata-field and semantic UI token examples.
+
+This micropasso does not define the complete Base Analysis taxonomy and does not implement taxonomy validators, theme mapping, OpenAPI contracts, UI rendering or graph rendering. The next safe design step is to define the controlled Base Analysis taxonomy using this metadata model.

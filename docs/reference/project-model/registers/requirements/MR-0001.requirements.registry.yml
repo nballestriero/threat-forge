@@ -294,3 +294,28 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0012
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0031_body.md
+
+
+  - id: MR-0001REQ-0032
+    title: Controlled taxonomy value metadata model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0032_body.md
+
+  - id: MR-0001REQ-0033
+    title: Mandatory taxonomy value descriptions
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0033_body.md
+
+  - id: MR-0001REQ-0034
+    title: Semantic UI metadata tokens for taxonomy values
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0034_body.md
