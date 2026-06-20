@@ -173,3 +173,51 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0005
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0021_body.md
+
+  - id: MR-0002REQ-0022
+    title: Governance Console visual template
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0022_body.md
+
+  - id: MR-0002REQ-0023
+    title: Minimal monochrome UI theme direction
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0023_body.md
+
+  - id: MR-0002REQ-0024
+    title: Shared application shell layout primitives
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0024_body.md
+
+  - id: MR-0002REQ-0025
+    title: Semantic icon-token usage
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0025_body.md
+
+  - id: MR-0002REQ-0026
+    title: Read-only Project Model Explorer UI slice
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0026_body.md
+
+  - id: MR-0002REQ-0027
+    title: Read-only Graph Explorer layout and interaction pattern
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0027_body.md

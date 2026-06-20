@@ -53,24 +53,25 @@ The milestone `project-model-threat-analysis-foundation-complete` is expected to
 
 The Base Analysis direction is now intentionally parked as a remembered architecture track: analysis instances, candidates, reviews, snapshots, stale status and DFD working state are dynamic application data persisted behind an `AnalysisStorePort`; SQLite may be the first adapter, but the storage implementation must remain replaceable. This track should resume later with Base Analysis command/query contracts, storage-port operations, schema/adapter design and threat-analysis runtime/API slices.
 
-The immediate product focus is now to prepare the first read-only Governance Console implementation for visualizing governed documentation and graphs. This should start with a minimal access/visibility model decision before UI/API implementation, so that even the first read-only Project Model Explorer does not hard-code who can see dashboards, project-model records, graphs, threat-analysis navigation, reports or user-management areas.
+The immediate product focus is now to prepare the first read-only Governance Console implementation for visualizing governed documentation and graphs. The minimal access/visibility model is now documented: an authenticated `registered_user` may initially see the read-only console, but route/menu visibility must flow through a capability boundary so future dynamic RBAC can replace the bootstrap policy. The next design step is a stable MR-0002 UI template and read-only Project Model Explorer slice before API and React implementation.
 
 The immediate governance themes are now:
 
 1. preserve the deferred Base Analysis command/query/storage direction in this plan so it is not lost while UI work starts;
-2. decide the minimal MR-0007 access model needed before Project Model Explorer API/UI work;
-3. define read-only Project Model Explorer UI slices under MR-0002 after access visibility is clear;
-4. define read-only OpenAPI/view-model contracts before React components read project-model data;
-5. keep the first UI read-only and backed by backend services/adapters, not direct frontend reads of YAML, Markdown, Git, filesystem, registries or graph files;
-6. postpone Base Analysis runtime storage, SQLite schema, command/query handlers and analysis editor implementation until after the documentation/graph explorer foundation is visible.
+2. keep the initial registered-user access policy as a bootstrap rule behind a capability/access-policy boundary;
+3. define a stable, minimal, black/white Governance Console UI template before ad-hoc pages appear;
+4. define read-only Project Model Explorer and Graph Explorer UI slices under MR-0002;
+5. define read-only OpenAPI/view-model contracts before React components read project-model data;
+6. keep the first UI read-only and backed by backend services/adapters, not direct frontend reads of YAML, Markdown, Git, filesystem, registries or graph files;
+7. postpone Base Analysis runtime storage, SQLite schema, command/query handlers and analysis editor implementation until after the documentation/graph explorer foundation is visible.
 
 ## Current Micropasso
 
-Align the working plan after the Base Analysis logical record/storage boundary and before the first Project Model Explorer UI/API implementation sequence.
+Define the MR-0002 Governance Console UI template and the first read-only Project Model Explorer/Graph Explorer UI slice.
 
-This micropasso records the intended sequencing only: first decide the minimum identity/access visibility contract, then define the read-only Project Model Explorer UI slice, then define its API/view-model contract, then define and implement the first backend/frontend read-only slice.
+This micropasso records the product UI template before implementation: a single minimal black/white Governance Console for platform and child project workspaces, coherent icon-token usage, shared shell/list/detail/graph layout patterns, and read-only documentation/graph browsing boundaries.
 
-The scope is intentionally working-plan only: no new ADR, Requirement, graph relation, OpenAPI file, Zod schema, backend code, frontend component, user-management runtime, SQLite schema or Base Analysis command/query contract is introduced in this step.
+The scope is intentionally document-only: no OpenAPI file, Zod schema, backend code, frontend component, CSS, icon library, user-management runtime, SQLite schema, Project Model reader service, or Base Analysis command/query contract is introduced in this step.
 
 ## Completed Milestones
 
@@ -122,6 +123,7 @@ The scope is intentionally working-plan only: no new ADR, Requirement, graph rel
 - Domain-neutral Base Analysis taxonomies and governed extension model, pushed as `565d05e`.
 - Base Analysis logical records and storage boundary, pushed as `3e1de42`.
 - Working-plan alignment before Project Model Explorer UI, pushed as `8411ec5`.
+- Initial registered-user access policy boundary, pushed as `5c9ebfc`.
 
 ## Pending Decisions
 
@@ -129,7 +131,9 @@ The requirement-model and common body-format architecture decisions are now repr
 
 Any new decision must be added to the relevant decision registry and graph before derived requirements or implementation work starts.
 
-Before implementing the first Governance Console interfaces and APIs, define the minimum MR-0007 identity/access visibility model needed by read-only navigation. The initial policy may grant read-only Governance Console visibility to an authenticated `registered_user`, but menu, route and API visibility must still flow through a capability/access-policy boundary so future dynamic RBAC can replace the bootstrap rule without hardcoded React role checks.
+Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
+
+Before implementing the first Project Model Explorer components, define the MR-0002 visual template and read-only UI slice so the first pages share a stable minimalist shell, layout, and icon strategy.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -200,11 +204,10 @@ No new implementation should start before the related requirements and graph rel
 
 Preferred near-term implementation sequence before code:
 
-1. MR-0007 document-only initial registered-user access policy and future dynamic RBAC boundary.
-2. MR-0002 read-only Project Model Explorer UI slice.
-3. MR-0002/MR-0001 read-only Project Model Explorer API/view-model contract for governed documentation and graph data.
-4. MR-0002 first implementation slice for backend project-model reader service/API adapter and frontend read-only documentation/graph explorer.
-5. Resume the deferred MR-0004 Base Analysis command/query/storage track when the visible documentation/graph explorer foundation exists.
+1. MR-0002 Governance Console UI template and read-only Project Model Explorer/Graph Explorer UI slice.
+2. MR-0002/MR-0001 read-only Project Model Explorer API/view-model contract for governed documentation and graph data.
+3. MR-0002 first implementation slice for backend project-model reader service/API adapter and frontend read-only documentation/graph explorer.
+4. Resume the deferred MR-0004 Base Analysis command/query/storage track when the visible documentation/graph explorer foundation exists.
 
 Expected future implementation areas include:
 

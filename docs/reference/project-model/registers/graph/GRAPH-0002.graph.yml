@@ -112,6 +112,35 @@ nodes:
   - id: MR-0002REQ-0021
     type: Requirement
     label: Capability-driven menu and route visibility mechanics
+
+
+  - id: ADR-0006
+    type: ADR
+    label: Governance Console UI template and read-only Project Model Explorer slice
+
+  - id: MR-0002REQ-0022
+    type: Requirement
+    label: Governance Console visual template
+
+  - id: MR-0002REQ-0023
+    type: Requirement
+    label: Minimal monochrome UI theme direction
+
+  - id: MR-0002REQ-0024
+    type: Requirement
+    label: Shared application shell layout primitives
+
+  - id: MR-0002REQ-0025
+    type: Requirement
+    label: Semantic icon-token usage
+
+  - id: MR-0002REQ-0026
+    type: Requirement
+    label: Read-only Project Model Explorer UI slice
+
+  - id: MR-0002REQ-0027
+    type: Requirement
+    label: Read-only Graph Explorer layout and interaction pattern
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -320,4 +349,60 @@ spo_relations:
   - subject: ADR-0005
     predicate: justifies
     object: MR-0002REQ-0021
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0006
+
+  - subject: ADR-0006
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0022
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0023
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0024
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0025
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0026
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0027
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0002REQ-0022
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0002REQ-0023
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0002REQ-0024
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0002REQ-0025
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0002REQ-0026
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0002REQ-0027
 
