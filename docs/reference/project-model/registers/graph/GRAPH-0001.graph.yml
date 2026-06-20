@@ -251,6 +251,26 @@ nodes:
     label: LLM governed development guide
     path: docs/how-to/governed-development/llm-governed-development-guide.md
 
+  - id: ADR-0012
+    type: ADR
+    label: Future graph vocabulary for data-flow, trust boundaries and AI/RAG runtime support
+
+  - id: MR-0001REQ-0027
+    type: Requirement
+    label: Future data-flow and trust-boundary graph vocabulary
+
+  - id: MR-0001REQ-0028
+    type: Requirement
+    label: Runtime service and AI/RAG infrastructure graph vocabulary
+
+  - id: MR-0001REQ-0029
+    type: Requirement
+    label: Data contract, payload, format and transformation graph vocabulary
+
+  - id: MR-0001REQ-0030
+    type: Requirement
+    label: Security-analysis readiness boundary for graph vocabulary
+
 spo_relations:
   - subject: MR-0001
     predicate: has_decision
@@ -678,3 +698,39 @@ spo_relations:
     predicate: described_by
     object: DOC-llm-governed-development-guide
 
+
+  - subject: MR-0001
+    predicate: has_decision
+    object: ADR-0012
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0001REQ-0027
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0001REQ-0028
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0001REQ-0029
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0001REQ-0030
+
+  - subject: MR-0001REQ-0027
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0028
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0029
+    predicate: belongs_to
+    object: MR-0001
+
+  - subject: MR-0001REQ-0030
+    predicate: belongs_to
+    object: MR-0001

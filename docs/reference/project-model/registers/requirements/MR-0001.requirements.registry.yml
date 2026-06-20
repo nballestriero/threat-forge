@@ -249,3 +249,39 @@ requirements:
     derived_from_decision_id: ADR-0011
     parent_requirement_id: MR-0001REQ-0026
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026GOV-0002_body.md
+
+
+  - id: MR-0001REQ-0027
+    title: Future data-flow and trust-boundary graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0027_body.md
+
+
+  - id: MR-0001REQ-0028
+    title: Runtime service and AI/RAG infrastructure graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0028_body.md
+
+
+  - id: MR-0001REQ-0029
+    title: Data contract, payload, format and transformation graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0029_body.md
+
+
+  - id: MR-0001REQ-0030
+    title: Security-analysis readiness boundary for graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0030_body.md
