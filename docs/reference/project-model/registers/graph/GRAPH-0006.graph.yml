@@ -8,4 +8,63 @@ nodes:
     type: MacroRequirement
     label: STRIDE-AI threat analysis overlay
 
-spo_relations: []
+  - id: ADR-0001
+    type: ADR
+    label: STRIDE-AI overlay boundary and AI pipeline risk taxonomy
+
+  - id: MR-0006REQ-0001
+    type: Requirement
+    label: STRIDE-AI overlay preserves base inventory
+
+  - id: MR-0006REQ-0002
+    type: Requirement
+    label: STRIDE-AI pipeline risk taxonomy contract
+
+  - id: MR-0006REQ-0003
+    type: Requirement
+    label: STRIDE-AI pipeline data-flow and boundary traceability contract
+
+  - id: MR-0006REQ-0004
+    type: Requirement
+    label: STRIDE-AI candidate output review contract
+
+spo_relations:
+  - subject: MR-0006
+    predicate: has_decision
+    object: ADR-0001
+
+  - subject: ADR-0001
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: MR-0006REQ-0001
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: MR-0006REQ-0002
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: MR-0006REQ-0003
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: MR-0006REQ-0004
+    predicate: belongs_to
+    object: MR-0006
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0006REQ-0001
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0006REQ-0002
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0006REQ-0003
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0006REQ-0004

@@ -1,4 +1,35 @@
 schema_version: 1
 macro_requirement_id: MR-0005
 
-requirements: []
+requirements:
+  - id: MR-0005REQ-0001
+    title: STRIDE overlay preserves base inventory
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005REQ-0001_body.md
+
+  - id: MR-0005REQ-0002
+    title: STRIDE taxonomy classification contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005REQ-0002_body.md
+
+  - id: MR-0005REQ-0003
+    title: STRIDE threat hypothesis and security property contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005REQ-0003_body.md
+
+  - id: MR-0005REQ-0004
+    title: STRIDE specialized security requirement derivation contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005REQ-0004_body.md

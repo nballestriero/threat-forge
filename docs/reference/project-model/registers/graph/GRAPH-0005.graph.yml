@@ -8,4 +8,63 @@ nodes:
     type: MacroRequirement
     label: STRIDE threat analysis overlay
 
-spo_relations: []
+  - id: ADR-0001
+    type: ADR
+    label: STRIDE overlay boundary and security requirement derivation
+
+  - id: MR-0005REQ-0001
+    type: Requirement
+    label: STRIDE overlay preserves base inventory
+
+  - id: MR-0005REQ-0002
+    type: Requirement
+    label: STRIDE taxonomy classification contract
+
+  - id: MR-0005REQ-0003
+    type: Requirement
+    label: STRIDE threat hypothesis and security property contract
+
+  - id: MR-0005REQ-0004
+    type: Requirement
+    label: STRIDE specialized security requirement derivation contract
+
+spo_relations:
+  - subject: MR-0005
+    predicate: has_decision
+    object: ADR-0001
+
+  - subject: ADR-0001
+    predicate: belongs_to
+    object: MR-0005
+
+  - subject: MR-0005REQ-0001
+    predicate: belongs_to
+    object: MR-0005
+
+  - subject: MR-0005REQ-0002
+    predicate: belongs_to
+    object: MR-0005
+
+  - subject: MR-0005REQ-0003
+    predicate: belongs_to
+    object: MR-0005
+
+  - subject: MR-0005REQ-0004
+    predicate: belongs_to
+    object: MR-0005
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0005REQ-0001
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0005REQ-0002
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0005REQ-0003
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0005REQ-0004
