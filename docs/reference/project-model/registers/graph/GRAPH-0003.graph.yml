@@ -28,6 +28,10 @@ nodes:
     type: Requirement
     label: Threat-forge self-analysis as a governed project
 
+
+  - id: MR-0003REQ-0005
+    type: Requirement
+    label: No nested child project workspaces
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -68,3 +72,11 @@ spo_relations:
   - subject: ADR-0001
     predicate: justifies
     object: MR-0003REQ-0004
+
+  - subject: MR-0003REQ-0005
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0001
+    predicate: justifies
+    object: MR-0003REQ-0005

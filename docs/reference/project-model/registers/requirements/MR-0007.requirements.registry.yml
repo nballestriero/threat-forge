@@ -1,4 +1,36 @@
 schema_version: 1
 macro_requirement_id: MR-0007
 
-requirements: []
+requirements:
+
+  - id: MR-0007REQ-0001
+    title: Authenticated user session boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0007/MR-0007REQ-0001_body.md
+
+  - id: MR-0007REQ-0002
+    title: Workspace membership model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0007/MR-0007REQ-0002_body.md
+
+  - id: MR-0007REQ-0003
+    title: Role and permission matrix
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0007/MR-0007REQ-0003_body.md
+
+  - id: MR-0007REQ-0004
+    title: Access-controlled navigation and route decisions
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0007/MR-0007REQ-0004_body.md

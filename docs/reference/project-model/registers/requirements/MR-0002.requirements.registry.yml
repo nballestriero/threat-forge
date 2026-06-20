@@ -129,3 +129,39 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0016_body.md
+
+
+  - id: MR-0002REQ-0017
+    title: Workspace-aware Governance Console shell
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0017_body.md
+
+
+  - id: MR-0002REQ-0018
+    title: Workspace-aware child project navigation capability
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0018_body.md
+
+
+  - id: MR-0002REQ-0019
+    title: First-level Threat Analysis navigation area
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0019_body.md
+
+
+  - id: MR-0002REQ-0020
+    title: Threat-forge self-analysis navigation support
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0020_body.md

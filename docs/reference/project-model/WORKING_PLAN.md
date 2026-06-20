@@ -47,27 +47,28 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-Close the final document-only architecture baseline before tagging and handing off the current governance/product-area planning milestone.
+Continue the document-first product architecture work after the threat-analysis foundation milestone.
 
-The governed operations and traceability milestone has been completed and tagged as `project-model-governed-operations-and-traceability-complete`.
+The milestone `project-model-threat-analysis-foundation-complete` is expected to be closed on `82cc093` and should be verified with live Git commands during handoff. That milestone established the Project Model Explorer boundary, graph vocabulary readiness, Base Threat Analysis canonical model, STRIDE overlay boundary, and STRIDE-AI overlay boundary.
 
-The product macro-area roadmap has been opened through `MR-0002` to `MR-0008`, and governed development guides have been placed under the Diátaxis `docs/how-to/` space. The immediate focus is now a final document-only closure step: add `MR-0009` for general reporting and open `MR-0002` with the baseline reusable application architecture ADR and small requirements.
+The immediate focus is now the reusable Governance Console and access model concept: the same console must serve the threat-forge platform workspace and governed child project workspaces, while adapting navigation based on workspace type, user permissions, and capabilities.
 
 The immediate governance themes are now:
 
-1. `MR-0009` as the reporting, dashboard, and product-intelligence macro-area for general threat-forge and child-project status reports;
-2. `MR-0002/ADR-0001` as the reusable application architecture decision for backend and frontend modules;
-3. small `MR-0002` requirements for backend module architecture, frontend application/API boundary, protected route/page-guard mechanics, and middleware boundaries;
-4. clear separation between reusable application mechanics in `MR-0002` and domain semantics in `MR-0003` through `MR-0009`;
-5. milestone handoff after successful governed verification and tag.
+1. workspace-aware Governance Console shell under `MR-0002`;
+2. `Child Projects` navigation available only for the platform workspace;
+3. no nested child project workspaces under `MR-0003`;
+4. first-level `Threat Analysis` navigation for both platform and child project workspaces;
+5. threat-forge self-analysis through the same analysis navigation model used by child projects;
+6. identity, membership, role, permission, and access-decision boundaries under `MR-0007`.
 
 ## Current Micropasso
 
-Define the final document-only product architecture closure before tag and handoff.
+Define the workspace-aware Governance Console and initial identity/access boundary as a document-only slice.
 
-This micropasso adds `MR-0009` as a distinct reporting/dashboard/product-intelligence macro-area and opens `MR-0002` with `ADR-0001` plus small architecture requirements.
+This micropasso adds `MR-0002/ADR-0005` with small shell/navigation requirements, adds the `MR-0003` no-nested-child-project requirement, and opens `MR-0007` with its first identity/access ADR plus small requirements for session, membership, role/permission matrix, and access-controlled navigation.
 
-The scope is intentionally document-only: no guide validator, reusable interface module, backend service, frontend component, protected-route implementation, child-project scaffolder, reporting engine, base threat-analysis implementation, STRIDE logic, or STRIDE-AI logic is introduced in this step.
+The scope is intentionally document-only: no OpenAPI files, Zod schemas, backend controllers, frontend routes, React components, identity provider adapters, child-project runtime, Base Analysis runtime, STRIDE runtime, STRIDE-AI runtime, reports, or audit implementation are introduced in this step.
 
 ## Completed Milestones
 
