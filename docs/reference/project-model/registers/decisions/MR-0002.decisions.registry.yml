@@ -84,3 +84,12 @@ decisions:
     date: 2026-06-22
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0009_body.md
+
+  - id: ADR-0010
+    title: Shared frontend design system and semantic icon registry
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-22
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0010_body.md

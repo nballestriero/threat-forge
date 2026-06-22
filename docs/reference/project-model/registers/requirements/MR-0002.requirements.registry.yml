@@ -309,3 +309,27 @@ requirements:
     priority: medium
     derived_from_decision_id: ADR-0009
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0038_body.md
+
+  - id: MR-0002REQ-0039
+    title: Shared frontend design-system ownership contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0039_body.md
+
+  - id: MR-0002REQ-0040
+    title: Semantic icon token registry and adapter boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0040_body.md
+
+  - id: MR-0002REQ-0041
+    title: Page composition through shared shell and page frames
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0041_body.md
