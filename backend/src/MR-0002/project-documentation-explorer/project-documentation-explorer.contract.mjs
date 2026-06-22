@@ -9,8 +9,10 @@ import { z } from "zod";
  * @implementsRequirement MR-0002REQ-0034
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
+ * @implementsRequirement MR-0002REQ-0037
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
+ * @derivedFromDecision MR-0002/ADR-0009
  * @macroRequirement MR-0002
  *
  * These contracts define frontend-safe read-only payloads for browsing governed
@@ -118,6 +120,14 @@ export const documentationItemSchema = z.object({
   source_references: z.array(sourceReferenceSchema).default([]),
 });
 
+export const documentationBodyViewModelSchema = z.object({
+  format: z.literal("markdown"),
+  path: z.string().min(1),
+  content_markdown: z.string(),
+  available: z.boolean(),
+  missing_reason: z.string().min(1).optional(),
+});
+
 export const documentationSummarySchema = z.object({
   total_items: z.number().int().nonnegative(),
   filtered_items: z.number().int().nonnegative(),
@@ -151,6 +161,7 @@ export const documentationDetailViewModelSchema = z.object({
     predicate: z.string().min(1),
     object: z.string().min(1),
   })).default([]),
+  body: documentationBodyViewModelSchema.nullable().default(null),
 });
 
 export const documentationRouteDescriptorSchema = z.object({

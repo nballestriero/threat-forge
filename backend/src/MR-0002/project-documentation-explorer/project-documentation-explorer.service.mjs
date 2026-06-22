@@ -1,5 +1,6 @@
 import {
   acceptanceStateSchema,
+  documentationDetailViewModelSchema,
   documentationExplorerViewModelSchema,
   documentationFiltersViewModelSchema,
   documentationQuerySchema,
@@ -17,8 +18,10 @@ import {
  * @implementsRequirement MR-0002REQ-0034
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
+ * @implementsRequirement MR-0002REQ-0037
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
+ * @derivedFromDecision MR-0002/ADR-0009
  * @macroRequirement MR-0002
  *
  * This service normalizes governed documentation, ADR, requirement, macro
@@ -362,6 +365,57 @@ function buildFilterFacets(items, query) {
 }
 
 /**
+ * Finds the governed Markdown body source reference for a documentation item.
+ *
+ * @param {Record<string, unknown>} item - Documentation item.
+ * @returns {string} Repository-relative body path, or an empty string.
+ */
+function getBodyPath(item) {
+  const reference = (item.source_references ?? []).find((candidate) => candidate.kind === "body" && candidate.path);
+  return normalizeProjectPath(reference?.path);
+}
+
+/**
+ * Loads the governed Markdown body through the source port when a body path exists.
+ *
+ * @param {Record<string, unknown>} item - Documentation item.
+ * @param {{loadBodyContent?: (projectPath: string) => Promise<string|null>}} sourcePort - Source port.
+ * @returns {Promise<Record<string, unknown>|null>} Body view-model.
+ */
+async function loadBodyViewModel(item, sourcePort) {
+  const bodyPath = getBodyPath(item);
+  if (!bodyPath) return null;
+
+  if (typeof sourcePort.loadBodyContent !== "function") {
+    return {
+      format: "markdown",
+      path: bodyPath,
+      content_markdown: "",
+      available: false,
+      missing_reason: "source_port_body_loader_not_configured",
+    };
+  }
+
+  const content = await sourcePort.loadBodyContent(bodyPath);
+  if (content === null) {
+    return {
+      format: "markdown",
+      path: bodyPath,
+      content_markdown: "",
+      available: false,
+      missing_reason: "body_file_not_found",
+    };
+  }
+
+  return {
+    format: "markdown",
+    path: bodyPath,
+    content_markdown: content,
+    available: true,
+  };
+}
+
+/**
  * Creates the read-only documentation explorer service.
  *
  * @param {{sourcePort: {loadSnapshot(): Promise<Record<string, unknown>>}}} input - Service dependencies.
@@ -419,7 +473,7 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
       const incoming = (snapshot.graphRelations ?? []).filter((relation) => relation.object === id);
       const outgoing = (snapshot.graphRelations ?? []).filter((relation) => relation.subject === id);
 
-      return {
+      return documentationDetailViewModelSchema.parse({
         access: access ?? {
           authenticated: false,
           allowed: false,
@@ -429,7 +483,8 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
         item,
         incoming_relations: incoming,
         outgoing_relations: outgoing,
-      };
+        body: await loadBodyViewModel(item, sourcePort),
+      });
     },
   });
 }

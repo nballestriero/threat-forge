@@ -226,6 +226,23 @@ nodes:
     label: Project Documentation Explorer bootstrap access policy boundary
     path: backend/src/MR-0002/project-documentation-explorer/bootstrap-registered-user-access-policy.mjs
 
+  - id: ADR-0009
+    type: ADR
+    label: Project Documentation Explorer body-backed detail and static validation prototype
+
+  - id: MR-0002REQ-0037
+    type: Requirement
+    label: Project Documentation Explorer body-backed detail view-model
+
+  - id: MR-0002REQ-0038
+    type: Requirement
+    label: Project Documentation Explorer static validation prototype
+
+  - id: MR-0002SRC-0009
+    type: SourceModule
+    label: Project Documentation Explorer static prototype renderer
+    path: backend/src/MR-0002/project-documentation-explorer/render-project-documentation-explorer-prototype.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -771,3 +788,83 @@ spo_relations:
     predicate: implemented_by
     object: MR-0002SRC-0008
 
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0009
+
+  - subject: ADR-0009
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0037
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0038
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0002REQ-0037
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0002REQ-0038
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0001
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0002
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0003
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0004
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0005
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0006
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0007
+
+  - subject: MR-0002REQ-0026
+    predicate: implemented_by
+    object: MR-0002SRC-0009
+
+  - subject: MR-0002REQ-0030
+    predicate: implemented_by
+    object: MR-0002SRC-0009
+
+  - subject: MR-0002REQ-0031
+    predicate: implemented_by
+    object: MR-0002SRC-0009
+
+  - subject: MR-0002REQ-0035
+    predicate: implemented_by
+    object: MR-0002SRC-0009
+
+  - subject: MR-0002REQ-0036
+    predicate: implemented_by
+    object: MR-0002SRC-0009
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0009
+
+  - subject: MR-0002REQ-0038
+    predicate: implemented_by
+    object: MR-0002SRC-0009

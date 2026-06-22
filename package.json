@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "docs:pages": "npm --prefix ./backend run docs:pages",
+    "docs:project-documentation-explorer:prototype": "node backend/src/MR-0002/project-documentation-explorer/render-project-documentation-explorer-prototype.mjs",
     "context:zip": "node tools/context/create-handoff-zip.mjs",
     "docs:graph-format": "node backend/tools/MR-0000/check-graph-format.mjs",
     "docs:adr-registry-fields": "node tools/docs/check-adr-registry-fields.mjs",

@@ -14,9 +14,11 @@ import { createProjectDocumentationExplorerService } from "./project-documentati
  * @implementsRequirement MR-0002REQ-0034
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
+ * @implementsRequirement MR-0002REQ-0037
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
+ * @derivedFromDecision MR-0002/ADR-0009
  * @macroRequirement MR-0002
  *
  * This module is the feature-local composition root for the first read-only

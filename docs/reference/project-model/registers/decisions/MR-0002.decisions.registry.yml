@@ -75,3 +75,12 @@ decisions:
     date: 2026-06-22
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0008_body.md
+
+  - id: ADR-0009
+    title: Project Documentation Explorer body-backed detail and static validation prototype
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-22
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0009_body.md

@@ -8,10 +8,12 @@
  * @implementsRequirement MR-0002REQ-0031
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
+ * @implementsRequirement MR-0002REQ-0037
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
+ * @derivedFromDecision MR-0002/ADR-0009
  * @macroRequirement MR-0002
  *
  * The Project Model source port isolates the read service from concrete YAML,
@@ -38,6 +40,7 @@
 /**
  * @typedef {object} ProjectModelSourcePort
  * @property {() => Promise<ProjectModelSourceSnapshot>} loadSnapshot Loads a read-only project-model source snapshot.
+ * @property {(projectPath: string) => Promise<string|null>} loadBodyContent Loads governed Markdown body content by repository-relative body path.
  */
 
 /**
@@ -48,6 +51,9 @@
 export function createUnsupportedProjectModelSourcePort() {
   return Object.freeze({
     async loadSnapshot() {
+      throw new Error("ProjectModelSourcePort is not configured.");
+    },
+    async loadBodyContent() {
       throw new Error("ProjectModelSourcePort is not configured.");
     },
   });

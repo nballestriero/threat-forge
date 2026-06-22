@@ -293,3 +293,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0008
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0036_body.md
+
+  - id: MR-0002REQ-0037
+    title: Project Documentation Explorer body-backed detail view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0037_body.md
+
+  - id: MR-0002REQ-0038
+    title: Project Documentation Explorer static validation prototype
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0038_body.md

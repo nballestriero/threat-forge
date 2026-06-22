@@ -12,10 +12,12 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0002REQ-0033
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
+ * @implementsRequirement MR-0002REQ-0037
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
+ * @derivedFromDecision MR-0002/ADR-0009
  * @macroRequirement MR-0002
  *
  * This adapter is the first replaceable ProjectModelSourcePort implementation.
@@ -229,7 +231,7 @@ function listRegistryFiles(directoryPath, pattern) {
  * Creates a filesystem-backed project-model source adapter.
  *
  * @param {{rootDir?: string}} [options] - Adapter options.
- * @returns {{loadSnapshot(): Promise<Record<string, unknown>>}} ProjectModelSourcePort implementation.
+ * @returns {{loadSnapshot(): Promise<Record<string, unknown>>, loadBodyContent(projectPath: string): Promise<string|null>}} ProjectModelSourcePort implementation.
  */
 export function createFilesystemProjectModelSourceAdapter(options = {}) {
   const rootDir = path.resolve(options.rootDir ?? defaultRootDir);
@@ -238,6 +240,16 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
 
   function resolveProjectPath(projectPath) {
     return path.join(rootDir, normalizeProjectPath(projectPath));
+  }
+
+  function resolveSafeProjectPath(projectPath) {
+    const normalized = normalizeProjectPath(projectPath);
+    const absolutePath = path.resolve(rootDir, normalized);
+    const relativePath = path.relative(rootDir, absolutePath);
+    if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+      throw new Error(`Project path escapes repository root: ${projectPath}`);
+    }
+    return absolutePath;
   }
 
   function loadMacroRequirements() {
@@ -333,6 +345,12 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
         graphNodes: graph.graphNodes,
         graphRelations: graph.graphRelations,
       };
+    },
+
+    async loadBodyContent(projectPath) {
+      const bodyPath = resolveSafeProjectPath(projectPath);
+      if (!fs.existsSync(bodyPath)) return null;
+      return readText(bodyPath);
     },
   });
 }
