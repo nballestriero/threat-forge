@@ -333,3 +333,28 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0010
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0041_body.md
+
+  - id: MR-0002REQ-0042
+    title: Feature-colocated frontend composition
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0042_body.md
+
+  - id: MR-0002REQ-0043
+    title: Custom hook and data client boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0043_body.md
+
+  - id: MR-0002REQ-0044
+    title: Frontend state ownership and store selection rules
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0044_body.md
+
