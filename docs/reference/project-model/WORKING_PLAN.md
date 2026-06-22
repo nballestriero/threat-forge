@@ -47,31 +47,38 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-Continue the document-first product architecture work after the threat-analysis foundation milestone and the Base Analysis logical-storage boundary.
+Stabilize the first Governance Console and Project Documentation Explorer foundation before opening larger product/runtime tracks.
 
-The milestone `project-model-threat-analysis-foundation-complete` is expected to be closed on `82cc093` and should be verified with live Git commands during handoff. That milestone established the Project Model Explorer boundary, graph vocabulary readiness, Base Threat Analysis canonical model, STRIDE overlay boundary, and STRIDE-AI overlay boundary.
+The current semantic state includes a backend Project Documentation Explorer module, body-detail view-model support, a prototype validation flow, a React/Vite Governance Console shell, a shared MR-0002 design system, semantic icon tokens and a pragmatic frontend state/data-access pattern. The latest governed project state before this planning update is expected at `HEAD 1dbed71` with commit `docs: define pragmatic frontend state and data access pattern`; live Git commands remain authoritative.
 
-The Base Analysis direction is now intentionally parked as a remembered architecture track: analysis instances, candidates, reviews, snapshots, stale status and DFD working state are dynamic application data persisted behind an `AnalysisStorePort`; SQLite may be the first adapter, but the storage implementation must remain replaceable. This track should resume later with Base Analysis command/query contracts, storage-port operations, schema/adapter design and threat-analysis runtime/API slices.
+Two independent technical reviews confirmed that the overall Doc-as-Code/security-first architecture is coherent, but identified the next risk area as insufficient automatic verification around runtime code, frontend build behavior, dependency integrity, source traceability coverage, orphan bodies, CI and tests.
 
-The immediate product focus is now to prepare the first read-only Governance Console implementation for visualizing governed documentation and graphs. The minimal access/visibility model is documented: an authenticated `registered_user` may initially see the read-only console, but route/menu visibility must flow through a capability boundary so future dynamic RBAC can replace the bootstrap policy. The shared Governance Console UI template and read-only Explorer slice are documented. The next design step is the read-only Project Model Explorer API/view-model contract before backend services or React implementation.
+The active objective is therefore to introduce a small governed stabilization roadmap under `MR-0000` before adding large new functionality. The immediate implementation sequence should prioritize fast local gates that catch real regressions before commit:
+
+1. add `frontend:build` to the governed runner;
+2. add a minimal unit test gate for stable runtime logic;
+3. add a lockfile registry/integrity guard;
+4. extend source-code traceability coverage to `backend/src` and `frontend/src` after graph nodes exist;
+5. add orphan governed body detection.
+
+The Base Analysis runtime/storage/API direction remains parked. It should resume only after the documentation explorer foundation and stabilization gates are healthy.
 
 The immediate governance themes are now:
 
-1. preserve the deferred Base Analysis command/query/storage direction in this plan so it is not lost while UI work starts;
-2. keep the initial registered-user access policy as a bootstrap rule behind a capability/access-policy boundary;
-3. reuse the documented stable, minimal, black/white Governance Console UI template for all first pages;
-4. keep the documented read-only Project Model Explorer and Graph Explorer UI slices as the first visible interface target;
-5. define read-only API/view-model contracts before React components read project-model data;
-6. keep the first UI read-only and backed by backend services/adapters, not direct frontend reads of YAML, Markdown, Git, filesystem, registries or graph files;
-7. postpone Base Analysis runtime storage, SQLite schema, command/query handlers and analysis editor implementation until after the documentation/graph explorer foundation is visible.
+1. treat independent review findings as governed roadmap inputs, not loose notes;
+2. keep stabilization gates small, deterministic and fast enough for routine `repo:check` use;
+3. avoid adding heavy lint/type/test/supply-chain stacks without a focused requirement and measured benefit;
+4. maintain document-first order: ADR/Requirement/Graph before each new gate implementation;
+5. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it;
+6. postpone Base Analysis, STRIDE overlays, OpenAPI completeness and complex RBAC until the first console and gate foundation is stable.
 
 ## Current Micropasso
 
-Define the MR-0002 read-only Project Model Explorer API/view-model contract.
+Define the MR-0000 stabilization gate expansion roadmap and align the working plan with the two independent reviews.
 
-This micropasso records the contract shape that the first backend reader and frontend explorer must use: overview, governed entity collections, entity detail, graph explorer, taxonomy explorer and capability-aware navigation view models. The goal is to ensure React renders normalized backend/API data instead of reading YAML, Markdown, Git, filesystem, registries, graph files or generated pages directly.
+This micropasso adds the governance decision and requirements for the next stabilization sequence: frontend build gate, first unit test gate, lockfile registry/integrity guard, runtime source traceability expansion and orphan governed body detection.
 
-The scope is intentionally document-only: no OpenAPI file, Zod schema, backend code, frontend component, CSS, icon library, user-management runtime, SQLite schema, Project Model reader service, or Base Analysis command/query contract is introduced in this step.
+The scope is intentionally document-only: no runner change, test file, lockfile scanner, source-traceability expansion, body orphan checker, CI workflow, OpenAPI contract, parser replacement, HTTP server, frontend route change or Base Analysis implementation is introduced in this step.
 
 ## Completed Milestones
 
@@ -125,6 +132,13 @@ The scope is intentionally document-only: no OpenAPI file, Zod schema, backend c
 - Working-plan alignment before Project Model Explorer UI, pushed as `8411ec5`.
 - Initial registered-user access policy boundary, pushed as `5c9ebfc`.
 - Governance Console UI template and read-only Explorer slice, pushed as `91ced91`.
+- Project Model Explorer read-only API/view-model contract, pushed as `0f8bf93`.
+- Project Documentation Explorer read-only filters, pushed as `29ce099`.
+- Project Documentation Explorer body detail, pushed as `9e9d618`.
+- Project Documentation Explorer prototype filter fix, pushed as `65e9190`.
+- Shared frontend design system and semantic icon registry, pushed as `2ad4904`.
+- Governance Console shell and Project Documentation Explorer React slice, pushed as `be3acf0`.
+- Pragmatic frontend state and data access pattern, pushed as `1dbed71`.
 
 ## Pending Decisions
 
@@ -244,9 +258,19 @@ npm run docs:append-first
 npm run repo:check
 ```
 
-Future gates should be added only after their requirements, graph relations, and implementation artifacts exist.
+The first stabilization gates now planned by `MR-0000/ADR-0006` are:
 
-The current gate list already includes ADR registry fields, Requirement registry fields, code traceability, repository operation governance, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks, and the governed repository check runner introduced in the current milestone.
+```text
+npm run frontend:build
+node --test backend/src/**/*.test.mjs
+node backend/tools/MR-0000/check-lockfile-registry-integrity.mjs
+expanded docs:code-traceability coverage for backend/src and frontend/src
+node backend/tools/MR-0000/check-orphan-governed-bodies.mjs
+```
+
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist.
+
+The current gate list already includes ADR registry fields, Requirement registry fields, code traceability, repository operation governance, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks and the governed repository check runner. The next gate additions should prioritize immediate feedback on runtime/frontend breakage and supply-chain drift before slower or broader checks such as Playwright accessibility, full linting, license checks, secret scanning or CI-only E2E checks.
 
 ## Routine Repository Operation Policy
 
@@ -288,24 +312,29 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-The next safe path is to use `npm run repo:check` for local verification and `npm run repo:commit-push -- "<message>"` for routine governed commits and pushes.
+The next safe path is to apply the stabilization roadmap document update, verify with `npm run repo:check`, and commit through the governed runner.
 
-After this final document-only closure step is committed, create a milestone tag and hand off from a clean working tree.
-
-Recommended tag name:
+Recommended commit message:
 
 ```text
-product-areas-and-development-guides-complete
+docs: define stabilization gate roadmap and update workplan
 ```
 
-The next safe implementation-planning micropassi after handoff are:
+After this document-only step is committed, implement the first stabilization gate as a separate micropasso:
 
-1. define the first Project Model Explorer view-model/API boundary under `MR-0002` without implementing a full UI;
-2. define source layout and OpenAPI/Zod contract placement for the first reusable backend/frontend slice;
-3. later connect `MR-0003` child-project profiles to `MR-0004` base threat-analysis inputs.
+```text
+tooling: add frontend build gate to governed runner
+```
 
-Do not implement child-project runtime scaffolding, Project Model Explorer UI, reporting dashboards, base threat analysis, STRIDE, or STRIDE-AI until the relevant ADRs, requirements, graph relations, and guide constraints exist.
+Then proceed in small ordered micropassi:
 
+1. add the frontend build gate to `repo:check`;
+2. add the first minimal unit test gate for stable Project Documentation Explorer logic;
+3. add a lockfile registry/integrity guard;
+4. add graph nodes and extend code traceability to `backend/src` and `frontend/src`;
+5. add orphan governed body detection.
+
+Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, OpenAPI completeness or broad CI tooling until the first stabilization gates are in place.
 
 ## Security-analysis-ready Project Knowledge Pipeline Micropasso
 

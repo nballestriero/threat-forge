@@ -164,6 +164,31 @@ nodes:
     label: Governed repository operation checker
     path: backend/tools/MR-0000/check-governed-repository-operation.mjs
 
+
+  - id: ADR-0006
+    type: ADR
+    label: Stabilization gate expansion roadmap
+
+  - id: MR-0000REQ-0017
+    type: Requirement
+    label: Frontend build gate in governed repository checks
+
+  - id: MR-0000REQ-0018
+    type: Requirement
+    label: Minimal unit test gate for stable runtime logic
+
+  - id: MR-0000REQ-0019
+    type: Requirement
+    label: Lockfile registry and dependency integrity guard
+
+  - id: MR-0000REQ-0020
+    type: Requirement
+    label: Runtime source traceability coverage expansion
+
+  - id: MR-0000REQ-0021
+    type: Requirement
+    label: Orphan governed body file detection
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -477,4 +502,48 @@ spo_relations:
   - subject: ADR-0003
     predicate: justifies
     object: MR-0000REQ-0007GOV-0005
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0006
+
+  - subject: MR-0000REQ-0017
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0018
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0019
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0020
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0021
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0000REQ-0017
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0000REQ-0018
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0000REQ-0019
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0000REQ-0020
+
+  - subject: ADR-0006
+    predicate: justifies
+    object: MR-0000REQ-0021
 

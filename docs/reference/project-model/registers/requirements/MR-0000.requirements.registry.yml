@@ -191,3 +191,43 @@ requirements:
     derived_from_decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0007GOV-0005_body.md
 
+
+  - id: MR-0000REQ-0017
+    title: Frontend build gate in governed repository checks
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0017_body.md
+
+  - id: MR-0000REQ-0018
+    title: Minimal unit test gate for stable runtime logic
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0018_body.md
+
+  - id: MR-0000REQ-0019
+    title: Lockfile registry and dependency integrity guard
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0019_body.md
+
+  - id: MR-0000REQ-0020
+    title: Runtime source traceability coverage expansion
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0020_body.md
+
+  - id: MR-0000REQ-0021
+    title: Orphan governed body file detection
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0021_body.md
