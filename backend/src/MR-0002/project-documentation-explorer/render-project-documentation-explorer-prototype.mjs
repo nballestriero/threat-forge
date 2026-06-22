@@ -400,8 +400,22 @@ function renderHtml(collection, detailsById, metadata) {
       const text = [item.id, item.title, item.macro_requirement_id, item.status, item.requirement_type, item.implementation_state, item.acceptance_state]
         .map((value) => String(value ?? "").toLowerCase())
         .join(" ");
+
       if (state.q && !text.includes(state.q.toLowerCase())) return false;
-      return Object.entries(state.filters).every(([key, value]) => !value || String(item[key] ?? "") === value);
+
+      const filterFieldById = {
+        mr: "macro_requirement_id",
+        kind: "kind",
+        status: "status",
+        requirement_type: "requirement_type",
+        implementation_state: "implementation_state",
+        acceptance_state: "acceptance_state"
+      };
+
+      return Object.entries(state.filters).every(([key, value]) => {
+        const field = filterFieldById[key] ?? key;
+        return !value || String(item[field] ?? "") === value;
+      });
     }
 
     function filteredItems() {
