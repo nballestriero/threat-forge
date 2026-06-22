@@ -66,3 +66,12 @@ decisions:
     date: 2026-06-20
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0007_body.md
+
+  - id: ADR-0008
+    title: Project Documentation Explorer read-only filters and capability-gated access
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-22
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0008_body.md

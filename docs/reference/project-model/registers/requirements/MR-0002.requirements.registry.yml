@@ -277,3 +277,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0007
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0034_body.md
+
+  - id: MR-0002REQ-0035
+    title: Project Documentation Explorer governed filter facets
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0035_body.md
+
+  - id: MR-0002REQ-0036
+    title: Project Documentation Explorer filtered read-only collection
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0036_body.md

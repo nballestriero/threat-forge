@@ -44,6 +44,12 @@ nodes:
   - id: MR-0007REQ-0007
     type: Requirement
     label: Future dynamic RBAC configurability boundary
+
+  - id: MR-0007SRC-0001
+    type: SourceModule
+    label: Project Documentation Explorer bootstrap registered-user access policy
+    path: backend/src/MR-0002/project-documentation-explorer/bootstrap-registered-user-access-policy.mjs
+
 spo_relations:
   - subject: MR-0007
     predicate: has_decision
@@ -116,4 +122,12 @@ spo_relations:
   - subject: ADR-0002
     predicate: justifies
     object: MR-0007REQ-0007
+
+  - subject: MR-0007REQ-0005
+    predicate: implemented_by
+    object: MR-0007SRC-0001
+
+  - subject: MR-0007REQ-0006
+    predicate: implemented_by
+    object: MR-0007SRC-0001
 
