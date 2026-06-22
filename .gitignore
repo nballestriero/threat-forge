@@ -4,3 +4,6 @@ node_modules/
 
 .vs/
 handoff/
+
+# Generated frontend validation snapshots
+frontend/public/*.snapshot.json

@@ -260,6 +260,57 @@ nodes:
     type: Requirement
     label: Page composition through shared shell and page frames
 
+
+  - id: MR-0002SRC-0010
+    type: SourceModule
+    label: Governance Console React entry point
+    path: frontend/src/main.jsx
+
+  - id: MR-0002SRC-0011
+    type: SourceModule
+    label: Governance Console shared shell component
+    path: frontend/src/MR-0002/app-shell/GovernanceConsoleShell.jsx
+
+  - id: MR-0002SRC-0012
+    type: SourceModule
+    label: Governance Console protected page frame
+    path: frontend/src/MR-0002/app-shell/ProtectedPageFrame.jsx
+
+  - id: MR-0002SRC-0013
+    type: SourceModule
+    label: Frontend design-system semantic token registry
+    path: frontend/src/MR-0002/design-system/design-system.tokens.js
+
+  - id: MR-0002SRC-0014
+    type: SourceModule
+    label: Frontend design-system semantic icon adapter
+    path: frontend/src/MR-0002/design-system/Icon.jsx
+
+  - id: MR-0002SRC-0015
+    type: SourceModule
+    label: Frontend design-system shared components
+    path: frontend/src/MR-0002/design-system/components.jsx
+
+  - id: MR-0002SRC-0016
+    type: SourceModule
+    label: Project Documentation Explorer frontend client port
+    path: frontend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.client.js
+
+  - id: MR-0002SRC-0017
+    type: SourceModule
+    label: Project Documentation Explorer frontend state helpers
+    path: frontend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.state.js
+
+  - id: MR-0002SRC-0018
+    type: SourceModule
+    label: Project Documentation Explorer React page
+    path: frontend/src/MR-0002/project-documentation-explorer/ProjectDocumentationExplorerPage.jsx
+
+  - id: MR-0002SRC-0019
+    type: SourceModule
+    label: Project Documentation Explorer frontend snapshot exporter
+    path: frontend/tools/export-project-documentation-explorer-snapshot.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -917,4 +968,227 @@ spo_relations:
   - subject: ADR-0010
     predicate: justifies
     object: MR-0002REQ-0041
+  - subject: MR-0002REQ-0002
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0003
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0021
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0022
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0024
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0026
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0039
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0041
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0017
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0018
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0019
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0020
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0021
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0022
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0024
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0039
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0041
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0003
+    predicate: implemented_by
+    object: MR-0002SRC-0012
+
+  - subject: MR-0002REQ-0021
+    predicate: implemented_by
+    object: MR-0002SRC-0012
+
+  - subject: MR-0002REQ-0041
+    predicate: implemented_by
+    object: MR-0002SRC-0012
+
+  - subject: MR-0002REQ-0022
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0023
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0025
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0039
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0040
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0025
+    predicate: implemented_by
+    object: MR-0002SRC-0014
+
+  - subject: MR-0002REQ-0040
+    predicate: implemented_by
+    object: MR-0002SRC-0014
+
+  - subject: MR-0002REQ-0022
+    predicate: implemented_by
+    object: MR-0002SRC-0015
+
+  - subject: MR-0002REQ-0023
+    predicate: implemented_by
+    object: MR-0002SRC-0015
+
+  - subject: MR-0002REQ-0024
+    predicate: implemented_by
+    object: MR-0002SRC-0015
+
+  - subject: MR-0002REQ-0039
+    predicate: implemented_by
+    object: MR-0002SRC-0015
+
+  - subject: MR-0002REQ-0041
+    predicate: implemented_by
+    object: MR-0002SRC-0015
+
+  - subject: MR-0002REQ-0002
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0007
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0012
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0026
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0035
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0036
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0008
+    predicate: implemented_by
+    object: MR-0002SRC-0017
+
+  - subject: MR-0002REQ-0026
+    predicate: implemented_by
+    object: MR-0002SRC-0017
+
+  - subject: MR-0002REQ-0035
+    predicate: implemented_by
+    object: MR-0002SRC-0017
+
+  - subject: MR-0002REQ-0036
+    predicate: implemented_by
+    object: MR-0002SRC-0017
+
+  - subject: MR-0002REQ-0002
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0007
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0008
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0026
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0035
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0036
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0041
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0012
+    predicate: implemented_by
+    object: MR-0002SRC-0019
+
+  - subject: MR-0002REQ-0026
+    predicate: implemented_by
+    object: MR-0002SRC-0019
+
+  - subject: MR-0002REQ-0035
+    predicate: implemented_by
+    object: MR-0002SRC-0019
+
+  - subject: MR-0002REQ-0036
+    predicate: implemented_by
+    object: MR-0002SRC-0019
+
+  - subject: MR-0002REQ-0037
+    predicate: implemented_by
+    object: MR-0002SRC-0019
 
