@@ -349,6 +349,16 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer HTTP read-only server
 
+  - id: MR-0002SRC-0020
+    type: SourceModule
+    label: Project Documentation Explorer native HTTP server boundary
+    path: backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.mjs
+
+  - id: MR-0002TEST-0001
+    type: VerificationArtifact
+    label: Project Documentation Explorer HTTP server smoke tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.test.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1301,5 +1311,13 @@ spo_relations:
 
   - subject: ADR-0013
     predicate: justifies
+    object: MR-0002REQ-0046
+
+  - subject: MR-0002REQ-0046
+    predicate: implemented_by
+    object: MR-0002SRC-0020
+
+  - subject: MR-0002TEST-0001
+    predicate: verifies
     object: MR-0002REQ-0046
 
