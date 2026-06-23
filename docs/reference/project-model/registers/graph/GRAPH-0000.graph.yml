@@ -175,6 +175,11 @@ nodes:
     label: Lockfile registry and integrity checker
     path: backend/tools/MR-0000/check-lockfile-integrity.mjs
 
+  - id: TOOL-check-code-traceability
+    type: Tool
+    label: Code traceability checker
+    path: backend/tools/MR-0000/check-code-traceability.mjs
+
   - id: ADR-0006
     type: ADR
     label: Stabilization gate expansion roadmap
@@ -596,4 +601,12 @@ spo_relations:
   - subject: TOOL-check-lockfile-integrity
     predicate: verifies
     object: MR-0000REQ-0019
+
+  - subject: MR-0000REQ-0020
+    predicate: implemented_by
+    object: TOOL-check-code-traceability
+
+  - subject: TOOL-check-code-traceability
+    predicate: verifies
+    object: MR-0000REQ-0020
 

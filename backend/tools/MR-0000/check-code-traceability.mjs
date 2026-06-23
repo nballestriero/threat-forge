@@ -11,7 +11,9 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0001REQ-0020
  * @implementsRequirement MR-0001REQ-0021
  * @implementsRequirement MR-0001REQ-0021GOV-0001
+ * @implementsRequirement MR-0000REQ-0020
  * @derivedFromDecision MR-0001/ADR-0008
+ * @derivedFromDecision MR-0000/ADR-0006
  * @macroRequirement MR-0001
  * @macroRequirement MR-0000
  *
@@ -44,7 +46,7 @@ const graphIndexPath = path.join(registersDir, "graph.index.yml");
 
 const codeArtifactTypes = new Set(["Tool", "SourceModule"]);
 const codeExtensions = new Set([".js", ".jsx", ".mjs", ".ts", ".tsx"]);
-const sourceScanRoots = (process.env.TF_CODE_TRACEABILITY_SOURCE_ROOTS ?? "backend/tools,tools/docs")
+const sourceScanRoots = (process.env.TF_CODE_TRACEABILITY_SOURCE_ROOTS ?? "backend/tools,tools/docs,backend/src,frontend/src")
   .split(",")
   .map((value) => value.trim())
   .filter(Boolean);
@@ -612,6 +614,7 @@ console.log("Code traceability check passed.");
 console.log("Implemented requirement: MR-0001REQ-0020");
 console.log("Implemented requirement: MR-0001REQ-0021");
 console.log("Implemented requirement: MR-0001REQ-0021GOV-0001");
+console.log("Implemented requirement: MR-0000REQ-0020");
 console.log(`Graph code artifact nodes: ${pathToNodeIds.size}`);
 console.log(`Source roots: ${sourceScanRoots.join(", ")}`);
 console.log(`Negative fixtures: ${negativeFixtureCount}`);
