@@ -26,7 +26,8 @@
     "frontend:dev": "npm run frontend:project-documentation-explorer:snapshot && vite --host 127.0.0.1",
     "frontend:build": "npm run frontend:project-documentation-explorer:snapshot && vite build",
     "test:runtime": "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
-    "frontend:preview": "vite preview --host 127.0.0.1"
+    "frontend:preview": "vite preview --host 127.0.0.1",
+    "backend:project-documentation-explorer:serve": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0",

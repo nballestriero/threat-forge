@@ -373,3 +373,11 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0013
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0046_body.md
+
+  - id: MR-0002REQ-0047
+    title: Project Documentation Explorer local serve command
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0014
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0047_body.md

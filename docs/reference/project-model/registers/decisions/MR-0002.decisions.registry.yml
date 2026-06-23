@@ -120,3 +120,12 @@ decisions:
     date: 2026-06-23
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0013_body.md
+
+  - id: ADR-0014
+    title: Project Documentation Explorer local serve composition root
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-23
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0014_body.md
