@@ -47,7 +47,7 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-The first Governance Console and Project Documentation Explorer foundation has now been stabilized through the P0 gate sequence introduced by `MR-0000/ADR-0006`.
+The first Governance Console and Project Documentation Explorer foundation has been stabilized through the P0 gate sequence introduced by `MR-0000/ADR-0006` and milestone-tagged as `project-model-stabilization-gates-complete`.
 
 The current semantic state includes:
 
@@ -56,33 +56,28 @@ The current semantic state includes:
 - React/Vite Governance Console shell and Project Documentation Explorer slice;
 - shared MR-0002 design system and semantic icon layer;
 - pragmatic frontend state/data-access boundary;
-- governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection.
+- governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection;
+- a minimal GitHub Actions workflow that installs from the lockfile and executes the governed `npm run repo:check` path on pushes and pull requests to `master`.
 
-The P0 stabilization sequence is complete. The active objective for this micropasso is to close the stabilization roadmap in this working plan and tag the resulting governed commit as a milestone.
+The active objective for this micropasso is to close the governed CI workflow setup in this working plan after the successful `MR-0000/ADR-0007` decision, `MR-0000REQ-0022` requirement, workflow implementation and GitHub Actions verification.
 
 The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
 The immediate governance themes are now:
 
-1. keep `repo:check` healthy as the local safety baseline before routine commit/push operations;
-2. avoid adding broader CI, audit, lint, OpenAPI or runtime stacks without focused requirements and graph relations;
-3. choose the next workstream deliberately after the stabilization tag rather than mixing closure with feature work;
+1. keep `repo:check` healthy as the local and CI safety baseline before routine commit/push operations;
+2. avoid adding audit, license, secrets, deployment, OpenAPI or runtime stacks without focused requirements and graph relations;
+3. choose the next workstream deliberately after the CI closure rather than mixing closure with feature work;
 4. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
 5. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it.
 
 ## Current Micropasso
 
-Close the MR-0000 stabilization gate roadmap after implementation of the five P0 gates.
+Close the governed CI workflow setup after implementation and live verification of the minimal GitHub Actions workflow.
 
-This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0000REQ-0017` through `MR-0000REQ-0021` are now implemented and enforced by governed checks.
+This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0000/ADR-0007` and `MR-0000REQ-0022` are now implemented by `.github/workflows/governed-repository-check.yml`, which runs `npm ci` and `npm run repo:check` for pushes and pull requests targeting `master`.
 
-No new runner behavior, validator, runtime feature, OpenAPI contract, UI route, Base Analysis storage/API, STRIDE overlay, RBAC model or CI workflow is introduced by this step.
-
-After the governed commit, create and push the milestone tag:
-
-```text
-project-model-stabilization-gates-complete
-```
+No new runner behavior, validator, runtime feature, OpenAPI contract, UI route, Base Analysis storage/API, STRIDE overlay, RBAC model, deployment, audit, license or secrets scanning workflow is introduced by this step.
 
 ## Completed Milestones
 
@@ -149,7 +144,9 @@ project-model-stabilization-gates-complete
 - Lockfile registry and dependency integrity guard, implementing `MR-0000REQ-0019`, pushed as `77feeaa`.
 - Runtime source traceability coverage expansion to `backend/src` and `frontend/src`, implementing `MR-0000REQ-0020`, pushed as `4cabd04`.
 - Orphan governed body file detection, implementing `MR-0000REQ-0021`, pushed as `b5a9085`.
-- P0 stabilization gate sequence ready for milestone tag `project-model-stabilization-gates-complete`.
+- P0 stabilization gate sequence completed and milestone-tagged as `project-model-stabilization-gates-complete`, pushed as `ac543c1`.
+- Governed CI execution boundary decision and minimal CI requirement, pushed as `c153f5c`.
+- GitHub Actions governed repository check workflow, running `npm ci` and `npm run repo:check`, pushed as `21ca294` and verified operational on GitHub Actions.
 
 ## Pending Decisions
 
@@ -159,7 +156,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
 
-Before implementing the first Project Model Explorer components, define the MR-0002 read-only API/view-model contract so the first pages consume normalized backend/API data rather than repository files.
+Before implementing the next Project Documentation Explorer backend/frontend integration step, define the MR-0002/OpenAPI read-only HTTP contract so future pages consume canonical API/view-model payloads rather than repository files or ad-hoc snapshots.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -175,7 +172,7 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`. The focused negative-fixture coverage requirement for the repository operation governance guard exists as `MR-0000REQ-0007GOV-0004`. The direct Git operation exception policy exists as `MR-0000REQ-0007GOV-0005`: routine commits and pushes must use the governed runner, while direct Git is reserved for bootstrap, recovery, or emergency maintenance.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`. The focused negative-fixture coverage requirement for the repository operation governance guard exists as `MR-0000REQ-0007GOV-0004`. The direct Git operation exception policy exists as `MR-0000REQ-0007GOV-0005`: routine commits and pushes must use the governed runner, while direct Git is reserved for bootstrap, recovery, or emergency maintenance. The minimal governed CI repository check requirement exists as `MR-0000REQ-0022` and is implemented by `.github/workflows/governed-repository-check.yml`, which runs `npm ci` and `npm run repo:check` rather than duplicating the runner's internal gate list.
 
 The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. The Requirement governance registry provides controlled Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules. The corresponding validator has been implemented as `backend/tools/MR-0000/check-requirement-registry-fields.mjs`.
 
@@ -249,6 +246,8 @@ Expected future implementation areas include:
 - future body-format or placement validator for governed how-to guides if guide conventions require deterministic enforcement;
 - code RTM generator.
 
+The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
+
 ## Pending Validators / Gates
 
 Current governed local gates are:
@@ -281,7 +280,15 @@ The stabilization gate sequence from `MR-0000/ADR-0006` is now implemented:
 - `MR-0000REQ-0020` — runtime source traceability coverage expansion to `backend/src` and `frontend/src`;
 - `MR-0000REQ-0021` — orphan governed body file detection.
 
-Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains CI integration, OpenAPI contract validation, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the stabilization closure micropasso.
+The minimal GitHub Actions CI workflow now runs the governed local check path:
+
+```text
+.github/workflows/governed-repository-check.yml
+  npm ci
+  npm run repo:check
+```
+
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains OpenAPI contract validation, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the governed CI closure micropasso.
 
 ## Routine Repository Operation Policy
 
@@ -323,32 +330,24 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-Commit this working-plan closure through the governed runner, then create and push the milestone tag on the resulting commit.
+Commit this governed CI workflow setup closure through the governed runner.
 
 Recommended governed commit command:
 
 ```text
-npm run repo:commit-push -- "docs: close stabilization gate roadmap"
+npm run repo:commit-push -- "docs: close governed CI workflow setup"
 ```
 
-Recommended tag commands after the governed commit/push succeeds and the working tree is clean:
-
-```text
-git tag -a project-model-stabilization-gates-complete -m "Complete project model stabilization gates"
-git push origin project-model-stabilization-gates-complete
-git tag --points-at HEAD
-```
-
-The tag operation is an explicit milestone operation because the current governed runner supports repository check and commit/push, but does not yet provide a governed tag command.
-
-After the tag, the next safe path is to choose a new small workstream instead of continuing implicitly. Good candidates are:
+After this closure, the next safe path is to choose a new small workstream instead of continuing implicitly. Good candidates are:
 
 1. OpenAPI/read-only HTTP contract stub for the Project Documentation Explorer;
 2. frontend URL state for filters/detail deep-linking;
 3. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
-4. GitHub Actions CI that runs the already-governed checks.
+4. snapshot payload validation for the Project Documentation Explorer generated frontend snapshot.
 
-Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC or broad CI tooling until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
+The recommended next workstream is the OpenAPI/read-only HTTP contract stub for the Project Documentation Explorer, because it aligns the already-built backend view-model and frontend snapshot boundary with the intended backend HTTP contract before adding a live server.
+
+Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, deployment or broad CI tooling until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
 
 ## Security-analysis-ready Project Knowledge Pipeline Micropasso
 
