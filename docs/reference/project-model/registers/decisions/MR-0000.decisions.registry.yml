@@ -65,3 +65,12 @@ decisions:
     date: 2026-06-23
     macro_requirement_id: MR-0000
     body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0006_body.md
+
+  - id: ADR-0007
+    title: Governed CI execution boundary
+    status: accepted
+    decision_type: operational
+    author: Nicolo Ballestriero
+    date: 2026-06-23
+    macro_requirement_id: MR-0000
+    body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0007_body.md

@@ -231,3 +231,11 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0006
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0021_body.md
+
+  - id: MR-0000REQ-0022
+    title: Minimal governed CI repository check workflow
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0022_body.md

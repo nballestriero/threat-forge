@@ -209,6 +209,14 @@ nodes:
     type: Requirement
     label: Orphan governed body file detection
 
+  - id: ADR-0007
+    type: ADR
+    label: Governed CI execution boundary
+
+  - id: MR-0000REQ-0022
+    type: Requirement
+    label: Minimal governed CI repository check workflow
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -630,4 +638,16 @@ spo_relations:
   - subject: TOOL-check-orphan-governed-bodies
     predicate: verifies
     object: MR-0000REQ-0021
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0007
+
+  - subject: MR-0000REQ-0022
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0000REQ-0022
 
