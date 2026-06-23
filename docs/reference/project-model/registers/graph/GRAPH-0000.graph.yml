@@ -180,6 +180,11 @@ nodes:
     label: Code traceability checker
     path: backend/tools/MR-0000/check-code-traceability.mjs
 
+  - id: TOOL-check-orphan-governed-bodies
+    type: Tool
+    label: Orphan governed body checker
+    path: backend/tools/MR-0000/check-orphan-governed-bodies.mjs
+
   - id: ADR-0006
     type: ADR
     label: Stabilization gate expansion roadmap
@@ -609,4 +614,20 @@ spo_relations:
   - subject: TOOL-check-code-traceability
     predicate: verifies
     object: MR-0000REQ-0020
+
+  - subject: MR-0000REQ-0021
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0021
+
+  - subject: MR-0000REQ-0021
+    predicate: implemented_by
+    object: TOOL-check-orphan-governed-bodies
+
+  - subject: TOOL-check-orphan-governed-bodies
+    predicate: verifies
+    object: MR-0000REQ-0021
 

@@ -62,6 +62,10 @@ const expectedScripts = new Map([
     "node backend/tools/MR-0000/check-lockfile-integrity.mjs",
   ],
   [
+    "docs:orphan-governed-bodies",
+    "node backend/tools/MR-0000/check-orphan-governed-bodies.mjs",
+  ],
+  [
     "test:runtime",
     "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
   ],
@@ -73,6 +77,7 @@ const requiredRunnerTraceabilityMarkers = [
   "@implementsRequirement MR-0000REQ-0017",
   "@implementsRequirement MR-0000REQ-0018",
   "@implementsRequirement MR-0000REQ-0019",
+  "@implementsRequirement MR-0000REQ-0021",
   "@derivedFromDecision MR-0000/ADR-0003",
   "@macroRequirement MR-0000",
 ];
@@ -90,6 +95,7 @@ const requiredRunnerGateScripts = [
   "docs:requirement-body-format",
   "docs:append-first",
   "docs:lockfile-integrity",
+  "docs:orphan-governed-bodies",
   "frontend:build",
   "test:runtime",
 ];
@@ -117,6 +123,12 @@ const requiredGraphFragments = [
   "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0019",
   "subject: MR-0000REQ-0019\n    predicate: implemented_by\n    object: TOOL-check-lockfile-integrity",
   "subject: TOOL-check-lockfile-integrity\n    predicate: verifies\n    object: MR-0000REQ-0019",
+  "id: TOOL-check-orphan-governed-bodies",
+  "path: backend/tools/MR-0000/check-orphan-governed-bodies.mjs",
+  "subject: MR-0000REQ-0021\n    predicate: implemented_by\n    object: TOOL-run-governed-repository-operation",
+  "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0021",
+  "subject: MR-0000REQ-0021\n    predicate: implemented_by\n    object: TOOL-check-orphan-governed-bodies",
+  "subject: TOOL-check-orphan-governed-bodies\n    predicate: verifies\n    object: MR-0000REQ-0021",
 ];
 
 /**
