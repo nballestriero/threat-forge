@@ -1,0 +1,531 @@
+openapi: 3.1.0
+info:
+  title: threat-forge API
+  version: 0.1.0
+  description: Governed read-only API contract for the current threat-forge application surface.
+servers:
+  - url: /
+paths:
+  /api/project-model/documentation:
+    get:
+      operationId: listProjectDocumentation
+      summary: List governed Project Documentation Explorer items.
+      description: Returns a frontend-safe read-only collection view-model with backend-derived filter facets.
+      tags:
+        - ProjectDocumentationExplorer
+      parameters:
+        - $ref: '#/components/parameters/MacroRequirementFilter'
+        - $ref: '#/components/parameters/KindFilter'
+        - $ref: '#/components/parameters/StatusFilter'
+        - $ref: '#/components/parameters/RequirementTypeFilter'
+        - $ref: '#/components/parameters/ImplementationStateFilter'
+        - $ref: '#/components/parameters/AcceptanceStateFilter'
+        - $ref: '#/components/parameters/SearchFilter'
+      responses:
+        '200':
+          description: Filtered documentation collection view-model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentationExplorerViewModel'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/project-model/documentation/filters:
+    get:
+      operationId: listProjectDocumentationFilters
+      summary: List Project Documentation Explorer filter facets.
+      description: Returns available backend-derived filter facets for the current query and access decision.
+      tags:
+        - ProjectDocumentationExplorer
+      parameters:
+        - $ref: '#/components/parameters/MacroRequirementFilter'
+        - $ref: '#/components/parameters/KindFilter'
+        - $ref: '#/components/parameters/StatusFilter'
+        - $ref: '#/components/parameters/RequirementTypeFilter'
+        - $ref: '#/components/parameters/ImplementationStateFilter'
+        - $ref: '#/components/parameters/AcceptanceStateFilter'
+        - $ref: '#/components/parameters/SearchFilter'
+      responses:
+        '200':
+          description: Filter facet view-model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentationFiltersViewModel'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/project-model/documentation/entities/{id}:
+    get:
+      operationId: getProjectDocumentationEntity
+      summary: Get a Project Documentation Explorer entity detail.
+      description: Returns registry metadata, graph relations and backend-resolved governed Markdown body content for one entity.
+      tags:
+        - ProjectDocumentationExplorer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Governed entity identifier returned by the collection endpoint.
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Documentation entity detail view-model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentationDetailViewModel'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    MacroRequirementFilter:
+      name: mr
+      in: query
+      required: false
+      description: Comma-separated macro requirement identifiers such as MR-0002.
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 1
+      style: form
+      explode: false
+    KindFilter:
+      name: kind
+      in: query
+      required: false
+      description: Comma-separated governed entity kinds.
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/EntityKind'
+      style: form
+      explode: false
+    StatusFilter:
+      name: status
+      in: query
+      required: false
+      description: Comma-separated registry status values.
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 1
+      style: form
+      explode: false
+    RequirementTypeFilter:
+      name: requirement_type
+      in: query
+      required: false
+      description: Comma-separated requirement type values.
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 1
+      style: form
+      explode: false
+    ImplementationStateFilter:
+      name: implementation_state
+      in: query
+      required: false
+      description: Comma-separated implementation state values.
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/ImplementationState'
+      style: form
+      explode: false
+    AcceptanceStateFilter:
+      name: acceptance_state
+      in: query
+      required: false
+      description: Comma-separated acceptance state values.
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/AcceptanceState'
+      style: form
+      explode: false
+    SearchFilter:
+      name: q
+      in: query
+      required: false
+      description: Free-text search query applied by the backend service.
+      schema:
+        type: string
+  responses:
+    Forbidden:
+      description: The current principal lacks the required capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: The requested governed entity was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    EntityKind:
+      type: string
+      enum:
+        - macro_requirement
+        - requirement
+        - adr
+        - taxonomy
+        - graph_node
+        - document
+    ImplementationState:
+      type: string
+      enum:
+        - implemented
+        - partially_implemented
+        - not_implemented
+        - not_applicable
+        - unknown
+    AcceptanceState:
+      type: string
+      enum:
+        - accepted
+        - not_accepted
+        - not_applicable
+        - unknown
+    SourceReference:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - registry
+            - body
+            - graph
+            - taxonomy
+            - derived
+        path:
+          type: string
+          minLength: 1
+        id:
+          type: string
+          minLength: 1
+      required:
+        - kind
+    AccessDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        authenticated:
+          type: boolean
+        role:
+          type: string
+          minLength: 1
+        allowed:
+          type: boolean
+        required_capability:
+          type: string
+          minLength: 1
+        capabilities:
+          type: array
+          items:
+            type: string
+            minLength: 1
+      required:
+        - authenticated
+        - allowed
+        - required_capability
+        - capabilities
+    DocumentationQuery:
+      type: object
+      additionalProperties: false
+      properties:
+        mr:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        kind:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityKind'
+        status:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        requirement_type:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        implementation_state:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImplementationState'
+        acceptance_state:
+          type: array
+          items:
+            $ref: '#/components/schemas/AcceptanceState'
+        q:
+          type: string
+      required:
+        - mr
+        - kind
+        - status
+        - requirement_type
+        - implementation_state
+        - acceptance_state
+        - q
+    FilterValue:
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: string
+          minLength: 1
+        label:
+          type: string
+          minLength: 1
+        count:
+          type: integer
+          minimum: 0
+        description:
+          type: string
+        selected:
+          type: boolean
+      required:
+        - value
+        - label
+        - count
+        - selected
+    FilterFacet:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          enum:
+            - mr
+            - kind
+            - status
+            - requirement_type
+            - implementation_state
+            - acceptance_state
+        label:
+          type: string
+          minLength: 1
+        source:
+          type: string
+          enum:
+            - registry
+            - graph
+            - derived
+            - policy
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterValue'
+      required:
+        - id
+        - label
+        - source
+        - values
+    DocumentationItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        local_id:
+          type: string
+          minLength: 1
+        kind:
+          $ref: '#/components/schemas/EntityKind'
+        title:
+          type: string
+          minLength: 1
+        macro_requirement_id:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          minLength: 1
+        requirement_type:
+          type: string
+          minLength: 1
+        decision_type:
+          type: string
+          minLength: 1
+        priority:
+          type: string
+          minLength: 1
+        implementation_state:
+          $ref: '#/components/schemas/ImplementationState'
+        acceptance_state:
+          $ref: '#/components/schemas/AcceptanceState'
+        related_requirement_ids:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        related_adr_ids:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        source_references:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceReference'
+      required:
+        - id
+        - kind
+        - title
+        - implementation_state
+        - acceptance_state
+        - related_requirement_ids
+        - related_adr_ids
+        - source_references
+    DocumentationBodyViewModel:
+      type: object
+      additionalProperties: false
+      properties:
+        format:
+          type: string
+          const: markdown
+        path:
+          type: string
+          minLength: 1
+        content_markdown:
+          type: string
+        available:
+          type: boolean
+        missing_reason:
+          type: string
+          minLength: 1
+      required:
+        - format
+        - path
+        - content_markdown
+        - available
+    DocumentationSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        total_items:
+          type: integer
+          minimum: 0
+        filtered_items:
+          type: integer
+          minimum: 0
+        counts_by_kind:
+          type: object
+          additionalProperties:
+            type: integer
+            minimum: 0
+      required:
+        - total_items
+        - filtered_items
+        - counts_by_kind
+    GraphRelation:
+      type: object
+      additionalProperties: false
+      properties:
+        subject:
+          type: string
+          minLength: 1
+        predicate:
+          type: string
+          minLength: 1
+        object:
+          type: string
+          minLength: 1
+      required:
+        - subject
+        - predicate
+        - object
+    DocumentationExplorerViewModel:
+      type: object
+      additionalProperties: false
+      properties:
+        access:
+          $ref: '#/components/schemas/AccessDecision'
+        query:
+          $ref: '#/components/schemas/DocumentationQuery'
+        summary:
+          $ref: '#/components/schemas/DocumentationSummary'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterFacet'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentationItem'
+      required:
+        - access
+        - query
+        - summary
+        - filters
+        - items
+    DocumentationFiltersViewModel:
+      type: object
+      additionalProperties: false
+      properties:
+        access:
+          $ref: '#/components/schemas/AccessDecision'
+        query:
+          $ref: '#/components/schemas/DocumentationQuery'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterFacet'
+      required:
+        - access
+        - query
+        - filters
+    DocumentationDetailViewModel:
+      type: object
+      additionalProperties: false
+      properties:
+        access:
+          $ref: '#/components/schemas/AccessDecision'
+        item:
+          $ref: '#/components/schemas/DocumentationItem'
+        incoming_relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphRelation'
+        outgoing_relations:
+          type: array
+          items:
+            $ref: '#/components/schemas/GraphRelation'
+        body:
+          oneOf:
+            - $ref: '#/components/schemas/DocumentationBodyViewModel'
+            - type: 'null'
+      required:
+        - access
+        - item
+        - incoming_relations
+        - outgoing_relations
+        - body
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        error:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+      required:
+        - error
+        - message

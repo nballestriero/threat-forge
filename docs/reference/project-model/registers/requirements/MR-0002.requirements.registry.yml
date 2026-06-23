@@ -358,3 +358,10 @@ requirements:
     derived_from_decision_id: ADR-0011
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0044_body.md
 
+  - id: MR-0002REQ-0045
+    title: Project Documentation Explorer governed OpenAPI contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0045_body.md

@@ -103,3 +103,11 @@ decisions:
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0011_body.md
 
+  - id: ADR-0012
+    title: Project Documentation Explorer OpenAPI read-only contract
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-23
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0012_body.md
