@@ -47,38 +47,42 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-Stabilize the first Governance Console and Project Documentation Explorer foundation before opening larger product/runtime tracks.
+The first Governance Console and Project Documentation Explorer foundation has now been stabilized through the P0 gate sequence introduced by `MR-0000/ADR-0006`.
 
-The current semantic state includes a backend Project Documentation Explorer module, body-detail view-model support, a prototype validation flow, a React/Vite Governance Console shell, a shared MR-0002 design system, semantic icon tokens and a pragmatic frontend state/data-access pattern. The latest governed project state before this planning update is expected at `HEAD 1dbed71` with commit `docs: define pragmatic frontend state and data access pattern`; live Git commands remain authoritative.
+The current semantic state includes:
 
-Two independent technical reviews confirmed that the overall Doc-as-Code/security-first architecture is coherent, but identified the next risk area as insufficient automatic verification around runtime code, frontend build behavior, dependency integrity, source traceability coverage, orphan bodies, CI and tests.
+- backend Project Documentation Explorer read-only filters and body-detail view-model support;
+- prototype validation for top filters, list/detail switching and body rendering;
+- React/Vite Governance Console shell and Project Documentation Explorer slice;
+- shared MR-0002 design system and semantic icon layer;
+- pragmatic frontend state/data-access boundary;
+- governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection.
 
-The active objective is therefore to introduce a small governed stabilization roadmap under `MR-0000` before adding large new functionality. The immediate implementation sequence should prioritize fast local gates that catch real regressions before commit:
+The P0 stabilization sequence is complete. The active objective for this micropasso is to close the stabilization roadmap in this working plan and tag the resulting governed commit as a milestone.
 
-1. add `frontend:build` to the governed runner;
-2. add a minimal unit test gate for stable runtime logic;
-3. add a lockfile registry/integrity guard;
-4. extend source-code traceability coverage to `backend/src` and `frontend/src` after graph nodes exist;
-5. add orphan governed body detection.
-
-The Base Analysis runtime/storage/API direction remains parked. It should resume only after the documentation explorer foundation and stabilization gates are healthy.
+The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
 The immediate governance themes are now:
 
-1. treat independent review findings as governed roadmap inputs, not loose notes;
-2. keep stabilization gates small, deterministic and fast enough for routine `repo:check` use;
-3. avoid adding heavy lint/type/test/supply-chain stacks without a focused requirement and measured benefit;
-4. maintain document-first order: ADR/Requirement/Graph before each new gate implementation;
-5. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it;
-6. postpone Base Analysis, STRIDE overlays, OpenAPI completeness and complex RBAC until the first console and gate foundation is stable.
+1. keep `repo:check` healthy as the local safety baseline before routine commit/push operations;
+2. avoid adding broader CI, audit, lint, OpenAPI or runtime stacks without focused requirements and graph relations;
+3. choose the next workstream deliberately after the stabilization tag rather than mixing closure with feature work;
+4. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
+5. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it.
 
 ## Current Micropasso
 
-Define the MR-0000 stabilization gate expansion roadmap and align the working plan with the two independent reviews.
+Close the MR-0000 stabilization gate roadmap after implementation of the five P0 gates.
 
-This micropasso adds the governance decision and requirements for the next stabilization sequence: frontend build gate, first unit test gate, lockfile registry/integrity guard, runtime source traceability expansion and orphan governed body detection.
+This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0000REQ-0017` through `MR-0000REQ-0021` are now implemented and enforced by governed checks.
 
-The scope is intentionally document-only: no runner change, test file, lockfile scanner, source-traceability expansion, body orphan checker, CI workflow, OpenAPI contract, parser replacement, HTTP server, frontend route change or Base Analysis implementation is introduced in this step.
+No new runner behavior, validator, runtime feature, OpenAPI contract, UI route, Base Analysis storage/API, STRIDE overlay, RBAC model or CI workflow is introduced by this step.
+
+After the governed commit, create and push the milestone tag:
+
+```text
+project-model-stabilization-gates-complete
+```
 
 ## Completed Milestones
 
@@ -139,6 +143,13 @@ The scope is intentionally document-only: no runner change, test file, lockfile 
 - Shared frontend design system and semantic icon registry, pushed as `2ad4904`.
 - Governance Console shell and Project Documentation Explorer React slice, pushed as `be3acf0`.
 - Pragmatic frontend state and data access pattern, pushed as `1dbed71`.
+
+- Frontend build gate added to the governed runner, implementing `MR-0000REQ-0017`, pushed as `ca0a682`.
+- Minimal runtime unit test gate for Project Documentation Explorer service logic, implementing `MR-0000REQ-0018`, pushed as `02bd036`.
+- Lockfile registry and dependency integrity guard, implementing `MR-0000REQ-0019`, pushed as `77feeaa`.
+- Runtime source traceability coverage expansion to `backend/src` and `frontend/src`, implementing `MR-0000REQ-0020`, pushed as `4cabd04`.
+- Orphan governed body file detection, implementing `MR-0000REQ-0021`, pushed as `b5a9085`.
+- P0 stabilization gate sequence ready for milestone tag `project-model-stabilization-gates-complete`.
 
 ## Pending Decisions
 
@@ -240,7 +251,7 @@ Expected future implementation areas include:
 
 ## Pending Validators / Gates
 
-Currently expected gates remain:
+Current governed local gates are:
 
 ```text
 npm run docs:graph-format
@@ -255,22 +266,22 @@ npm run docs:markdown-body-parser
 npm run docs:adr-body-format
 npm run docs:requirement-body-format
 npm run docs:append-first
+npm run docs:lockfile-integrity
+npm run docs:orphan-governed-bodies
+npm run frontend:build
+npm run test:runtime
 npm run repo:check
 ```
 
-The first stabilization gates now planned by `MR-0000/ADR-0006` are:
+The stabilization gate sequence from `MR-0000/ADR-0006` is now implemented:
 
-```text
-npm run frontend:build
-node --test backend/src/**/*.test.mjs
-node backend/tools/MR-0000/check-lockfile-registry-integrity.mjs
-expanded docs:code-traceability coverage for backend/src and frontend/src
-node backend/tools/MR-0000/check-orphan-governed-bodies.mjs
-```
+- `MR-0000REQ-0017` — frontend build gate in the governed runner;
+- `MR-0000REQ-0018` — minimal runtime unit test gate;
+- `MR-0000REQ-0019` — lockfile registry and dependency integrity guard;
+- `MR-0000REQ-0020` — runtime source traceability coverage expansion to `backend/src` and `frontend/src`;
+- `MR-0000REQ-0021` — orphan governed body file detection.
 
-Future gates should be added only after their requirements, graph relations and implementation artifacts exist.
-
-The current gate list already includes ADR registry fields, Requirement registry fields, code traceability, repository operation governance, the body-format registry, shared Markdown parser, ADR body format, Requirement body format, append-first checks and the governed repository check runner. The next gate additions should prioritize immediate feedback on runtime/frontend breakage and supply-chain drift before slower or broader checks such as Playwright accessibility, full linting, license checks, secret scanning or CI-only E2E checks.
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains CI integration, OpenAPI contract validation, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the stabilization closure micropasso.
 
 ## Routine Repository Operation Policy
 
@@ -312,29 +323,32 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-The next safe path is to apply the stabilization roadmap document update, verify with `npm run repo:check`, and commit through the governed runner.
+Commit this working-plan closure through the governed runner, then create and push the milestone tag on the resulting commit.
 
-Recommended commit message:
-
-```text
-docs: define stabilization gate roadmap and update workplan
-```
-
-After this document-only step is committed, implement the first stabilization gate as a separate micropasso:
+Recommended governed commit command:
 
 ```text
-tooling: add frontend build gate to governed runner
+npm run repo:commit-push -- "docs: close stabilization gate roadmap"
 ```
 
-Then proceed in small ordered micropassi:
+Recommended tag commands after the governed commit/push succeeds and the working tree is clean:
 
-1. add the frontend build gate to `repo:check`;
-2. add the first minimal unit test gate for stable Project Documentation Explorer logic;
-3. add a lockfile registry/integrity guard;
-4. add graph nodes and extend code traceability to `backend/src` and `frontend/src`;
-5. add orphan governed body detection.
+```text
+git tag -a project-model-stabilization-gates-complete -m "Complete project model stabilization gates"
+git push origin project-model-stabilization-gates-complete
+git tag --points-at HEAD
+```
 
-Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, OpenAPI completeness or broad CI tooling until the first stabilization gates are in place.
+The tag operation is an explicit milestone operation because the current governed runner supports repository check and commit/push, but does not yet provide a governed tag command.
+
+After the tag, the next safe path is to choose a new small workstream instead of continuing implicitly. Good candidates are:
+
+1. OpenAPI/read-only HTTP contract stub for the Project Documentation Explorer;
+2. frontend URL state for filters/detail deep-linking;
+3. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
+4. GitHub Actions CI that runs the already-governed checks.
+
+Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC or broad CI tooling until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
 
 ## Security-analysis-ready Project Knowledge Pipeline Micropasso
 
