@@ -217,6 +217,11 @@ nodes:
     type: Requirement
     label: Minimal governed CI repository check workflow
 
+  - id: TOOL-github-actions-governed-repository-check
+    type: Tool
+    label: GitHub Actions governed repository check workflow
+    path: .github/workflows/governed-repository-check.yml
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -649,5 +654,13 @@ spo_relations:
 
   - subject: ADR-0007
     predicate: justifies
+    object: MR-0000REQ-0022
+
+  - subject: MR-0000REQ-0022
+    predicate: implemented_by
+    object: TOOL-github-actions-governed-repository-check
+
+  - subject: TOOL-github-actions-governed-repository-check
+    predicate: verifies
     object: MR-0000REQ-0022
 

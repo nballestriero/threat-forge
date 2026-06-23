@@ -1,0 +1,35 @@
+# Implements requirement: MR-0000REQ-0022
+# Derived from decision: MR-0000/ADR-0007
+# Macro requirement: MR-0000
+name: Governed repository check
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  governed-repository-check:
+    name: Governed repository check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies from lockfile
+        run: npm ci
+
+      - name: Run governed repository check
+        run: npm run repo:check
