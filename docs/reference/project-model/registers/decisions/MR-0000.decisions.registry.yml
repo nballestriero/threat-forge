@@ -74,3 +74,13 @@ decisions:
     date: 2026-06-23
     macro_requirement_id: MR-0000
     body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0007_body.md
+
+
+  - id: ADR-0008
+    title: OpenAPI structural validation gate without additional dependencies
+    status: accepted
+    decision_type: operational
+    author: Nicolo Ballestriero
+    date: 2026-06-23
+    macro_requirement_id: MR-0000
+    body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0008_body.md

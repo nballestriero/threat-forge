@@ -19,6 +19,7 @@
     "docs:append-first": "node backend/tools/MR-0000/check-append-first-records.mjs",
     "docs:orphan-governed-bodies": "node backend/tools/MR-0000/check-orphan-governed-bodies.mjs",
     "docs:lockfile-integrity": "node backend/tools/MR-0000/check-lockfile-integrity.mjs",
+    "docs:openapi-contract": "node backend/tools/MR-0000/check-openapi-contract.mjs",
     "repo:check": "node backend/tools/MR-0000/run-governed-repository-operation.mjs --check",
     "repo:commit-push": "node backend/tools/MR-0000/run-governed-repository-operation.mjs --commit-push",
     "frontend:project-documentation-explorer:snapshot": "node frontend/tools/export-project-documentation-explorer-snapshot.mjs",

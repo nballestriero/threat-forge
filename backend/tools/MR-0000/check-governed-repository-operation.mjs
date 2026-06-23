@@ -66,6 +66,10 @@ const expectedScripts = new Map([
     "node backend/tools/MR-0000/check-orphan-governed-bodies.mjs",
   ],
   [
+    "docs:openapi-contract",
+    "node backend/tools/MR-0000/check-openapi-contract.mjs",
+  ],
+  [
     "test:runtime",
     "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
   ],
@@ -78,6 +82,7 @@ const requiredRunnerTraceabilityMarkers = [
   "@implementsRequirement MR-0000REQ-0018",
   "@implementsRequirement MR-0000REQ-0019",
   "@implementsRequirement MR-0000REQ-0021",
+  "@implementsRequirement MR-0000REQ-0023",
   "@derivedFromDecision MR-0000/ADR-0003",
   "@macroRequirement MR-0000",
 ];
@@ -96,6 +101,7 @@ const requiredRunnerGateScripts = [
   "docs:append-first",
   "docs:lockfile-integrity",
   "docs:orphan-governed-bodies",
+  "docs:openapi-contract",
   "frontend:build",
   "test:runtime",
 ];
@@ -129,6 +135,13 @@ const requiredGraphFragments = [
   "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0021",
   "subject: MR-0000REQ-0021\n    predicate: implemented_by\n    object: TOOL-check-orphan-governed-bodies",
   "subject: TOOL-check-orphan-governed-bodies\n    predicate: verifies\n    object: MR-0000REQ-0021",
+
+  "id: TOOL-check-openapi-contract",
+  "path: backend/tools/MR-0000/check-openapi-contract.mjs",
+  "subject: MR-0000REQ-0023\n    predicate: implemented_by\n    object: TOOL-run-governed-repository-operation",
+  "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0023",
+  "subject: MR-0000REQ-0023\n    predicate: implemented_by\n    object: TOOL-check-openapi-contract",
+  "subject: TOOL-check-openapi-contract\n    predicate: verifies\n    object: MR-0000REQ-0023",
 ];
 
 /**

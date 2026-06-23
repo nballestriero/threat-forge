@@ -239,3 +239,12 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0007
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0022_body.md
+
+
+  - id: MR-0000REQ-0023
+    title: OpenAPI contract structural validation gate
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0023_body.md

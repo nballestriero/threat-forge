@@ -222,6 +222,19 @@ nodes:
     label: GitHub Actions governed repository check workflow
     path: .github/workflows/governed-repository-check.yml
 
+  - id: ADR-0008
+    type: ADR
+    label: OpenAPI structural validation gate without additional dependencies
+
+  - id: MR-0000REQ-0023
+    type: Requirement
+    label: OpenAPI contract structural validation gate
+
+  - id: TOOL-check-openapi-contract
+    type: Tool
+    label: OpenAPI contract structure checker
+    path: backend/tools/MR-0000/check-openapi-contract.mjs
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -664,3 +677,31 @@ spo_relations:
     predicate: verifies
     object: MR-0000REQ-0022
 
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0008
+
+  - subject: MR-0000REQ-0023
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0000REQ-0023
+
+  - subject: MR-0000REQ-0023
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0023
+
+  - subject: MR-0000REQ-0023
+    predicate: implemented_by
+    object: TOOL-check-openapi-contract
+
+  - subject: TOOL-check-openapi-contract
+    predicate: verifies
+    object: MR-0000REQ-0023
