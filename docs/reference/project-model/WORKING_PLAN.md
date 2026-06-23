@@ -59,25 +59,27 @@ The current semantic state includes:
 - governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection;
 - a minimal GitHub Actions workflow that installs from the lockfile and executes the governed `npm run repo:check` path on pushes and pull requests to `master`.
 
-The active objective for this micropasso is to close the governed CI workflow setup in this working plan after the successful `MR-0000/ADR-0007` decision, `MR-0000REQ-0022` requirement, workflow implementation and GitHub Actions verification.
+The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, plus a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`.
+
+The active objective for this micropasso is to close the OpenAPI contract and structural validation gate setup in this working plan after the successful contract definition and runner integration.
 
 The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
 The immediate governance themes are now:
 
 1. keep `repo:check` healthy as the local and CI safety baseline before routine commit/push operations;
-2. avoid adding audit, license, secrets, deployment, OpenAPI or runtime stacks without focused requirements and graph relations;
-3. choose the next workstream deliberately after the CI closure rather than mixing closure with feature work;
+2. preserve the OpenAPI contract as the canonical HTTP boundary before adding a live HTTP server;
+3. avoid adding audit, license, secrets, deployment, strict OpenAPI validation dependencies or runtime stacks without focused requirements and graph relations;
 4. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
 5. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it.
 
 ## Current Micropasso
 
-Close the governed CI workflow setup after implementation and live verification of the minimal GitHub Actions workflow.
+Close the Project Documentation Explorer OpenAPI contract and structural validation gate setup after implementation of the governed read-only contract and the dependency-free `docs:openapi-contract` runner gate.
 
-This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0000/ADR-0007` and `MR-0000REQ-0022` are now implemented by `.github/workflows/governed-repository-check.yml`, which runs `npm ci` and `npm run repo:check` for pushes and pull requests targeting `master`.
+This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0002/ADR-0012` and `MR-0002REQ-0045` define the Project Documentation Explorer read-only OpenAPI boundary, and that `MR-0000/ADR-0008` and `MR-0000REQ-0023` validate that contract structurally through `npm run docs:openapi-contract`.
 
-No new runner behavior, validator, runtime feature, OpenAPI contract, UI route, Base Analysis storage/API, STRIDE overlay, RBAC model, deployment, audit, license or secrets scanning workflow is introduced by this step.
+No new server HTTP implementation, strict OpenAPI dependency, UI route, Base Analysis storage/API, STRIDE overlay, RBAC model, deployment, audit, license or secrets scanning workflow is introduced by this step.
 
 ## Completed Milestones
 
@@ -147,6 +149,9 @@ No new runner behavior, validator, runtime feature, OpenAPI contract, UI route, 
 - P0 stabilization gate sequence completed and milestone-tagged as `project-model-stabilization-gates-complete`, pushed as `ac543c1`.
 - Governed CI execution boundary decision and minimal CI requirement, pushed as `c153f5c`.
 - GitHub Actions governed repository check workflow, running `npm ci` and `npm run repo:check`, pushed as `21ca294` and verified operational on GitHub Actions.
+- Governed CI workflow setup closed in the working plan, pushed as `cb28de2`.
+- Project Documentation Explorer OpenAPI read-only contract, pushed as `c2d09be`.
+- OpenAPI structural validation gate, implementing `MR-0000REQ-0023`, pushed as `70ed776`.
 
 ## Pending Decisions
 
@@ -156,7 +161,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
 
-Before implementing the next Project Documentation Explorer backend/frontend integration step, define the MR-0002/OpenAPI read-only HTTP contract so future pages consume canonical API/view-model payloads rather than repository files or ad-hoc snapshots.
+The MR-0002/OpenAPI read-only HTTP contract for the Project Documentation Explorer now exists as `MR-0002/ADR-0012`, `MR-0002REQ-0045`, and `docs/reference/api/openapi/threat-forge.openapi.yml`. Future HTTP server implementation must conform to this contract rather than introducing ad-hoc routes or payloads.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -172,7 +177,7 @@ The focused append-first protected record guard requirement has been declared an
 
 The focused confirmation-manifest requirement has been declared and implemented. A schema contract for the confirmation manifest format has been introduced. The confirmation-manifest storage model has been clarified as self-contained YAML records. The append-first guard now discovers, validates, and matches confirmation manifests against protected `modify` or `delete` changes.
 
-The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`. The focused negative-fixture coverage requirement for the repository operation governance guard exists as `MR-0000REQ-0007GOV-0004`. The direct Git operation exception policy exists as `MR-0000REQ-0007GOV-0005`: routine commits and pushes must use the governed runner, while direct Git is reserved for bootstrap, recovery, or emergency maintenance. The minimal governed CI repository check requirement exists as `MR-0000REQ-0022` and is implemented by `.github/workflows/governed-repository-check.yml`, which runs `npm ci` and `npm run repo:check` rather than duplicating the runner's internal gate list.
+The broad MR-0000 gate runner requirement already exists as `MR-0000REQ-0007`. The focused specialized gate-runner requirement exists as `MR-0000REQ-0007GOV-0001`. The governed commit-push execution requirement exists as `MR-0000REQ-0007GOV-0002`, and the repository operation runner implementation cites both specialized requirements. The governed repository operation command anti-regression guard requirement exists as `MR-0000REQ-0007GOV-0003`. The focused negative-fixture coverage requirement for the repository operation governance guard exists as `MR-0000REQ-0007GOV-0004`. The direct Git operation exception policy exists as `MR-0000REQ-0007GOV-0005`: routine commits and pushes must use the governed runner, while direct Git is reserved for bootstrap, recovery, or emergency maintenance. The minimal governed CI repository check requirement exists as `MR-0000REQ-0022` and is implemented by `.github/workflows/governed-repository-check.yml`, which runs `npm ci` and `npm run repo:check` rather than duplicating the runner's internal gate list. The OpenAPI contract structural validation requirement exists as `MR-0000REQ-0023` and is implemented by `backend/tools/MR-0000/check-openapi-contract.mjs` through `npm run docs:openapi-contract`.
 
 The Requirement governance registry requirement now exists as `MR-0001REQ-0025`. Its focused specialized validation requirement exists as `MR-0001REQ-0025GOV-0001`. The Requirement governance registry provides controlled Requirement status values, Requirement type values, specialized Requirement suffix families, and specialized parent rules. The corresponding validator has been implemented as `backend/tools/MR-0000/check-requirement-registry-fields.mjs`.
 
@@ -209,6 +214,12 @@ These requirements define the documentation and governance contract only. Future
 - `MR-0001REQ-0026GOV-0002` — LLM governed development guide.
 
 The guide documents live in `docs/how-to/governed-development/` and are referenced from `GRAPH-0001` as `Document` nodes.
+
+`MR-0002/ADR-0012` defines the Project Documentation Explorer read-only OpenAPI contract. The derived contract requirement is:
+
+- `MR-0002REQ-0045` — Project Documentation Explorer governed OpenAPI contract.
+
+The contract is stored at `docs/reference/api/openapi/threat-forge.openapi.yml` and currently covers the read-only documentation list, filters, and entity detail operations. It does not implement a live HTTP server.
 
 `MR-0002/ADR-0001` defines the reusable application architecture for backend and frontend modules. The first derived architecture requirements are:
 
@@ -248,6 +259,8 @@ Expected future implementation areas include:
 
 The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
 
+The Project Documentation Explorer OpenAPI contract and dependency-free structural validation gate have been implemented. Future strict OpenAPI validation with a dedicated third-party tool must be introduced through a separate decision and dependency governance step.
+
 ## Pending Validators / Gates
 
 Current governed local gates are:
@@ -267,6 +280,7 @@ npm run docs:requirement-body-format
 npm run docs:append-first
 npm run docs:lockfile-integrity
 npm run docs:orphan-governed-bodies
+npm run docs:openapi-contract
 npm run frontend:build
 npm run test:runtime
 npm run repo:check
@@ -288,7 +302,9 @@ The minimal GitHub Actions CI workflow now runs the governed local check path:
   npm run repo:check
 ```
 
-Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains OpenAPI contract validation, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the governed CI closure micropasso.
+The OpenAPI structural validation gate now checks `docs/reference/api/openapi/threat-forge.openapi.yml` for the expected read-only operations, required schemas, required operation metadata and allowed HTTP methods.
+
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the OpenAPI structural gate closure micropasso.
 
 ## Routine Repository Operation Policy
 
@@ -330,22 +346,23 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-Commit this governed CI workflow setup closure through the governed runner.
+Commit this OpenAPI contract and structural validation gate closure through the governed runner.
 
 Recommended governed commit command:
 
 ```text
-npm run repo:commit-push -- "docs: close governed CI workflow setup"
+npm run repo:commit-push -- "docs: close OpenAPI contract validation setup"
 ```
 
-After this closure, the next safe path is to choose a new small workstream instead of continuing implicitly. Good candidates are:
+After this closure, the next safe path is to choose a new small implementation workstream instead of continuing implicitly. Good candidates are:
 
-1. OpenAPI/read-only HTTP contract stub for the Project Documentation Explorer;
-2. frontend URL state for filters/detail deep-linking;
-3. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
-4. snapshot payload validation for the Project Documentation Explorer generated frontend snapshot.
+1. backend Project Documentation Explorer read-only HTTP server that conforms to the existing OpenAPI contract;
+2. strict OpenAPI validation policy and tool decision before introducing a third-party OpenAPI validator;
+3. frontend URL state for filters/detail deep-linking;
+4. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
+5. snapshot payload validation for the Project Documentation Explorer generated frontend snapshot.
 
-The recommended next workstream is the OpenAPI/read-only HTTP contract stub for the Project Documentation Explorer, because it aligns the already-built backend view-model and frontend snapshot boundary with the intended backend HTTP contract before adding a live server.
+The recommended next workstream is the backend Project Documentation Explorer read-only HTTP server, because the API contract and structural contract gate now exist. The implementation must keep controller/service/port/adapter boundaries and must not let controllers instantiate concrete adapters.
 
 Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, deployment or broad CI tooling until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
 
