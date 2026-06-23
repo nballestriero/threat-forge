@@ -170,6 +170,11 @@ nodes:
     label: Project Documentation Explorer service unit tests
     path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs
 
+  - id: TOOL-check-lockfile-integrity
+    type: Tool
+    label: Lockfile registry and integrity checker
+    path: backend/tools/MR-0000/check-lockfile-integrity.mjs
+
   - id: ADR-0006
     type: ADR
     label: Stabilization gate expansion roadmap
@@ -575,4 +580,20 @@ spo_relations:
   - subject: TOOL-project-documentation-explorer-service-test
     predicate: verifies
     object: MR-0000REQ-0018
+
+  - subject: MR-0000REQ-0019
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0019
+
+  - subject: MR-0000REQ-0019
+    predicate: implemented_by
+    object: TOOL-check-lockfile-integrity
+
+  - subject: TOOL-check-lockfile-integrity
+    predicate: verifies
+    object: MR-0000REQ-0019
 

@@ -58,6 +58,10 @@ const expectedScripts = new Map([
     "node backend/tools/MR-0000/check-governed-repository-operation.mjs",
   ],
   [
+    "docs:lockfile-integrity",
+    "node backend/tools/MR-0000/check-lockfile-integrity.mjs",
+  ],
+  [
     "test:runtime",
     "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
   ],
@@ -68,6 +72,7 @@ const requiredRunnerTraceabilityMarkers = [
   "@implementsRequirement MR-0000REQ-0007GOV-0002",
   "@implementsRequirement MR-0000REQ-0017",
   "@implementsRequirement MR-0000REQ-0018",
+  "@implementsRequirement MR-0000REQ-0019",
   "@derivedFromDecision MR-0000/ADR-0003",
   "@macroRequirement MR-0000",
 ];
@@ -84,6 +89,7 @@ const requiredRunnerGateScripts = [
   "docs:adr-body-format",
   "docs:requirement-body-format",
   "docs:append-first",
+  "docs:lockfile-integrity",
   "frontend:build",
   "test:runtime",
 ];
@@ -105,6 +111,12 @@ const requiredGraphFragments = [
   "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0018",
   "subject: MR-0000REQ-0018\n    predicate: implemented_by\n    object: TOOL-project-documentation-explorer-service-test",
   "subject: TOOL-project-documentation-explorer-service-test\n    predicate: verifies\n    object: MR-0000REQ-0018",
+  "id: TOOL-check-lockfile-integrity",
+  "path: backend/tools/MR-0000/check-lockfile-integrity.mjs",
+  "subject: MR-0000REQ-0019\n    predicate: implemented_by\n    object: TOOL-run-governed-repository-operation",
+  "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0019",
+  "subject: MR-0000REQ-0019\n    predicate: implemented_by\n    object: TOOL-check-lockfile-integrity",
+  "subject: TOOL-check-lockfile-integrity\n    predicate: verifies\n    object: MR-0000REQ-0019",
 ];
 
 /**
