@@ -165,6 +165,11 @@ nodes:
     path: backend/tools/MR-0000/check-governed-repository-operation.mjs
 
 
+  - id: TOOL-project-documentation-explorer-service-test
+    type: Tool
+    label: Project Documentation Explorer service unit tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs
+
   - id: ADR-0006
     type: ADR
     label: Stabilization gate expansion roadmap
@@ -554,3 +559,20 @@ spo_relations:
   - subject: TOOL-run-governed-repository-operation
     predicate: verifies
     object: MR-0000REQ-0017
+
+  - subject: MR-0000REQ-0018
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0018
+
+  - subject: MR-0000REQ-0018
+    predicate: implemented_by
+    object: TOOL-project-documentation-explorer-service-test
+
+  - subject: TOOL-project-documentation-explorer-service-test
+    predicate: verifies
+    object: MR-0000REQ-0018
+

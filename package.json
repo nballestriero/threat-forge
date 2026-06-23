@@ -22,6 +22,7 @@
     "frontend:project-documentation-explorer:snapshot": "node frontend/tools/export-project-documentation-explorer-snapshot.mjs",
     "frontend:dev": "npm run frontend:project-documentation-explorer:snapshot && vite --host 127.0.0.1",
     "frontend:build": "npm run frontend:project-documentation-explorer:snapshot && vite build",
+    "test:runtime": "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
     "frontend:preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {

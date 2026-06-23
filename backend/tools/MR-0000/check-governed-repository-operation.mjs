@@ -57,12 +57,17 @@ const expectedScripts = new Map([
     "docs:repo-operation-governance",
     "node backend/tools/MR-0000/check-governed-repository-operation.mjs",
   ],
+  [
+    "test:runtime",
+    "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
+  ],
 ]);
 
 const requiredRunnerTraceabilityMarkers = [
   "@implementsRequirement MR-0000REQ-0007GOV-0001",
   "@implementsRequirement MR-0000REQ-0007GOV-0002",
   "@implementsRequirement MR-0000REQ-0017",
+  "@implementsRequirement MR-0000REQ-0018",
   "@derivedFromDecision MR-0000/ADR-0003",
   "@macroRequirement MR-0000",
 ];
@@ -80,6 +85,7 @@ const requiredRunnerGateScripts = [
   "docs:requirement-body-format",
   "docs:append-first",
   "frontend:build",
+  "test:runtime",
 ];
 
 const requiredGraphFragments = [
@@ -93,6 +99,12 @@ const requiredGraphFragments = [
   "subject: TOOL-check-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0007GOV-0004",
   "subject: MR-0000REQ-0017\n    predicate: implemented_by\n    object: TOOL-run-governed-repository-operation",
   "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0017",
+  "id: TOOL-project-documentation-explorer-service-test",
+  "path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
+  "subject: MR-0000REQ-0018\n    predicate: implemented_by\n    object: TOOL-run-governed-repository-operation",
+  "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0018",
+  "subject: MR-0000REQ-0018\n    predicate: implemented_by\n    object: TOOL-project-documentation-explorer-service-test",
+  "subject: TOOL-project-documentation-explorer-service-test\n    predicate: verifies\n    object: MR-0000REQ-0018",
 ];
 
 /**

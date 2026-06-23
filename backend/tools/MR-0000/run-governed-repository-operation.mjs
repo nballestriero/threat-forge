@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0000REQ-0007GOV-0001
  * @implementsRequirement MR-0000REQ-0007GOV-0002
  * @implementsRequirement MR-0000REQ-0017
+ * @implementsRequirement MR-0000REQ-0018
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @macroRequirement MR-0000
@@ -59,6 +60,7 @@ const gateCommands = [
   { label: "Requirement body format", command: "npm", args: ["run", "docs:requirement-body-format"] },
   { label: "Append-first protected records", command: "npm", args: ["run", "docs:append-first"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
+  { label: "Runtime unit tests", command: "npm", args: ["run", "test:runtime"] },
 ];
 
 /**
@@ -231,6 +233,7 @@ if (mode === "--check") {
   console.log("Implemented requirement: MR-0000REQ-0007GOV-0001");
   console.log("Implemented requirement: MR-0000REQ-0007GOV-0002");
   console.log("Implemented requirement: MR-0000REQ-0017");
+  console.log("Implemented requirement: MR-0000REQ-0018");
   process.exit(0);
 }
 
@@ -241,3 +244,4 @@ console.log("\nGoverned commit-push completed.");
 console.log("Implemented requirement: MR-0000REQ-0007GOV-0001");
 console.log("Implemented requirement: MR-0000REQ-0007GOV-0002");
 console.log("Implemented requirement: MR-0000REQ-0017");
+console.log("Implemented requirement: MR-0000REQ-0018");
