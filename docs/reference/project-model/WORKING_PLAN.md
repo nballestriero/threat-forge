@@ -59,27 +59,28 @@ The current semantic state includes:
 - governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection;
 - a minimal GitHub Actions workflow that installs from the lockfile and executes the governed `npm run repo:check` path on pushes and pull requests to `master`.
 
-The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, plus a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`.
+The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`, and a minimal native Node.js read-only HTTP boundary under `MR-0002/ADR-0013` and `MR-0002REQ-0046`.
 
-The active objective for this micropasso is to close the OpenAPI contract and structural validation gate setup in this working plan after the successful contract definition and runner integration.
+The active objective for this micropasso is to close the Project Documentation Explorer HTTP read-only server setup in this working plan after the successful boundary decision and runtime implementation.
 
 The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
 The immediate governance themes are now:
 
 1. keep `repo:check` healthy as the local and CI safety baseline before routine commit/push operations;
-2. preserve the OpenAPI contract as the canonical HTTP boundary before adding a live HTTP server;
-3. avoid adding audit, license, secrets, deployment, strict OpenAPI validation dependencies or runtime stacks without focused requirements and graph relations;
-4. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
-5. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it.
+2. preserve the OpenAPI contract as the canonical HTTP boundary for the Project Documentation Explorer server;
+3. keep the HTTP server read-only, dependency-light and composed through controller/service/port/adapter boundaries;
+4. avoid adding audit, license, secrets, deployment, strict OpenAPI validation dependencies or runtime stacks without focused requirements and graph relations;
+5. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
+6. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it.
 
 ## Current Micropasso
 
-Close the Project Documentation Explorer OpenAPI contract and structural validation gate setup after implementation of the governed read-only contract and the dependency-free `docs:openapi-contract` runner gate.
+Close the Project Documentation Explorer HTTP read-only server setup after implementation of the minimal native Node.js HTTP boundary and runtime smoke coverage.
 
-This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0002/ADR-0012` and `MR-0002REQ-0045` define the Project Documentation Explorer read-only OpenAPI boundary, and that `MR-0000/ADR-0008` and `MR-0000REQ-0023` validate that contract structurally through `npm run docs:openapi-contract`.
+This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0002/ADR-0013` and `MR-0002REQ-0046` define the Project Documentation Explorer HTTP read-only server boundary, and that `backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.mjs` implements a narrow server boundary for the three governed OpenAPI GET operations.
 
-No new server HTTP implementation, strict OpenAPI dependency, UI route, Base Analysis storage/API, STRIDE overlay, RBAC model, deployment, audit, license or secrets scanning workflow is introduced by this step.
+No new composition-root command, frontend API switch, strict OpenAPI dependency, Base Analysis storage/API, STRIDE overlay, RBAC model, deployment, audit, license or secrets scanning workflow is introduced by this step.
 
 ## Completed Milestones
 
@@ -152,6 +153,8 @@ No new server HTTP implementation, strict OpenAPI dependency, UI route, Base Ana
 - Governed CI workflow setup closed in the working plan, pushed as `cb28de2`.
 - Project Documentation Explorer OpenAPI read-only contract, pushed as `c2d09be`.
 - OpenAPI structural validation gate, implementing `MR-0000REQ-0023`, pushed as `70ed776`.
+- Project Documentation Explorer HTTP read-only server boundary decision, pushed as `1a2969a`.
+- Native Node.js Project Documentation Explorer HTTP read-only server implementation, pushed as `df2ed36`.
 
 ## Pending Decisions
 
@@ -161,7 +164,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
 
-The MR-0002/OpenAPI read-only HTTP contract for the Project Documentation Explorer now exists as `MR-0002/ADR-0012`, `MR-0002REQ-0045`, and `docs/reference/api/openapi/threat-forge.openapi.yml`. Future HTTP server implementation must conform to this contract rather than introducing ad-hoc routes or payloads.
+The MR-0002/OpenAPI read-only HTTP contract for the Project Documentation Explorer now exists as `MR-0002/ADR-0012`, `MR-0002REQ-0045`, and `docs/reference/api/openapi/threat-forge.openapi.yml`. The minimal HTTP server boundary now exists as `MR-0002/ADR-0013` and `MR-0002REQ-0046`, and future composition-root/start-command work must conform to the existing contract rather than introducing ad-hoc routes, payloads or adapter instantiation inside controllers.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -219,7 +222,13 @@ The guide documents live in `docs/how-to/governed-development/` and are referenc
 
 - `MR-0002REQ-0045` — Project Documentation Explorer governed OpenAPI contract.
 
-The contract is stored at `docs/reference/api/openapi/threat-forge.openapi.yml` and currently covers the read-only documentation list, filters, and entity detail operations. It does not implement a live HTTP server.
+The contract is stored at `docs/reference/api/openapi/threat-forge.openapi.yml` and currently covers the read-only documentation list, filters, and entity detail operations.
+
+`MR-0002/ADR-0013` defines the minimal Project Documentation Explorer HTTP read-only server boundary. The derived server requirement is:
+
+- `MR-0002REQ-0046` — Project Documentation Explorer HTTP read-only server.
+
+The first implementation exists as a native Node.js HTTP boundary at `backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.mjs`, with runtime smoke coverage for collection, detail decoding and read-only behavior.
 
 `MR-0002/ADR-0001` defines the reusable application architecture for backend and frontend modules. The first derived architecture requirements are:
 
@@ -259,7 +268,7 @@ Expected future implementation areas include:
 
 The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
 
-The Project Documentation Explorer OpenAPI contract and dependency-free structural validation gate have been implemented. Future strict OpenAPI validation with a dedicated third-party tool must be introduced through a separate decision and dependency governance step.
+The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate and minimal native HTTP read-only server boundary have been implemented. Future strict OpenAPI validation with a dedicated third-party tool, process startup command, real composition-root wiring or frontend API switch must be introduced through separate decisions or focused requirements as appropriate.
 
 ## Pending Validators / Gates
 
@@ -304,7 +313,9 @@ The minimal GitHub Actions CI workflow now runs the governed local check path:
 
 The OpenAPI structural validation gate now checks `docs/reference/api/openapi/threat-forge.openapi.yml` for the expected read-only operations, required schemas, required operation metadata and allowed HTTP methods.
 
-Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the OpenAPI structural gate closure micropasso.
+The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
+
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the HTTP read-only server closure micropasso.
 
 ## Routine Repository Operation Policy
 
@@ -346,23 +357,24 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-Commit this OpenAPI contract and structural validation gate closure through the governed runner.
+Commit this Project Documentation Explorer HTTP read-only server setup closure through the governed runner.
 
 Recommended governed commit command:
 
 ```text
-npm run repo:commit-push -- "docs: close OpenAPI contract validation setup"
+npm run repo:commit-push -- "docs: close Project Documentation Explorer HTTP server setup"
 ```
 
-After this closure, the next safe path is to choose a new small implementation workstream instead of continuing implicitly. Good candidates are:
+After this closure, the next safe path is to choose one new small workstream instead of continuing implicitly. Good candidates are:
 
-1. backend Project Documentation Explorer read-only HTTP server that conforms to the existing OpenAPI contract;
-2. strict OpenAPI validation policy and tool decision before introducing a third-party OpenAPI validator;
-3. frontend URL state for filters/detail deep-linking;
-4. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
-5. snapshot payload validation for the Project Documentation Explorer generated frontend snapshot.
+1. backend composition-root wiring and a local serve command for the Project Documentation Explorer HTTP API;
+2. frontend API client integration with snapshot fallback for the Project Documentation Explorer;
+3. strict OpenAPI validation policy and tool decision before introducing a third-party OpenAPI validator;
+4. frontend URL state for filters/detail deep-linking;
+5. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
+6. snapshot payload validation for the Project Documentation Explorer generated frontend snapshot.
 
-The recommended next workstream is the backend Project Documentation Explorer read-only HTTP server, because the API contract and structural contract gate now exist. The implementation must keep controller/service/port/adapter boundaries and must not let controllers instantiate concrete adapters.
+The recommended next workstream is backend composition-root wiring and a local serve command, because the HTTP boundary now exists as a tested module but is not yet exposed as a runnable local process with real adapters.
 
 Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, deployment or broad CI tooling until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
 
