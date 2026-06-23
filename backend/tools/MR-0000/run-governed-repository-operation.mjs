@@ -8,7 +8,9 @@ import { fileURLToPath } from "node:url";
  *
  * @implementsRequirement MR-0000REQ-0007GOV-0001
  * @implementsRequirement MR-0000REQ-0007GOV-0002
+ * @implementsRequirement MR-0000REQ-0017
  * @derivedFromDecision MR-0000/ADR-0003
+ * @derivedFromDecision MR-0000/ADR-0006
  * @macroRequirement MR-0000
  *
  * This runner is the thin local workflow entrypoint for governed
@@ -56,6 +58,7 @@ const gateCommands = [
   { label: "ADR body format", command: "npm", args: ["run", "docs:adr-body-format"] },
   { label: "Requirement body format", command: "npm", args: ["run", "docs:requirement-body-format"] },
   { label: "Append-first protected records", command: "npm", args: ["run", "docs:append-first"] },
+  { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
 ];
 
 /**
@@ -227,6 +230,7 @@ if (mode === "--check") {
   console.log("\nGoverned repository check passed.");
   console.log("Implemented requirement: MR-0000REQ-0007GOV-0001");
   console.log("Implemented requirement: MR-0000REQ-0007GOV-0002");
+  console.log("Implemented requirement: MR-0000REQ-0017");
   process.exit(0);
 }
 
@@ -236,3 +240,4 @@ printGitStatus("Repository status after governed push");
 console.log("\nGoverned commit-push completed.");
 console.log("Implemented requirement: MR-0000REQ-0007GOV-0001");
 console.log("Implemented requirement: MR-0000REQ-0007GOV-0002");
+console.log("Implemented requirement: MR-0000REQ-0017");

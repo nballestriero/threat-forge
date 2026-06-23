@@ -547,3 +547,10 @@ spo_relations:
     predicate: justifies
     object: MR-0000REQ-0021
 
+  - subject: MR-0000REQ-0017
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0017

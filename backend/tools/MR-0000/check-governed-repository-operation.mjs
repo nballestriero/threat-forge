@@ -62,6 +62,7 @@ const expectedScripts = new Map([
 const requiredRunnerTraceabilityMarkers = [
   "@implementsRequirement MR-0000REQ-0007GOV-0001",
   "@implementsRequirement MR-0000REQ-0007GOV-0002",
+  "@implementsRequirement MR-0000REQ-0017",
   "@derivedFromDecision MR-0000/ADR-0003",
   "@macroRequirement MR-0000",
 ];
@@ -78,6 +79,7 @@ const requiredRunnerGateScripts = [
   "docs:adr-body-format",
   "docs:requirement-body-format",
   "docs:append-first",
+  "frontend:build",
 ];
 
 const requiredGraphFragments = [
@@ -89,6 +91,8 @@ const requiredGraphFragments = [
   "subject: TOOL-check-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0007GOV-0003",
   "subject: MR-0000REQ-0007GOV-0004\n    predicate: implemented_by\n    object: TOOL-check-governed-repository-operation",
   "subject: TOOL-check-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0007GOV-0004",
+  "subject: MR-0000REQ-0017\n    predicate: implemented_by\n    object: TOOL-run-governed-repository-operation",
+  "subject: TOOL-run-governed-repository-operation\n    predicate: verifies\n    object: MR-0000REQ-0017",
 ];
 
 /**
