@@ -548,3 +548,26 @@ This micropasso adds:
 
 No backend code is changed by this step. The next safe implementation step is to add a small dependency-free typed error helper or class set inside the Project Documentation Explorer backend slice, replace message-regex status mapping in the HTTP boundary, and add runtime tests for `403`, `404`, `400` and fail-closed `500` behavior. Do not replace the native HTTP server/router, introduce Hono/Fastify/find-my-way, add OpenAPI runtime validation, introduce dynamic RBAC, add mutation endpoints or implement Base Analysis runtime/storage in that implementation step.
 
+
+## Project Documentation Explorer Filesystem Source Path Canonicalization Micropasso
+
+This document-only micropasso records the next robustness improvement selected after the typed HTTP error boundary. The code review highlighted that guarding against `..` traversal is not sufficient when filesystem indirection such as symbolic links or junctions may allow a path that appears to be inside the project root to resolve outside it.
+
+The intended correction is:
+
+```text
+configured project/documentation root
+→ canonical allowed root
+requested governed relative path
+→ canonical requested path
+→ read only if contained inside the canonical allowed root
+→ fail closed otherwise
+```
+
+This micropasso adds:
+
+- `MR-0002/ADR-0018` to define the Project Documentation Explorer filesystem source path canonicalization boundary;
+- `MR-0002REQ-0051` to require canonical containment for filesystem source reads and symlink escape rejection;
+- graph relations connecting the decision and requirement to MR-0002.
+
+No backend code is changed by this step. The next safe implementation step is to harden the Project Documentation Explorer filesystem source adapter by canonicalizing both the configured root and requested files before reads, rejecting `..` traversal, absolute path injection and symlink/junction escape, and adding runtime tests for safe reads, traversal attempts and symlink escape where supported by the platform. Do not replace the YAML parser, add caching, add filesystem watchers, introduce new dependencies, change the live HTTP UI behavior, introduce dynamic RBAC or implement Base Analysis runtime/storage in that implementation step.

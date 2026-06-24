@@ -406,3 +406,11 @@ requirements:
     derived_from_decision_id: ADR-0017
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0050_body.md
 
+  - id: MR-0002REQ-0051
+    title: Project Documentation Explorer filesystem source path canonicalization
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0018
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0051_body.md
+

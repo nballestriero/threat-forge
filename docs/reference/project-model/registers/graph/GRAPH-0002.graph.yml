@@ -415,6 +415,15 @@ nodes:
     label: Project Documentation Explorer typed error boundary
     path: backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.errors.mjs
 
+
+  - id: ADR-0018
+    type: ADR
+    label: Project Documentation Explorer filesystem source path canonicalization boundary
+
+  - id: MR-0002REQ-0051
+    type: Requirement
+    label: Project Documentation Explorer filesystem source path canonicalization
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1502,4 +1511,20 @@ spo_relations:
   - subject: MR-0002TEST-0001
     predicate: verifies
     object: MR-0002REQ-0050
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0018
+
+  - subject: ADR-0018
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0051
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0018
+    predicate: justifies
+    object: MR-0002REQ-0051
 
