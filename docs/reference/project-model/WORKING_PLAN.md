@@ -526,3 +526,25 @@ This micropasso adds:
 - `MR-0002REQ-0049` to require snapshot-default, live HTTP opt-in and visible selected-source failure behavior.
 
 No frontend implementation is added by this step. The next safe implementation step is to wire the Project Documentation Explorer page to the existing data-source boundary using snapshot as default, live HTTP as explicit opt-in and visible load/error state for the selected source. Do not introduce query/cache libraries, generated OpenAPI clients, dynamic RBAC, mutation endpoints, deployment configuration or Base Analysis runtime/storage in that implementation step.
+
+## Project Documentation Explorer Typed HTTP Error Boundary Micropasso
+
+This document-only micropasso records the first robustness improvement selected after the live HTTP UI activation and the subsequent code review analysis. The review highlighted that HTTP status mapping based on regular expressions over generic error-message text is too fragile for a governed, fail-closed API boundary.
+
+The intended correction is:
+
+```text
+generic message-regex error mapping
+→ typed Project Documentation Explorer error categories
+→ explicit HTTP response mapping at the delivery boundary
+→ fail-closed 500 behavior for unexpected exceptions
+```
+
+This micropasso adds:
+
+- `MR-0002/ADR-0017` to define the Project Documentation Explorer typed HTTP error boundary;
+- `MR-0002REQ-0050` to require typed error/code mapping for access denied, entity not found, invalid request and unexpected internal errors;
+- graph relations connecting the decision and requirement to MR-0002.
+
+No backend code is changed by this step. The next safe implementation step is to add a small dependency-free typed error helper or class set inside the Project Documentation Explorer backend slice, replace message-regex status mapping in the HTTP boundary, and add runtime tests for `403`, `404`, `400` and fail-closed `500` behavior. Do not replace the native HTTP server/router, introduce Hono/Fastify/find-my-way, add OpenAPI runtime validation, introduce dynamic RBAC, add mutation endpoints or implement Base Analysis runtime/storage in that implementation step.
+

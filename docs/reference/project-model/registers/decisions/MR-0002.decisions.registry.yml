@@ -147,3 +147,13 @@ decisions:
     date: 2026-06-24
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0016_body.md
+
+  - id: ADR-0017
+    title: Project Documentation Explorer typed HTTP error boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-24
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0017_body.md
+
