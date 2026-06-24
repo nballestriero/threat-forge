@@ -424,6 +424,11 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer filesystem source path canonicalization
 
+  - id: MR-0002TEST-0004
+    type: VerificationArtifact
+    label: Project Documentation Explorer filesystem source adapter path canonicalization tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.filesystem-source-adapter.test.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1528,3 +1533,10 @@ spo_relations:
     predicate: justifies
     object: MR-0002REQ-0051
 
+  - subject: MR-0002REQ-0051
+    predicate: implemented_by
+    object: MR-0002SRC-0003
+
+  - subject: MR-0002TEST-0004
+    predicate: verifies
+    object: MR-0002REQ-0051

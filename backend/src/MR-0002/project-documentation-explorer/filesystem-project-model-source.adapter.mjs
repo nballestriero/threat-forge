@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0051
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
@@ -238,18 +239,42 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
   const projectModelDir = path.join(rootDir, "docs", "reference", "project-model");
   const registersDir = path.join(projectModelDir, "registers");
 
-  function resolveProjectPath(projectPath) {
-    return path.join(rootDir, normalizeProjectPath(projectPath));
+  const canonicalRootDir = fs.realpathSync.native(rootDir);
+
+  function assertInsideRoot(candidatePath, originalProjectPath, pathKind) {
+    const relativePath = path.relative(canonicalRootDir, candidatePath);
+    if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
+      throw new Error(`${pathKind} project path escapes repository root: ${originalProjectPath}`);
+    }
   }
 
-  function resolveSafeProjectPath(projectPath) {
+  function assertLexicallySafeProjectPath(projectPath) {
     const normalized = normalizeProjectPath(projectPath);
+    if (!normalized || path.isAbsolute(normalized)) {
+      throw new Error(`Unsafe project path: ${projectPath}`);
+    }
+
     const absolutePath = path.resolve(rootDir, normalized);
     const relativePath = path.relative(rootDir, absolutePath);
     if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
       throw new Error(`Project path escapes repository root: ${projectPath}`);
     }
     return absolutePath;
+  }
+
+  /**
+   * Resolves a project-relative path through lexical and canonical containment checks.
+   *
+   * @param {string} projectPath - Project-relative path authored in governed records.
+   * @returns {string} Safe absolute path.
+   */
+  function resolveSafeProjectPath(projectPath) {
+    const absolutePath = assertLexicallySafeProjectPath(projectPath);
+    if (!fs.existsSync(absolutePath)) return absolutePath;
+
+    const canonicalPath = fs.realpathSync.native(absolutePath);
+    assertInsideRoot(canonicalPath, projectPath, "Canonical");
+    return canonicalPath;
   }
 
   function loadMacroRequirements() {
@@ -308,7 +333,7 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
     const graphRelations = [];
 
     for (const graphEntry of graphIndex.graphs ?? []) {
-      const graphPath = resolveProjectPath(graphEntry.path);
+      const graphPath = resolveSafeProjectPath(graphEntry.path);
       if (!fs.existsSync(graphPath)) continue;
       const graph = readYaml(graphPath);
       const graphId = String(graph.graph_id ?? graphEntry.graph_id ?? "");
