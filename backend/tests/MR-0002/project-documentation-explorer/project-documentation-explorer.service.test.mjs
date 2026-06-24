@@ -3,6 +3,7 @@ import test from "node:test";
 
 import "./project-documentation-explorer.http-server.test.mjs";
 import "./project-documentation-explorer.serve.test.mjs";
+import "./project-documentation-explorer.frontend-client.test.mjs";
 
 import {
   createProjectDocumentationExplorerService,

@@ -387,6 +387,11 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer frontend HTTP data-source boundary
 
+  - id: MR-0002TEST-0003
+    type: VerificationArtifact
+    label: Project Documentation Explorer frontend data-source boundary tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.frontend-client.test.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1387,5 +1392,16 @@ spo_relations:
 
   - subject: ADR-0015
     predicate: justifies
+    object: MR-0002REQ-0048
+  - subject: MR-0002REQ-0048
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0048
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002TEST-0003
+    predicate: verifies
     object: MR-0002REQ-0048
 
