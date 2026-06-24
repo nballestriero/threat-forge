@@ -1430,3 +1430,27 @@ spo_relations:
     predicate: justifies
     object: MR-0002REQ-0049
 
+  - subject: MR-0002REQ-0049
+    predicate: implemented_by
+    object: MR-0002SRC-0010
+
+  - subject: MR-0002REQ-0049
+    predicate: implemented_by
+    object: MR-0002SRC-0016
+
+  - subject: MR-0002REQ-0049
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0049
+    predicate: implemented_by
+    object: MR-0002SRC-0020
+
+  - subject: MR-0002TEST-0001
+    predicate: verifies
+    object: MR-0002REQ-0049
+
+  - subject: MR-0002TEST-0003
+    predicate: verifies
+    object: MR-0002REQ-0049
+

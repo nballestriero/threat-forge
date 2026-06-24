@@ -14,12 +14,14 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0041
+ * @implementsRequirement MR-0002REQ-0049
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
  * @derivedFromDecision MR-0002/ADR-0010
+ * @derivedFromDecision MR-0002/ADR-0016
  * @macroRequirement MR-0002
  *
  * The page implements the manually validated list/detail interaction: filters
@@ -32,6 +34,31 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * in React component state. It does not mutate project-model records or perform
  * write operations.
  */
+
+/**
+ * Render the selected Project Documentation Explorer data-source state.
+ *
+ * @param {{dataSource?: Record<string, unknown>}} props - Data-source props.
+ * @returns {import("react").JSX.Element|null} Data-source status card.
+ */
+function DataSourceStatus({ dataSource }) {
+  if (!dataSource) return null;
+
+  const selected = dataSource.selected_source ?? "unknown";
+  const effective = dataSource.effective_source ?? selected;
+  const isFallback = Boolean(dataSource.fallback);
+
+  return (
+    <Card>
+      <p className="tf-eyebrow">Data source</p>
+      <strong>{dataSource.label ?? `Using ${effective}`}</strong>
+      <p>{dataSource.message ?? `Selected source: ${selected}. Effective source: ${effective}.`}</p>
+      {isFallback && dataSource.failure_message ? (
+        <p>Live HTTP failure: {String(dataSource.failure_message)}</p>
+      ) : null}
+    </Card>
+  );
+}
 
 /**
  * Render filter controls from backend-provided filter facets.
@@ -192,6 +219,8 @@ export function ProjectDocumentationExplorerPage({ client }) {
         </div>
         <div className="tf-count-pill">{filteredItems.length} / {model.summary?.total_items ?? model.items.length} items</div>
       </div>
+
+      <DataSourceStatus dataSource={model.data_source ?? client.describeDataSource?.()} />
 
       <FilterBar
         filters={model.filters ?? []}

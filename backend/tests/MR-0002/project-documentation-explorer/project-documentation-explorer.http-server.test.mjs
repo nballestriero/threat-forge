@@ -9,7 +9,9 @@ import { createProjectDocumentationExplorerRoutes } from "../../../src/MR-0002/p
  * @file Minimal HTTP smoke tests for the Project Documentation Explorer read-only server boundary.
  *
  * @verifiesRequirement MR-0002REQ-0046
+ * @verifiesRequirement MR-0002REQ-0049
  * @derivedFromDecision MR-0002/ADR-0013
+ * @derivedFromDecision MR-0002/ADR-0016
  * @macroRequirement MR-0002
  *
  * These tests exercise the native Node.js HTTP transport without reading real
@@ -121,6 +123,7 @@ test("serves the governed documentation collection over HTTP GET", async () => {
 
     assert.equal(response.status, 200);
     assert.equal(response.headers.get("content-type"), "application/json; charset=utf-8");
+    assert.equal(response.headers.get("access-control-allow-origin"), "*");
     assert.deepEqual(payload.query.mr, "MR-0002");
     assert.equal(payload.items[0].id, "MR-0002REQ-0046");
   } finally {
@@ -137,6 +140,28 @@ test("serves entity details with decoded path parameters", async () => {
 
     assert.equal(response.status, 200);
     assert.equal(payload.item.id, "MR-0002/ADR-0013");
+  } finally {
+    await close(server);
+  }
+});
+
+test("answers browser preflight for the read-only live HTTP UI", async () => {
+  const server = createFixtureServer();
+  const baseUrl = await listen(server);
+  try {
+    const response = await fetch(`${baseUrl}/api/project-model/documentation`, {
+      method: "OPTIONS",
+      headers: {
+        origin: "http://127.0.0.1:5173",
+        "access-control-request-method": "GET",
+        "access-control-request-headers": "x-threat-forge-authenticated,x-threat-forge-role",
+      },
+    });
+
+    assert.equal(response.status, 204);
+    assert.equal(response.headers.get("access-control-allow-origin"), "*");
+    assert.match(response.headers.get("access-control-allow-methods"), /GET/u);
+    assert.match(response.headers.get("access-control-allow-headers"), /x-threat-forge-authenticated/u);
   } finally {
     await close(server);
   }

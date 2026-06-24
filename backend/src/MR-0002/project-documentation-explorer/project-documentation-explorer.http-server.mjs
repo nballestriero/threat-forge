@@ -4,7 +4,9 @@ import { createServer } from "node:http";
  * @file Native Node.js HTTP transport for the Project Documentation Explorer read-only API.
  *
  * @implementsRequirement MR-0002REQ-0046
+ * @implementsRequirement MR-0002REQ-0049
  * @derivedFromDecision MR-0002/ADR-0013
+ * @derivedFromDecision MR-0002/ADR-0016
  * @macroRequirement MR-0002
  *
  * This module maps native Node.js HTTP requests to the already-composed
@@ -20,6 +22,12 @@ import { createServer } from "node:http";
  */
 
 const jsonContentType = "application/json; charset=utf-8";
+const corsHeaders = Object.freeze({
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, OPTIONS",
+  "access-control-allow-headers": "accept, content-type, x-threat-forge-authenticated, x-threat-forge-role",
+  "access-control-max-age": "300",
+});
 const knownQueryKeys = new Set([
   "mr",
   "kind",
@@ -142,10 +150,22 @@ function hasKnownPath(compiledRoutes, pathname) {
  */
 function writeJson(response, statusCode, payload) {
   response.writeHead(statusCode, {
+    ...corsHeaders,
     "content-type": jsonContentType,
     "cache-control": "no-store",
   });
   response.end(`${JSON.stringify(payload)}\n`);
+}
+
+/**
+ * Writes a browser CORS preflight response for read-only local preview.
+ *
+ * @param {import("node:http").ServerResponse} response - HTTP response.
+ * @returns {void}
+ */
+function writePreflight(response) {
+  response.writeHead(204, corsHeaders);
+  response.end();
 }
 
 /**
@@ -182,6 +202,11 @@ export function createProjectDocumentationExplorerHttpHandler({ controller, rout
     const requestUrl = new URL(request.url ?? "/", "http://localhost");
     const method = String(request.method ?? "GET").toUpperCase();
     const pathname = requestUrl.pathname;
+
+    if (method === "OPTIONS" && hasKnownPath(compiledRoutes, pathname)) {
+      writePreflight(response);
+      return;
+    }
 
     if (method !== "GET" && hasKnownPath(compiledRoutes, pathname)) {
       writeJson(response, 405, { error: "method_not_allowed", message: "Project Documentation Explorer HTTP API is read-only." });

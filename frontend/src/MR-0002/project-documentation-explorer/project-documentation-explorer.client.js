@@ -9,12 +9,14 @@
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0048
+ * @implementsRequirement MR-0002REQ-0049
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
  * @derivedFromDecision MR-0002/ADR-0015
+ * @derivedFromDecision MR-0002/ADR-0016
  * @macroRequirement MR-0002
  *
  * This module defines the frontend client boundary used by React components. The
@@ -30,6 +32,7 @@
 
 /** @typedef {{id: string, label: string, values: Array<{value: string, label?: string, count?: number}>}} DocumentationFilter */
 /** @typedef {{id: string, kind: string, title: string, macro_requirement_id?: string, status?: string, implementation_state?: string, acceptance_state?: string}} DocumentationItem */
+/** @typedef {{selected_source: string, effective_source: string, fallback: boolean, label: string, message: string, failure_message?: string}} DocumentationDataSourceState */
 /** @typedef {{list: {access?: {capabilities?: string[]}, summary: Record<string, unknown>, filters: DocumentationFilter[], items: DocumentationItem[]}, details_by_id: Record<string, Record<string, unknown>>}} DocumentationSnapshot */
 
 export const PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES = Object.freeze({
@@ -41,6 +44,40 @@ const DEFAULT_BOOTSTRAP_HEADERS = Object.freeze({
   "x-threat-forge-authenticated": "true",
   "x-threat-forge-role": "registered_user",
 });
+
+/**
+ * Converts a caught value to a concise data-source diagnostic.
+ *
+ * @param {unknown} error - Caught load error.
+ * @returns {string} Human-readable diagnostic.
+ */
+function describeError(error) {
+  return error instanceof Error ? error.message : String(error ?? "Unknown Project Documentation Explorer load failure.");
+}
+
+/**
+ * Creates a stable data-source state record for UI display.
+ *
+ * @param {DocumentationDataSourceState} state - State to freeze.
+ * @returns {DocumentationDataSourceState} Frozen state.
+ */
+function createDataSourceState(state) {
+  return Object.freeze({ ...state });
+}
+
+/**
+ * Adds explicit data-source state to a normalized read model without mutating it.
+ *
+ * @param {Record<string, unknown>} payload - Read model payload.
+ * @param {DocumentationDataSourceState} dataSource - Data-source state.
+ * @returns {Record<string, unknown>} Payload with source state.
+ */
+function withDataSourceState(payload, dataSource) {
+  return {
+    ...(payload ?? {}),
+    data_source: dataSource,
+  };
+}
 
 /**
  * Append normalized query parameters to a read-only Project Documentation
@@ -133,31 +170,42 @@ export function createStaticProjectDocumentationExplorerClient({
   if (typeof fetchImpl !== "function") throw new Error("Project Documentation Explorer static client requires fetch.");
 
   let snapshotPromise;
+  const snapshotDataSource = createDataSourceState({
+    selected_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.snapshot,
+    effective_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.snapshot,
+    fallback: false,
+    label: "Generated snapshot",
+    message: "Using the generated Project Documentation Explorer snapshot.",
+  });
   const readSnapshot = () => {
     snapshotPromise ??= loadSnapshot({ snapshotUrl, fetchImpl });
     return snapshotPromise;
   };
 
   return Object.freeze({
+    describeDataSource() {
+      return snapshotDataSource;
+    },
+
     async loadDocumentation() {
       const snapshot = await readSnapshot();
-      return snapshot.list;
+      return withDataSourceState(snapshot.list, snapshotDataSource);
     },
 
     async loadDocumentationFilters() {
       const snapshot = await readSnapshot();
-      return {
+      return withDataSourceState({
         access: snapshot.list.access,
         query: snapshot.list.query ?? {},
         filters: snapshot.list.filters ?? [],
-      };
+      }, snapshotDataSource);
     },
 
     async loadDocumentationEntity(id) {
       const snapshot = await readSnapshot();
       const detail = snapshot.details_by_id[id];
       if (!detail) throw new Error(`Unknown documentation entity: ${id}`);
-      return detail;
+      return withDataSourceState(detail, snapshotDataSource);
     },
   });
 }
@@ -172,24 +220,115 @@ export function createHttpProjectDocumentationExplorerClient({
   baseUrl = "",
   headers = DEFAULT_BOOTSTRAP_HEADERS,
   fetchImpl = globalThis.fetch,
+  snapshotFallback = true,
 } = {}) {
   if (typeof fetchImpl !== "function") throw new Error("Project Documentation Explorer HTTP client requires fetch.");
 
+  const httpDataSource = createDataSourceState({
+    selected_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.http,
+    effective_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.http,
+    fallback: false,
+    label: "Live HTTP",
+    message: "Using the governed Project Documentation Explorer HTTP API.",
+  });
+
   return Object.freeze({
+    describeDataSource() {
+      return httpDataSource;
+    },
+
     async loadDocumentation(query = {}) {
       const url = appendQuery(joinApiUrl(baseUrl, "/api/project-model/documentation"), query);
-      return fetchJson({ fetchImpl, url, headers });
+      return withDataSourceState(await fetchJson({ fetchImpl, url, headers }), httpDataSource);
     },
 
     async loadDocumentationFilters(query = {}) {
       const url = appendQuery(joinApiUrl(baseUrl, "/api/project-model/documentation/filters"), query);
-      return fetchJson({ fetchImpl, url, headers });
+      return withDataSourceState(await fetchJson({ fetchImpl, url, headers }), httpDataSource);
     },
 
     async loadDocumentationEntity(id) {
       if (!id) throw new Error("Project Documentation Explorer entity id is required.");
       const url = joinApiUrl(baseUrl, `/api/project-model/documentation/entities/${encodeURIComponent(id)}`);
-      return fetchJson({ fetchImpl, url, headers });
+      return withDataSourceState(await fetchJson({ fetchImpl, url, headers }), httpDataSource);
+    },
+  });
+}
+
+/**
+ * Create a live HTTP client with an explicit generated-snapshot fallback.
+ *
+ * @param {{httpBaseUrl?: string, snapshotUrl: string, headers?: Record<string, string>, fetchImpl?: Function, snapshotFallback?: boolean}} options - Client options.
+ * @returns {{describeDataSource: Function, loadDocumentation: Function, loadDocumentationFilters: Function, loadDocumentationEntity: Function}} Frontend client port.
+ */
+export function createLiveProjectDocumentationExplorerClient({
+  httpBaseUrl = "",
+  snapshotUrl,
+  headers = DEFAULT_BOOTSTRAP_HEADERS,
+  fetchImpl = globalThis.fetch,
+  snapshotFallback = true,
+}) {
+  const httpClient = createHttpProjectDocumentationExplorerClient({ baseUrl: httpBaseUrl, headers, fetchImpl });
+  const snapshotClient = createStaticProjectDocumentationExplorerClient({ snapshotUrl, fetchImpl });
+  let lastDataSource = httpClient.describeDataSource();
+
+  /**
+   * Executes a live read and optionally falls back to the generated snapshot.
+   *
+   * @param {() => Promise<Record<string, unknown>>} liveRead - Live HTTP read.
+   * @param {() => Promise<Record<string, unknown>>} snapshotRead - Snapshot read.
+   * @returns {Promise<Record<string, unknown>>} Read model with data-source state.
+   */
+  async function readWithFallback(liveRead, snapshotRead) {
+    try {
+      const payload = await liveRead();
+      lastDataSource = payload.data_source ?? httpClient.describeDataSource();
+      return payload;
+    } catch (error) {
+      if (!snapshotFallback) throw error;
+
+      try {
+        const snapshotPayload = await snapshotRead();
+        const fallbackDataSource = createDataSourceState({
+          selected_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.http,
+          effective_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.snapshot,
+          fallback: true,
+          label: "Live HTTP unavailable · snapshot fallback",
+          message: "Live HTTP failed, so the UI is showing the generated read-only snapshot.",
+          failure_message: describeError(error),
+        });
+        lastDataSource = fallbackDataSource;
+        return withDataSourceState(snapshotPayload, fallbackDataSource);
+      } catch (fallbackError) {
+        throw new Error(`${describeError(error)} Snapshot fallback also failed: ${describeError(fallbackError)}`);
+      }
+    }
+  }
+
+  return Object.freeze({
+    describeDataSource() {
+      return lastDataSource;
+    },
+
+    loadDocumentation(query = {}) {
+      return readWithFallback(
+        () => httpClient.loadDocumentation(query),
+        () => snapshotClient.loadDocumentation(query),
+      );
+    },
+
+    loadDocumentationFilters(query = {}) {
+      return readWithFallback(
+        () => httpClient.loadDocumentationFilters(query),
+        () => snapshotClient.loadDocumentationFilters(query),
+      );
+    },
+
+    loadDocumentationEntity(id) {
+      return readWithFallback(
+        () => httpClient.loadDocumentationEntity(id),
+        () => snapshotClient.loadDocumentationEntity(id),
+      );
     },
   });
 }
@@ -197,7 +336,7 @@ export function createHttpProjectDocumentationExplorerClient({
 /**
  * Create the page-facing Project Documentation Explorer client boundary.
  *
- * @param {{source?: string, snapshotUrl?: string, httpBaseUrl?: string, headers?: Record<string, string>, fetchImpl?: Function}} options - Boundary options.
+ * @param {{source?: string, snapshotUrl?: string, httpBaseUrl?: string, headers?: Record<string, string>, fetchImpl?: Function, snapshotFallback?: boolean}} options - Boundary options.
  * @returns {{loadDocumentation: Function, loadDocumentationFilters: Function, loadDocumentationEntity: Function}} Frontend client port.
  */
 export function createProjectDocumentationExplorerClient({
@@ -206,11 +345,12 @@ export function createProjectDocumentationExplorerClient({
   httpBaseUrl = "",
   headers = DEFAULT_BOOTSTRAP_HEADERS,
   fetchImpl = globalThis.fetch,
+  snapshotFallback = true,
 } = {}) {
   const normalizedSource = String(source || PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.snapshot).toLowerCase();
 
   if (normalizedSource === PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.http) {
-    return createHttpProjectDocumentationExplorerClient({ baseUrl: httpBaseUrl, headers, fetchImpl });
+    return createLiveProjectDocumentationExplorerClient({ httpBaseUrl, snapshotUrl, headers, fetchImpl, snapshotFallback });
   }
 
   if (normalizedSource !== PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.snapshot) {

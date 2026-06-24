@@ -18,11 +18,13 @@ import "./styles.css";
  * @implementsRequirement MR-0002REQ-0039
  * @implementsRequirement MR-0002REQ-0041
  * @implementsRequirement MR-0002REQ-0048
+ * @implementsRequirement MR-0002REQ-0049
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0015
+ * @derivedFromDecision MR-0002/ADR-0016
  * @macroRequirement MR-0002
  *
  * The entry point composes the shared shell, a protected page frame and the
@@ -41,6 +43,7 @@ const client = createProjectDocumentationExplorerClient({
   source: import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE,
   snapshotUrl: "/project-documentation-explorer.snapshot.json",
   httpBaseUrl: import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL,
+  snapshotFallback: import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_SNAPSHOT_FALLBACK !== "false",
 });
 
 createRoot(document.getElementById("root")).render(

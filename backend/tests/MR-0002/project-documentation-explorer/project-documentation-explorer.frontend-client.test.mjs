@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   createHttpProjectDocumentationExplorerClient,
+  createLiveProjectDocumentationExplorerClient,
   createProjectDocumentationExplorerClient,
   createStaticProjectDocumentationExplorerClient,
 } from "../../../../frontend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.client.js";
@@ -11,7 +12,9 @@ import {
  * @file Smoke tests for the Project Documentation Explorer frontend data-source boundary.
  *
  * @verifiesRequirement MR-0002REQ-0048
+ * @verifiesRequirement MR-0002REQ-0049
  * @derivedFromDecision MR-0002/ADR-0015
+ * @derivedFromDecision MR-0002/ADR-0016
  * @macroRequirement MR-0002
  *
  * These tests verify that the page-facing frontend client boundary can use the
@@ -49,11 +52,13 @@ function createFetchFake(payloadOrFactory) {
     async fetchImpl(url, init = {}) {
       calls.push({ url, init });
       const payload = typeof payloadOrFactory === "function" ? payloadOrFactory(url, init) : payloadOrFactory;
+      if (payload?.response) return payload.response;
+      const isResponseShape = payload && (Object.hasOwn(payload, "ok") || Object.hasOwn(payload, "status"));
       return {
-        ok: true,
-        status: 200,
+        ok: isResponseShape ? payload.ok : true,
+        status: isResponseShape ? payload.status : 200,
         async json() {
-          return payload;
+          return isResponseShape && Object.hasOwn(payload, "body") ? payload.body : payload;
         },
       };
     },
@@ -74,13 +79,18 @@ test("keeps the generated snapshot as the default Project Documentation Explorer
     fetchImpl,
   });
 
-  assert.deepEqual(await client.loadDocumentation(), fixtureList);
-  assert.deepEqual(await client.loadDocumentationFilters(), {
-    access: fixtureList.access,
-    query: fixtureList.query,
-    filters: fixtureList.filters,
-  });
-  assert.deepEqual(await client.loadDocumentationEntity("MR-0002REQ-0048"), fixtureDetail);
+  const list = await client.loadDocumentation();
+  const filters = await client.loadDocumentationFilters();
+  const detail = await client.loadDocumentationEntity("MR-0002REQ-0048");
+
+  assert.equal(list.items[0].id, fixtureList.items[0].id);
+  assert.equal(list.data_source.selected_source, "snapshot");
+  assert.equal(list.data_source.effective_source, "snapshot");
+  assert.equal(list.data_source.fallback, false);
+  assert.deepEqual(filters.filters, fixtureList.filters);
+  assert.equal(filters.data_source.effective_source, "snapshot");
+  assert.equal(detail.item.id, fixtureDetail.item.id);
+  assert.equal(detail.data_source.effective_source, "snapshot");
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "/project-documentation-explorer.snapshot.json");
   assert.equal(calls[0].init.method, "GET");
@@ -98,9 +108,17 @@ test("loads Project Documentation Explorer collection, filters and details from 
     fetchImpl,
   });
 
-  assert.deepEqual(await client.loadDocumentation({ mr: "MR-0002", kind: ["requirement", "adr"] }), fixtureList);
-  assert.deepEqual(await client.loadDocumentationFilters({ status: "approved" }), { filters: fixtureList.filters });
-  assert.deepEqual(await client.loadDocumentationEntity("MR-0002/ADR-0015"), fixtureDetail);
+  const list = await client.loadDocumentation({ mr: "MR-0002", kind: ["requirement", "adr"] });
+  const filters = await client.loadDocumentationFilters({ status: "approved" });
+  const detail = await client.loadDocumentationEntity("MR-0002/ADR-0015");
+
+  assert.equal(list.data_source.selected_source, "http");
+  assert.equal(list.data_source.effective_source, "http");
+  assert.equal(list.data_source.fallback, false);
+  assert.deepEqual(filters.filters, fixtureList.filters);
+  assert.equal(filters.data_source.effective_source, "http");
+  assert.equal(detail.item.id, fixtureDetail.item.id);
+  assert.equal(detail.data_source.effective_source, "http");
 
   assert.equal(calls[0].url, "http://127.0.0.1:4174/api/project-model/documentation?mr=MR-0002&kind=requirement&kind=adr");
   assert.equal(calls[1].url, "http://127.0.0.1:4174/api/project-model/documentation/filters?status=approved");
@@ -120,9 +138,44 @@ test("selects the governed HTTP source only through explicit frontend data-sourc
     fetchImpl,
   });
 
-  assert.deepEqual(await client.loadDocumentation(), fixtureList);
+  const list = await client.loadDocumentation();
+
+  assert.equal(list.items[0].id, fixtureList.items[0].id);
+  assert.equal(list.data_source.selected_source, "http");
+  assert.equal(list.data_source.effective_source, "http");
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, "/api/project-model/documentation");
+});
+
+test("falls back to the generated snapshot when live HTTP activation fails explicitly", async () => {
+  const snapshot = {
+    list: fixtureList,
+    details_by_id: {
+      "MR-0002REQ-0048": fixtureDetail,
+    },
+  };
+  const { calls, fetchImpl } = createFetchFake((url) => {
+    if (String(url).includes("project-documentation-explorer.snapshot.json")) return snapshot;
+    return { ok: false, status: 503, body: { error: "unavailable" } };
+  });
+
+  const client = createLiveProjectDocumentationExplorerClient({
+    httpBaseUrl: "http://127.0.0.1:4174",
+    snapshotUrl: "/project-documentation-explorer.snapshot.json",
+    fetchImpl,
+  });
+
+  const list = await client.loadDocumentation();
+  const detail = await client.loadDocumentationEntity("MR-0002REQ-0048");
+
+  assert.equal(list.items[0].id, fixtureList.items[0].id);
+  assert.equal(list.data_source.selected_source, "http");
+  assert.equal(list.data_source.effective_source, "snapshot");
+  assert.equal(list.data_source.fallback, true);
+  assert.match(list.data_source.failure_message, /HTTP 503/u);
+  assert.equal(detail.data_source.effective_source, "snapshot");
+  assert.equal(calls[0].url, "http://127.0.0.1:4174/api/project-model/documentation");
+  assert.equal(calls[1].url, "/project-documentation-explorer.snapshot.json");
 });
 
 test("rejects unsupported Project Documentation Explorer frontend data sources", () => {
