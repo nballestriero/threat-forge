@@ -65,6 +65,21 @@ When backend code is introduced, preserve Node.js, Zod contracts, OpenAPI HTTP c
 
 When frontend code is introduced, preserve React component reuse, view models, client ports, and API/OpenAPI adapters. Components must not directly read project-model files or repository infrastructure.
 
+## Preserve the Project Documentation Explorer live HTTP pattern
+
+When assisting with Project Documentation Explorer or a similar read-only feature slice, check whether the existing pattern already covers the change before proposing new architecture:
+
+- `MR-0002/ADR-0012` and `MR-0002REQ-0045` own the read-only OpenAPI contract;
+- `MR-0002/ADR-0013` and `MR-0002REQ-0046` own the native read-only HTTP server boundary;
+- `MR-0002/ADR-0014` and `MR-0002REQ-0047` own the local serve composition command;
+- `MR-0002/ADR-0015` and `MR-0002REQ-0048` own the frontend HTTP data-source boundary;
+- `MR-0002/ADR-0016` and `MR-0002REQ-0049` own live HTTP opt-in and visible selected-source failure behavior;
+- `MR-0002/ADR-0017` and `MR-0002REQ-0050` own typed HTTP error mapping;
+- `MR-0002/ADR-0018` and `MR-0002REQ-0051` own canonical filesystem source containment;
+- `MR-0002/ADR-0019` and `MR-0002REQ-0052` own optional TTL-based snapshot caching.
+
+Do not propose direct browser reads of YAML, Markdown, graph files, registries, Git state or filesystem paths. Do not propose direct adapter construction in controllers, message-regex HTTP status mapping, stale-on-error cache behavior, filesystem watchers, query/cache libraries, generated OpenAPI clients or mutation endpoints unless the user explicitly selects that workstream and the required governance records are added first.
+
 ## Preserve child-project security-first behavior
 
 Child projects must be analyzable from documentation creation onward.

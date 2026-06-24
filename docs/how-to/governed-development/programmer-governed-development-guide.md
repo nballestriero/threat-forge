@@ -83,6 +83,22 @@ Components should render view models and send user actions to controllers/hooks.
 
 Frontend access to backend/project data should go through client ports and API/OpenAPI adapters.
 
+## Reuse the Project Documentation Explorer pattern
+
+When working on Project Documentation Explorer or similar read-only browser/API slices, preserve the proven MR-0002 pattern:
+
+- document the boundary first with ADR, Requirement and graph relations;
+- keep OpenAPI as the canonical HTTP contract;
+- keep controllers thin and free from concrete adapter instantiation;
+- keep services dependent on ports and concrete filesystem/Git/project sources isolated behind adapters;
+- map expected HTTP failures through typed errors rather than regular expressions over generic `Error.message` text;
+- resolve filesystem-backed source paths through canonical containment before reads, including symlink or junction escape rejection;
+- keep generated frontend snapshots as deterministic defaults unless a live source is explicitly configured;
+- keep live HTTP activation visible through loading/error state rather than silent fallback that hides selected-source failures;
+- add cache behavior as source-port decorators or composition-root wrappers, not inside controllers or React components.
+
+Do not add filesystem watchers, stale-on-error cache behavior, mutation endpoints, frontend query/cache libraries, generated OpenAPI clients or runtime RBAC expansion without a focused ADR, requirement and graph update.
+
 ## Preserve child-project analyzability
 
 Child projects must be created as analyzable Doc-as-Code workspaces.

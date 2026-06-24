@@ -59,9 +59,9 @@ The current semantic state includes:
 - governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection;
 - a minimal GitHub Actions workflow that installs from the lockfile and executes the governed `npm run repo:check` path on pushes and pull requests to `master`.
 
-The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`, a minimal native Node.js read-only HTTP boundary under `MR-0002/ADR-0013` and `MR-0002REQ-0046`, and a local serve composition command under `MR-0002/ADR-0014` and `MR-0002REQ-0047`.
+The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`, a minimal native Node.js read-only HTTP boundary under `MR-0002/ADR-0013` and `MR-0002REQ-0046`, a local serve composition command under `MR-0002/ADR-0014` and `MR-0002REQ-0047`, a frontend HTTP data-source boundary under `MR-0002/ADR-0015` and `MR-0002REQ-0048`, live HTTP UI activation under `MR-0002/ADR-0016` and `MR-0002REQ-0049`, typed HTTP errors under `MR-0002/ADR-0017` and `MR-0002REQ-0050`, filesystem source canonicalization under `MR-0002/ADR-0018` and `MR-0002REQ-0051`, and optional snapshot caching under `MR-0002/ADR-0019` and `MR-0002REQ-0052`.
 
-The active objective is now to prepare the Project Documentation Explorer frontend for a governed transition from generated snapshot consumption to live HTTP API consumption, while keeping the page read-only and preserving backend ownership of project-model normalization.
+The active Project Documentation Explorer workstream has closed the live HTTP and snapshot-caching hardening slice. The current implementation preserves generated snapshot consumption as the deterministic default, supports explicit live HTTP consumption, keeps the backend authoritative for project-model normalization and body-path resolution, maps expected HTTP failures through typed errors, rejects filesystem source escape attempts through canonical path containment, and supports an optional TTL-based source-port snapshot cache with `TTL=0` as the safe default.
 
 The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
@@ -76,11 +76,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Define the Project Documentation Explorer frontend HTTP data-source boundary before any frontend migration from generated snapshot data to live HTTP data.
+Close and align the Project Documentation Explorer live HTTP and snapshot-caching workstream after the implementation slice pushed as `backend: add Project Documentation Explorer snapshot cache decorator`.
 
-This micropasso is intentionally document-only: it adds `MR-0002/ADR-0015` and `MR-0002REQ-0048` to require a feature-local data-source boundary that can support both the existing generated snapshot and the governed read-only HTTP API. The React page must stay independent from the selected transport source, and the backend remains authoritative for body-path resolution, registry normalization and graph-derived read models.
+This micropasso is intentionally document-only. It updates this working plan to distinguish completed Project Documentation Explorer work from remaining candidate work, and it updates the governed Programmer and LLM how-to guides where the recent MR-0002 Explorer pattern creates reusable operating instructions.
 
-No frontend HTTP migration, snapshot removal, dynamic RBAC, query/cache library, generated OpenAPI client, deployment change, mutation endpoint, Base Analysis storage/API, STRIDE overlay, audit, license or secrets scanning workflow is introduced by this step.
+No ADR, Requirement, graph relation, source code, validator, API contract, frontend behavior, Base Analysis runtime/storage, STRIDE overlay, RBAC model, CI workflow, third-party cache/query library, file watcher, stale-on-error behavior or mutation endpoint is introduced by this closure step.
 
 ## Completed Milestones
 
@@ -156,6 +156,14 @@ No frontend HTTP migration, snapshot removal, dynamic RBAC, query/cache library,
 - Project Documentation Explorer HTTP read-only server boundary decision, pushed as `1a2969a`.
 - Native Node.js Project Documentation Explorer HTTP read-only server implementation, pushed as `df2ed36`.
 - Project Documentation Explorer local serve composition command, pushed as `18f2bed`.
+- Project Documentation Explorer frontend HTTP data-source boundary, pushed as `4bbef50`.
+- Project Documentation Explorer frontend data-source adapter boundary implementation, pushed as `031adb6`.
+- Project Documentation Explorer live HTTP UI activation decision and implementation, pushed as `a0f0114` and `f69dbac`.
+- Project Documentation Explorer typed HTTP error boundary decision and implementation, pushed as `d1c4589` and `1f530b0`.
+- Project Documentation Explorer filesystem source path canonicalization decision and implementation, pushed as `a2c5a56` and `609fc3f`.
+- Project Documentation Explorer live HTTP hardening milestone tag `project-documentation-explorer-live-http-hardening-complete`, pointing at `609fc3f`.
+- Threat modeling manual chapter 1, pushed as `6c9ede4`.
+- Project Documentation Explorer snapshot caching boundary decision and implementation, pushed as `55ad5a1` and `48e9e78`.
 
 ## Pending Decisions
 
@@ -165,7 +173,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
 
-The MR-0002/OpenAPI read-only HTTP contract for the Project Documentation Explorer now exists as `MR-0002/ADR-0012`, `MR-0002REQ-0045`, and `docs/reference/api/openapi/threat-forge.openapi.yml`. The minimal HTTP server boundary now exists as `MR-0002/ADR-0013` and `MR-0002REQ-0046`, and the local serve composition command now exists as `MR-0002/ADR-0014` and `MR-0002REQ-0047`. Future frontend HTTP consumption must conform to the existing contract rather than introducing ad-hoc routes, payloads or browser-side source-file access.
+The MR-0002 Project Documentation Explorer live HTTP/caching slice is represented by focused decisions and requirements through `MR-0002/ADR-0019` and `MR-0002REQ-0052`. Future changes must conform to the existing OpenAPI contract, controller/service/port/adapter boundaries, typed error mapping, canonical filesystem containment and source-port cache-decorator model rather than introducing ad-hoc routes, browser-side source-file access, message-regex error mapping, direct adapter instantiation in delivery code, filesystem watchers, stale-on-error behavior or third-party cache/query libraries without new decisions.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -237,11 +245,15 @@ The first implementation exists as a native Node.js HTTP boundary at `backend/sr
 
 The local command exists as `backend:project-documentation-explorer:serve` and starts the read-only API through the feature composition boundary.
 
-`MR-0002/ADR-0015` defines the Project Documentation Explorer frontend HTTP data-source boundary. The derived frontend boundary requirement is:
+`MR-0002/ADR-0015` through `MR-0002/ADR-0019` define the completed Project Documentation Explorer live HTTP and caching hardening slice. The derived requirements are:
 
-- `MR-0002REQ-0048` — Project Documentation Explorer frontend HTTP data-source boundary.
+- `MR-0002REQ-0048` — Project Documentation Explorer frontend HTTP data-source boundary;
+- `MR-0002REQ-0049` — Project Documentation Explorer live HTTP UI activation;
+- `MR-0002REQ-0050` — Project Documentation Explorer typed HTTP error boundary;
+- `MR-0002REQ-0051` — Project Documentation Explorer filesystem source path canonicalization;
+- `MR-0002REQ-0052` — Project Documentation Explorer snapshot caching policy.
 
-This document-only step prepares a later implementation that can add an HTTP-backed frontend data source while preserving the generated snapshot path.
+The implementation now supports generated snapshot default loading, explicit live HTTP opt-in, visible live-source loading/error state, typed HTTP error mapping, canonical filesystem containment and optional TTL-based in-memory snapshot caching through a source-port decorator.
 
 `MR-0002/ADR-0001` defines the reusable application architecture for backend and frontend modules. The first derived architecture requirements are:
 
@@ -281,7 +293,7 @@ Expected future implementation areas include:
 
 The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
 
-The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, minimal native HTTP read-only server boundary and local serve composition command have been implemented. A frontend HTTP data-source boundary has now been defined. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, query/cache library or generated OpenAPI client must be introduced through separate decisions or focused requirements as appropriate.
+The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, native HTTP read-only server, local serve composition command, frontend data-source boundary, live HTTP opt-in UI, typed HTTP error mapping, filesystem source canonicalization and optional TTL-based snapshot cache decorator have been implemented. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, URL-state/deep-linking, generated OpenAPI client, snapshot payload validation, child-project source adapters or broader cache policy must be introduced through separate decisions or focused requirements as appropriate.
 
 ## Pending Validators / Gates
 
@@ -326,9 +338,9 @@ The minimal GitHub Actions CI workflow now runs the governed local check path:
 
 The OpenAPI structural validation gate now checks `docs/reference/api/openapi/threat-forge.openapi.yml` for the expected read-only operations, required schemas, required operation metadata and allowed HTTP methods.
 
-The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary and local serve command in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
+The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary and local serve command, frontend data-source behavior, typed HTTP error behavior, filesystem source canonicalization and snapshot cache behavior in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
 
-Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the HTTP read-only server closure micropasso.
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning, guide-format validation and broader test coverage, but none of these is part of the Project Documentation Explorer live HTTP/caching closure micropasso.
 
 ## Routine Repository Operation Policy
 
@@ -370,26 +382,19 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-Implement the Project Documentation Explorer frontend data-source boundary as a small MR-0002 implementation micropasso. Keep the generated snapshot as the default source, add no query/cache library, and do not switch the frontend to live HTTP by default until that behavior is separately governed and verified.
-
-Recommended governed commit command:
-
-```text
-npm run repo:commit-push -- "docs: close Project Documentation Explorer HTTP server setup"
-```
-
 After this closure, the next safe path is to choose one new small workstream instead of continuing implicitly. Good candidates are:
 
-1. backend composition-root wiring and a local serve command for the Project Documentation Explorer HTTP API;
-2. frontend API client integration with snapshot fallback for the Project Documentation Explorer;
+1. Project Documentation Explorer URL state and deep-linking for filters/detail selection;
+2. snapshot payload/schema validation for the generated frontend snapshot;
 3. strict OpenAPI validation policy and tool decision before introducing a third-party OpenAPI validator;
-4. frontend URL state for filters/detail deep-linking;
-5. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
-6. snapshot payload validation for the Project Documentation Explorer generated frontend snapshot.
+4. AccessContext/WorkspaceContext replacement for remaining hardcoded bootstrap assumptions;
+5. guide-format validation for governed how-to documents if Programmer/LLM guide conventions need deterministic enforcement;
+6. first child-project documentation profile/scaffolding design under MR-0003;
+7. resume MR-0004 Base Analysis command/query/storage design only after an explicit workstream selection.
 
-The recommended next workstream is backend composition-root wiring and a local serve command, because the HTTP boundary now exists as a tested module but is not yet exposed as a runnable local process with real adapters.
+The recommended next workstream is Project Documentation Explorer URL state and deep-linking if the priority remains the visible Governance Console. It is user-facing, small, and can be introduced without changing the backend security boundary. If the priority shifts to analysis foundations, select MR-0004 and start with document-only command/query/storage decisions.
 
-Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, deployment or broad CI tooling until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
+Do not implement Base Analysis runtime/storage/API, STRIDE/STRIDE-AI overlays, complex RBAC, deployment, broader CI tooling, strict OpenAPI validation dependencies, cache watchers or stale-cache behavior until the next workstream is selected and represented by focused ADRs, requirements and graph relations.
 
 ## Security-analysis-ready Project Knowledge Pipeline Micropasso
 
@@ -592,5 +597,35 @@ This micropasso adds:
 - `MR-0002REQ-0052` to require an optional, dependency-free, TTL-based in-memory snapshot cache policy;
 - graph relations connecting the decision and requirement to MR-0002.
 
-No backend code is changed by this step. The next safe implementation step is to add a source-port cache decorator or composition-root wrapper, expose cache TTL configuration through the local serve configuration, keep `TTL=0` as cache disabled, and add runtime tests for cache-disabled loading, cache reuse, TTL expiry and fail-closed behavior. Do not add filesystem watchers, mtime fingerprinting, LRU/cache dependencies, cache mutation endpoints, stale-on-error behavior, frontend query/cache libraries, dynamic RBAC or Base Analysis runtime/storage in that implementation step.
+The implementation was completed as `backend: add Project Documentation Explorer snapshot cache decorator`, adding the source-port cache decorator, local serve TTL configuration, `TTL=0` disabled mode, TTL reuse/reload behavior, fail-closed load/reload behavior and pass-through Markdown body loading. Do not add filesystem watchers, mtime fingerprinting, LRU/cache dependencies, cache mutation endpoints, stale-on-error behavior, frontend query/cache libraries, dynamic RBAC or Base Analysis runtime/storage without a new focused decision and requirement.
+
+## Project Documentation Explorer Live HTTP and Snapshot Caching Closure
+
+This closure micropasso records that the Project Documentation Explorer live HTTP/caching slice is complete and that the reusable operating instructions have been aligned.
+
+Completed in this slice:
+
+- read-only OpenAPI contract and structural OpenAPI gate;
+- native Node.js read-only HTTP boundary;
+- local serve composition command;
+- frontend data-source boundary and explicit live HTTP source activation;
+- visible selected-source loading/error behavior;
+- typed HTTP error categories and fail-closed unexpected error mapping;
+- canonical filesystem source containment including symlink/junction escape rejection;
+- optional source-port snapshot cache decorator with `TTL=0` default and fail-closed reload semantics;
+- runtime test coverage expanded from 23 to 29 tests across HTTP, frontend source selection, filesystem source canonicalization and snapshot caching;
+- milestone tag `project-documentation-explorer-live-http-hardening-complete` on the live HTTP hardening commit;
+- Programmer and LLM governed development guides aligned with the reusable Project Documentation Explorer pattern.
+
+Remaining candidate work is intentionally separate:
+
+- URL state/deep-linking for filters and detail selection;
+- generated snapshot payload/schema validation;
+- strict OpenAPI validation with a dedicated tool decision;
+- AccessContext/WorkspaceContext refinement;
+- governed how-to guide format validation if guide conventions need deterministic enforcement;
+- child-project documentation profile/scaffolding under MR-0003;
+- MR-0004 Base Analysis command/query/storage design.
+
+The next workstream must be explicitly selected and represented by focused ADRs, requirements and graph relations before implementation.
 
