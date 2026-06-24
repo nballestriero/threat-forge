@@ -571,3 +571,26 @@ This micropasso adds:
 - graph relations connecting the decision and requirement to MR-0002.
 
 No backend code is changed by this step. The next safe implementation step is to harden the Project Documentation Explorer filesystem source adapter by canonicalizing both the configured root and requested files before reads, rejecting `..` traversal, absolute path injection and symlink/junction escape, and adding runtime tests for safe reads, traversal attempts and symlink escape where supported by the platform. Do not replace the YAML parser, add caching, add filesystem watchers, introduce new dependencies, change the live HTTP UI behavior, introduce dynamic RBAC or implement Base Analysis runtime/storage in that implementation step.
+
+## Project Documentation Explorer Snapshot Caching Boundary Micropasso
+
+This document-only micropasso records the next performance and reliability boundary selected after live HTTP hardening and filesystem path canonicalization. The code review highlighted that loading the complete Project Documentation Explorer snapshot on every request can become expensive as the governed project-model corpus and future child-project documentation sources grow.
+
+The intended correction is:
+
+```text
+sourcePort.loadSnapshot()
+→ optional source-port snapshot cache decorator
+→ composition-root scoped cache per project/documentation root
+→ TTL-based invalidation
+→ fail closed on load failures by default
+```
+
+This micropasso adds:
+
+- `MR-0002/ADR-0019` to define the Project Documentation Explorer snapshot caching boundary;
+- `MR-0002REQ-0052` to require an optional, dependency-free, TTL-based in-memory snapshot cache policy;
+- graph relations connecting the decision and requirement to MR-0002.
+
+No backend code is changed by this step. The next safe implementation step is to add a source-port cache decorator or composition-root wrapper, expose cache TTL configuration through the local serve configuration, keep `TTL=0` as cache disabled, and add runtime tests for cache-disabled loading, cache reuse, TTL expiry and fail-closed behavior. Do not add filesystem watchers, mtime fingerprinting, LRU/cache dependencies, cache mutation endpoints, stale-on-error behavior, frontend query/cache libraries, dynamic RBAC or Base Analysis runtime/storage in that implementation step.
+

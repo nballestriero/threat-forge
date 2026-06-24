@@ -413,4 +413,11 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0018
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0051_body.md
+  - id: MR-0002REQ-0052
+    title: Project Documentation Explorer snapshot caching policy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0019
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0052_body.md
 
