@@ -5,6 +5,7 @@ import "./project-documentation-explorer.http-server.test.mjs";
 import "./project-documentation-explorer.serve.test.mjs";
 import "./project-documentation-explorer.frontend-client.test.mjs";
 import "./project-documentation-explorer.filesystem-source-adapter.test.mjs";
+import "./project-documentation-explorer.snapshot-cache.test.mjs";
 
 import {
   createProjectDocumentationExplorerService,

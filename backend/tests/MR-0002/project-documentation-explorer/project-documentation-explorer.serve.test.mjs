@@ -14,7 +14,9 @@ import {
  * @file Smoke tests for the Project Documentation Explorer process-level composition root and serve command.
  *
  * @verifiesRequirement MR-0002REQ-0047
+ * @verifiesRequirement MR-0002REQ-0052
  * @derivedFromDecision MR-0002/ADR-0014
+ * @derivedFromDecision MR-0002/ADR-0019
  * @macroRequirement MR-0002
  *
  * These tests verify local serve-command composition and startup behavior without
@@ -64,13 +66,14 @@ async function close(server) {
 
 test("parses Project Documentation Explorer serve command options", () => {
   const options = parseProjectDocumentationExplorerServeOptions(
-    ["--host", "127.0.0.2", "--port=4321", "--root-dir", "."],
+    ["--host", "127.0.0.2", "--port=4321", "--root-dir", ".", "--snapshot-cache-ttl-ms", "250"],
     {},
   );
 
   assert.equal(options.host, "127.0.0.2");
   assert.equal(options.port, 4321);
-  assert.match(options.rootDir, /threat_forge_work|threat-forge/u);
+  assert.equal(path.isAbsolute(options.rootDir), true);
+  assert.equal(options.snapshotCacheTtlMs, 250);
 });
 
 
@@ -91,11 +94,13 @@ test("creates the Project Documentation Explorer serve app through composed depe
     principalResolver() {
       return { authenticated: true, role: "registered_user" };
     },
+    snapshotCacheTtlMs: 1000,
   });
 
   assert.equal(typeof app.server.listen, "function");
   assert.equal(typeof app.module.controller.listDocumentation, "function");
   assert.equal(app.module.routes.length, 3);
+  assert.equal(app.options.snapshotCacheTtlMs, 1000);
 });
 
 test("starts the local read-only Project Documentation Explorer serve command", async () => {

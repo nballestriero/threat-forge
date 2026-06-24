@@ -438,6 +438,16 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer snapshot caching policy
 
+  - id: MR-0002SRC-0023
+    type: SourceModule
+    label: Project Documentation Explorer snapshot cache source-port decorator
+    path: backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.snapshot-cache.mjs
+
+  - id: MR-0002TEST-0005
+    type: VerificationArtifact
+    label: Project Documentation Explorer snapshot cache decorator tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.snapshot-cache.test.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1564,5 +1574,21 @@ spo_relations:
 
   - subject: ADR-0019
     predicate: justifies
+    object: MR-0002REQ-0052
+
+  - subject: MR-0002REQ-0052
+    predicate: implemented_by
+    object: MR-0002SRC-0023
+
+  - subject: MR-0002REQ-0052
+    predicate: implemented_by
+    object: MR-0002SRC-0007
+
+  - subject: MR-0002REQ-0052
+    predicate: implemented_by
+    object: MR-0002SRC-0021
+
+  - subject: MR-0002TEST-0005
+    predicate: verifies
     object: MR-0002REQ-0052
 

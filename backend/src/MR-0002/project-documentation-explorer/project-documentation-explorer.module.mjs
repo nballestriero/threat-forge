@@ -3,6 +3,7 @@ import { createFilesystemProjectModelSourceAdapter } from "./filesystem-project-
 import { createProjectDocumentationExplorerController } from "./project-documentation-explorer.controller.mjs";
 import { createProjectDocumentationExplorerRoutes } from "./project-documentation-explorer.routes.mjs";
 import { createProjectDocumentationExplorerService } from "./project-documentation-explorer.service.mjs";
+import { createProjectDocumentationExplorerSnapshotCacheSourcePort } from "./project-documentation-explorer.snapshot-cache.mjs";
 
 /**
  * @file Composition root for the MR-0002 Project Documentation Explorer backend slice.
@@ -15,10 +16,12 @@ import { createProjectDocumentationExplorerService } from "./project-documentati
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0052
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
+ * @derivedFromDecision MR-0002/ADR-0019
  * @macroRequirement MR-0002
  *
  * This module is the feature-local composition root for the first read-only
@@ -34,11 +37,15 @@ import { createProjectDocumentationExplorerService } from "./project-documentati
 /**
  * Builds the Project Documentation Explorer backend module.
  *
- * @param {{rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>}} [options] - Module options.
+ * @param {{rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} [options] - Module options.
  * @returns {{sourcePort: Record<string, Function>, service: Record<string, Function>, accessPolicy: Record<string, Function>, controller: Record<string, Function>, routes: Array<Record<string, unknown>>}} Composed module.
  */
 export function createProjectDocumentationExplorerModule(options = {}) {
-  const sourcePort = options.sourcePort ?? createFilesystemProjectModelSourceAdapter({ rootDir: options.rootDir });
+  const baseSourcePort = options.sourcePort ?? createFilesystemProjectModelSourceAdapter({ rootDir: options.rootDir });
+  const sourcePort = createProjectDocumentationExplorerSnapshotCacheSourcePort(baseSourcePort, {
+    ttlMs: options.snapshotCacheTtlMs,
+    now: options.snapshotCacheNow,
+  });
   const service = createProjectDocumentationExplorerService({ sourcePort });
   const accessPolicy = options.accessPolicy ?? createBootstrapRegisteredUserAccessPolicy();
   const controller = createProjectDocumentationExplorerController({ service, accessPolicy });

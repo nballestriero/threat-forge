@@ -8,7 +8,9 @@ import { createProjectDocumentationExplorerModule } from "./project-documentatio
  * @file Process-level composition root and local serve command for the Project Documentation Explorer API.
  *
  * @implementsRequirement MR-0002REQ-0047
+ * @implementsRequirement MR-0002REQ-0052
  * @derivedFromDecision MR-0002/ADR-0014
+ * @derivedFromDecision MR-0002/ADR-0019
  * @macroRequirement MR-0002
  *
  * This module provides the executable local entrypoint for the read-only Project
@@ -33,6 +35,8 @@ const optionNameMap = new Map([
   ["port", "port"],
   ["rootDir", "rootDir"],
   ["root-dir", "rootDir"],
+  ["snapshot-cache-ttl-ms", "snapshotCacheTtlMs"],
+  ["snapshotCacheTtlMs", "snapshotCacheTtlMs"],
 ]);
 
 /**
@@ -65,18 +69,34 @@ function normalizePort(value) {
   return port;
 }
 
+
+/**
+ * Normalizes the optional snapshot cache TTL for the local serve command.
+ *
+ * @param {string|number|undefined|null} value - TTL-like value in milliseconds.
+ * @returns {number} Non-negative integer TTL in milliseconds.
+ */
+function normalizeProjectDocumentationExplorerServeSnapshotCacheTtlMs(value) {
+  const ttlMs = Number.parseInt(String(value ?? 0), 10);
+  if (!Number.isInteger(ttlMs) || ttlMs < 0) {
+    throw new Error(`Invalid Project Documentation Explorer snapshot cache TTL: ${value}.`);
+  }
+  return ttlMs;
+}
+
 /**
  * Parses CLI/environment options for the local serve command.
  *
  * @param {string[]} [argv] - CLI arguments, excluding `node` and script path.
  * @param {Record<string, string|undefined>} [env] - Environment variables.
- * @returns {{host: string, port: number, rootDir: string}} Normalized serve options.
+ * @returns {{host: string, port: number, rootDir: string, snapshotCacheTtlMs: number}} Normalized serve options.
  */
 export function parseProjectDocumentationExplorerServeOptions(argv = process.argv.slice(2), env = process.env) {
   const options = {
     host: env.TF_PROJECT_DOCUMENTATION_EXPLORER_HOST || defaultHost,
     port: env.TF_PROJECT_DOCUMENTATION_EXPLORER_PORT || String(defaultPort),
     rootDir: env.TF_PROJECT_DOCUMENTATION_EXPLORER_ROOT || defaultRootDir,
+    snapshotCacheTtlMs: env.TF_PROJECT_DOCUMENTATION_EXPLORER_SNAPSHOT_CACHE_TTL_MS || "0",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -100,13 +120,14 @@ export function parseProjectDocumentationExplorerServeOptions(argv = process.arg
     host: String(options.host || defaultHost),
     port: normalizePort(options.port),
     rootDir: path.resolve(String(options.rootDir || defaultRootDir)),
+    snapshotCacheTtlMs: normalizeProjectDocumentationExplorerServeSnapshotCacheTtlMs(options.snapshotCacheTtlMs),
   });
 }
 
 /**
  * Builds the read-only Project Documentation Explorer serve app without listening.
  *
- * @param {{rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, principalResolver?: Function}} [options] - Composition options.
+ * @param {{rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, principalResolver?: Function, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} [options] - Composition options.
  * @returns {{module: Record<string, unknown>, server: import("node:http").Server, options: Record<string, unknown>}} Serve app.
  */
 export function createProjectDocumentationExplorerServeApp(options = {}) {
@@ -114,6 +135,8 @@ export function createProjectDocumentationExplorerServeApp(options = {}) {
     rootDir: options.rootDir,
     sourcePort: options.sourcePort,
     accessPolicy: options.accessPolicy,
+    snapshotCacheTtlMs: options.snapshotCacheTtlMs,
+    snapshotCacheNow: options.snapshotCacheNow,
   });
   const server = createProjectDocumentationExplorerHttpServer({
     controller: module.controller,
@@ -124,26 +147,32 @@ export function createProjectDocumentationExplorerServeApp(options = {}) {
   return Object.freeze({
     module,
     server,
-    options: Object.freeze({ rootDir: options.rootDir }),
+    options: Object.freeze({
+      rootDir: options.rootDir,
+      snapshotCacheTtlMs: normalizeProjectDocumentationExplorerServeSnapshotCacheTtlMs(options.snapshotCacheTtlMs),
+    }),
   });
 }
 
 /**
  * Starts the local Project Documentation Explorer read-only HTTP server.
  *
- * @param {{host?: string, port?: number, rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, principalResolver?: Function, logger?: Pick<Console, "log"|"error">}} [options] - Serve options.
+ * @param {{host?: string, port?: number, rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, principalResolver?: Function, logger?: Pick<Console, "log"|"error">, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} [options] - Serve options.
  * @returns {Promise<{server: import("node:http").Server, url: string}>} Started server handle.
  */
 export async function startProjectDocumentationExplorerServeCommand(options = {}) {
   const host = String(options.host || defaultHost);
   const port = normalizePort(options.port ?? defaultPort);
   const rootDir = path.resolve(String(options.rootDir || defaultRootDir));
+  const snapshotCacheTtlMs = normalizeProjectDocumentationExplorerServeSnapshotCacheTtlMs(options.snapshotCacheTtlMs);
   const logger = options.logger ?? console;
   const app = createProjectDocumentationExplorerServeApp({
     rootDir,
     sourcePort: options.sourcePort,
     accessPolicy: options.accessPolicy,
     principalResolver: options.principalResolver,
+    snapshotCacheTtlMs,
+    snapshotCacheNow: options.snapshotCacheNow,
   });
 
   await new Promise((resolve, reject) => {
@@ -156,6 +185,7 @@ export async function startProjectDocumentationExplorerServeCommand(options = {}
   const url = `http://${host}:${resolvedPort}`;
   logger.log(`Project Documentation Explorer read-only API listening on ${url}`);
   logger.log("Use x-threat-forge-authenticated: true and x-threat-forge-role: registered_user headers for bootstrap access.");
+  logger.log(`Snapshot cache TTL: ${snapshotCacheTtlMs}ms`);
 
   return Object.freeze({ server: app.server, url });
 }
