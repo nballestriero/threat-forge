@@ -7,6 +7,10 @@ import {
   implementationStateSchema,
   projectDocumentationExplorerCapabilities,
 } from "./project-documentation-explorer.contract.mjs";
+import {
+  ProjectDocumentationExplorerInvalidRequestError,
+  ProjectDocumentationExplorerNotFoundError,
+} from "./project-documentation-explorer.errors.mjs";
 
 /**
  * @file Read service for the Project Documentation Explorer filtered view-model.
@@ -19,9 +23,11 @@ import {
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0050
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
+ * @derivedFromDecision MR-0002/ADR-0017
  * @macroRequirement MR-0002
  *
  * This service normalizes governed documentation, ADR, requirement, macro
@@ -465,13 +471,18 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
     },
 
     async getDetail({ id, access } = {}) {
+      const normalizedId = String(id ?? "").trim();
+      if (!normalizedId) {
+        throw new ProjectDocumentationExplorerInvalidRequestError("Project documentation entity id is required.");
+      }
+
       const snapshot = await sourcePort.loadSnapshot();
       const items = buildDocumentationItems(snapshot);
-      const item = items.find((candidate) => candidate.id === id || candidate.local_id === id);
-      if (!item) throw new Error(`Project documentation entity not found: ${id}`);
+      const item = items.find((candidate) => candidate.id === normalizedId || candidate.local_id === normalizedId);
+      if (!item) throw new ProjectDocumentationExplorerNotFoundError(`Project documentation entity not found: ${normalizedId}`);
 
-      const incoming = (snapshot.graphRelations ?? []).filter((relation) => relation.object === id);
-      const outgoing = (snapshot.graphRelations ?? []).filter((relation) => relation.subject === id);
+      const incoming = (snapshot.graphRelations ?? []).filter((relation) => relation.object === normalizedId);
+      const outgoing = (snapshot.graphRelations ?? []).filter((relation) => relation.subject === normalizedId);
 
       return documentationDetailViewModelSchema.parse({
         access: access ?? {

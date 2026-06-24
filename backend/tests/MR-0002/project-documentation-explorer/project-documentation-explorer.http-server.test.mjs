@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { createProjectDocumentationExplorerController } from "../../../src/MR-0002/project-documentation-explorer/project-documentation-explorer.controller.mjs";
+import { ProjectDocumentationExplorerNotFoundError } from "../../../src/MR-0002/project-documentation-explorer/project-documentation-explorer.errors.mjs";
 import { createProjectDocumentationExplorerHttpServer } from "../../../src/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.mjs";
 import { createProjectDocumentationExplorerRoutes } from "../../../src/MR-0002/project-documentation-explorer/project-documentation-explorer.routes.mjs";
 
@@ -10,8 +11,10 @@ import { createProjectDocumentationExplorerRoutes } from "../../../src/MR-0002/p
  *
  * @verifiesRequirement MR-0002REQ-0046
  * @verifiesRequirement MR-0002REQ-0049
+ * @verifiesRequirement MR-0002REQ-0050
  * @derivedFromDecision MR-0002/ADR-0013
  * @derivedFromDecision MR-0002/ADR-0016
+ * @derivedFromDecision MR-0002/ADR-0017
  * @macroRequirement MR-0002
  *
  * These tests exercise the native Node.js HTTP transport without reading real
@@ -37,10 +40,10 @@ const access = Object.freeze({
  *
  * @returns {{evaluate(): Record<string, unknown>}} Access policy.
  */
-function createAllowingAccessPolicy() {
+function createAccessPolicy({ allowed = true } = {}) {
   return {
     evaluate({ requiredCapability }) {
-      return { ...access, required_capability: requiredCapability };
+      return { ...access, allowed, required_capability: requiredCapability };
     },
   };
 }
@@ -50,7 +53,7 @@ function createAllowingAccessPolicy() {
  *
  * @returns {import("node:http").Server} HTTP server.
  */
-function createFixtureServer() {
+function createFixtureServer({ accessAllowed = true, genericNotFoundError = false } = {}) {
   const service = {
     async getDocumentation({ query, access: accessDecision }) {
       return {
@@ -65,7 +68,10 @@ function createFixtureServer() {
       return { access: accessDecision, query, filters: [] };
     },
     async getDetail({ id, access: accessDecision }) {
-      if (id === "missing") throw new Error("Project documentation entity not found: missing");
+      if (id === "missing") {
+        if (genericNotFoundError) throw new Error("Project documentation entity not found: missing");
+        throw new ProjectDocumentationExplorerNotFoundError("Project documentation entity not found: missing");
+      }
       return {
         access: accessDecision,
         item: { id, kind: "adr", title: "Detail", implementation_state: "not_applicable", acceptance_state: "accepted", related_requirement_ids: [], related_adr_ids: [], source_references: [] },
@@ -76,7 +82,7 @@ function createFixtureServer() {
     },
   };
 
-  const controller = createProjectDocumentationExplorerController({ service, accessPolicy: createAllowingAccessPolicy() });
+  const controller = createProjectDocumentationExplorerController({ service, accessPolicy: createAccessPolicy({ allowed: accessAllowed }) });
   const routes = createProjectDocumentationExplorerRoutes(controller);
   return createProjectDocumentationExplorerHttpServer({
     controller,
@@ -176,6 +182,66 @@ test("keeps the Project Documentation Explorer HTTP boundary read-only", async (
 
     assert.equal(response.status, 405);
     assert.equal(payload.error, "method_not_allowed");
+  } finally {
+    await close(server);
+  }
+});
+
+test("maps typed access errors to forbidden responses without message regex", async () => {
+  const server = createFixtureServer({ accessAllowed: false });
+  const baseUrl = await listen(server);
+  try {
+    const response = await fetch(`${baseUrl}/api/project-model/documentation`);
+    const payload = await response.json();
+
+    assert.equal(response.status, 403);
+    assert.equal(payload.error, "forbidden");
+    assert.equal(payload.message, "Access denied for capability: project_model.documentation.read");
+  } finally {
+    await close(server);
+  }
+});
+
+test("maps typed entity absence to not found responses", async () => {
+  const server = createFixtureServer();
+  const baseUrl = await listen(server);
+  try {
+    const response = await fetch(`${baseUrl}/api/project-model/documentation/entities/missing`);
+    const payload = await response.json();
+
+    assert.equal(response.status, 404);
+    assert.equal(payload.error, "not_found");
+    assert.equal(payload.message, "Project documentation entity not found: missing");
+  } finally {
+    await close(server);
+  }
+});
+
+test("keeps generic errors fail-closed even when messages contain not found text", async () => {
+  const server = createFixtureServer({ genericNotFoundError: true });
+  const baseUrl = await listen(server);
+  try {
+    const response = await fetch(`${baseUrl}/api/project-model/documentation/entities/missing`);
+    const payload = await response.json();
+
+    assert.equal(response.status, 500);
+    assert.equal(payload.error, "internal_error");
+    assert.equal(payload.message, "Project Documentation Explorer request failed.");
+  } finally {
+    await close(server);
+  }
+});
+
+test("maps malformed route parameters to typed invalid request responses", async () => {
+  const server = createFixtureServer();
+  const baseUrl = await listen(server);
+  try {
+    const response = await fetch(`${baseUrl}/api/project-model/documentation/entities/%E0%A4%A`);
+    const payload = await response.json();
+
+    assert.equal(response.status, 400);
+    assert.equal(payload.error, "invalid_request");
+    assert.equal(payload.message, "Invalid route parameter encoding for id.");
   } finally {
     await close(server);
   }

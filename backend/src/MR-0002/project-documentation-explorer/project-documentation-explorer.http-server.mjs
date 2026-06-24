@@ -1,12 +1,20 @@
 import { createServer } from "node:http";
 
+import {
+  ProjectDocumentationExplorerInvalidRequestError,
+  ProjectDocumentationExplorerNotFoundError,
+  isProjectDocumentationExplorerError,
+} from "./project-documentation-explorer.errors.mjs";
+
 /**
  * @file Native Node.js HTTP transport for the Project Documentation Explorer read-only API.
  *
  * @implementsRequirement MR-0002REQ-0046
  * @implementsRequirement MR-0002REQ-0049
+ * @implementsRequirement MR-0002REQ-0050
  * @derivedFromDecision MR-0002/ADR-0013
  * @derivedFromDecision MR-0002/ADR-0016
+ * @derivedFromDecision MR-0002/ADR-0017
  * @macroRequirement MR-0002
  *
  * This module maps native Node.js HTTP requests to the already-composed
@@ -122,7 +130,14 @@ function matchRoute(compiledRoutes, method, pathname) {
 
     const params = {};
     candidate.parameterNames.forEach((name, index) => {
-      params[name] = decodeURIComponent(match[index + 1]);
+      try {
+        params[name] = decodeURIComponent(match[index + 1]);
+      } catch (error) {
+        if (error instanceof URIError) {
+          throw new ProjectDocumentationExplorerInvalidRequestError(`Invalid route parameter encoding for ${name}.`);
+        }
+        throw error;
+      }
     });
     return { route: candidate.route, params };
   }
@@ -175,14 +190,17 @@ function writePreflight(response) {
  * @returns {{statusCode: number, payload: Record<string, string>}} HTTP error result.
  */
 function mapError(error) {
-  const message = error instanceof Error ? error.message : String(error ?? "Unknown error");
-  if (/access denied/iu.test(message)) {
-    return { statusCode: 403, payload: { error: "forbidden", message } };
+  if (isProjectDocumentationExplorerError(error)) {
+    return {
+      statusCode: error.statusCode,
+      payload: { error: error.code, message: error.publicMessage },
+    };
   }
-  if (/not found/iu.test(message)) {
-    return { statusCode: 404, payload: { error: "not_found", message } };
-  }
-  return { statusCode: 500, payload: { error: "internal_error", message: "Project Documentation Explorer request failed." } };
+
+  return {
+    statusCode: 500,
+    payload: { error: "internal_error", message: "Project Documentation Explorer request failed." },
+  };
 }
 
 /**
@@ -213,16 +231,16 @@ export function createProjectDocumentationExplorerHttpHandler({ controller, rout
       return;
     }
 
-    const match = matchRoute(compiledRoutes, method, pathname);
-    if (!match) {
-      writeJson(response, 404, { error: "not_found", message: `Route not found: ${method} ${pathname}` });
-      return;
-    }
-
-    const principal = principalResolver(request);
-    const query = extractDocumentationQuery(requestUrl.searchParams);
-
     try {
+      const match = matchRoute(compiledRoutes, method, pathname);
+      if (!match) {
+        const mapped = mapError(new ProjectDocumentationExplorerNotFoundError(`Route not found: ${method} ${pathname}`));
+        writeJson(response, mapped.statusCode, mapped.payload);
+        return;
+      }
+
+      const principal = principalResolver(request);
+      const query = extractDocumentationQuery(requestUrl.searchParams);
       let payload;
       if (match.route.handler === controller.listDocumentation) {
         payload = await controller.listDocumentation({ principal, query });

@@ -1,4 +1,5 @@
 import { projectDocumentationExplorerCapabilities } from "./project-documentation-explorer.contract.mjs";
+import { ProjectDocumentationExplorerAccessDeniedError } from "./project-documentation-explorer.errors.mjs";
 
 /**
  * @file Controller boundary for Project Documentation Explorer read-only operations.
@@ -10,9 +11,11 @@ import { projectDocumentationExplorerCapabilities } from "./project-documentatio
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0050
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
+ * @derivedFromDecision MR-0002/ADR-0017
  * @macroRequirement MR-0002
  *
  * The controller coordinates capability checks and read-service calls for the
@@ -34,7 +37,7 @@ import { projectDocumentationExplorerCapabilities } from "./project-documentatio
 function assertAllowed(access) {
   if (!access?.allowed) {
     const capability = String(access?.required_capability ?? "unknown");
-    throw new Error(`Access denied for capability: ${capability}`);
+    throw new ProjectDocumentationExplorerAccessDeniedError(capability);
   }
 }
 
