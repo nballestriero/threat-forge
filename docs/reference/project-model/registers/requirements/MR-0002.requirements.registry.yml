@@ -381,3 +381,12 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0014
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0047_body.md
+
+  - id: MR-0002REQ-0048
+    title: Project Documentation Explorer frontend HTTP data-source boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0015
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0048_body.md
+

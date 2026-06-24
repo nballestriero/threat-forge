@@ -378,6 +378,15 @@ nodes:
     label: Project Documentation Explorer serve command smoke tests
     path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.test.mjs
 
+
+  - id: ADR-0015
+    type: ADR
+    label: Project Documentation Explorer frontend HTTP data-source boundary
+
+  - id: MR-0002REQ-0048
+    type: Requirement
+    label: Project Documentation Explorer frontend HTTP data-source boundary
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1363,3 +1372,20 @@ spo_relations:
   - subject: MR-0002TEST-0002
     predicate: verifies
     object: MR-0002REQ-0047
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0015
+
+  - subject: ADR-0015
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0048
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0015
+    predicate: justifies
+    object: MR-0002REQ-0048
+

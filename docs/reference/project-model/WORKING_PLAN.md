@@ -59,9 +59,9 @@ The current semantic state includes:
 - governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection;
 - a minimal GitHub Actions workflow that installs from the lockfile and executes the governed `npm run repo:check` path on pushes and pull requests to `master`.
 
-The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`, and a minimal native Node.js read-only HTTP boundary under `MR-0002/ADR-0013` and `MR-0002REQ-0046`.
+The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`, a minimal native Node.js read-only HTTP boundary under `MR-0002/ADR-0013` and `MR-0002REQ-0046`, and a local serve composition command under `MR-0002/ADR-0014` and `MR-0002REQ-0047`.
 
-The active objective for this micropasso is to close the Project Documentation Explorer HTTP read-only server setup in this working plan after the successful boundary decision and runtime implementation.
+The active objective is now to prepare the Project Documentation Explorer frontend for a governed transition from generated snapshot consumption to live HTTP API consumption, while keeping the page read-only and preserving backend ownership of project-model normalization.
 
 The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
@@ -76,11 +76,11 @@ The immediate governance themes are now:
 
 ## Current Micropasso
 
-Close the Project Documentation Explorer HTTP read-only server setup after implementation of the minimal native Node.js HTTP boundary and runtime smoke coverage.
+Define the Project Documentation Explorer frontend HTTP data-source boundary before any frontend migration from generated snapshot data to live HTTP data.
 
-This micropasso is intentionally document-only: it updates the working plan to reflect that `MR-0002/ADR-0013` and `MR-0002REQ-0046` define the Project Documentation Explorer HTTP read-only server boundary, and that `backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.mjs` implements a narrow server boundary for the three governed OpenAPI GET operations.
+This micropasso is intentionally document-only: it adds `MR-0002/ADR-0015` and `MR-0002REQ-0048` to require a feature-local data-source boundary that can support both the existing generated snapshot and the governed read-only HTTP API. The React page must stay independent from the selected transport source, and the backend remains authoritative for body-path resolution, registry normalization and graph-derived read models.
 
-No new composition-root command, frontend API switch, strict OpenAPI dependency, Base Analysis storage/API, STRIDE overlay, RBAC model, deployment, audit, license or secrets scanning workflow is introduced by this step.
+No frontend HTTP migration, snapshot removal, dynamic RBAC, query/cache library, generated OpenAPI client, deployment change, mutation endpoint, Base Analysis storage/API, STRIDE overlay, audit, license or secrets scanning workflow is introduced by this step.
 
 ## Completed Milestones
 
@@ -155,6 +155,7 @@ No new composition-root command, frontend API switch, strict OpenAPI dependency,
 - OpenAPI structural validation gate, implementing `MR-0000REQ-0023`, pushed as `70ed776`.
 - Project Documentation Explorer HTTP read-only server boundary decision, pushed as `1a2969a`.
 - Native Node.js Project Documentation Explorer HTTP read-only server implementation, pushed as `df2ed36`.
+- Project Documentation Explorer local serve composition command, pushed as `18f2bed`.
 
 ## Pending Decisions
 
@@ -164,7 +165,7 @@ Any new decision must be added to the relevant decision registry and graph befor
 
 Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
 
-The MR-0002/OpenAPI read-only HTTP contract for the Project Documentation Explorer now exists as `MR-0002/ADR-0012`, `MR-0002REQ-0045`, and `docs/reference/api/openapi/threat-forge.openapi.yml`. The minimal HTTP server boundary now exists as `MR-0002/ADR-0013` and `MR-0002REQ-0046`, and future composition-root/start-command work must conform to the existing contract rather than introducing ad-hoc routes, payloads or adapter instantiation inside controllers.
+The MR-0002/OpenAPI read-only HTTP contract for the Project Documentation Explorer now exists as `MR-0002/ADR-0012`, `MR-0002REQ-0045`, and `docs/reference/api/openapi/threat-forge.openapi.yml`. The minimal HTTP server boundary now exists as `MR-0002/ADR-0013` and `MR-0002REQ-0046`, and the local serve composition command now exists as `MR-0002/ADR-0014` and `MR-0002REQ-0047`. Future frontend HTTP consumption must conform to the existing contract rather than introducing ad-hoc routes, payloads or browser-side source-file access.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -230,6 +231,18 @@ The contract is stored at `docs/reference/api/openapi/threat-forge.openapi.yml` 
 
 The first implementation exists as a native Node.js HTTP boundary at `backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.http-server.mjs`, with runtime smoke coverage for collection, detail decoding and read-only behavior.
 
+`MR-0002/ADR-0014` defines the local Project Documentation Explorer serve composition root. The derived command requirement is:
+
+- `MR-0002REQ-0047` — Project Documentation Explorer local serve command.
+
+The local command exists as `backend:project-documentation-explorer:serve` and starts the read-only API through the feature composition boundary.
+
+`MR-0002/ADR-0015` defines the Project Documentation Explorer frontend HTTP data-source boundary. The derived frontend boundary requirement is:
+
+- `MR-0002REQ-0048` — Project Documentation Explorer frontend HTTP data-source boundary.
+
+This document-only step prepares a later implementation that can add an HTTP-backed frontend data source while preserving the generated snapshot path.
+
 `MR-0002/ADR-0001` defines the reusable application architecture for backend and frontend modules. The first derived architecture requirements are:
 
 - `MR-0002REQ-0001` — Backend application module architecture;
@@ -268,7 +281,7 @@ Expected future implementation areas include:
 
 The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
 
-The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate and minimal native HTTP read-only server boundary have been implemented. Future strict OpenAPI validation with a dedicated third-party tool, process startup command, real composition-root wiring or frontend API switch must be introduced through separate decisions or focused requirements as appropriate.
+The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, minimal native HTTP read-only server boundary and local serve composition command have been implemented. A frontend HTTP data-source boundary has now been defined. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, query/cache library or generated OpenAPI client must be introduced through separate decisions or focused requirements as appropriate.
 
 ## Pending Validators / Gates
 
@@ -313,7 +326,7 @@ The minimal GitHub Actions CI workflow now runs the governed local check path:
 
 The OpenAPI structural validation gate now checks `docs/reference/api/openapi/threat-forge.openapi.yml` for the expected read-only operations, required schemas, required operation metadata and allowed HTTP methods.
 
-The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
+The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary and local serve command in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
 
 Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning and broader test coverage, but none of these is part of the HTTP read-only server closure micropasso.
 
@@ -357,7 +370,7 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-Commit this Project Documentation Explorer HTTP read-only server setup closure through the governed runner.
+Implement the Project Documentation Explorer frontend data-source boundary as a small MR-0002 implementation micropasso. Keep the generated snapshot as the default source, add no query/cache library, and do not switch the frontend to live HTTP by default until that behavior is separately governed and verified.
 
 Recommended governed commit command:
 
