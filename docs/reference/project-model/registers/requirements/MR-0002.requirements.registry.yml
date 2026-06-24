@@ -390,3 +390,10 @@ requirements:
     derived_from_decision_id: ADR-0015
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0048_body.md
 
+  - id: MR-0002REQ-0049
+    title: Project Documentation Explorer live HTTP UI activation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0016
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0049_body.md

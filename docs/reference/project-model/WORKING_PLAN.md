@@ -504,3 +504,25 @@ The Base Analysis resource taxonomy intentionally uses the broader `base_resourc
 Custom project taxonomies are not implemented by this step. A future user-defined taxonomy such as `irrigation_component_type=pump` must map to a base value such as `base_component_kind=physical_or_operational_unit` and must not replace the mandatory base classification.
 
 This micropasso does not implement taxonomy validators, domain profile registries, methodology overlay taxonomy registries, custom taxonomy authoring, OpenAPI contracts, Zod contracts, UI rendering, Base Analysis storage or CI/CD stale detection. The next safe design step is to define a schema/validator for the taxonomy registry or to define the first methodology taxonomy overlay model.
+
+## Project Documentation Explorer Live HTTP UI Activation Micropasso
+
+This document-only micropasso defines how the Project Documentation Explorer UI may activate the live HTTP source without removing the generated snapshot or making the local backend server mandatory for static frontend use.
+
+The intended activation model is:
+
+```text
+generated snapshot source
+→ default deterministic frontend build and fallback source
+explicit live HTTP configuration
+→ opt-in local/live Project Documentation Explorer API source
+selected-source loading and error state
+→ clear UI feedback without silent data corruption
+```
+
+This micropasso adds:
+
+- `MR-0002/ADR-0016` to define live HTTP UI activation semantics;
+- `MR-0002REQ-0049` to require snapshot-default, live HTTP opt-in and visible selected-source failure behavior.
+
+No frontend implementation is added by this step. The next safe implementation step is to wire the Project Documentation Explorer page to the existing data-source boundary using snapshot as default, live HTTP as explicit opt-in and visible load/error state for the selected source. Do not introduce query/cache libraries, generated OpenAPI clients, dynamic RBAC, mutation endpoints, deployment configuration or Base Analysis runtime/storage in that implementation step.
