@@ -11,3 +11,12 @@ decisions:
     date: 2026-06-19
     macro_requirement_id: MR-0003
     body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md
+
+  - id: ADR-0002
+    title: Child project document-first governed lifecycle and management boundary
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-26
+    macro_requirement_id: MR-0003
+    body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0002_body.md

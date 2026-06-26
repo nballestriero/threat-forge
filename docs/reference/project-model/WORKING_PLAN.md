@@ -704,3 +704,35 @@ Remaining candidate work is intentionally separate:
 
 The next workstream must be explicitly selected and represented by focused ADRs, requirements and graph relations before implementation.
 
+## Child Project Governed Lifecycle and Management Boundary Micropasso
+
+This document-only micropasso defines the next child-project workstream before any skeleton generator, UI implementation, repository adapter, RBAC runtime, or threat-analysis execution gate is added.
+
+The intended lifecycle is:
+
+```text
+governed child-project skeleton
+→ document-source manifest and contained canonical documentation
+→ ADR/requirement/graph justification for work
+→ reserved pre-code threat-analysis readiness stage
+→ implementation code with requirement/ADR traceability
+→ governed gates and lifecycle status reporting
+```
+
+This micropasso adds:
+
+- `MR-0003/ADR-0002` to define the child-project document-first governed lifecycle and platform management boundary;
+- `MR-0003REQ-0006` for the governed child-project skeleton;
+- `MR-0003REQ-0007` for document-first lifecycle enforcement;
+- `MR-0003REQ-0008` for child-project code traceability policy;
+- `MR-0003REQ-0009` for the threat-analysis-ready pre-code gate placeholder;
+- `MR-0003REQ-0010` for explicit document-source manifests;
+- `MR-0003REQ-0011` for document-source containment controls;
+- `MR-0003REQ-0012` for the child-project management UI boundary;
+- `MR-0003REQ-0013` for platform-only Child Projects navigation;
+- `MR-0003REQ-0014` for child-project lifecycle status views;
+- `MR-0003REQ-0015` for RBAC-ready backend capability boundaries;
+- graph relations connecting the decision and requirements to `MR-0003`.
+
+No code is changed by this step. The next safe implementation step is to add a small document-source manifest contract and validator for child projects, with no skeleton generator, UI, RBAC runtime, repository adapter, Base Analysis execution, STRIDE, STRIDE-AI, or application-code generation until separate ADRs and requirements authorize them.
+

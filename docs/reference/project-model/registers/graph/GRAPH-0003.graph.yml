@@ -32,6 +32,51 @@ nodes:
   - id: MR-0003REQ-0005
     type: Requirement
     label: No nested child project workspaces
+
+
+  - id: ADR-0002
+    type: ADR
+    label: Child project document-first governed lifecycle and management boundary
+
+  - id: MR-0003REQ-0006
+    type: Requirement
+    label: Child project governed skeleton
+
+  - id: MR-0003REQ-0007
+    type: Requirement
+    label: Child project document-first lifecycle
+
+  - id: MR-0003REQ-0008
+    type: Requirement
+    label: Child project code traceability policy
+
+  - id: MR-0003REQ-0009
+    type: Requirement
+    label: Child project threat-analysis-ready pre-code gate
+
+  - id: MR-0003REQ-0010
+    type: Requirement
+    label: Child project document source manifest
+
+  - id: MR-0003REQ-0011
+    type: Requirement
+    label: Child project document source containment
+
+  - id: MR-0003REQ-0012
+    type: Requirement
+    label: Child project management UI boundary
+
+  - id: MR-0003REQ-0013
+    type: Requirement
+    label: Platform-only child project navigation
+
+  - id: MR-0003REQ-0014
+    type: Requirement
+    label: Child project lifecycle status view
+
+  - id: MR-0003REQ-0015
+    type: Requirement
+    label: Child project RBAC-ready capability boundary
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -80,3 +125,92 @@ spo_relations:
   - subject: ADR-0001
     predicate: justifies
     object: MR-0003REQ-0005
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0002
+
+  - subject: ADR-0002
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0006
+
+  - subject: MR-0003REQ-0006
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0007
+
+  - subject: MR-0003REQ-0007
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0008
+
+  - subject: MR-0003REQ-0008
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0009
+
+  - subject: MR-0003REQ-0009
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0010
+
+  - subject: MR-0003REQ-0010
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0011
+
+  - subject: MR-0003REQ-0011
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0012
+
+  - subject: MR-0003REQ-0012
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0013
+
+  - subject: MR-0003REQ-0013
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0014
+
+  - subject: MR-0003REQ-0014
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0002
+    predicate: justifies
+    object: MR-0003REQ-0015
+
+  - subject: MR-0003REQ-0015
+    predicate: belongs_to
+    object: MR-0003
+

@@ -42,3 +42,93 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0005_body.md
+
+  - id: MR-0003REQ-0006
+    title: Child project governed skeleton
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0006_body.md
+
+
+  - id: MR-0003REQ-0007
+    title: Child project document-first lifecycle
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0007_body.md
+
+
+  - id: MR-0003REQ-0008
+    title: Child project code traceability policy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0008_body.md
+
+
+  - id: MR-0003REQ-0009
+    title: Child project threat-analysis-ready pre-code gate
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0009_body.md
+
+
+  - id: MR-0003REQ-0010
+    title: Child project document source manifest
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0010_body.md
+
+
+  - id: MR-0003REQ-0011
+    title: Child project document source containment
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0011_body.md
+
+
+  - id: MR-0003REQ-0012
+    title: Child project management UI boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0012_body.md
+
+
+  - id: MR-0003REQ-0013
+    title: Platform-only child project navigation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0013_body.md
+
+
+  - id: MR-0003REQ-0014
+    title: Child project lifecycle status view
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0014_body.md
+
+
+  - id: MR-0003REQ-0015
+    title: Child project RBAC-ready capability boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0015_body.md
+
