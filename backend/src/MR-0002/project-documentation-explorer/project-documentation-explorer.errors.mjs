@@ -2,7 +2,9 @@
  * @file Typed Project Documentation Explorer error boundary primitives.
  *
  * @implementsRequirement MR-0002REQ-0050
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0017
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This module provides transport-stable error objects for Project Documentation

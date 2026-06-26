@@ -8,11 +8,13 @@ import { fileURLToPath } from "node:url";
  * @file Governed JSDoc static type-checking pilot for the Project Documentation Explorer.
  *
  * @implementsRequirement MR-0002REQ-0053
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0020
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This tool runs TypeScript `checkJs` over the selected Project Documentation
- * Explorer pilot files using the repository's existing TypeScript development
+ * Explorer pilot and coverage-expansion files using the repository's existing TypeScript development
  * dependency. It also proves that a representative wrong-field fixture fails
  * closed, so the pilot is not just executing an empty/no-op configuration.
  *
@@ -131,7 +133,8 @@ if (!skipNegativeFixtures) {
   runNegativeFixture();
 }
 
-console.log("Project Documentation Explorer JSDoc static type-check pilot passed.");
+console.log("Project Documentation Explorer JSDoc static type-check passed.");
 console.log(`Config: ${relativeProjectPath(positiveConfigPath)}`);
-console.log(`Selected files: ${skipNegativeFixtures ? "positive pilot only" : "positive pilot plus 1 negative fixture"}`);
+console.log(`Selected files: ${skipNegativeFixtures ? "backend core coverage expansion only" : "backend core coverage expansion plus 1 negative fixture"}`);
 console.log("Implemented requirement: MR-0002REQ-0053");
+console.log("Implemented requirement: MR-0002REQ-0054");

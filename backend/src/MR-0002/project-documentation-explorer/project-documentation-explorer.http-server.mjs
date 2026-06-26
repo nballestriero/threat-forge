@@ -12,9 +12,11 @@ import {
  * @implementsRequirement MR-0002REQ-0046
  * @implementsRequirement MR-0002REQ-0049
  * @implementsRequirement MR-0002REQ-0050
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0013
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0002/ADR-0017
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This module maps native Node.js HTTP requests to the already-composed
@@ -27,6 +29,13 @@ import {
  * native Node.js HTTP server object. It does not call `listen`, mutate governed
  * project-model sources, persist data, perform Git operations, implement dynamic
  * RBAC, or introduce Base Analysis runtime behavior.
+ */
+
+/**
+ * @typedef {(input: {principal?: Record<string, unknown>, query?: Record<string, unknown>, id?: string}) => Promise<Record<string, unknown>>} DocumentationRouteHandler
+ * @typedef {Record<string, unknown> & {method: string, path: string, handler: DocumentationRouteHandler}} DocumentationRouteDescriptor
+ * @typedef {{route: DocumentationRouteDescriptor, regex: RegExp, parameterNames: string[]}} CompiledDocumentationRoute
+ * @typedef {{listDocumentation: DocumentationRouteHandler, listDocumentationFilters: DocumentationRouteHandler, getDocumentationEntity: DocumentationRouteHandler}} ProjectDocumentationExplorerController
  */
 
 const jsonContentType = "application/json; charset=utf-8";
@@ -69,6 +78,7 @@ export function resolveHeaderPrincipal(request) {
  * @returns {Record<string, string|string[]>} Controller query object.
  */
 export function extractDocumentationQuery(searchParams) {
+  /** @type {Record<string, string|string[]>} */
   const query = {};
   for (const key of knownQueryKeys) {
     const values = searchParams.getAll(key).filter((value) => String(value ?? "").trim());
@@ -91,10 +101,11 @@ function escapeRegex(value) {
 /**
  * Compiles a route descriptor path into a matcher.
  *
- * @param {Record<string, unknown>} route - Route descriptor.
- * @returns {{route: Record<string, unknown>, regex: RegExp, parameterNames: string[]}} Compiled matcher.
+ * @param {DocumentationRouteDescriptor} route - Route descriptor.
+ * @returns {CompiledDocumentationRoute} Compiled matcher.
  */
 function compileRoute(route) {
+  /** @type {string[]} */
   const parameterNames = [];
   const pattern = String(route.path ?? "")
     .split("/")
@@ -117,10 +128,10 @@ function compileRoute(route) {
 /**
  * Matches a request against route descriptors.
  *
- * @param {Array<Record<string, unknown>>} compiledRoutes - Compiled route descriptors.
+ * @param {ReadonlyArray<CompiledDocumentationRoute>} compiledRoutes - Compiled route descriptors.
  * @param {string} method - Request method.
  * @param {string} pathname - Request pathname.
- * @returns {{route: Record<string, unknown>, params: Record<string, string>}|null} Match result.
+ * @returns {{route: DocumentationRouteDescriptor, params: Record<string, string>}|null} Match result.
  */
 function matchRoute(compiledRoutes, method, pathname) {
   for (const candidate of compiledRoutes) {
@@ -128,6 +139,7 @@ function matchRoute(compiledRoutes, method, pathname) {
     if (!match) continue;
     if (String(candidate.route.method ?? "").toUpperCase() !== method.toUpperCase()) return null;
 
+    /** @type {Record<string, string>} */
     const params = {};
     candidate.parameterNames.forEach((name, index) => {
       try {
@@ -147,7 +159,7 @@ function matchRoute(compiledRoutes, method, pathname) {
 /**
  * Checks whether a path is known with a different HTTP method.
  *
- * @param {Array<Record<string, unknown>>} compiledRoutes - Compiled route descriptors.
+ * @param {ReadonlyArray<CompiledDocumentationRoute>} compiledRoutes - Compiled route descriptors.
  * @param {string} pathname - Request pathname.
  * @returns {boolean} True when the path is known.
  */
@@ -206,7 +218,7 @@ function mapError(error) {
 /**
  * Creates a native Node.js HTTP request handler for Project Documentation Explorer.
  *
- * @param {{controller: Record<string, Function>, routes: Array<Record<string, unknown>>, principalResolver?: (request: import("node:http").IncomingMessage) => Record<string, unknown>}} dependencies - Handler dependencies.
+ * @param {{controller: ProjectDocumentationExplorerController, routes: ReadonlyArray<DocumentationRouteDescriptor>, principalResolver?: (request: import("node:http").IncomingMessage) => Record<string, unknown>}} dependencies - Handler dependencies.
  * @returns {(request: import("node:http").IncomingMessage, response: import("node:http").ServerResponse) => Promise<void>} HTTP handler.
  */
 export function createProjectDocumentationExplorerHttpHandler({ controller, routes, principalResolver = resolveHeaderPrincipal }) {
@@ -263,7 +275,7 @@ export function createProjectDocumentationExplorerHttpHandler({ controller, rout
 /**
  * Creates a native Node.js HTTP server for the Project Documentation Explorer.
  *
- * @param {{controller: Record<string, Function>, routes: Array<Record<string, unknown>>, principalResolver?: (request: import("node:http").IncomingMessage) => Record<string, unknown>}} dependencies - Server dependencies.
+ * @param {{controller: ProjectDocumentationExplorerController, routes: ReadonlyArray<DocumentationRouteDescriptor>, principalResolver?: (request: import("node:http").IncomingMessage) => Record<string, unknown>}} dependencies - Server dependencies.
  * @returns {import("node:http").Server} HTTP server.
  */
 export function createProjectDocumentationExplorerHttpServer(dependencies) {

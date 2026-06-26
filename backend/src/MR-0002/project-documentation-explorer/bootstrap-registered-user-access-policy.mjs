@@ -7,9 +7,11 @@ import { projectDocumentationExplorerCapabilities } from "./project-documentatio
  * @implementsRequirement MR-0002REQ-0034
  * @implementsRequirement MR-0007REQ-0005
  * @implementsRequirement MR-0007REQ-0006
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0007/ADR-0002
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  * @macroRequirement MR-0007
  *
@@ -24,6 +26,7 @@ import { projectDocumentationExplorerCapabilities } from "./project-documentatio
  * RBAC screens, workspace membership storage, or frontend role checks.
  */
 
+/** @type {readonly string[]} */
 const registeredUserCapabilities = Object.freeze([
   projectDocumentationExplorerCapabilities.read,
   projectDocumentationExplorerCapabilities.filter,

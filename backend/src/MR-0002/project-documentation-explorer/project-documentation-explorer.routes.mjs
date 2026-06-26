@@ -13,9 +13,11 @@ import {
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * These route descriptors define the first read-only API surface without binding
@@ -29,12 +31,19 @@ import {
  */
 
 /**
+ * @typedef {(input: {principal?: Record<string, unknown>, query?: Record<string, unknown>, id?: string}) => Promise<Record<string, unknown>>} DocumentationRouteHandler
+ * @typedef {{listDocumentation: DocumentationRouteHandler, listDocumentationFilters: DocumentationRouteHandler, getDocumentationEntity: DocumentationRouteHandler}} ProjectDocumentationExplorerController
+ * @typedef {Record<string, unknown> & {method: string, path: string, required_capability: string, description: string, handler: DocumentationRouteHandler}} DocumentationRouteDescriptor
+ */
+
+/**
  * Creates route descriptors bound to the provided controller methods.
  *
- * @param {Record<string, Function>} controller - Project Documentation Explorer controller.
- * @returns {Array<Record<string, unknown>>} Validated route descriptors.
+ * @param {ProjectDocumentationExplorerController} controller - Project Documentation Explorer controller.
+ * @returns {ReadonlyArray<DocumentationRouteDescriptor>} Validated route descriptors.
  */
 export function createProjectDocumentationExplorerRoutes(controller) {
+  /** @type {DocumentationRouteDescriptor[]} */
   const descriptors = [
     {
       method: "GET",

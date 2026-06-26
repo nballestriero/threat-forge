@@ -9,11 +9,13 @@
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * The Project Model source port isolates the read service from concrete YAML,

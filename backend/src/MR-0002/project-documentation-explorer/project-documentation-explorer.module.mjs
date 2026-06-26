@@ -17,11 +17,13 @@ import { createProjectDocumentationExplorerSnapshotCacheSourcePort } from "./pro
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0052
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
  * @derivedFromDecision MR-0002/ADR-0019
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This module is the feature-local composition root for the first read-only
@@ -35,10 +37,20 @@ import { createProjectDocumentationExplorerSnapshotCacheSourcePort } from "./pro
  */
 
 /**
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourcePort} ProjectModelSourcePort
+ * @typedef {{evaluate(input: {principal?: Record<string, unknown>, requiredCapability: string}): Record<string, unknown>}} ProjectDocumentationExplorerAccessPolicy
+ * @typedef {{rootDir?: string, sourcePort?: ProjectModelSourcePort, accessPolicy?: ProjectDocumentationExplorerAccessPolicy, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} ProjectDocumentationExplorerModuleOptions
+ * @typedef {ReturnType<typeof createProjectDocumentationExplorerService>} ProjectDocumentationExplorerService
+ * @typedef {ReturnType<typeof createProjectDocumentationExplorerController>} ProjectDocumentationExplorerController
+ * @typedef {ReturnType<typeof createProjectDocumentationExplorerRoutes>} ProjectDocumentationExplorerRoutes
+ * @typedef {{sourcePort: ProjectModelSourcePort, service: ProjectDocumentationExplorerService, accessPolicy: ProjectDocumentationExplorerAccessPolicy, controller: ProjectDocumentationExplorerController, routes: ProjectDocumentationExplorerRoutes}} ProjectDocumentationExplorerModule
+ */
+
+/**
  * Builds the Project Documentation Explorer backend module.
  *
- * @param {{rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} [options] - Module options.
- * @returns {{sourcePort: Record<string, Function>, service: Record<string, Function>, accessPolicy: Record<string, Function>, controller: Record<string, Function>, routes: Array<Record<string, unknown>>}} Composed module.
+ * @param {ProjectDocumentationExplorerModuleOptions} [options] - Module options.
+ * @returns {ProjectDocumentationExplorerModule} Composed module.
  */
 export function createProjectDocumentationExplorerModule(options = {}) {
   const baseSourcePort = options.sourcePort ?? createFilesystemProjectModelSourceAdapter({ rootDir: options.rootDir });

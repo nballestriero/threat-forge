@@ -1664,3 +1664,51 @@ spo_relations:
   - subject: ADR-0021
     predicate: justifies
     object: MR-0002REQ-0054
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002TOOL-0001
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0002
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0003
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0004
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0005
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0006
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0007
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0008
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0020
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0021
+
+  - subject: MR-0002REQ-0054
+    predicate: implemented_by
+    object: MR-0002SRC-0022
+
+  - subject: MR-0002TOOL-0001
+    predicate: verifies
+    object: MR-0002REQ-0054

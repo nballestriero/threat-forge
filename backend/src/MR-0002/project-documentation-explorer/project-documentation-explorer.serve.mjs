@@ -9,8 +9,10 @@ import { createProjectDocumentationExplorerModule } from "./project-documentatio
  *
  * @implementsRequirement MR-0002REQ-0047
  * @implementsRequirement MR-0002REQ-0052
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0014
  * @derivedFromDecision MR-0002/ADR-0019
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This module provides the executable local entrypoint for the read-only Project
@@ -24,6 +26,14 @@ import { createProjectDocumentationExplorerModule } from "./project-documentatio
  * constructing the serve app do not call `listen`, mutate governed sources,
  * perform Git operations, introduce write endpoints, implement dynamic RBAC, or
  * move the frontend from snapshot consumption to live HTTP consumption.
+ */
+
+/**
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourcePort} ProjectModelSourcePort
+ * @typedef {{evaluate(input: {principal?: Record<string, unknown>, requiredCapability: string}): Record<string, unknown>}} ProjectDocumentationExplorerAccessPolicy
+ * @typedef {(request: import("node:http").IncomingMessage) => Record<string, unknown>} PrincipalResolver
+ * @typedef {{rootDir?: string, sourcePort?: ProjectModelSourcePort, accessPolicy?: ProjectDocumentationExplorerAccessPolicy, principalResolver?: PrincipalResolver, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} ProjectDocumentationExplorerServeAppOptions
+ * @typedef {ProjectDocumentationExplorerServeAppOptions & {host?: string, port?: number, logger?: Pick<Console, "log"|"error">}} ProjectDocumentationExplorerServeCommandOptions
  */
 
 const currentFilePath = fileURLToPath(import.meta.url);
@@ -92,6 +102,7 @@ function normalizeProjectDocumentationExplorerServeSnapshotCacheTtlMs(value) {
  * @returns {{host: string, port: number, rootDir: string, snapshotCacheTtlMs: number}} Normalized serve options.
  */
 export function parseProjectDocumentationExplorerServeOptions(argv = process.argv.slice(2), env = process.env) {
+  /** @type {Record<string, string>} */
   const options = {
     host: env.TF_PROJECT_DOCUMENTATION_EXPLORER_HOST || defaultHost,
     port: env.TF_PROJECT_DOCUMENTATION_EXPLORER_PORT || String(defaultPort),
@@ -127,7 +138,7 @@ export function parseProjectDocumentationExplorerServeOptions(argv = process.arg
 /**
  * Builds the read-only Project Documentation Explorer serve app without listening.
  *
- * @param {{rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, principalResolver?: Function, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} [options] - Composition options.
+ * @param {ProjectDocumentationExplorerServeAppOptions} [options] - Composition options.
  * @returns {{module: Record<string, unknown>, server: import("node:http").Server, options: Record<string, unknown>}} Serve app.
  */
 export function createProjectDocumentationExplorerServeApp(options = {}) {
@@ -157,7 +168,7 @@ export function createProjectDocumentationExplorerServeApp(options = {}) {
 /**
  * Starts the local Project Documentation Explorer read-only HTTP server.
  *
- * @param {{host?: string, port?: number, rootDir?: string, sourcePort?: Record<string, Function>, accessPolicy?: Record<string, Function>, principalResolver?: Function, logger?: Pick<Console, "log"|"error">, snapshotCacheTtlMs?: number|string|null, snapshotCacheNow?: () => number}} [options] - Serve options.
+ * @param {ProjectDocumentationExplorerServeCommandOptions} [options] - Serve options.
  * @returns {Promise<{server: import("node:http").Server, url: string}>} Started server handle.
  */
 export async function startProjectDocumentationExplorerServeCommand(options = {}) {

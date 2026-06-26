@@ -24,10 +24,12 @@ import {
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0050
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
  * @derivedFromDecision MR-0002/ADR-0017
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This service normalizes governed documentation, ADR, requirement, macro
@@ -42,13 +44,22 @@ import {
  * Base Analysis runtime/storage.
  */
 
+/**
+ * @typedef {{mr: string[], kind: string[], status: string[], requirement_type: string[], implementation_state: string[], acceptance_state: string[], q: string}} DocumentationQuery
+ * @typedef {{kind: string, path?: string, id?: string}} SourceReference
+ * @typedef {Record<string, unknown> & {id: string, local_id?: string, kind: string, title: string, macro_requirement_id?: string, status?: string, requirement_type?: string, decision_type?: string, priority?: string, implementation_state: string, acceptance_state: string, related_requirement_ids: string[], related_adr_ids: string[], source_references: SourceReference[]}} DocumentationItem
+ * @typedef {{format: "markdown", path: string, content_markdown: string, available: boolean, missing_reason?: string}} DocumentationBodyViewModel
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourcePort} ProjectModelSourcePort
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourceSnapshot} ProjectModelSourceSnapshot
+ */
+
 const acceptedStatuses = new Set(["accepted", "approved", "active"]);
 const notAcceptedStatuses = new Set(["proposed", "draft", "rejected", "deprecated", "superseded"]);
 
 /**
  * Converts path separators to stable forward slashes.
  *
- * @param {string|null|undefined} value - Path-like value.
+ * @param {unknown} value - Path-like value.
  * @returns {string} Normalized path string.
  */
 function normalizeProjectPath(value) {
@@ -73,7 +84,7 @@ function toValueArray(value) {
  * Normalizes incoming filter parameters before Zod validation.
  *
  * @param {Record<string, unknown>} [query] - Raw query object.
- * @returns {Record<string, unknown>} Normalized query.
+ * @returns {DocumentationQuery} Normalized query.
  */
 export function normalizeDocumentationQuery(query = {}) {
   return documentationQuerySchema.parse({
@@ -90,7 +101,7 @@ export function normalizeDocumentationQuery(query = {}) {
 /**
  * Derives a normalized acceptance state from current governed status fields.
  *
- * @param {string|null|undefined} status - Raw lifecycle status.
+ * @param {unknown} status - Raw lifecycle status.
  * @returns {import("zod").infer<typeof acceptanceStateSchema>} Acceptance state.
  */
 function deriveAcceptanceState(status) {
@@ -122,6 +133,7 @@ function deriveImplementationState(itemKind, entityId, implementedBy) {
  * @returns {Map<string, Set<string>>} Requirement implementation map.
  */
 function buildImplementedByIndex(graphRelations) {
+  /** @type {Map<string, Set<string>>} */
   const index = new Map();
   for (const relation of graphRelations) {
     if (relation?.predicate !== "implemented_by") continue;
@@ -129,7 +141,8 @@ function buildImplementedByIndex(graphRelations) {
     const artifactId = String(relation.object ?? "");
     if (!requirementId || !artifactId) continue;
     if (!index.has(requirementId)) index.set(requirementId, new Set());
-    index.get(requirementId).add(artifactId);
+    const bucket = index.get(requirementId);
+    if (bucket) bucket.add(artifactId);
   }
   return index;
 }
@@ -138,8 +151,8 @@ function buildImplementedByIndex(graphRelations) {
  * Creates a source reference when a path exists.
  *
  * @param {string} kind - Source kind.
- * @param {string|null|undefined} sourcePath - Repository-relative source path.
- * @returns {Array<Record<string, string>>} Source reference array.
+ * @param {unknown} sourcePath - Repository-relative source path.
+ * @returns {SourceReference[]} Source reference array.
  */
 function sourceReference(kind, sourcePath) {
   const normalized = normalizeProjectPath(sourcePath);
@@ -149,15 +162,15 @@ function sourceReference(kind, sourcePath) {
 /**
  * Normalizes source snapshot records into documentation explorer items.
  *
- * @param {Record<string, unknown>} snapshot - Source snapshot.
- * @returns {Array<Record<string, unknown>>} Normalized documentation items.
+ * @param {ProjectModelSourceSnapshot} snapshot - Source snapshot.
+ * @returns {DocumentationItem[]} Normalized documentation items.
  */
 function buildDocumentationItems(snapshot) {
   const implementedBy = buildImplementedByIndex(snapshot.graphRelations ?? []);
 
   const macroItems = (snapshot.macroRequirements ?? []).map((entry) => {
     const id = String(entry.id ?? "");
-    return {
+    return ({
       id,
       kind: "macro_requirement",
       title: String(entry.name ?? entry.title ?? id),
@@ -171,14 +184,14 @@ function buildDocumentationItems(snapshot) {
         ...sourceReference("registry", entry.source_path),
         ...sourceReference("body", entry.body_path),
       ],
-    };
+    });
   });
 
   const requirementItems = (snapshot.requirements ?? []).map((entry) => {
     const id = String(entry.id ?? "");
     const macroRequirementId = String(entry.macro_requirement_id ?? "");
     const relatedAdrId = entry.derived_from_decision_id ? `${macroRequirementId}/${entry.derived_from_decision_id}` : "";
-    return {
+    return ({
       id,
       kind: "requirement",
       title: String(entry.title ?? id),
@@ -194,12 +207,12 @@ function buildDocumentationItems(snapshot) {
         ...sourceReference("registry", entry.source_path),
         ...sourceReference("body", entry.body_path),
       ],
-    };
+    });
   });
 
   const decisionItems = (snapshot.decisions ?? []).map((entry) => {
     const id = String(entry.id ?? "");
-    return {
+    return ({
       id,
       local_id: String(entry.local_id ?? ""),
       kind: "adr",
@@ -215,7 +228,7 @@ function buildDocumentationItems(snapshot) {
         ...sourceReference("registry", entry.source_path),
         ...sourceReference("body", entry.body_path),
       ],
-    };
+    });
   });
 
   const taxonomyItems = (snapshot.taxonomies ?? []).map((entry) => ({
@@ -230,17 +243,18 @@ function buildDocumentationItems(snapshot) {
     source_references: sourceReference("taxonomy", entry.source_path),
   }));
 
-  return [...macroItems, ...requirementItems, ...decisionItems, ...taxonomyItems].filter((item) => item.id);
+  return /** @type {DocumentationItem[]} */ (/** @type {unknown} */ ([...macroItems, ...requirementItems, ...decisionItems, ...taxonomyItems].filter((item) => item.id)));
 }
 
 /**
  * Tests whether an item matches the normalized query.
  *
- * @param {Record<string, unknown>} item - Documentation item.
- * @param {Record<string, unknown>} query - Normalized query.
+ * @param {DocumentationItem} item - Documentation item.
+ * @param {DocumentationQuery} query - Normalized query.
  * @returns {boolean} True when the item matches.
  */
 function matchesQuery(item, query) {
+  /** @type {Array<[string[], unknown]>} */
   const filters = [
     [query.mr, item.macro_requirement_id],
     [query.kind, item.kind],
@@ -264,15 +278,17 @@ function matchesQuery(item, query) {
 /**
  * Builds counts for each entity kind.
  *
- * @param {Array<Record<string, unknown>>} items - Documentation items.
+ * @param {DocumentationItem[]} items - Documentation items.
  * @returns {Record<string, number>} Counts by kind.
  */
 function countByKind(items) {
-  return items.reduce((accumulator, item) => {
+  /** @type {Record<string, number>} */
+  const counts = {};
+  for (const item of items) {
     const kind = String(item.kind ?? "unknown");
-    accumulator[kind] = (accumulator[kind] ?? 0) + 1;
-    return accumulator;
-  }, {});
+    counts[kind] = (counts[kind] ?? 0) + 1;
+  }
+  return counts;
 }
 
 /**
@@ -319,11 +335,12 @@ function buildFacet({ id, label, source, values, selectedValues }) {
 /**
  * Builds filter facets from available items rather than hardcoded frontend values.
  *
- * @param {Array<Record<string, unknown>>} items - Documentation items.
- * @param {Record<string, unknown>} query - Normalized query.
+ * @param {DocumentationItem[]} items - Documentation items.
+ * @param {DocumentationQuery} query - Normalized query.
  * @returns {Array<Record<string, unknown>>} Filter facets.
  */
 function buildFilterFacets(items, query) {
+  /** @type {Record<"mr"|"kind"|"status"|"requirement_type"|"implementation_state"|"acceptance_state", Map<string, number>>} */
   const facets = {
     mr: new Map(),
     kind: new Map(),
@@ -373,20 +390,20 @@ function buildFilterFacets(items, query) {
 /**
  * Finds the governed Markdown body source reference for a documentation item.
  *
- * @param {Record<string, unknown>} item - Documentation item.
+ * @param {DocumentationItem} item - Documentation item.
  * @returns {string} Repository-relative body path, or an empty string.
  */
 function getBodyPath(item) {
-  const reference = (item.source_references ?? []).find((candidate) => candidate.kind === "body" && candidate.path);
+  const reference = item.source_references.find((candidate) => candidate.kind === "body" && candidate.path);
   return normalizeProjectPath(reference?.path);
 }
 
 /**
  * Loads the governed Markdown body through the source port when a body path exists.
  *
- * @param {Record<string, unknown>} item - Documentation item.
- * @param {{loadBodyContent?: (projectPath: string) => Promise<string|null>}} sourcePort - Source port.
- * @returns {Promise<Record<string, unknown>|null>} Body view-model.
+ * @param {DocumentationItem} item - Documentation item.
+ * @param {ProjectModelSourcePort} sourcePort - Source port.
+ * @returns {Promise<DocumentationBodyViewModel|null>} Body view-model.
  */
 async function loadBodyViewModel(item, sourcePort) {
   const bodyPath = getBodyPath(item);
@@ -424,14 +441,20 @@ async function loadBodyViewModel(item, sourcePort) {
 /**
  * Creates the read-only documentation explorer service.
  *
- * @param {{sourcePort: {loadSnapshot(): Promise<Record<string, unknown>>}}} input - Service dependencies.
- * @returns {{getDocumentation(input?: {query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getFilters(input?: {query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getDetail(input: {id: string, access?: Record<string, unknown>}): Promise<Record<string, unknown>>}} Service API.
+ * @param {{sourcePort: ProjectModelSourcePort}} input - Service dependencies.
+ * @returns {{getDocumentation(input?: {query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getFilters(input?: {query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getDetail(input?: {id?: string, access?: Record<string, unknown>}): Promise<Record<string, unknown>>}} Service API.
  */
 export function createProjectDocumentationExplorerService({ sourcePort }) {
   if (!sourcePort || typeof sourcePort.loadSnapshot !== "function") {
     throw new TypeError("ProjectDocumentationExplorerService requires a ProjectModelSourcePort.");
   }
 
+  /**
+   * Builds the collection view-model before schema validation.
+   *
+   * @param {{query?: Record<string, unknown>, access?: Record<string, unknown>}} [input] - Collection input.
+   * @returns {Promise<Record<string, unknown>>} Unvalidated collection view-model.
+   */
   async function buildModel({ query: rawQuery = {}, access } = {}) {
     const query = normalizeDocumentationQuery(rawQuery);
     const snapshot = await sourcePort.loadSnapshot();
@@ -481,8 +504,8 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
       const item = items.find((candidate) => candidate.id === normalizedId || candidate.local_id === normalizedId);
       if (!item) throw new ProjectDocumentationExplorerNotFoundError(`Project documentation entity not found: ${normalizedId}`);
 
-      const incoming = (snapshot.graphRelations ?? []).filter((relation) => relation.object === normalizedId);
-      const outgoing = (snapshot.graphRelations ?? []).filter((relation) => relation.subject === normalizedId);
+      const incoming = snapshot.graphRelations.filter((relation) => relation.object === normalizedId);
+      const outgoing = snapshot.graphRelations.filter((relation) => relation.subject === normalizedId);
 
       return documentationDetailViewModelSchema.parse({
         access: access ?? {

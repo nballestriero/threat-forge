@@ -14,11 +14,13 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0051
+ * @implementsRequirement MR-0002REQ-0054
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
+ * @derivedFromDecision MR-0002/ADR-0021
  * @macroRequirement MR-0002
  *
  * This adapter is the first replaceable ProjectModelSourcePort implementation.
@@ -30,6 +32,12 @@ import { fileURLToPath } from "node:url";
  * Side effects: reads project-model registry and graph files from disk. It does
  * not mutate repository files, execute Git, generate pages, expose HTTP routes,
  * perform access-policy checks, or implement Base Analysis runtime/storage.
+ */
+
+/**
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourcePort} ProjectModelSourcePort
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourceSnapshot} ProjectModelSourceSnapshot
+ * @typedef {Record<string, unknown>} YamlRecord
  */
 
 const currentFilePath = fileURLToPath(import.meta.url);
@@ -49,7 +57,7 @@ function readText(filePath) {
 /**
  * Converts path separators to stable forward slashes.
  *
- * @param {string|null|undefined} value - Path-like value.
+ * @param {unknown} value - Path-like value.
  * @returns {string} Normalized path string.
  */
 function normalizeProjectPath(value) {
@@ -107,15 +115,25 @@ function countIndent(line) {
  * @returns {Record<string, unknown>} Parsed object.
  */
 function parseYaml(text) {
+  /** @type {YamlRecord} */
   const root = {};
+  /** @type {Array<{indent: number, value: YamlRecord|unknown[]}>} */
   const stack = [{ indent: -1, value: root }];
   const lines = String(text ?? "").replace(/^\uFEFF/u, "").replace(/\r\n/gu, "\n").split("\n");
 
+  /**
+   * @param {number} indent - Current indentation.
+   * @returns {YamlRecord|unknown[]} Current YAML parent container.
+   */
   function getParent(indent) {
     while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
     return stack[stack.length - 1].value;
   }
 
+  /**
+   * @param {number} startIndex - Current line index.
+   * @returns {string} Next non-comment line.
+   */
   function nextMeaningfulLine(startIndex) {
     for (let index = startIndex + 1; index < lines.length; index += 1) {
       if (lines[index].trim() && !lines[index].trimStart().startsWith("#")) return lines[index];
@@ -123,6 +141,11 @@ function parseYaml(text) {
     return "";
   }
 
+  /**
+   * @param {number} startIndex - First block line index.
+   * @param {number} baseIndent - Parent indentation.
+   * @returns {{text: string, nextIndex: number}} Parsed block.
+   */
   function readBlock(startIndex, baseIndent) {
     const block = [];
     let index = startIndex;
@@ -158,6 +181,7 @@ function parseYaml(text) {
 
       const key = itemText.slice(0, colonIndex).trim();
       const rawValue = itemText.slice(colonIndex + 1).trim();
+      /** @type {YamlRecord} */
       const obj = {};
       parent.push(obj);
 
@@ -184,6 +208,7 @@ function parseYaml(text) {
     const key = trimmed.slice(0, colonIndex).trim();
     const rawValue = trimmed.slice(colonIndex + 1).trim();
     const parent = getParent(indent);
+    if (Array.isArray(parent)) continue;
 
     if (rawValue === "|") {
       const block = readBlock(index, indent);
@@ -212,6 +237,17 @@ function readYaml(filePath) {
   return parseYaml(readText(filePath));
 }
 
+
+/**
+ * Converts an unknown YAML value to a record array for governed registry traversal.
+ *
+ * @param {unknown} value - Candidate YAML array.
+ * @returns {YamlRecord[]} Record array or an empty array.
+ */
+function toRecordArray(value) {
+  return Array.isArray(value) ? /** @type {YamlRecord[]} */ (value) : [];
+}
+
 /**
  * Lists registry files matching a macro-scoped registry pattern.
  *
@@ -232,7 +268,7 @@ function listRegistryFiles(directoryPath, pattern) {
  * Creates a filesystem-backed project-model source adapter.
  *
  * @param {{rootDir?: string}} [options] - Adapter options.
- * @returns {{loadSnapshot(): Promise<Record<string, unknown>>, loadBodyContent(projectPath: string): Promise<string|null>}} ProjectModelSourcePort implementation.
+ * @returns {ProjectModelSourcePort} ProjectModelSourcePort implementation.
  */
 export function createFilesystemProjectModelSourceAdapter(options = {}) {
   const rootDir = path.resolve(options.rootDir ?? defaultRootDir);
@@ -241,6 +277,12 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
 
   const canonicalRootDir = fs.realpathSync.native(rootDir);
 
+  /**
+   * @param {string} candidatePath - Canonical absolute candidate path.
+   * @param {string} originalProjectPath - Original governed project path.
+   * @param {string} pathKind - Human-readable path kind.
+   * @returns {void}
+   */
   function assertInsideRoot(candidatePath, originalProjectPath, pathKind) {
     const relativePath = path.relative(canonicalRootDir, candidatePath);
     if (relativePath.startsWith("..") || path.isAbsolute(relativePath)) {
@@ -248,6 +290,10 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
     }
   }
 
+  /**
+   * @param {string} projectPath - Project-relative path.
+   * @returns {string} Lexically contained absolute path.
+   */
   function assertLexicallySafeProjectPath(projectPath) {
     const normalized = normalizeProjectPath(projectPath);
     if (!normalized || path.isAbsolute(normalized)) {
@@ -280,7 +326,7 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
   function loadMacroRequirements() {
     const registryPath = path.join(registersDir, "macro-requirements.registry.yml");
     const registry = readYaml(registryPath);
-    return (registry.macro_requirements ?? []).map((entry) => ({
+    return toRecordArray(registry.macro_requirements).map((entry) => ({
       ...entry,
       source_path: normalizeProjectPath(path.relative(rootDir, registryPath)),
     }));
@@ -291,7 +337,7 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
     return listRegistryFiles(requirementsDir, /^MR-\d{4}\.requirements\.registry\.yml$/u).flatMap((registryPath) => {
       const registry = readYaml(registryPath);
       const macroRequirementId = String(registry.macro_requirement_id ?? "");
-      return (registry.requirements ?? []).map((entry) => ({
+      return toRecordArray(registry.requirements).map((entry) => ({
         ...entry,
         macro_requirement_id: macroRequirementId,
         source_path: normalizeProjectPath(path.relative(rootDir, registryPath)),
@@ -304,7 +350,7 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
     return listRegistryFiles(decisionsDir, /^MR-\d{4}\.decisions\.registry\.yml$/u).flatMap((registryPath) => {
       const registry = readYaml(registryPath);
       const macroRequirementId = String(registry.macro_requirement_id ?? "");
-      return (registry.decisions ?? []).map((entry) => ({
+      return toRecordArray(registry.decisions).map((entry) => ({
         ...entry,
         local_id: String(entry.id ?? ""),
         id: `${macroRequirementId}/${entry.id}`,
@@ -332,14 +378,14 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
     const graphNodes = [];
     const graphRelations = [];
 
-    for (const graphEntry of graphIndex.graphs ?? []) {
-      const graphPath = resolveSafeProjectPath(graphEntry.path);
+    for (const graphEntry of toRecordArray(graphIndex.graphs)) {
+      const graphPath = resolveSafeProjectPath(String(graphEntry.path ?? ""));
       if (!fs.existsSync(graphPath)) continue;
       const graph = readYaml(graphPath);
       const graphId = String(graph.graph_id ?? graphEntry.graph_id ?? "");
       const graphSourcePath = normalizeProjectPath(graphEntry.path);
 
-      for (const node of graph.nodes ?? []) {
+      for (const node of toRecordArray(graph.nodes)) {
         graphNodes.push({
           ...node,
           graph_id: graphId,
@@ -347,7 +393,7 @@ export function createFilesystemProjectModelSourceAdapter(options = {}) {
         });
       }
 
-      for (const relation of graph.spo_relations ?? []) {
+      for (const relation of toRecordArray(graph.spo_relations)) {
         graphRelations.push({
           ...relation,
           graph_id: graphId,
