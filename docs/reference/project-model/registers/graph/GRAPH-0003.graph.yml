@@ -124,6 +124,26 @@ nodes:
     label: Governed repository operation runner
     path: backend/tools/MR-0000/run-governed-repository-operation.mjs
 
+  - id: ADR-0005
+    type: ADR
+    label: Child project management storage port and SQLite adapter boundary
+
+  - id: MR-0003REQ-0023
+    type: Requirement
+    label: Child project management storage port
+
+  - id: MR-0003REQ-0024
+    type: Requirement
+    label: SQLite child project store adapter boundary
+
+  - id: MR-0003REQ-0025
+    type: Requirement
+    label: Child project operational state read model
+
+  - id: MR-0003REQ-0026
+    type: Requirement
+    label: Child project storage portability and RBAC-ready operations
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -373,3 +393,44 @@ spo_relations:
   - subject: TOOL-run-governed-repository-operation
     predicate: verifies
     object: MR-0003REQ-0022
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0005
+
+  - subject: ADR-0005
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0003REQ-0023
+
+  - subject: MR-0003REQ-0023
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0003REQ-0024
+
+  - subject: MR-0003REQ-0024
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0003REQ-0025
+
+  - subject: MR-0003REQ-0025
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0005
+    predicate: justifies
+    object: MR-0003REQ-0026
+
+  - subject: MR-0003REQ-0026
+    predicate: belongs_to
+    object: MR-0003
+

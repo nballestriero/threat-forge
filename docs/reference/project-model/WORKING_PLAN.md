@@ -804,3 +804,32 @@ The tool validates:
 - negative fixtures for missing skeleton paths and lexical traversal root input.
 
 This step intentionally does not generate a child-project skeleton, clone repositories, add UI, add RBAC runtime, execute threat analysis, add a custom child-project manifest, migrate to TypeScript, add dependencies, or define a new family of child-project-specific validators.
+
+## Child Project Management Storage Port and SQLite Adapter Boundary Micropasso
+
+This document-only micropasso defines where managed child-project platform state belongs before adding a database, backend API, UI or skeleton-generation action.
+
+The selected direction is:
+
+```text
+child-project canonical documentation
+→ remains in the child repository standard Project Model
+
+platform operational management state
+→ is stored through a backend port
+→ initially implemented by a SQLite adapter
+→ replaceable by another database adapter later
+```
+
+This micropasso adds:
+
+- `MR-0003/ADR-0005` to define the child-project management storage port and SQLite adapter boundary;
+- `MR-0003REQ-0023` for the child-project management storage port;
+- `MR-0003REQ-0024` for the initial SQLite adapter boundary;
+- `MR-0003REQ-0025` for the operational child-project lifecycle read model;
+- `MR-0003REQ-0026` for database portability and RBAC-ready operation boundaries;
+- graph relations connecting the decision and requirements to `MR-0003`.
+
+No runtime code, database dependency, schema migration, backend endpoint, UI, RBAC runtime, child-project skeleton generator, repository cloning, or child-project commit/push runner is added by this step.
+
+The next safe implementation step is a small backend child-project management storage port and in-memory/fake adapter test seam, followed by an initial SQLite adapter behind the same port. The service must keep using `Controller -> Service -> Port -> Adapter` and must not expose SQLite details to controllers, UI contracts or Project Model validators.

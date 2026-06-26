@@ -188,3 +188,35 @@ requirements:
     derived_from_decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0022_body.md
 
+
+  - id: MR-0003REQ-0023
+    title: Child project management storage port
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0023_body.md
+
+  - id: MR-0003REQ-0024
+    title: SQLite child project store adapter boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0024_body.md
+
+  - id: MR-0003REQ-0025
+    title: Child project operational state read model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0025_body.md
+
+  - id: MR-0003REQ-0026
+    title: Child project storage portability and RBAC-ready operations
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0026_body.md
