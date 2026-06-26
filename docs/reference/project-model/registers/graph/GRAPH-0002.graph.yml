@@ -457,6 +457,16 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer JSDoc static type-checking pilot
 
+  - id: MR-0002TOOL-0001
+    type: Tool
+    label: Project Documentation Explorer JSDoc static type-check pilot tool
+    path: backend/tools/MR-0002/check-project-documentation-explorer-jsdoc-typecheck.mjs
+
+  - id: MR-0002TEST-0006
+    type: VerificationArtifact
+    label: Project Documentation Explorer JSDoc static type-check wrong-field negative fixture
+    path: backend/tools/MR-0002/fixtures/jsdoc-typecheck/negative/wrong-field-name.fixture.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1615,5 +1625,17 @@ spo_relations:
 
   - subject: ADR-0020
     predicate: justifies
+    object: MR-0002REQ-0053
+
+  - subject: MR-0002REQ-0053
+    predicate: implemented_by
+    object: MR-0002TOOL-0001
+
+  - subject: MR-0002TOOL-0001
+    predicate: verifies
+    object: MR-0002REQ-0053
+
+  - subject: MR-0002TEST-0006
+    predicate: verifies
     object: MR-0002REQ-0053
 

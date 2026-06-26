@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": [],
+    "lib": ["ES2022"]
+  },
+  "files": [
+    "backend/tools/MR-0002/types/node-builtins.d.ts",
+    "backend/src/MR-0002/project-documentation-explorer/project-model-source.port.mjs",
+    "backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.snapshot-cache.mjs",
+    "backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.snapshot-cache.test.mjs"
+  ]
+}

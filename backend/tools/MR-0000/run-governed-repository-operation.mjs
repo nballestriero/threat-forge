@@ -54,6 +54,11 @@ const gateCommands = [
   { label: "Requirement registry fields", command: "npm", args: ["run", "docs:requirement-registry-fields"] },
   { label: "Code traceability", command: "npm", args: ["run", "docs:code-traceability"] },
   {
+    label: "Project Documentation Explorer JSDoc type-check",
+    command: "npm",
+    args: ["run", "docs:project-documentation-explorer-jsdoc-typecheck"],
+  },
+  {
     label: "Repository operation governance",
     command: "npm",
     args: ["run", "docs:repo-operation-governance"],

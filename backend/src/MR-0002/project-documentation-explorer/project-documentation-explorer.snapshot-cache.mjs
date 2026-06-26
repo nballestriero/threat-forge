@@ -20,6 +20,7 @@
 
 /**
  * @typedef {import("./project-model-source.port.mjs").ProjectModelSourcePort} ProjectModelSourcePort
+ * @typedef {import("./project-model-source.port.mjs").ProjectModelSourceSnapshot} ProjectModelSourceSnapshot
  */
 
 /**
@@ -46,6 +47,7 @@ export function normalizeProjectDocumentationExplorerSnapshotCacheTtlMs(value) {
 export function createProjectDocumentationExplorerSnapshotCacheSourcePort(sourcePort, options = {}) {
   const ttlMs = normalizeProjectDocumentationExplorerSnapshotCacheTtlMs(options.ttlMs);
   const now = options.now ?? Date.now;
+  /** @type {ProjectModelSourceSnapshot|null} */
   let cachedSnapshot = null;
   let expiresAtMs = 0;
 
