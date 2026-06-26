@@ -56,7 +56,7 @@ nodes:
 
   - id: MR-0003REQ-0010
     type: Requirement
-    label: Child project document source manifest
+    label: Child project standard Project Model source declaration
 
   - id: MR-0003REQ-0011
     type: Requirement
@@ -77,6 +77,22 @@ nodes:
   - id: MR-0003REQ-0015
     type: Requirement
     label: Child project RBAC-ready capability boundary
+
+  - id: ADR-0003
+    type: ADR
+    label: Child project standard Project Model reuse and taxonomy boundary
+
+  - id: MR-0003REQ-0016
+    type: Requirement
+    label: Child project standard Project Model reuse
+
+  - id: MR-0003REQ-0017
+    type: Requirement
+    label: Child project taxonomy reuse and extension controls
+
+  - id: MR-0003REQ-0018
+    type: Requirement
+    label: Platform child project registry boundary
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -214,3 +230,35 @@ spo_relations:
     predicate: belongs_to
     object: MR-0003
 
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0003
+
+  - subject: ADR-0003
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0003REQ-0016
+
+  - subject: MR-0003REQ-0016
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0003REQ-0017
+
+  - subject: MR-0003REQ-0017
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0003
+    predicate: justifies
+    object: MR-0003REQ-0018
+
+  - subject: MR-0003REQ-0018
+    predicate: belongs_to
+    object: MR-0003

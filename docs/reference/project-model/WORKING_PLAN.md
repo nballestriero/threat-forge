@@ -197,7 +197,7 @@ The MR-0002 Project Documentation Explorer live HTTP/caching slice is represente
 
 The MR-0002 JSDoc static type-checking pilot is represented by `MR-0002/ADR-0020` and `MR-0002REQ-0053`. The focused expansion boundary is represented by `MR-0002/ADR-0021` and `MR-0002REQ-0054`. Future implementation must remain scoped to selected Project Documentation Explorer JavaScript source/test/frontend files, must use `tsc --checkJs` with JSDoc types, must not replace runtime validation at untrusted boundaries, and must not expand to repository-wide type-checking without a new focused decision.
 
-Before MR-0004 Base Analysis runtime/storage begins, MR-0003 must receive separate decisions for child-project governed skeleton generation and child-project document-source controls. The intended direction is that threat-forge should create child projects from a governed skeleton rather than expecting ad-hoc repositories to become analyzable later. That skeleton should include documentation-first gates, governed guides for programmers and LLMs, canonical project-model structure, repo operation controls, and an analyzable document manifest or equivalent source declaration.
+Before MR-0004 Base Analysis runtime/storage begins, MR-0003 must receive separate decisions for child-project governed skeleton generation and child-project standard Project Model source controls. The intended direction is that threat-forge should create child projects from a governed skeleton rather than expecting ad-hoc repositories to become analyzable later. That skeleton should include documentation-first gates, governed guides for programmers and LLMs, the same canonical Project Model structure used by threat-forge, repo operation controls, controlled taxonomy declarations, and standard Project Model source validation.
 
 The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
@@ -712,7 +712,7 @@ The intended lifecycle is:
 
 ```text
 governed child-project skeleton
-→ document-source manifest and contained canonical documentation
+→ standard Project Model registries, bodies, graph and taxonomy declarations
 → ADR/requirement/graph justification for work
 → reserved pre-code threat-analysis readiness stage
 → implementation code with requirement/ADR traceability
@@ -726,7 +726,7 @@ This micropasso adds:
 - `MR-0003REQ-0007` for document-first lifecycle enforcement;
 - `MR-0003REQ-0008` for child-project code traceability policy;
 - `MR-0003REQ-0009` for the threat-analysis-ready pre-code gate placeholder;
-- `MR-0003REQ-0010` for explicit document-source manifests;
+- `MR-0003REQ-0010` for standard Project Model source declaration;
 - `MR-0003REQ-0011` for document-source containment controls;
 - `MR-0003REQ-0012` for the child-project management UI boundary;
 - `MR-0003REQ-0013` for platform-only Child Projects navigation;
@@ -734,5 +734,32 @@ This micropasso adds:
 - `MR-0003REQ-0015` for RBAC-ready backend capability boundaries;
 - graph relations connecting the decision and requirements to `MR-0003`.
 
-No code is changed by this step. The next safe implementation step is to add a small document-source manifest contract and validator for child projects, with no skeleton generator, UI, RBAC runtime, repository adapter, Base Analysis execution, STRIDE, STRIDE-AI, or application-code generation until separate ADRs and requirements authorize them.
+No code is changed by this step. A follow-up documentation clarification adds `MR-0003/ADR-0003` to make explicit that child projects reuse the same Project Model, registry models, body formats, graph model and controlled taxonomy model as threat-forge instead of introducing a separate document-source manifest. The next safe implementation step is a standard Project Model skeleton/source validator for child projects, with no skeleton generator, UI, RBAC runtime, repository adapter, Base Analysis execution, STRIDE, STRIDE-AI, or application-code generation until separate ADRs and requirements authorize them.
+
+## Child Project Standard Project Model Reuse Clarification Micropasso
+
+This document-only micropasso corrects the child-project source-control direction before implementation work starts.
+
+The clarified lifecycle is:
+
+```text
+governed child-project skeleton
+→ standard Project Model registries, governed bodies, graph records, body-format declarations and controlled taxonomy registries
+→ ADR/requirement/graph justification for work
+→ reserved pre-code threat-analysis readiness stage
+→ implementation code with requirement/ADR traceability
+→ governed gates and lifecycle status reporting
+```
+
+This micropasso adds:
+
+- `MR-0003/ADR-0003` to define child projects as standard Project Model repositories rather than repositories with a custom document-source manifest;
+- `MR-0003REQ-0016` for standard Project Model reuse;
+- `MR-0003REQ-0017` for controlled taxonomy reuse and governed local taxonomy extensions;
+- `MR-0003REQ-0018` for the platform child-project registry boundary, distinct from child internal Project Model registries;
+- graph relations connecting the decision and requirements to `MR-0003`.
+
+It also corrects earlier wording around `MR-0003REQ-0010` and `MR-0003REQ-0011`: child-project document-source control is based on validating the same Project Model roots and models used by threat-forge, not on introducing a separate child-project-specific manifest format.
+
+No code is changed by this step. The next safe implementation step is a child-project standard Project Model skeleton/source validator.
 

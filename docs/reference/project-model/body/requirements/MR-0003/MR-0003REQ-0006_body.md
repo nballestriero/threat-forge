@@ -20,7 +20,7 @@ It does not implement the generator, copy files into a child repository, or defi
 
 - Generated child-project skeletons must include a canonical `docs/reference/project-model/` area.
 - Generated child-project skeletons must include governed guides for LLM/programmer operation and document-first development.
-- Generated child-project skeletons must include a declared document-source manifest location.
+- Generated child-project skeletons must include the standard Project Model registry, body, graph, body-format and taxonomy roots used by threat-forge.
 - Generated child-project skeletons must include local check and governed commit/push entrypoint placeholders or implementations.
 - Generated child-project skeletons must not include business implementation code as part of the governance bootstrap.
 

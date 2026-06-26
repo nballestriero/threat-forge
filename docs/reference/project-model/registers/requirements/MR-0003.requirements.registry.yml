@@ -80,7 +80,7 @@ requirements:
 
 
   - id: MR-0003REQ-0010
-    title: Child project document source manifest
+    title: Child project standard Project Model source declaration
     type: functional
     status: approved
     priority: high
@@ -131,4 +131,28 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0002
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0015_body.md
+
+  - id: MR-0003REQ-0016
+    title: Child project standard Project Model reuse
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0016_body.md
+
+  - id: MR-0003REQ-0017
+    title: Child project taxonomy reuse and extension controls
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0017_body.md
+
+  - id: MR-0003REQ-0018
+    title: Platform child project registry boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0018_body.md
 

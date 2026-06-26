@@ -1,0 +1,20 @@
+schema_version: 1
+confirmation_id: CHANGE-20260626-align-child-project-source-model
+reason: Align child-project source-control wording with the governed standard Project Model reuse decision before implementation begins.
+approved_by: human
+approved: true
+confirmed_changes:
+  - source_path: docs/reference/project-model/registers/requirements/MR-0003.requirements.registry.yml
+    collection: requirements
+    record_identity:
+      record_id: MR-0003REQ-0010
+    change_type: modify
+    fields:
+      - title
+  - source_path: docs/reference/project-model/registers/graph/GRAPH-0003.graph.yml
+    collection: nodes
+    record_identity:
+      record_id: MR-0003REQ-0010
+    change_type: modify
+    fields:
+      - label
