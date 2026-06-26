@@ -95,9 +95,26 @@ When working on Project Documentation Explorer or similar read-only browser/API 
 - resolve filesystem-backed source paths through canonical containment before reads, including symlink or junction escape rejection;
 - keep generated frontend snapshots as deterministic defaults unless a live source is explicitly configured;
 - keep live HTTP activation visible through loading/error state rather than silent fallback that hides selected-source failures;
-- add cache behavior as source-port decorators or composition-root wrappers, not inside controllers or React components.
+- add cache behavior as source-port decorators or composition-root wrappers, not inside controllers or React components;
+- use the focused JSDoc static type-checking pilot for selected Explorer internal JavaScript contracts where `MR-0002/ADR-0020` and `MR-0002REQ-0053` apply.
 
-Do not add filesystem watchers, stale-on-error cache behavior, mutation endpoints, frontend query/cache libraries, generated OpenAPI clients or runtime RBAC expansion without a focused ADR, requirement and graph update.
+Run the focused static check when touching the selected pilot files:
+
+```text
+npm run docs:project-documentation-explorer-jsdoc-typecheck
+```
+
+Keep the distinction clear:
+
+```text
+JSDoc + tsc --checkJs
+→ static checking for selected internal JavaScript contracts
+
+Zod / OpenAPI / JSON Schema / deterministic validators
+→ runtime or artifact validation at untrusted boundaries
+```
+
+Do not add filesystem watchers, stale-on-error cache behavior, mutation endpoints, frontend query/cache libraries, generated OpenAPI clients, runtime RBAC expansion, repository-wide TypeScript conversion, `.js`/`.mjs` renames or broader type-checking scope without a focused ADR, requirement and graph update.
 
 ## Preserve child-project analyzability
 

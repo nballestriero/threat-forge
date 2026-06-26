@@ -65,7 +65,7 @@ The active Project Documentation Explorer workstream has closed the live HTTP an
 
 The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
 
-The next selected workstream is a narrow MR-0002 JSDoc static type-checking pilot for the Project Documentation Explorer. It is represented by `MR-0002/ADR-0020` and `MR-0002REQ-0053`. The pilot is intended to improve internal JavaScript contract checking without replacing Zod/OpenAPI/JSON Schema/runtime validation at untrusted boundaries and without converting the repository to TypeScript.
+The MR-0002 JSDoc static type-checking pilot for the Project Documentation Explorer has been defined and implemented. It is represented by `MR-0002/ADR-0020` and `MR-0002REQ-0053`, implemented by a focused `tsc --checkJs` pilot gate and negative fixture coverage. The pilot improves internal JavaScript contract checking without replacing Zod/OpenAPI/JSON Schema/runtime validation at untrusted boundaries and without converting the repository to TypeScript.
 
 The immediate governance themes are now:
 
@@ -74,25 +74,26 @@ The immediate governance themes are now:
 3. keep the HTTP server read-only, dependency-light and composed through controller/service/port/adapter boundaries;
 4. avoid adding audit, license, secrets, deployment, strict OpenAPI validation dependencies or runtime stacks without focused requirements and graph relations;
 5. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
-6. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it.
+6. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it;
+7. keep the JSDoc static type-checking pilot narrow until another governed decision expands its scope.
 
 ## Current Micropasso
 
-Define the Project Documentation Explorer JSDoc static type-checking pilot before adding any TypeScript configuration, npm script, gate or source annotations.
+Close the Project Documentation Explorer JSDoc static type-checking pilot workstream after implementation by updating the working plan and governed-development guides.
 
-This micropasso is intentionally document-only. It introduces `MR-0002/ADR-0020`, `MR-0002REQ-0053`, and graph relations that bound the pilot to the Project Documentation Explorer slice.
+This micropasso is intentionally guide/working-plan only. It records that the pilot decision and requirement have moved from planned to implemented, summarizes the new gate behavior, and documents how programmers and LLM-assisted sessions should use the pilot without expanding it opportunistically.
 
-The decision separates JSDoc type-checking from runtime validation:
+The implemented separation remains:
 
 ```text
 JSDoc + tsc --checkJs
-→ static checks for internal JavaScript contracts
+→ static checks for selected internal JavaScript contracts
 
 Zod / OpenAPI / JSON Schema / deterministic validators
 → runtime or artifact validation at untrusted boundaries
 ```
 
-No TypeScript configuration, package script, repo gate, source-code annotation, frontend behavior, HTTP API, cache policy, RBAC model, Base Analysis runtime/storage, STRIDE overlay, new dependency or repository-wide migration is introduced by this document-only step.
+No new ADR, requirement, graph relation, source behavior, HTTP API, cache policy, RBAC model, Base Analysis runtime/storage, STRIDE overlay, dependency, package-lock update, TypeScript migration or repository-wide type-check expansion is introduced by this closure step.
 
 ## Completed Milestones
 
@@ -314,7 +315,7 @@ Expected future implementation areas include:
 
 The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
 
-The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, native HTTP read-only server, local serve composition command, frontend data-source boundary, live HTTP opt-in UI, typed HTTP error mapping, filesystem source canonicalization and optional TTL-based snapshot cache decorator have been implemented. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, URL-state/deep-linking, generated OpenAPI client, snapshot payload validation, child-project source adapters or broader cache policy must be introduced through separate decisions or focused requirements as appropriate.
+The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, native HTTP read-only server, local serve composition command, frontend data-source boundary, live HTTP opt-in UI, typed HTTP error mapping, filesystem source canonicalization, optional TTL-based snapshot cache decorator and focused JSDoc static type-checking pilot have been implemented. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, URL-state/deep-linking, generated OpenAPI client, snapshot payload validation, child-project source adapters, broader cache policy, broader JSDoc type-checking scope or repository-wide TypeScript migration must be introduced through separate decisions or focused requirements as appropriate.
 
 ## Pending Validators / Gates
 
@@ -327,6 +328,7 @@ node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
 npm run docs:requirement-registry-fields
 npm run docs:code-traceability
+npm run docs:project-documentation-explorer-jsdoc-typecheck
 npm run docs:repo-operation-governance
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
@@ -361,6 +363,8 @@ The OpenAPI structural validation gate now checks `docs/reference/api/openapi/th
 
 The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary and local serve command, frontend data-source behavior, typed HTTP error behavior, filesystem source canonicalization and snapshot cache behavior in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
 
+The Project Documentation Explorer JSDoc static type-checking pilot gate now runs a focused `tsc --checkJs` check over selected Explorer source/test files and a negative fixture that verifies field-name drift is rejected. The pilot remains scoped to MR-0002 Explorer files and does not replace runtime boundary validation.
+
 Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning, guide-format validation and broader test coverage, but none of these is part of the Project Documentation Explorer live HTTP/caching closure micropasso.
 
 ## Routine Repository Operation Policy
@@ -393,6 +397,7 @@ node tools/docs/check-docs-structure.mjs
 npm run docs:adr-registry-fields
 npm run docs:requirement-registry-fields
 npm run docs:code-traceability
+npm run docs:project-documentation-explorer-jsdoc-typecheck
 npm run docs:repo-operation-governance
 npm run docs:body-format-registry
 npm run docs:markdown-body-parser
@@ -403,39 +408,41 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-The next safe implementation step is to add the Project Documentation Explorer JSDoc static type-checking pilot described by `MR-0002/ADR-0020` and `MR-0002REQ-0053`.
+The next safe step is to choose the next workstream explicitly before adding more code.
 
-Implementation perimeter:
+Recommended options:
 
-1. add the smallest focused TypeScript configuration needed for selected Project Documentation Explorer `.js`/`.jsx` files;
-2. add a focused npm script for the pilot command;
-3. add JSDoc typedefs/annotations only where needed to make the selected files checkable;
-4. keep Zod/OpenAPI/JSON Schema/deterministic runtime validators at untrusted boundaries;
-5. update graph relations for implementation and verification artifacts;
-6. include the pilot in `repo:check` only if it passes deterministically and remains scoped.
+1. tag the completed Project Documentation Explorer JSDoc static type-checking pilot after a clean verification;
+2. add a document-only decision for the next narrow JSDoc expansion target if the pilot should grow beyond snapshot-cache source/test files;
+3. return to the parked MR-0004 Base Analysis runtime/storage/API direction with a fresh ADR/Requirement/Graph micropasso;
+4. continue the threat-modeling manual/tutorial workstream in `docs/tutorials/` with a separate governed commit.
 
-Do not convert the repository to TypeScript, rename source files, add transpilation, introduce new dependencies, type-check unrelated legacy areas, change Explorer API behavior, replace runtime validation, implement Base Analysis runtime/storage, or expand RBAC in this implementation step.
+Do not expand the JSDoc pilot to unrelated modules, convert the repository to TypeScript, rename source files, add transpilation, change Explorer API behavior, replace runtime validation, implement Base Analysis runtime/storage, or expand RBAC without a selected workstream and fresh governance records.
 
-## Project Documentation Explorer JSDoc Static Type-checking Pilot Micropasso
+## Project Documentation Explorer JSDoc Static Type-checking Pilot Closure Micropasso
 
-This document-only micropasso defines how the project will pilot JSDoc-driven static checking for the Project Documentation Explorer without changing the runtime architecture.
+The Project Documentation Explorer JSDoc static type-checking pilot is now defined, implemented and integrated into the governed runner.
 
-The intended boundary is:
+The implemented boundary is:
 
 ```text
 selected Project Documentation Explorer JS files
 → JSDoc typedefs and function annotations
 → focused tsc --checkJs command
-→ static failures for internal contract drift
+→ negative fixture for representative contract drift
+→ repo:check gate
 ```
 
-The pilot adds:
+The completed slice includes:
 
-- `MR-0002/ADR-0020` to define the Project Documentation Explorer JSDoc static type-checking pilot;
-- `MR-0002REQ-0053` to require a scoped `tsc --checkJs` pilot over selected Explorer files;
-- graph relations connecting the decision and requirement to MR-0002.
+- `MR-0002/ADR-0020` defining the pilot boundary;
+- `MR-0002REQ-0053` requiring a scoped `tsc --checkJs` pilot over selected Explorer files;
+- `npm run docs:project-documentation-explorer-jsdoc-typecheck` as the focused command;
+- `tsconfig.project-documentation-explorer.checkjs.json` as the pilot configuration;
+- a MR-0002 tool that runs both the positive pilot and a negative fixture;
+- graph relations connecting the requirement, implementation artifact and verification artifact.
 
-No TypeScript conversion, repository-wide type-check, package script, source annotation, validator replacement, API change or runtime behavior change is introduced by this step. The next implementation step is to add a focused configuration/script and minimal JSDoc type annotations for the selected Explorer scope.
+The pilot remains intentionally narrow. It must not be treated as permission for repository-wide type-checking, TypeScript conversion, source-file renaming, build/transpile changes or removal of runtime validation at untrusted boundaries.
 
 ## Security-analysis-ready Project Knowledge Pipeline Micropasso
 

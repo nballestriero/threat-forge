@@ -76,9 +76,20 @@ When assisting with Project Documentation Explorer or a similar read-only featur
 - `MR-0002/ADR-0016` and `MR-0002REQ-0049` own live HTTP opt-in and visible selected-source failure behavior;
 - `MR-0002/ADR-0017` and `MR-0002REQ-0050` own typed HTTP error mapping;
 - `MR-0002/ADR-0018` and `MR-0002REQ-0051` own canonical filesystem source containment;
-- `MR-0002/ADR-0019` and `MR-0002REQ-0052` own optional TTL-based snapshot caching.
+- `MR-0002/ADR-0019` and `MR-0002REQ-0052` own optional TTL-based snapshot caching;
+- `MR-0002/ADR-0020` and `MR-0002REQ-0053` own the focused JSDoc static type-checking pilot for selected Explorer internal JavaScript contracts.
 
-Do not propose direct browser reads of YAML, Markdown, graph files, registries, Git state or filesystem paths. Do not propose direct adapter construction in controllers, message-regex HTTP status mapping, stale-on-error cache behavior, filesystem watchers, query/cache libraries, generated OpenAPI clients or mutation endpoints unless the user explicitly selects that workstream and the required governance records are added first.
+When the user asks about JSDoc, TypeScript, `tsc --checkJs`, or Zod in this area, keep the distinction explicit:
+
+```text
+JSDoc + tsc --checkJs
+→ static checking for selected internal JavaScript contracts
+
+Zod / OpenAPI / JSON Schema / deterministic validators
+→ runtime or artifact validation at untrusted boundaries
+```
+
+Do not propose direct browser reads of YAML, Markdown, graph files, registries, Git state or filesystem paths. Do not propose direct adapter construction in controllers, message-regex HTTP status mapping, stale-on-error cache behavior, filesystem watchers, query/cache libraries, generated OpenAPI clients, mutation endpoints, repository-wide TypeScript conversion, `.js`/`.mjs` renames or broader type-checking scope unless the user explicitly selects that workstream and the required governance records are added first.
 
 ## Preserve child-project security-first behavior
 
