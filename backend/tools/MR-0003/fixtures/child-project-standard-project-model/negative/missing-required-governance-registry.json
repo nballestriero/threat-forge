@@ -1,0 +1,19 @@
+{
+  "id": "missing-required-governance-registry",
+  "expectedDiagnostic": "Required file does not exist: docs/reference/project-model/registers/requirements/requirement-governance.registry.yml",
+  "directories": [
+    "docs/reference/project-model/registers/requirements",
+    "docs/reference/project-model/registers/decisions",
+    "docs/reference/project-model/registers/graph",
+    "docs/reference/project-model/body/requirements",
+    "docs/reference/project-model/body/decisions"
+  ],
+  "files": {
+    "docs/reference/project-model/WORKING_PLAN.md": "# Working Plan\n",
+    "docs/reference/project-model/registers/macro-requirements.registry.yml": "schema_version: 1\nmacro_requirements: []\n",
+    "docs/reference/project-model/registers/body-formats.registry.yml": "schema_version: 1\nbody_formats: []\n",
+    "docs/reference/project-model/registers/taxonomies.registry.yml": "schema_version: 1\ntaxonomies: []\n",
+    "docs/reference/project-model/registers/decisions/adr-governance.registry.yml": "schema_version: 1\n",
+    "docs/reference/project-model/registers/graph.index.yml": "schema_version: 1\ngraphs: []\n"
+  }
+}

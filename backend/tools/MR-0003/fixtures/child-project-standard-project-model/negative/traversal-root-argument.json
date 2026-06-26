@@ -1,0 +1,7 @@
+{
+  "id": "traversal-root-argument",
+  "expectedDiagnostic": "Child project root must not contain traversal segments: ..",
+  "args": ["--child-project-root", "../outside", "--skip-delegated-validators"],
+  "directories": [],
+  "files": {}
+}

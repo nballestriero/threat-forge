@@ -1,0 +1,6 @@
+{
+  "id": "missing-project-model-root",
+  "expectedDiagnostic": "Required directory does not exist: docs/reference/project-model",
+  "directories": [],
+  "files": {}
+}

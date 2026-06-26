@@ -13,10 +13,13 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0000REQ-0019
  * @implementsRequirement MR-0000REQ-0021
  * @implementsRequirement MR-0000REQ-0023
+ * @implementsRequirement MR-0003REQ-0022
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @derivedFromDecision MR-0000/ADR-0008
+ * @derivedFromDecision MR-0003/ADR-0004
  * @macroRequirement MR-0000
+ * @macroRequirement MR-0003
  *
  * This runner is the thin local workflow entrypoint for governed
  * project-model work. It executes the existing MR-0000/documentation gates
@@ -70,6 +73,11 @@ const gateCommands = [
   { label: "Append-first protected records", command: "npm", args: ["run", "docs:append-first"] },
   { label: "Lockfile registry and integrity", command: "npm", args: ["run", "docs:lockfile-integrity"] },
   { label: "Orphan governed body files", command: "npm", args: ["run", "docs:orphan-governed-bodies"] },
+  {
+    label: "Child project standard Project Model skeleton",
+    command: "npm",
+    args: ["run", "docs:child-project-standard-project-model"],
+  },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
   { label: "Runtime unit tests", command: "npm", args: ["run", "test:runtime"] },
@@ -249,6 +257,7 @@ if (mode === "--check") {
   console.log("Implemented requirement: MR-0000REQ-0019");
   console.log("Implemented requirement: MR-0000REQ-0021");
   console.log("Implemented requirement: MR-0000REQ-0023");
+  console.log("Implemented requirement: MR-0003REQ-0022");
   process.exit(0);
 }
 
@@ -263,3 +272,4 @@ console.log("Implemented requirement: MR-0000REQ-0018");
 console.log("Implemented requirement: MR-0000REQ-0019");
 console.log("Implemented requirement: MR-0000REQ-0021");
 console.log("Implemented requirement: MR-0000REQ-0023");
+console.log("Implemented requirement: MR-0003REQ-0022");

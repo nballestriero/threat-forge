@@ -12,6 +12,7 @@
     "docs:requirement-registry-fields": "node backend/tools/MR-0000/check-requirement-registry-fields.mjs",
     "docs:code-traceability": "node backend/tools/MR-0000/check-code-traceability.mjs",
     "docs:repo-operation-governance": "node backend/tools/MR-0000/check-governed-repository-operation.mjs",
+    "docs:child-project-standard-project-model": "node backend/tools/MR-0003/check-child-project-standard-project-model.mjs",
     "docs:body-format-registry": "node backend/tools/MR-0000/check-body-format-registry.mjs",
     "docs:markdown-body-parser": "node backend/tools/MR-0000/check-markdown-body-parser.mjs",
     "docs:adr-body-format": "node backend/tools/MR-0000/check-adr-body-format.mjs",

@@ -788,3 +788,19 @@ This micropasso adds:
 - graph relations connecting the decision and requirements to `MR-0003`.
 
 No code is changed by this step. The next safe implementation step is a small child-project standard Project Model skeleton validator that accepts an explicit child-project root, resolves the standard project-model root, rejects containment escapes, and reuses existing threat-forge validators wherever practical. Do not add a skeleton generator, UI, RBAC runtime, repository cloning, Base Analysis, STRIDE, STRIDE-AI, new dependencies, TypeScript migration, or application-code generation in that implementation step.
+
+## Child Project Standard Project Model Skeleton Validation Tooling Micropasso
+
+This implementation micropasso adds the first child-project validation tool without introducing a parallel child-project document model.
+
+The tool validates:
+
+- an explicit child-project repository root;
+- containment of `docs/reference/project-model/` under that root;
+- the standard Project Model skeleton required by threat-forge reuse;
+- required governance registries for macro requirements, body formats, taxonomies, ADR governance, Requirement governance and graph indexing;
+- at least one macro-requirement Requirement registry, ADR registry and graph registry;
+- delegated root-aware validation through existing threat-forge validators for Requirement registry fields, code traceability and orphan governed body files;
+- negative fixtures for missing skeleton paths and lexical traversal root input.
+
+This step intentionally does not generate a child-project skeleton, clone repositories, add UI, add RBAC runtime, execute threat analysis, add a custom child-project manifest, migrate to TypeScript, add dependencies, or define a new family of child-project-specific validators.

@@ -114,6 +114,16 @@ nodes:
     type: Requirement
     label: Child project standard skeleton validation profile
 
+  - id: TOOL-check-child-project-standard-project-model
+    type: Tool
+    label: Child project standard Project Model skeleton checker
+    path: backend/tools/MR-0003/check-child-project-standard-project-model.mjs
+
+  - id: TOOL-run-governed-repository-operation
+    type: Tool
+    label: Governed repository operation runner
+    path: backend/tools/MR-0000/run-governed-repository-operation.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -324,3 +334,42 @@ spo_relations:
     predicate: belongs_to
     object: MR-0003
 
+  - subject: MR-0003REQ-0019
+    predicate: implemented_by
+    object: TOOL-check-child-project-standard-project-model
+
+  - subject: MR-0003REQ-0020
+    predicate: implemented_by
+    object: TOOL-check-child-project-standard-project-model
+
+  - subject: MR-0003REQ-0021
+    predicate: implemented_by
+    object: TOOL-check-child-project-standard-project-model
+
+  - subject: MR-0003REQ-0022
+    predicate: implemented_by
+    object: TOOL-check-child-project-standard-project-model
+
+  - subject: TOOL-check-child-project-standard-project-model
+    predicate: verifies
+    object: MR-0003REQ-0019
+
+  - subject: TOOL-check-child-project-standard-project-model
+    predicate: verifies
+    object: MR-0003REQ-0020
+
+  - subject: TOOL-check-child-project-standard-project-model
+    predicate: verifies
+    object: MR-0003REQ-0021
+
+  - subject: TOOL-check-child-project-standard-project-model
+    predicate: verifies
+    object: MR-0003REQ-0022
+
+  - subject: MR-0003REQ-0022
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0003REQ-0022
