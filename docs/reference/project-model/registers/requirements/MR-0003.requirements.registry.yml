@@ -156,3 +156,35 @@ requirements:
     derived_from_decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0018_body.md
 
+  - id: MR-0003REQ-0019
+    title: Reusable Project Model validator boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0019_body.md
+
+  - id: MR-0003REQ-0020
+    title: Child project root containment validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0020_body.md
+
+  - id: MR-0003REQ-0021
+    title: Child project validator reuse policy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0021_body.md
+
+  - id: MR-0003REQ-0022
+    title: Child project standard skeleton validation profile
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0022_body.md
+

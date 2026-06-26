@@ -93,6 +93,27 @@ nodes:
   - id: MR-0003REQ-0018
     type: Requirement
     label: Platform child project registry boundary
+
+  - id: ADR-0004
+    type: ADR
+    label: Reusable Project Model validator boundary for child projects
+
+  - id: MR-0003REQ-0019
+    type: Requirement
+    label: Reusable Project Model validator boundary
+
+  - id: MR-0003REQ-0020
+    type: Requirement
+    label: Child project root containment validation
+
+  - id: MR-0003REQ-0021
+    type: Requirement
+    label: Child project validator reuse policy
+
+  - id: MR-0003REQ-0022
+    type: Requirement
+    label: Child project standard skeleton validation profile
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -262,3 +283,44 @@ spo_relations:
   - subject: MR-0003REQ-0018
     predicate: belongs_to
     object: MR-0003
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0004
+
+  - subject: ADR-0004
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0003REQ-0019
+
+  - subject: MR-0003REQ-0019
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0003REQ-0020
+
+  - subject: MR-0003REQ-0020
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0003REQ-0021
+
+  - subject: MR-0003REQ-0021
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0004
+    predicate: justifies
+    object: MR-0003REQ-0022
+
+  - subject: MR-0003REQ-0022
+    predicate: belongs_to
+    object: MR-0003
+

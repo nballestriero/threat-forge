@@ -763,3 +763,28 @@ It also corrects earlier wording around `MR-0003REQ-0010` and `MR-0003REQ-0011`:
 
 No code is changed by this step. The next safe implementation step is a child-project standard Project Model skeleton/source validator.
 
+
+## Reusable Project Model Validator Boundary Micropasso
+
+This document-only micropasso defines how child-project validation must reuse threat-forge's existing Project Model validators instead of introducing a parallel child-project checker family.
+
+The intended validation direction is:
+
+```text
+explicit child-project repository root
+→ contained `docs/reference/project-model/` root
+→ shared Project Model validators and registries
+→ minimal child-project standard skeleton validation profile
+→ deterministic report for future child-project lifecycle status
+```
+
+This micropasso adds:
+
+- `MR-0003/ADR-0004` to define the reusable Project Model validator boundary for child projects;
+- `MR-0003REQ-0019` for reusable Project Model validation over a target root;
+- `MR-0003REQ-0020` for child-project root containment validation;
+- `MR-0003REQ-0021` for validator reuse instead of duplicated child-project rule sets;
+- `MR-0003REQ-0022` for the standard child-project skeleton validation profile;
+- graph relations connecting the decision and requirements to `MR-0003`.
+
+No code is changed by this step. The next safe implementation step is a small child-project standard Project Model skeleton validator that accepts an explicit child-project root, resolves the standard project-model root, rejects containment escapes, and reuses existing threat-forge validators wherever practical. Do not add a skeleton generator, UI, RBAC runtime, repository cloning, Base Analysis, STRIDE, STRIDE-AI, new dependencies, TypeScript migration, or application-code generation in that implementation step.
