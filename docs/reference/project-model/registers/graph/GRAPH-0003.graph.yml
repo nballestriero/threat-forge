@@ -304,6 +304,35 @@ nodes:
     label: Child project management API serve self-test gate
     path: backend/src/MR-0003/child-project-management/child-project-management.serve.mjs
 
+
+  - id: ADR-0007
+    type: ADR
+    label: Parent-child ownership and governed taxonomy responsibility boundary
+
+  - id: MR-0003REQ-0031
+    type: Requirement
+    label: Child project canonical content ownership boundary
+
+  - id: MR-0003REQ-0032
+    type: Requirement
+    label: Platform operational management ownership boundary
+
+  - id: MR-0003REQ-0033
+    type: Requirement
+    label: Child project governed taxonomy reuse and extension boundary
+
+  - id: MR-0003REQ-0034
+    type: Requirement
+    label: Taxonomy value visibility and UI handoff boundary
+
+  - id: MR-0003REQ-0035
+    type: Requirement
+    label: Draft candidate and approved analysis artifact ownership boundary
+
+  - id: MR-0003REQ-0036
+    type: Requirement
+    label: Managed child project governance profile boundary
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1005,3 +1034,60 @@ spo_relations:
   - subject: MR-0003REQ-0028
     predicate: implemented_by
     object: MR-0003UI-0004
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0007
+
+  - subject: ADR-0007
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0003REQ-0031
+
+  - subject: MR-0003REQ-0031
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0003REQ-0032
+
+  - subject: MR-0003REQ-0032
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0003REQ-0033
+
+  - subject: MR-0003REQ-0033
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0003REQ-0034
+
+  - subject: MR-0003REQ-0034
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0003REQ-0035
+
+  - subject: MR-0003REQ-0035
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0007
+    predicate: justifies
+    object: MR-0003REQ-0036
+
+  - subject: MR-0003REQ-0036
+    predicate: belongs_to
+    object: MR-0003
+

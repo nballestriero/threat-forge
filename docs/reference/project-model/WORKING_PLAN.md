@@ -974,3 +974,25 @@ Status: planned implementation boundary converted into frontend/demo serve guida
 - Add a UI navigation action from the selected `demo-child-project` detail to the existing Project Documentation Explorer page.
 - Keep browser-side filesystem access forbidden: the frontend still reads only through configured HTTP/snapshot client ports.
 - Keep automatic process orchestration, UI reset buttons, child-project write APIs, governed child-project commit/push and full multi-child Explorer routing as later micropassi.
+
+## Child Project Parent-Child Ownership and Governed Taxonomy Boundary Micropasso
+
+This document-only micropasso defines a single responsibility boundary for managed child projects, platform operational state and governed taxonomy usage before adding full child-project gate orchestration or taxonomy UI rendering.
+
+The decision establishes that a child project remains the canonical owner of its own Project Model, MR/ADR/REQ records, graph records, governed Markdown bodies, application code, local evidence, authorized taxonomy extensions and approved analysis artifacts that describe its system. Threat-forge owns registration, operational state, latest checks, gate aggregation, management UI, platform policy/capability/RBAC, demo/reset/check orchestration, cross-project reports, draft/candidate review state and platform persistence.
+
+The micropasso also fixes the taxonomy boundary: platform taxonomies are shared governed contracts for validation, UI, filters, reports and methodology overlays; child projects may reuse or extend them only with governed namespaces, descriptions, intended-use metadata and mapping to platform/base values when cross-project aggregation needs common semantics. Taxonomy values must become visible UI contracts showing accepted/deprecated state, descriptions, allowed fields, validation behavior, UI surfaces and examples.
+
+This step adds:
+
+- `MR-0003/ADR-0007` for the parent-child ownership and governed taxonomy responsibility boundary;
+- `MR-0003REQ-0031` for child-project canonical content ownership;
+- `MR-0003REQ-0032` for platform operational management ownership;
+- `MR-0003REQ-0033` for governed child-project taxonomy reuse and extension;
+- `MR-0003REQ-0034` for taxonomy value visibility and UI handoff;
+- `MR-0003REQ-0035` for draft/candidate versus approved analysis artifact ownership;
+- `MR-0003REQ-0036` for managed child-project governance profiles.
+
+This step intentionally does not change taxonomy schemas, validators, frontend rendering, child-project gate orchestration, analysis write-back, repository mutation, branch protection, or governed child-project commit/push.
+
+The next safe implementation/documentation steps are to define child-project governance profiles and then extend taxonomy registry metadata/view-models so the Project Documentation Explorer can show taxonomy values, accepted/deprecated semantics and usage surfaces.

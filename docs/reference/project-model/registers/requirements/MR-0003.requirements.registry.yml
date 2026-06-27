@@ -255,3 +255,56 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0006
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0030_body.md
+
+  - id: MR-0003REQ-0031
+    title: Child project canonical content ownership boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0031_body.md
+
+
+  - id: MR-0003REQ-0032
+    title: Platform operational management ownership boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0032_body.md
+
+
+  - id: MR-0003REQ-0033
+    title: Child project governed taxonomy reuse and extension boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0033_body.md
+
+
+  - id: MR-0003REQ-0034
+    title: Taxonomy value visibility and UI handoff boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0034_body.md
+
+
+  - id: MR-0003REQ-0035
+    title: Draft candidate and approved analysis artifact ownership boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0035_body.md
+
+
+  - id: MR-0003REQ-0036
+    title: Managed child project governance profile boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0036_body.md
