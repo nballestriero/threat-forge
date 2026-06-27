@@ -1,0 +1,148 @@
+schema_version: 1
+registry_id: requirement-governance-registry
+name: Requirement governance registry
+purpose: Defines controlled Requirement registry fields, lifecycle statuses, requirement types, and specialized requirement suffix families.
+
+requirement_id_patterns:
+  functional: "^MR-[0-9]{4}REQ-[0-9]{4}$"
+  specialized: "^MR-[0-9]{4}REQ-[0-9]{4}[A-Z]+-[0-9]{4}$"
+
+requirement_statuses:
+  - id: proposed
+    label: Proposed
+    function: Marks a candidate requirement that is under discussion and is not yet binding.
+    description: Use for requirements that need review before they can govern project work, implementation, validation, or generated views.
+
+  - id: approved
+    label: Approved
+    function: Marks a binding requirement that has been accepted for implementation or continued governance.
+    description: Use for requirements that are authoritative but not necessarily implemented by a concrete artifact yet.
+
+  - id: implemented
+    label: Implemented
+    function: Marks a requirement whose implementation and verification evidence are represented in governed project-model traceability.
+    description: Use only when the knowledge graph or equivalent governed evidence links the requirement to implementation and verification artifacts.
+
+  - id: superseded
+    label: Superseded
+    function: Marks a requirement that has been replaced by a later governed requirement.
+    description: Use when historical traceability must be preserved but new work must follow the replacement requirement.
+
+  - id: rejected
+    label: Rejected
+    function: Marks a proposed requirement that was explicitly rejected and must not govern project work.
+    description: Use for historical decisions where the rejected requirement should remain visible but non-binding.
+
+  - id: deprecated
+    label: Deprecated
+    function: Marks a requirement that remains historically relevant but should not govern new work.
+    description: Use when the requirement is not immediately superseded by a single replacement but should no longer be used as a current control.
+
+requirement_types:
+  - id: functional
+    label: Functional
+    function: Describes a capability, behavior, validation behavior, workflow, generated artifact, or user-visible project outcome.
+    description: Functional requirements can stand directly under a macro-requirement and may have specialized child requirements.
+
+  - id: specialized
+    label: Specialized
+    function: Describes a governed child requirement that constrains, hardens, verifies, or qualifies a functional parent requirement.
+    description: Specialized requirements must declare a parent functional requirement and must use a registered specialized requirement suffix family.
+
+specialized_requirement_families:
+  - id: SEC
+    label: Security
+    function: Security control or security-hardening requirement.
+    description: Use for requirements that reduce security risk, constrain unsafe behavior, or support future security analysis methods.
+    suffix: SEC
+
+  - id: PERF
+    label: Performance
+    function: Performance or efficiency requirement.
+    description: Use for requirements that constrain time, resource consumption, scalability, or throughput expectations.
+    suffix: PERF
+
+  - id: GOV
+    label: Governance
+    function: Governance, traceability, lifecycle, or process-control requirement.
+    description: Use for requirements that harden project governance, controlled changes, validation flow, or repository operation.
+    suffix: GOV
+
+  - id: TRC
+    label: Traceability
+    function: Traceability and evidence-linking requirement.
+    description: Use for requirements that ensure artifacts, decisions, code, tests, reports, or graph records remain linked and auditable.
+    suffix: TRC
+
+  - id: QLT
+    label: Quality
+    function: Maintainability, readability, robustness, or consistency requirement.
+    description: Use for requirements that improve quality attributes without being primarily security, performance, or operations controls.
+    suffix: QLT
+
+  - id: OPS
+    label: Operability
+    function: Operational workflow, repeatability, or supportability requirement.
+    description: Use for requirements that govern local operations, handoff, reproducibility, recovery, or ongoing maintenance procedures.
+    suffix: OPS
+
+  - id: UX
+    label: Usability
+    function: Human usability or authoring-experience requirement.
+    description: Use for requirements that affect how humans navigate, understand, author, review, or consume governed project artifacts.
+    suffix: UX
+
+  - id: COMP
+    label: Compatibility
+    function: Compatibility or interoperability requirement.
+    description: Use for requirements that constrain compatibility with platforms, formats, external tools, or future migration paths.
+    suffix: COMP
+
+requirement_registry_fields:
+  - id: id
+    required: true
+    controlled: true
+    rule: must_match_functional_or_specialized_requirement_id_pattern
+    description: Stable requirement identifier unique across the governed project model.
+
+  - id: title
+    required: true
+    controlled: false
+    rule: must_be_non_empty_text
+    description: Human-readable requirement title.
+
+  - id: type
+    required: transitional
+    controlled: true
+    rule: must_exist_in_requirement_types_when_present
+    description: Controlled requirement category. Legacy records without this field are treated as functional until a dedicated append-first migration makes the field explicit.
+
+  - id: status
+    required: true
+    controlled: true
+    rule: must_exist_in_requirement_statuses
+    description: Requirement lifecycle status.
+
+  - id: priority
+    required: true
+    controlled: false
+    rule: must_be_non_empty_text
+    description: Human-readable priority used for planning until a dedicated priority taxonomy is introduced.
+
+  - id: derived_from_decision_id
+    required: true
+    controlled: true
+    rule: must_reference_existing_adr_in_same_macro_requirement_scope
+    description: ADR identifier that justifies the requirement within the owning macro-requirement scope.
+
+  - id: parent_requirement_id
+    required: conditional
+    controlled: true
+    rule: required_for_specialized_and_must_reference_functional_parent
+    description: Parent functional requirement identifier for specialized child requirements.
+
+  - id: body_path
+    required: true
+    controlled: true
+    rule: must_match_requirement_body_path_and_exist
+    description: Markdown body file path for the requirement narrative.

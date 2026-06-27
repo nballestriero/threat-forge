@@ -1,0 +1,8 @@
+schema_version: 1
+registry_id: graph-index
+project: minimal-governed-child-project
+
+graphs:
+  - graph_id: GRAPH-0000
+    name: Common governance and bootstrap graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0000.graph.yml

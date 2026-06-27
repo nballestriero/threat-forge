@@ -14,6 +14,7 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0000REQ-0021
  * @implementsRequirement MR-0000REQ-0023
  * @implementsRequirement MR-0003REQ-0022
+ * @implementsRequirement MR-0003REQ-0029
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @derivedFromDecision MR-0000/ADR-0008
@@ -77,6 +78,11 @@ const gateCommands = [
     label: "Child project standard Project Model skeleton",
     command: "npm",
     args: ["run", "docs:child-project-standard-project-model"],
+  },
+  {
+    label: "Child project demo workspace reset self-test",
+    command: "npm",
+    args: ["run", "docs:child-project-demo-workspace"],
   },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },

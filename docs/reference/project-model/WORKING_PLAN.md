@@ -933,3 +933,13 @@ This micropasso adds:
 This step intentionally does not create the seed files, add `.gitignore` entries, implement reset commands, register a demo project in SQLite, run validators from backend actions, add UI create/reset/check actions, switch Project Documentation Explorer to child roots, clone repositories, or implement governed child-project commit/push.
 
 The next safe implementation step is a tooling micropasso that creates the minimal governed child-project seed and a reset command that copies it into `.threat-forge/workspaces/demo-child-project/` with strict path containment and standard child-project skeleton validation.
+
+## Micropasso: demo child project reset workspace tooling
+
+Status: planned implementation boundary converted into tooling.
+
+- Add versioned seed under `examples/child-projects/minimal-governed-child-project/`.
+- Add generated runtime workspace ignore rule for `.threat-forge/workspaces/`.
+- Add reset command `npm run child-project:demo:reset`.
+- Add self-test gate `npm run docs:child-project-demo-workspace` to prove reset can generate a valid child Project Model without mutating the repository working tree.
+- Keep SQLite registration, backend reset actions, UI reset buttons and Project Documentation Explorer child-root opening as later micropassi.

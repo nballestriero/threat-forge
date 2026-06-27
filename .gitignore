@@ -7,3 +7,6 @@ handoff/
 
 # Generated frontend validation snapshots
 frontend/public/*.snapshot.json
+
+# Generated child-project demo/runtime workspaces
+.threat-forge/workspaces/

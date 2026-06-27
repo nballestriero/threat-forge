@@ -269,6 +269,21 @@ nodes:
     type: Requirement
     label: Production child project external workspace policy
 
+  - id: TOOL-reset-demo-child-project-workspace
+    type: Tool
+    label: Demo child project workspace reset tool
+    path: backend/tools/MR-0003/reset-demo-child-project-workspace.mjs
+
+  - id: VERIFY-child-project-demo-workspace-reset-self-test
+    type: VerificationArtifact
+    label: Demo child project workspace reset self-test gate
+    path: backend/tools/MR-0003/reset-demo-child-project-workspace.mjs
+
+  - id: DOC-child-project-demo-seed
+    type: Document
+    label: Minimal governed child project demo seed
+    path: examples/child-projects/minimal-governed-child-project/README.md
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -855,3 +870,46 @@ spo_relations:
     predicate: belongs_to
     object: MR-0003
 
+  - subject: MR-0003REQ-0027
+    predicate: implemented_by
+    object: TOOL-reset-demo-child-project-workspace
+
+  - subject: MR-0003REQ-0028
+    predicate: implemented_by
+    object: TOOL-reset-demo-child-project-workspace
+
+  - subject: MR-0003REQ-0029
+    predicate: implemented_by
+    object: TOOL-reset-demo-child-project-workspace
+
+  - subject: MR-0003REQ-0030
+    predicate: implemented_by
+    object: TOOL-reset-demo-child-project-workspace
+
+  - subject: MR-0003REQ-0029
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: MR-0003REQ-0027
+    predicate: described_by
+    object: DOC-child-project-demo-seed
+
+  - subject: MR-0003REQ-0028
+    predicate: described_by
+    object: DOC-child-project-demo-seed
+
+  - subject: VERIFY-child-project-demo-workspace-reset-self-test
+    predicate: verifies
+    object: MR-0003REQ-0027
+
+  - subject: VERIFY-child-project-demo-workspace-reset-self-test
+    predicate: verifies
+    object: MR-0003REQ-0028
+
+  - subject: VERIFY-child-project-demo-workspace-reset-self-test
+    predicate: verifies
+    object: MR-0003REQ-0029
+
+  - subject: VERIFY-child-project-demo-workspace-reset-self-test
+    predicate: verifies
+    object: MR-0003REQ-0030

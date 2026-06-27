@@ -1,0 +1,11 @@
+schema_version: 1
+registry_id: macro-requirements-registry
+project: minimal-governed-child-project
+
+macro_requirements:
+  - id: MR-0000
+    name: Common governance and bootstrap
+    type: common_governance_macro_requirement
+    status: active
+    body_path: docs/reference/project-model/body/macro-requirements/MR-0000_body.md
+    decisions_registry_path: docs/reference/project-model/registers/decisions/MR-0000.decisions.registry.yml

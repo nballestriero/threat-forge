@@ -29,7 +29,9 @@
     "frontend:build": "npm run frontend:project-documentation-explorer:snapshot && vite build",
     "test:runtime": "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
     "frontend:preview": "vite preview --host 127.0.0.1",
-    "backend:project-documentation-explorer:serve": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs"
+    "backend:project-documentation-explorer:serve": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs",
+    "docs:child-project-demo-workspace": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --self-test",
+    "child-project:demo:reset": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --reset"
   },
   "dependencies": {
     "ajv": "^8.20.0",
