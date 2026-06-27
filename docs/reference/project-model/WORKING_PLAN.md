@@ -1016,3 +1016,24 @@ This step adds:
 This step intentionally does not implement child-project gate orchestration, capability detection, Base Analysis, STRIDE, STRIDE-AI, language-specific adapters, UI enforcement, repository write-back or governed child-project commit/push.
 
 The next safe documentation step is to define child-project archetypes and capability facets so future governance profiles can classify which additional gates are mandatory, optional, warning-only or not applicable while preserving this baseline.
+
+## Child Project Archetypes and Capability Model Micropasso
+
+This document-only micropasso defines how threat-forge classifies child projects before finalizing child-project gate applicability.
+
+The decision keeps the mandatory child-project baseline stable while allowing additional controls to be composed from project capabilities. Archetypes provide user-facing defaults and documentation guidance, but capability facets are the authoritative basis for future gate selection. Language ecosystems select concrete adapters only after capabilities and baseline rules are known.
+
+This step adds:
+
+- `MR-0003/ADR-0009` for the child-project archetypes and governance capability model;
+- `MR-0003REQ-0043` for archetype classification;
+- `MR-0003REQ-0044` for capability facets;
+- `MR-0003REQ-0045` for evidence state and confidence semantics;
+- `MR-0003REQ-0046` for language ecosystem adapter boundaries;
+- `MR-0003REQ-0047` for provisional governance profile composition;
+- `MR-0003REQ-0048` for capability-specific analysis method planning.
+
+This step intentionally does not implement capability detection, final gate matrices, language adapters, UI changes, Base Analysis, STRIDE, STRIDE-AI, child-project write-back, governed child-project commit/push or remote CI enforcement.
+
+The next safe documentation step is to define provisional child-project governance profiles and gate applicability classes using this capability model, while keeping Base Analysis, STRIDE, STRIDE-AI and future methodology gates explicitly provisional until their implementations are available.
+

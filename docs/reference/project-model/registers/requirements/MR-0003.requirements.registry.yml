@@ -361,3 +361,52 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0008
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0042_body.md
+
+  - id: MR-0003REQ-0043
+    title: Child project archetype classification model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0043_body.md
+
+  - id: MR-0003REQ-0044
+    title: Child project capability facet model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0044_body.md
+
+  - id: MR-0003REQ-0045
+    title: Capability evidence state and confidence semantics
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0045_body.md
+
+  - id: MR-0003REQ-0046
+    title: Language ecosystem adapter boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0046_body.md
+
+  - id: MR-0003REQ-0047
+    title: Provisional governance profile composition model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0047_body.md
+
+  - id: MR-0003REQ-0048
+    title: Capability-specific analysis method planning boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0048_body.md
+

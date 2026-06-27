@@ -76,3 +76,13 @@ decisions:
     date: 2026-06-27
     macro_requirement_id: MR-0003
     body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0008_body.md
+
+  - id: ADR-0009
+    title: Child project archetypes and governance capability model
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-27
+    macro_requirement_id: MR-0003
+    body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0009_body.md
+

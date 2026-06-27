@@ -363,6 +363,35 @@ nodes:
     label: Capability-specific gates extend mandatory baseline
 
 
+
+  - id: ADR-0009
+    type: ADR
+    label: Child project archetypes and governance capability model
+
+  - id: MR-0003REQ-0043
+    type: Requirement
+    label: Child project archetype classification model
+
+  - id: MR-0003REQ-0044
+    type: Requirement
+    label: Child project capability facet model
+
+  - id: MR-0003REQ-0045
+    type: Requirement
+    label: Capability evidence state and confidence semantics
+
+  - id: MR-0003REQ-0046
+    type: Requirement
+    label: Language ecosystem adapter boundary
+
+  - id: MR-0003REQ-0047
+    type: Requirement
+    label: Provisional governance profile composition model
+
+  - id: MR-0003REQ-0048
+    type: Requirement
+    label: Capability-specific analysis method planning boundary
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1174,6 +1203,63 @@ spo_relations:
     object: MR-0003REQ-0042
 
   - subject: MR-0003REQ-0042
+    predicate: belongs_to
+    object: MR-0003
+
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0009
+
+  - subject: ADR-0009
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0003REQ-0043
+
+  - subject: MR-0003REQ-0043
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0003REQ-0044
+
+  - subject: MR-0003REQ-0044
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0003REQ-0045
+
+  - subject: MR-0003REQ-0045
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0003REQ-0046
+
+  - subject: MR-0003REQ-0046
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0003REQ-0047
+
+  - subject: MR-0003REQ-0047
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0003REQ-0048
+
+  - subject: MR-0003REQ-0048
     predicate: belongs_to
     object: MR-0003
 
