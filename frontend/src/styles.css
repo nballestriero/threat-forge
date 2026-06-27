@@ -285,3 +285,20 @@ button, input, select { font: inherit; }
   gap: 8px;
   margin-top: 14px;
 }
+
+.tf-command-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.tf-command-list code {
+  display: block;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--tf-border);
+  border-radius: 0.75rem;
+  background: var(--tf-surface-muted);
+  color: var(--tf-ink);
+  font-size: 0.82rem;
+  overflow-x: auto;
+}

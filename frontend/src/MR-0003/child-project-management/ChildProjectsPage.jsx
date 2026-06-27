@@ -17,6 +17,7 @@ import {
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0028
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -24,9 +25,10 @@ import {
  * The page renders the first platform-only Child Projects UI slice. It reads a
  * normalized operational-state view model through an injected frontend client
  * port, displays status filters, and shows one selected child project's registry
- * configuration and latest check details. It does not create projects, run
- * validation gates, clone repositories, inspect local filesystem paths, read
- * child Project Model sources, write SQLite records, or perform commit/push.
+ * configuration, latest check details and local demo Project Model Explorer
+ * launch guidance. It does not create projects, run validation gates, clone
+ * repositories, inspect local filesystem paths, read child Project Model
+ * sources, write SQLite records, or perform commit/push.
  *
  * Side effects: loads read-only data through the injected client port and keeps
  * local browser UI state in React component state.
@@ -187,11 +189,12 @@ function LatestCheckRunCard({ checkRun }) {
  * @param {{detail: Record<string, unknown>, onBack: Function}} props - Detail props.
  * @returns {import("react").JSX.Element} Detail view.
  */
-function ChildProjectDetail({ detail, onBack }) {
+function ChildProjectDetail({ detail, onBack, onOpenProjectModel }) {
   const state = detail.child_project ? detail : detail.item ?? detail;
   const project = state.child_project ?? {};
   const repository = project.repository ?? {};
   const projectModel = project.project_model ?? {};
+  const canOpenProjectModel = typeof onOpenProjectModel === "function";
 
   const rows = [
     ["ID", project.id],
@@ -228,17 +231,46 @@ function ChildProjectDetail({ detail, onBack }) {
       </Card>
       <LifecyclePolicyCard policy={project.lifecycle_policy} />
       <LatestCheckRunCard checkRun={state.latest_check_run} />
+      <ProjectModelExplorerLaunchCard project={project} onOpenProjectModel={canOpenProjectModel ? onOpenProjectModel : undefined} />
     </section>
+  );
+}
+
+
+/**
+ * Render local demo Project Model Explorer launch guidance.
+ *
+ * @param {{project?: Record<string, unknown>, onOpenProjectModel?: Function}} props - Launch guidance props.
+ * @returns {import("react").JSX.Element|null} Guidance card or null.
+ */
+function ProjectModelExplorerLaunchCard({ project = {}, onOpenProjectModel }) {
+  if (project.id !== "demo-child-project") return null;
+
+  return (
+    <Card>
+      <p className="tf-eyebrow">Demo Project Model Explorer</p>
+      <h3>Open this child Project Model</h3>
+      <p>Serve the demo workspace Project Model on the Project Documentation Explorer API, then configure the frontend to read that HTTP source.</p>
+      <div className="tf-command-list" aria-label="Demo Project Model Explorer launch commands">
+        <code>npm run child-project:demo:register</code>
+        <code>npm run backend:project-documentation-explorer:serve:demo</code>
+        <code>$env:VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE=&quot;http&quot;</code>
+        <code>$env:VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL=&quot;http://127.0.0.1:4174&quot;</code>
+      </div>
+      {typeof onOpenProjectModel === "function" ? (
+        <Button onClick={() => onOpenProjectModel(project.id)}><Icon token="navigation.documentation" /> Open Project Documentation Explorer</Button>
+      ) : null}
+    </Card>
   );
 }
 
 /**
  * Render Child Projects page.
  *
- * @param {{client: {describeDataSource?: Function, listChildProjects: Function, getChildProject: Function}}} props - Page props.
+ * @param {{client: {describeDataSource?: Function, listChildProjects: Function, getChildProject: Function}, onOpenProjectModel?: Function}} props - Page props.
  * @returns {import("react").JSX.Element} Child Projects page.
  */
-export function ChildProjectsPage({ client }) {
+export function ChildProjectsPage({ client, onOpenProjectModel }) {
   const [model, setModel] = useState(null);
   const [detail, setDetail] = useState(null);
   const [error, setError] = useState(null);
@@ -307,7 +339,7 @@ export function ChildProjectsPage({ client }) {
       </section>
 
       {state.selectedId ? (
-        detail ? <ChildProjectDetail detail={detail} onBack={() => setState((current) => ({ ...current, selectedId: "" }))} /> : <EmptyState title="Loading child project">Reading selected operational state through the client port.</EmptyState>
+        detail ? <ChildProjectDetail detail={detail} onBack={() => setState((current) => ({ ...current, selectedId: "" }))} onOpenProjectModel={onOpenProjectModel} /> : <EmptyState title="Loading child project">Reading selected operational state through the client port.</EmptyState>
       ) : (
         <>
           <div className="tf-stats-grid">

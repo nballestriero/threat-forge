@@ -997,3 +997,11 @@ spo_relations:
   - subject: VERIFY-child-project-management-api-serve-self-test
     predicate: verifies
     object: MR-0003REQ-0026
+
+  - subject: MR-0003REQ-0028
+    predicate: implemented_by
+    object: MR-0003UI-0001
+
+  - subject: MR-0003REQ-0028
+    predicate: implemented_by
+    object: MR-0003UI-0004

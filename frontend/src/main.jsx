@@ -24,6 +24,7 @@ import "./styles.css";
  * @implementsRequirement MR-0003REQ-0012
  * @implementsRequirement MR-0003REQ-0013
  * @implementsRequirement MR-0003REQ-0014
+ * @implementsRequirement MR-0003REQ-0028
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
@@ -44,9 +45,10 @@ import "./styles.css";
  * rendering code.
  *
  * Side effects: mounts React into the `#root` DOM node and performs browser
- * network reads through configured client ports. It does not mutate
- * project-model sources, write repository files, start backend services,
- * generate child projects, run validators or implement identity/RBAC
+ * network reads through configured client ports and can route from a demo child
+ * project detail view to the existing Project Documentation Explorer page. It
+ * does not mutate project-model sources, write repository files, start backend
+ * services, generate child projects, run validators or implement identity/RBAC
  * administration.
  */
 
@@ -85,7 +87,7 @@ function GovernanceConsoleApp() {
     >
       <ProtectedPageFrame requiredCapability={requiredCapability}>
         {activeNavigationId === "child-projects" ? (
-          <ChildProjectsPage client={childProjectsClient} />
+          <ChildProjectsPage client={childProjectsClient} onOpenProjectModel={() => setActiveNavigationId("project-documentation")} />
         ) : (
           <ProjectDocumentationExplorerPage client={documentationClient} />
         )}

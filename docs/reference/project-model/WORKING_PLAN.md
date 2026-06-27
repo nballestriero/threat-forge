@@ -964,3 +964,13 @@ Status: planned implementation boundary converted into backend serve tooling.
 - Preserve bootstrap registered-user headers and read-only endpoints `GET /api/child-projects` and `GET /api/child-projects/:id`.
 - Add self-test gate `npm run docs:child-project-management-api-serve` that starts a bounded local server on an ephemeral port, seeds a temporary SQLite database, and verifies list/detail responses for `demo-child-project`.
 - Keep frontend launch convenience, UI reset buttons, child Project Documentation Explorer opening and governed child-project commit/push as later micropassi.
+
+## Micropasso: demo child Project Model Explorer launch guidance
+
+Status: planned implementation boundary converted into frontend/demo serve guidance.
+
+- Add local demo Project Documentation Explorer serve script `npm run backend:project-documentation-explorer:serve:demo` pointing at `.threat-forge/workspaces/demo-child-project/`.
+- Add child-project detail guidance that tells the operator how to serve the demo child Project Model and configure the frontend HTTP data source.
+- Add a UI navigation action from the selected `demo-child-project` detail to the existing Project Documentation Explorer page.
+- Keep browser-side filesystem access forbidden: the frontend still reads only through configured HTTP/snapshot client ports.
+- Keep automatic process orchestration, UI reset buttons, child-project write APIs, governed child-project commit/push and full multi-child Explorer routing as later micropassi.
