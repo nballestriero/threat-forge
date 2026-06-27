@@ -75,3 +75,9 @@ validation_surfaces:
     description: Gate starts a bounded local API server on an ephemeral port and validates read-only gate-plan artifact endpoints.
     evidence_kind: self_test
     command: npm run docs:child-project-governance-plan-api-serve
+
+  - id: governance_gate_plan_frontend_view
+    label: Governance gate plan frontend view
+    description: Gate plan artifacts are rendered by the Governance Console read-only frontend build without executing gates or mutating child projects.
+    evidence_kind: frontend_build
+    command: npm run frontend:build

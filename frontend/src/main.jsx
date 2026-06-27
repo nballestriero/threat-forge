@@ -6,6 +6,8 @@ import { ProjectDocumentationExplorerPage } from "./MR-0002/project-documentatio
 import { createProjectDocumentationExplorerClient } from "./MR-0002/project-documentation-explorer/project-documentation-explorer.client.js";
 import { ChildProjectsPage } from "./MR-0003/child-project-management/ChildProjectsPage.jsx";
 import { createChildProjectManagementClient } from "./MR-0003/child-project-management/child-project-management.client.js";
+import { ChildProjectGovernancePlanPage } from "./MR-0003/child-project-governance-plan/ChildProjectGovernancePlanPage.jsx";
+import { createChildProjectGovernancePlanClient } from "./MR-0003/child-project-governance-plan/child-project-governance-plan.client.js";
 import "./styles.css";
 
 /**
@@ -24,7 +26,10 @@ import "./styles.css";
  * @implementsRequirement MR-0003REQ-0012
  * @implementsRequirement MR-0003REQ-0013
  * @implementsRequirement MR-0003REQ-0014
+ * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0028
+ * @implementsRequirement MR-0003REQ-0059
+ * @implementsRequirement MR-0003REQ-0060
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
@@ -33,12 +38,13 @@ import "./styles.css";
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
+ * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0002
  * @macroRequirement MR-0003
  *
  * The entry point composes the shared shell, protected page frame and the first
- * read-only Project Documentation and Child Projects pages using client-port
- * adapters. It does not read YAML, Markdown, graph files, Git state, SQLite,
+ * read-only Project Documentation, Child Projects and Child Project
+ * Governance Plan pages using client-port adapters. It does not read YAML, Markdown, graph files, Git state, SQLite,
  * filesystem paths or project-model registries from the browser. Local preview
  * data remains snapshot/static backed by default; explicit frontend
  * configuration may select governed HTTP data sources without changing page
@@ -55,6 +61,7 @@ import "./styles.css";
 const navigationCapabilities = Object.freeze({
   "project-documentation": "project_model.documentation.read",
   "child-projects": "child_projects.view_operational_state",
+  "child-governance-plans": "child_project_governance_plan.read",
 });
 
 /**
@@ -77,6 +84,11 @@ function GovernanceConsoleApp() {
     httpBaseUrl: import.meta.env.VITE_CHILD_PROJECT_MANAGEMENT_HTTP_BASE_URL,
   }), []);
 
+  const governancePlanClient = useMemo(() => createChildProjectGovernancePlanClient({
+    source: import.meta.env.VITE_CHILD_PROJECT_GOVERNANCE_PLAN_SOURCE,
+    httpBaseUrl: import.meta.env.VITE_CHILD_PROJECT_GOVERNANCE_PLAN_HTTP_BASE_URL,
+  }), []);
+
   const requiredCapability = navigationCapabilities[activeNavigationId] ?? navigationCapabilities["project-documentation"];
 
   return (
@@ -88,6 +100,8 @@ function GovernanceConsoleApp() {
       <ProtectedPageFrame requiredCapability={requiredCapability}>
         {activeNavigationId === "child-projects" ? (
           <ChildProjectsPage client={childProjectsClient} onOpenProjectModel={() => setActiveNavigationId("project-documentation")} />
+        ) : activeNavigationId === "child-governance-plans" ? (
+          <ChildProjectGovernancePlanPage client={governancePlanClient} />
         ) : (
           <ProjectDocumentationExplorerPage client={documentationClient} />
         )}

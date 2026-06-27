@@ -22,6 +22,7 @@ const glyphs = Object.freeze({
   network: "◇",
   shield: "⬟",
   "folder-tree": "▦",
+  "list-check": "☷",
   chart: "▥",
   "arrow-left": "←",
   filter: "⌁",

@@ -1208,3 +1208,23 @@ Generated plan artifacts remain evidence, not canonical source. The API reads ar
 This step intentionally does not persist gate results in SQLite, implement the final executor/orchestrator, detect capabilities automatically, render the frontend UI, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is a frontend governance-plan view that consumes the read-only API or generated preview data and renders gate status, applicability, reason, evidence and validation surface details.
+
+## Child Project Governance Gate Plan UI Micropasso
+
+This frontend micropasso renders generated child-project governance gate plans in the Governance Console without introducing the final executor/orchestrator.
+
+The implementation introduces:
+
+- a read-only frontend page `frontend/src/MR-0003/child-project-governance-plan/ChildProjectGovernancePlanPage.jsx`;
+- a frontend client port `frontend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.client.js` that can use static preview mode or the governed HTTP API;
+- deterministic state helpers in `frontend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.state.js` for list filtering, gate filtering, result counts and summary normalization;
+- a platform-only `Governance Plans` navigation entry protected by the `child_project_governance_plan.read` capability;
+- a UI that renders plan list, selected profile/target scope, result summary, capability states, gate status, applicability class, reason, evidence and validation surfaces;
+- a governed validation surface `governance_gate_plan_frontend_view` and gate `child_governance_gate_plan_ui` selected by `platform_self_governance`;
+- graph traceability from `MR-0003REQ-0014`, `MR-0003REQ-0015`, `MR-0003REQ-0059` and `MR-0003REQ-0060` to the new frontend page, client and state helper modules.
+
+The UI consumes generated evidence through a client port. It does not execute gates, mutate child projects, write SQLite state, read artifact files directly from the browser, detect capabilities automatically or change canonical Project Model registries.
+
+This step intentionally does not persist gate results, implement the final executor/orchestrator, link every UI value to the taxonomy/registry detail view, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is to link governance plan values back to registry/taxonomy detail views or add a minimal UI launch recipe for running the governance-plan API alongside the Governance Console.

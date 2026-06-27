@@ -302,3 +302,62 @@ button, input, select { font: inherit; }
   font-size: 0.82rem;
   overflow-x: auto;
 }
+
+.tf-child-project-governance-plan-page {
+  display: block;
+}
+
+.tf-split-view {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.tf-governance-plan-row.is-selected {
+  border-color: #111;
+  box-shadow: 0 0 0 1px #111 inset;
+}
+
+.tf-governance-plan-detail {
+  min-width: 0;
+}
+
+.tf-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.tf-governance-gate-list {
+  display: grid;
+  gap: 12px;
+}
+
+.tf-governance-gate-card {
+  display: grid;
+  gap: 12px;
+}
+
+.tf-governance-gate-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tf-governance-gate-card__header h3 {
+  margin: 0;
+}
+
+.tf-governance-gate-card__reason {
+  margin: 0;
+  color: #444;
+}
+
+@media (max-width: 980px) {
+  .tf-split-view {
+    grid-template-columns: 1fr;
+  }
+}

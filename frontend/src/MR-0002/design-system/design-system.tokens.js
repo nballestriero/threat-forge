@@ -10,12 +10,15 @@
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0003/ADR-0002
+ * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0002
  *
  * The design system exposes semantic, stable tokens for shared frontend slices.
  * Feature pages must consume these tokens rather than inventing local layout,
- * icon or status vocabularies. The platform-only Child Projects navigation token is stable and capability-named for the MR-0003 read-only UI slice. The concrete icon glyph mapping is intentionally
- * replaceable and must remain hidden behind the shared Icon component.
+ * icon or status vocabularies. The platform-only Child Projects and Governance
+ * Plans navigation tokens are stable and capability-named for MR-0003 read-only
+ * UI slices. The concrete icon glyph mapping is intentionally replaceable and
+ * must remain hidden behind the shared Icon component.
  *
  * Side effects: none. This module exports immutable token maps only.
  */
@@ -24,6 +27,7 @@ export const shellNavigation = Object.freeze([
   { id: "graph", label: "Graph Explorer", icon: "navigation.graph", capability: "project_model.graph.read", disabled: true },
   { id: "threat-analysis", label: "Threat Analysis", icon: "navigation.threatAnalysis", capability: "threat_analysis.read", disabled: true },
   { id: "child-projects", label: "Child Projects", icon: "navigation.childProjects", capability: "child_projects.view_operational_state", platformOnly: true },
+  { id: "child-governance-plans", label: "Governance Plans", icon: "navigation.governancePlans", capability: "child_project_governance_plan.read", platformOnly: true },
   { id: "reports", label: "Reports", icon: "navigation.reports", capability: "reports.read", disabled: true },
 ]);
 
@@ -33,6 +37,7 @@ export const iconTokens = Object.freeze({
     graph: "network",
     threatAnalysis: "shield",
     childProjects: "folder-tree",
+    governancePlans: "list-check",
     reports: "chart",
   }),
   action: Object.freeze({
@@ -54,6 +59,12 @@ export const iconTokens = Object.freeze({
     accepted: "check-circle",
     approved: "check-circle",
     active: "check-circle",
+    pass: "check-circle",
+    fail: "x",
+    warning: "circle-dashed",
+    planned: "clock",
+    unsupported: "circle-help",
+    not_applicable: "circle-dashed",
     draft: "circle-dashed",
     implemented: "badge-check",
     not_implemented: "clock",
@@ -71,4 +82,9 @@ export const statusLabels = Object.freeze({
   partially_implemented: "Partial",
   unknown: "Unknown",
   not_applicable: "N/A",
+  planned: "Planned",
+  pass: "Pass",
+  fail: "Fail",
+  warning: "Warning",
+  unsupported: "Unsupported",
 });

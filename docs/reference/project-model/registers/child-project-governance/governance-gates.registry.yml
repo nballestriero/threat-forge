@@ -310,3 +310,21 @@ governance_gates:
       - governance_gate_plan_api_self_test
     result_when_not_applicable: fail
     unsupported_behavior: fail
+
+  - id: child_governance_gate_plan_ui
+    label: Child governance gate plan UI
+    description: Renders generated child project governance gate plans in the Governance Console read-only UI with profile, status, reason, evidence and validation-surface visibility.
+    owner_macro_requirement: MR-0003
+    applicability_class: platform_self_required
+    target_scopes:
+      - platform_self
+    required_capabilities:
+      - child_project_management
+      - frontend_ui
+    validation_surfaces:
+      - threat_forge_repo_check
+      - governance_gate_plan_artifact_export
+      - governance_gate_plan_api_self_test
+      - governance_gate_plan_frontend_view
+    result_when_not_applicable: fail
+    unsupported_behavior: fail

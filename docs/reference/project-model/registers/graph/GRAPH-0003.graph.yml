@@ -485,6 +485,22 @@ nodes:
     label: Child project governance plan API serve self-test gate
     path: backend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.serve.mjs
 
+
+  - id: MR-0003UI-0007
+    type: SourceModule
+    label: Child project governance plan read-only React page
+    path: frontend/src/MR-0003/child-project-governance-plan/ChildProjectGovernancePlanPage.jsx
+
+  - id: MR-0003UI-0008
+    type: SourceModule
+    label: Child project governance plan frontend client port
+    path: frontend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.client.js
+
+  - id: MR-0003UI-0009
+    type: SourceModule
+    label: Child project governance plan frontend state helpers
+    path: frontend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.state.js
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1637,3 +1653,56 @@ spo_relations:
   - subject: VERIFY-child-project-governance-plan-api-serve-self-test
     predicate: verifies
     object: MR-0003REQ-0060
+
+  - subject: MR-0003REQ-0014
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0014
+    predicate: implemented_by
+    object: MR-0003UI-0008
+
+  - subject: MR-0003REQ-0015
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0015
+    predicate: implemented_by
+    object: MR-0003UI-0008
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: MR-0003UI-0008
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: MR-0003UI-0009
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: MR-0003UI-0008
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: MR-0003UI-0009
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: MR-0003UI-0004
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: MR-0003UI-0004
+
+  - subject: MR-0003REQ-0015
+    predicate: implemented_by
+    object: MR-0003UI-0004
+

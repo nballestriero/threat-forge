@@ -43,6 +43,7 @@ governance_profiles:
       - child_governance_gate_plan
       - child_governance_gate_plan_artifacts
       - child_governance_gate_plan_api
+      - child_governance_gate_plan_ui
 
   - id: demo_child_project_governance
     label: Demo child project governance
