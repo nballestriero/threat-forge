@@ -907,3 +907,29 @@ The implementation introduces:
 - graph traceability from `MR-0003REQ-0012`, `MR-0003REQ-0013`, `MR-0003REQ-0014`, `MR-0003REQ-0015`, `MR-0003REQ-0025` and `MR-0003REQ-0026` to the new frontend implementation artifacts.
 
 The page consumes only normalized operational-state read models. It does not read SQLite directly, inspect child-project repositories, parse child Project Model files, run validators, register projects, create skeletons, mutate platform storage, or execute Git operations. Live data remains selected by frontend environment configuration; the default static preview intentionally shows an empty registered-project state until backend data is configured or a child project is registered in a later micropasso.
+## Child Project Demo Seed and Resettable Workspace Boundary Micropasso
+
+This document-only micropasso defines how threat-forge will provide a safe learning/demo child project without confusing platform source code with a governed child-project working copy.
+
+The selected model is hybrid:
+
+```text
+examples/child-projects/minimal-governed-child-project/
+→ versioned demo seed/template
+
+.threat-forge/workspaces/demo-child-project/
+→ generated, resettable runtime workspace ignored by git
+```
+
+This micropasso adds:
+
+- `MR-0003/ADR-0006` for the child-project demo seed and resettable workspace model;
+- `MR-0003REQ-0027` for the versioned demo seed template;
+- `MR-0003REQ-0028` for the resettable generated runtime workspace;
+- `MR-0003REQ-0029` for the safe demo reset operation;
+- `MR-0003REQ-0030` for the production child-project external workspace policy;
+- graph relations connecting the decision and requirements to `MR-0003`.
+
+This step intentionally does not create the seed files, add `.gitignore` entries, implement reset commands, register a demo project in SQLite, run validators from backend actions, add UI create/reset/check actions, switch Project Documentation Explorer to child roots, clone repositories, or implement governed child-project commit/push.
+
+The next safe implementation step is a tooling micropasso that creates the minimal governed child-project seed and a reset command that copies it into `.threat-forge/workspaces/demo-child-project/` with strict path containment and standard child-project skeleton validation.

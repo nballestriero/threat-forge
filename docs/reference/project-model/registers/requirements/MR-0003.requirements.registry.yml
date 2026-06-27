@@ -220,3 +220,38 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0005
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0026_body.md
+
+  - id: MR-0003REQ-0027
+    title: Child project demo seed template
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0027_body.md
+
+
+  - id: MR-0003REQ-0028
+    title: Resettable demo child project workspace
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0028_body.md
+
+
+  - id: MR-0003REQ-0029
+    title: Demo child project reset operation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0029_body.md
+
+
+  - id: MR-0003REQ-0030
+    title: Production child project external workspace policy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0030_body.md
