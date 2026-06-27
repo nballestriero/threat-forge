@@ -457,3 +457,51 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0010
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0054_body.md
+
+  - id: MR-0003REQ-0055
+    title: Gate registry contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0055_body.md
+
+  - id: MR-0003REQ-0056
+    title: Governance profile registry contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0056_body.md
+
+  - id: MR-0003REQ-0057
+    title: Capability registry contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0057_body.md
+
+  - id: MR-0003REQ-0058
+    title: Validation surface registry contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0058_body.md
+
+  - id: MR-0003REQ-0059
+    title: Gate execution planning result semantics
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0059_body.md
+
+  - id: MR-0003REQ-0060
+    title: Non-applicability and unsupported evidence contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0060_body.md

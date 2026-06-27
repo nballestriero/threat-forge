@@ -94,3 +94,12 @@ decisions:
     date: 2026-06-27
     macro_requirement_id: MR-0003
     body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0010_body.md
+
+  - id: ADR-0011
+    title: Gate applicability and profile registry contract
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-27
+    macro_requirement_id: MR-0003
+    body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0011_body.md

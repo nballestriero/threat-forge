@@ -421,6 +421,35 @@ nodes:
     type: Requirement
     label: Threat-forge dogfooding requirement for developed governance capabilities
 
+
+  - id: ADR-0011
+    type: ADR
+    label: Gate applicability and profile registry contract
+
+  - id: MR-0003REQ-0055
+    type: Requirement
+    label: Gate registry contract
+
+  - id: MR-0003REQ-0056
+    type: Requirement
+    label: Governance profile registry contract
+
+  - id: MR-0003REQ-0057
+    type: Requirement
+    label: Capability registry contract
+
+  - id: MR-0003REQ-0058
+    type: Requirement
+    label: Validation surface registry contract
+
+  - id: MR-0003REQ-0059
+    type: Requirement
+    label: Gate execution planning result semantics
+
+  - id: MR-0003REQ-0060
+    type: Requirement
+    label: Non-applicability and unsupported evidence contract
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1347,3 +1376,60 @@ spo_relations:
   - subject: MR-0003REQ-0054
     predicate: belongs_to
     object: MR-0003
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0011
+
+  - subject: ADR-0011
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0003REQ-0055
+
+  - subject: MR-0003REQ-0055
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0003REQ-0056
+
+  - subject: MR-0003REQ-0056
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0003REQ-0057
+
+  - subject: MR-0003REQ-0057
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0003REQ-0058
+
+  - subject: MR-0003REQ-0058
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0003REQ-0059
+
+  - subject: MR-0003REQ-0059
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0003REQ-0060
+
+  - subject: MR-0003REQ-0060
+    predicate: belongs_to
+    object: MR-0003
+

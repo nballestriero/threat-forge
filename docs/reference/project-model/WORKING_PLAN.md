@@ -1056,3 +1056,24 @@ This step adds:
 This step intentionally does not implement the gate orchestrator, capability detectors, final gate matrix, Base Analysis, STRIDE, STRIDE-AI, language adapters, UI changes, child-project repository mutation, governed child-project commit/push or remote CI enforcement.
 
 The next safe documentation or tooling step is to define a gate applicability/profile registry contract, then implement a read-only profile catalog and a demo/self-test path that reports applicability classes, validation surfaces and evidence without enforcing final method-specific gates.
+
+## Child Project Gate Applicability and Profile Registry Contract Micropasso
+
+This document-only micropasso defines the registry contract needed before implementing child-project gate orchestration.
+
+The decision turns provisional profile and applicability decisions into a future governed registry family for gate applicability classes, governance capabilities, governance gates, governance profiles, validation surfaces and execution planning results. These registries will let threat-forge calculate why a gate is required, planned, unsupported, platform-only or not applicable without hardcoding project-type branches in tools.
+
+This step adds:
+
+- `MR-0003/ADR-0011` for the gate applicability and profile registry contract;
+- `MR-0003REQ-0055` for the gate registry contract;
+- `MR-0003REQ-0056` for the governance profile registry contract;
+- `MR-0003REQ-0057` for the capability registry contract;
+- `MR-0003REQ-0058` for the validation surface registry contract;
+- `MR-0003REQ-0059` for gate execution planning result semantics;
+- `MR-0003REQ-0060` for non-applicability and unsupported evidence contracts.
+
+This step intentionally does not add concrete registry files, schemas, validators, capability detectors, gate orchestration, UI changes, Base Analysis, STRIDE, STRIDE-AI, language adapters, child-project repository mutation or final enforcement matrices.
+
+The next safe implementation step is to add the first child-project governance registry files and a validator with positive and negative fixtures before creating an execution-plan preview tool.
+
