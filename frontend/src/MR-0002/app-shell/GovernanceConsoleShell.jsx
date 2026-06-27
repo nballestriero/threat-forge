@@ -13,13 +13,18 @@ import { shellNavigation } from "../design-system/design-system.tokens.js";
  * @implementsRequirement MR-0002REQ-0024
  * @implementsRequirement MR-0002REQ-0039
  * @implementsRequirement MR-0002REQ-0041
+ * @implementsRequirement MR-0003REQ-0012
+ * @implementsRequirement MR-0003REQ-0013
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
+ * @derivedFromDecision MR-0003/ADR-0002
  * @macroRequirement MR-0002
  *
  * The shell provides a single workspace-aware layout for platform and future
- * child-project contexts. Navigation entries are semantic and capability-aware;
+ * child-project contexts. It also exposes the platform-only Child Projects
+ * navigation entry when the application shell provides an enabled navigation
+ * handler. Navigation entries are semantic and capability-aware;
  * disabled future areas are rendered as visible placeholders without enabling
  * unimplemented runtime behavior. Feature pages must render inside this shell
  * rather than defining local templates.
@@ -32,10 +37,10 @@ import { shellNavigation } from "../design-system/design-system.tokens.js";
 /**
  * Render shared application navigation.
  *
- * @param {{workspaceKind: "platform"|"child-project", activeNavigationId: string}} props - Navigation props.
+ * @param {{workspaceKind: "platform"|"child-project", activeNavigationId: string, onNavigate?: Function}} props - Navigation props.
  * @returns {import("react").JSX.Element} Navigation element.
  */
-function Navigation({ workspaceKind, activeNavigationId }) {
+function Navigation({ workspaceKind, activeNavigationId, onNavigate }) {
   const items = shellNavigation.filter((item) => workspaceKind === "platform" || !item.platformOnly);
   return (
     <nav className="tf-navigation" aria-label="Governance Console">
@@ -44,8 +49,9 @@ function Navigation({ workspaceKind, activeNavigationId }) {
           key={item.id}
           className={`tf-navigation__item ${item.id === activeNavigationId ? "is-active" : ""}`}
           type="button"
-          disabled={item.disabled}
+          disabled={item.disabled || typeof onNavigate !== "function"}
           title={item.disabled ? "Planned capability" : item.label}
+          onClick={() => onNavigate?.(item.id)}
         >
           <Icon token={item.icon} />
           <span>{item.label}</span>
@@ -58,10 +64,10 @@ function Navigation({ workspaceKind, activeNavigationId }) {
 /**
  * Render the reusable Governance Console shell.
  *
- * @param {{children: import("react").ReactNode, workspaceKind?: "platform"|"child-project", activeNavigationId?: string}} props - Shell props.
+ * @param {{children: import("react").ReactNode, workspaceKind?: "platform"|"child-project", activeNavigationId?: string, onNavigate?: Function}} props - Shell props.
  * @returns {import("react").JSX.Element} Shell layout.
  */
-export function GovernanceConsoleShell({ children, workspaceKind = "platform", activeNavigationId = "project-documentation" }) {
+export function GovernanceConsoleShell({ children, workspaceKind = "platform", activeNavigationId = "project-documentation", onNavigate }) {
   return (
     <div className="tf-shell">
       <aside className="tf-sidebar">
@@ -72,7 +78,7 @@ export function GovernanceConsoleShell({ children, workspaceKind = "platform", a
             <span>{workspaceKind === "platform" ? "Platform workspace" : "Child project workspace"}</span>
           </div>
         </div>
-        <Navigation workspaceKind={workspaceKind} activeNavigationId={activeNavigationId} />
+        <Navigation workspaceKind={workspaceKind} activeNavigationId={activeNavigationId} onNavigate={onNavigate} />
       </aside>
       <div className="tf-workspace">
         <header className="tf-topbar">

@@ -892,3 +892,18 @@ The implementation introduces:
 - runtime tests proving route composition, capability enforcement, read-only HTTP behavior, list responses, detail responses and not-found mapping.
 
 The API remains read-only. It does not register child projects through HTTP, write checks through HTTP, create SQLite records directly in controllers, run child-project validators, generate skeletons, clone repositories, mutate child project Project Model files, perform Git operations, add UI routes or implement final dynamic RBAC persistence.
+
+## Child Projects Read-only Frontend Page Micropasso
+
+This implementation micropasso adds the first visible Child Projects frontend page in the Governance Console without adding child-project creation, repository cloning, skeleton generation, check execution, Project Documentation Explorer switching for child roots, or governed child-project commit/push operations.
+
+The implementation introduces:
+
+- a Child Projects read-only React page under `frontend/src/MR-0003/child-project-management/`;
+- a frontend client port that can read `GET /api/child-projects` and `GET /api/child-projects/:id` when explicitly configured for HTTP mode;
+- a static empty preview client so the frontend remains buildable and visible without starting backend services;
+- frontend state helpers for searching child projects and summarizing latest lifecycle status;
+- platform-only navigation from the shared Governance Console shell to the Child Projects page;
+- graph traceability from `MR-0003REQ-0012`, `MR-0003REQ-0013`, `MR-0003REQ-0014`, `MR-0003REQ-0015`, `MR-0003REQ-0025` and `MR-0003REQ-0026` to the new frontend implementation artifacts.
+
+The page consumes only normalized operational-state read models. It does not read SQLite directly, inspect child-project repositories, parse child Project Model files, run validators, register projects, create skeletons, mutate platform storage, or execute Git operations. Live data remains selected by frontend environment configuration; the default static preview intentionally shows an empty registered-project state until backend data is configured or a child project is registered in a later micropasso.

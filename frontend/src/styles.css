@@ -270,3 +270,18 @@ button, input, select { font: inherit; }
         justify-content: flex-start;
     }
 }
+
+.tf-child-projects-page {
+  display: block;
+}
+
+.tf-child-project-row .tf-entity-row__main span {
+  overflow-wrap: anywhere;
+}
+
+.tf-child-project-gates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
