@@ -860,3 +860,18 @@ The implementation introduces:
 - graph traceability from `MR-0003REQ-0024`, `MR-0003REQ-0025` and `MR-0003REQ-0026` to the SQLite adapter and runtime verification artifact.
 
 This step intentionally does not add an HTTP controller, service orchestration, frontend UI, RBAC runtime, repository cloning, skeleton generation, child-project check execution, child-project governed commit/push, database vendor lock-in outside the adapter, or canonical ADR/Requirement/graph storage in SQLite. Child project Project Model registries, ADR, requirements, bodies and graphs remain canonical in each child repository.
+
+## Child Project Management Service Read Model Backend Micropasso
+
+This implementation micropasso adds the first service layer for child-project management operational state without adding HTTP routes, frontend UI, repository cloning, skeleton generation, child-project check execution or RBAC persistence.
+
+The implementation introduces:
+
+- a child-project management service module that depends only on `ChildProjectStorePort`;
+- read-model operations for listing child-project operational states and reading one child project by id;
+- write orchestration methods for registering a child project record and recording a check run through the port;
+- capability-list shaping for future RBAC without binding the service to a concrete policy database;
+- runtime tests using an in-memory port-shaped adapter to prove that the service is independent from SQLite;
+- graph traceability from `MR-0003REQ-0025` and `MR-0003REQ-0026` to the service module and verification artifact.
+
+The service preserves the selected `Controller -> Service -> Port -> Adapter` pattern. SQLite remains inside the adapter added in the previous micropasso; canonical child project Project Model registries, ADR, requirements, bodies and graphs remain in the child repository rather than in platform storage.
