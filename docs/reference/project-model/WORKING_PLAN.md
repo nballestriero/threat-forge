@@ -47,60 +47,113 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-The first Governance Console and Project Documentation Explorer foundation has been stabilized through the P0 gate sequence introduced by `MR-0000/ADR-0006` and milestone-tagged as `project-model-stabilization-gates-complete`.
+The child-project governance foundation has been closed and milestone-tagged as `project-model-child-project-governance-foundation-complete` on HEAD `5649e72`.
 
-The current semantic state includes:
+That foundation established the following MR-0003 decision chain:
 
-- backend Project Documentation Explorer read-only filters and body-detail view-model support;
-- prototype validation for top filters, list/detail switching and body rendering;
-- React/Vite Governance Console shell and Project Documentation Explorer slice;
-- shared MR-0002 design system and semantic icon layer;
-- pragmatic frontend state/data-access boundary;
-- governed runner coverage for frontend build, minimal runtime unit tests, lockfile registry/integrity, expanded runtime source traceability and orphan governed body detection;
-- a minimal GitHub Actions workflow that installs from the lockfile and executes the governed `npm run repo:check` path on pushes and pull requests to `master`.
+- `MR-0003/ADR-0007` — parent/child ownership and governed taxonomy responsibility boundary;
+- `MR-0003/ADR-0008` — mandatory child-project governance baseline;
+- `MR-0003/ADR-0009` — child-project archetypes and governance capability model;
+- `MR-0003/ADR-0010` — provisional child-project governance profiles and gate applicability classes;
+- `MR-0003/ADR-0011` — gate applicability and profile registry contract.
 
-The Project Documentation Explorer now has a governed read-only OpenAPI contract under `MR-0002/ADR-0012` and `MR-0002REQ-0045`, a dependency-free structural validation gate under `MR-0000/ADR-0008` and `MR-0000REQ-0023`, a minimal native Node.js read-only HTTP boundary under `MR-0002/ADR-0013` and `MR-0002REQ-0046`, a local serve composition command under `MR-0002/ADR-0014` and `MR-0002REQ-0047`, a frontend HTTP data-source boundary under `MR-0002/ADR-0015` and `MR-0002REQ-0048`, live HTTP UI activation under `MR-0002/ADR-0016` and `MR-0002REQ-0049`, typed HTTP errors under `MR-0002/ADR-0017` and `MR-0002REQ-0050`, filesystem source canonicalization under `MR-0002/ADR-0018` and `MR-0002REQ-0051`, and optional snapshot caching under `MR-0002/ADR-0019` and `MR-0002REQ-0052`.
+The active objective is now to realign the working plan before new implementation work starts.
 
-The active Project Documentation Explorer workstream has closed the live HTTP and snapshot-caching hardening slice. The current implementation preserves generated snapshot consumption as the deterministic default, supports explicit live HTTP consumption, keeps the backend authoritative for project-model normalization and body-path resolution, maps expected HTTP failures through typed errors, rejects filesystem source escape attempts through canonical path containment, and supports an optional TTL-based source-port snapshot cache with `TTL=0` as the safe default.
+This alignment records the ordered path from the foundation milestone to the next safe implementation sequence:
 
-The Base Analysis runtime/storage/API direction remains parked. It should resume only after the next workstream is explicitly selected and its ADR/requirements/graph are prepared.
+```text
+1. preserve the child-project governance foundation as a closed milestone;
+2. carry forward expert-review quality constraints before adding new tools;
+3. elevate taxonomy visibility and usage semantics as a cross-cutting priority;
+4. add governed child-project governance registries and a small validator before orchestration;
+5. expose taxonomy values and usage in the Project Documentation Explorer before relying on taxonomy-driven UI or analysis workflows;
+6. add a gate-planning tool before running full child-project gate orchestration;
+7. resume Base Analysis only after the governance registries, taxonomy semantics and planning outputs are deterministic.
+```
 
-The MR-0002 JSDoc static type-checking pilot for the Project Documentation Explorer has been defined, implemented, closed and milestone-tagged. It is represented by `MR-0002/ADR-0020` and `MR-0002REQ-0053`, implemented by a focused `tsc --checkJs` pilot gate and negative fixture coverage. The pilot improves internal JavaScript contract checking without replacing Zod/OpenAPI/JSON Schema/runtime validation at untrusted boundaries and without converting the repository to TypeScript. The next selected workstream is a governed expansion of that pilot within the Project Documentation Explorer before new product functionality is introduced.
+The previous Project Documentation Explorer, JSDoc, live HTTP, caching and child-project demo workstreams remain closed. They remain available as validation surfaces and dogfooding evidence, but they are no longer the active planning topic.
 
-The immediate governance themes are now:
+The Base Analysis runtime/storage/API direction remains parked. It should resume only after the registry, taxonomy and gate-planning workstreams below are explicitly completed or reprioritized through a focused governance decision.
 
-1. keep `repo:check` healthy as the local and CI safety baseline before routine commit/push operations;
-2. preserve the OpenAPI contract as the canonical HTTP boundary for the Project Documentation Explorer server;
-3. keep the HTTP server read-only, dependency-light and composed through controller/service/port/adapter boundaries;
-4. avoid adding audit, license, secrets, deployment, strict OpenAPI validation dependencies or runtime stacks without focused requirements and graph relations;
-5. preserve document-first order: ADR/Requirement/Graph before each new tool, API, UI or runtime implementation;
-6. keep the frontend pragmatic: colocated features, custom hooks, lightweight data clients and context only where lifecycle requires it;
-7. expand the JSDoc static type-checking pilot only through focused MR-0002 decisions and requirements;
-8. before Base Analysis runtime/storage, define how threat-forge creates, validates and reads governed child-project skeletons and document sources under MR-0003.
+## Quality Constraints Carried Forward
 
+The earlier expert-review analysis is carried forward as planning constraint, not as a new canonical decision by itself.
+
+Near-term work must preserve these quality rules:
+
+- prefer schema-first contracts before large tools, runtime flows or UI behavior;
+- use controlled vocabularies for critical values instead of free strings;
+- distinguish strong deterministic gates from advisory quality signals;
+- avoid treating tag noise, lexical overlap or similarity as blocking errors until tuning and migration rules are explicit;
+- keep provenance, freshness, `canonical_for`, lifecycle/status and authority semantics explicit when a document or registry value claims to be canonical;
+- make unknown fields, invalid enum values and unregistered taxonomy/tag values detectable with clear file/field/value diagnostics;
+- preserve graph health and declared relationships rather than relying on unstructured prose inference;
+- keep every new gate dogfooded inside threat-forge before using it to govern child projects.
+
+## Taxonomy Planning Note
+
+Taxonomies are a cross-cutting product and governance concern.
+
+They must not be treated as opaque enum files, free tags or UI-only dropdown lists.
+
+For threat-forge and governed child projects, taxonomy values should become visible governed contracts with at least:
+
+```text
+id
+label / display name
+description
+intended use / function
+accepted/deprecated/superseded semantics
+allowed usage fields
+validation behavior
+UI/report/filter surfaces
+example usage
+extension namespace and mapping when a child project specializes a platform taxonomy
+```
+
+This note affects the next workstreams because governance profiles, applicability classes, capabilities, validation surfaces, analysis methods, Base Analysis element kinds, STRIDE categories and STRIDE-AI categories all depend on controlled values that users must be able to inspect and understand in the interface.
+
+The Project Documentation Explorer must therefore evolve from showing that taxonomy records exist to showing what each taxonomy contains, which values are accepted or deprecated, where each value is valid, and how the value affects gates, reports, filters, menus and future analysis workflows.
 
 ## Current Micropasso
 
-Define the Project Documentation Explorer JSDoc type-check coverage expansion boundary and update the working plan before implementation.
+Align the working plan after the `project-model-child-project-governance-foundation-complete` milestone.
 
-This micropasso is document-only. It adds a focused MR-0002 decision and requirement for expanding the existing JSDoc/static type-check pilot beyond its first selected files while preserving the same constraints:
+This micropasso is document-only and updates only this working plan.
+
+It does not add ADRs, requirements, graph records, registry files, validators, APIs, frontend behavior, Base Analysis runtime, STRIDE, STRIDE-AI, child-project orchestration or taxonomy runtime implementation.
+
+The purpose is to decide the order of work after the child-project governance foundation and to carry forward two planning constraints:
 
 ```text
-Project Documentation Explorer only
-→ selected files
-→ JSDoc + tsc --checkJs
-→ no TypeScript migration
-→ no build/transpile step
-→ no runtime validation replacement
+expert-review quality constraints
++ taxonomy values as governed, UI-visible contracts
 ```
 
-The intended next implementation micropasso will expand the focused check configuration to a small additional Explorer file set, likely backend source-port/service/controller/HTTP/composition files first, while keeping `repo:check` deterministic.
+The next implementation-bearing workstream should not start until this plan is aligned and committed.
 
-The child-project and Base Analysis dependency is also recorded as planning context: before Base Analysis runtime/storage starts, MR-0003 must define how threat-forge creates governed child-project skeletons and how it validates child-project document sources. This JSDoc expansion micropasso does not implement that child-project skeleton, but it records it as the next architectural decision area after the Explorer typing expansion.
+## Current Workstream Order
 
-No source behavior, HTTP API, frontend behavior, child-project scaffolder, Base Analysis runtime/storage, STRIDE overlay, RBAC model, dependency, package-lock update, TypeScript migration or repository-wide type-check expansion is introduced by this document step.
+The recommended order is:
+
+1. `docs: align working plan after child project governance foundation milestone` — this document-only alignment.
+2. `docs/tooling: add child project governance registry files and validator` — initial registry files for applicability classes, capabilities, gates, profiles and validation surfaces, plus a small deterministic validator.
+3. `docs/tooling: define taxonomy usage metadata registry contract` — make taxonomy value usage semantics explicit before UI or analysis workflows depend on them.
+4. `backend/frontend: expose and render taxonomy values and usage in Explorer` — show accepted/deprecated values, descriptions, usage fields, UI/report/filter surfaces and extension mappings.
+5. `tooling: plan child project governance gates from profile registry` — compute gate plans with pass/fail/warn/planned/not_applicable/unsupported evidence before executing full child gates.
+6. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics and planner output are deterministic.
+7. `docs/backend/frontend: STRIDE overlay planning and implementation` — after Base Analysis is stable enough to provide canonical elements, boundaries, flows and evidence.
+8. `docs/backend/frontend: STRIDE-AI overlay planning and implementation` — after AI/RAG/agent capabilities, taxonomy contracts and Base Analysis inputs are stable.
+9. quality hardening backlog — parser hardening, stronger graph/link validation, provenance automation, coverage expansion, lint/formatting and future advisory-to-gate promotions.
 
 ## Completed Milestones
+
+- Child-project governance foundation milestone `project-model-child-project-governance-foundation-complete`, tagged on `5649e72` after `repo:check` passed and the working tree was clean.
+- Parent-child ownership and governed taxonomy responsibility boundary, represented by `MR-0003/ADR-0007` and `MR-0003REQ-0031` through `MR-0003REQ-0036`.
+- Mandatory child-project governance baseline, represented by `MR-0003/ADR-0008` and `MR-0003REQ-0037` through `MR-0003REQ-0042`.
+- Child-project archetypes and governance capability model, represented by `MR-0003/ADR-0009` and `MR-0003REQ-0043` through `MR-0003REQ-0048`.
+- Provisional child-project governance profiles and gate applicability classes, represented by `MR-0003/ADR-0010` and `MR-0003REQ-0049` through `MR-0003REQ-0054`.
+- Gate applicability and profile registry contract, represented by `MR-0003/ADR-0011` and `MR-0003REQ-0055` through `MR-0003REQ-0060`.
 
 - Bootstrap of `MR-0000` common governance.
 - System-state control requirements for `MR-0000`.
@@ -187,19 +240,25 @@ No source behavior, HTTP API, frontend behavior, child-project scaffolder, Base 
 
 ## Pending Decisions
 
-The requirement-model and common body-format architecture decisions are now represented by ADRs.
+The requirement-model and common body-format architecture decisions are represented by ADRs.
+
+The child-project governance foundation is closed through `MR-0003/ADR-0011` and milestone-tagged as `project-model-child-project-governance-foundation-complete`.
+
+Do not revise that foundation opportunistically. Future work must instantiate it through focused registry, validator, planner, UI or analysis decisions.
+
+Near-term pending decisions, in order, are:
+
+1. whether the initial child-project governance registry files should be introduced as pure documentation records first or together with a small validator in the same micropasso;
+2. the exact schema/shape for taxonomy usage metadata so taxonomy values become explainable contracts rather than opaque enum strings;
+3. the Explorer API/view-model shape needed to expose taxonomy values, accepted/deprecated semantics, usage fields and child extension mappings;
+4. the first gate-planning output contract before any tool executes a full set of child-project gates;
+5. the re-entry point for Base Analysis once registry, taxonomy and planner outputs are deterministic.
+
+The expert-review quality constraints remain planning guidance: schema-first, controlled vocabularies, clear provenance/freshness semantics, explicit authority/canonical ownership, deterministic diagnostics and separation between strong gates and advisory quality signals.
+
+The taxonomy visibility note is a priority before Base Analysis and STRIDE/STRIDE-AI implementation: taxonomy values must become inspectable contracts, not only internal enum strings used by filters or validators.
 
 Any new decision must be added to the relevant decision registry and graph before derived requirements or implementation work starts.
-
-Before implementing the first Governance Console interfaces and APIs, keep the initial MR-0007 registered-user policy behind the documented capability/access-policy boundary. Future dynamic RBAC remains deferred, but React pages must not hardcode permanent role checks.
-
-The MR-0002 Project Documentation Explorer live HTTP/caching slice is represented by focused decisions and requirements through `MR-0002/ADR-0019` and `MR-0002REQ-0052`. Future changes must conform to the existing OpenAPI contract, controller/service/port/adapter boundaries, typed error mapping, canonical filesystem containment and source-port cache-decorator model rather than introducing ad-hoc routes, browser-side source-file access, message-regex error mapping, direct adapter instantiation in delivery code, filesystem watchers, stale-on-error behavior or third-party cache/query libraries without new decisions.
-
-The MR-0002 JSDoc static type-checking pilot is represented by `MR-0002/ADR-0020` and `MR-0002REQ-0053`. The focused expansion boundary is represented by `MR-0002/ADR-0021` and `MR-0002REQ-0054`. Future implementation must remain scoped to selected Project Documentation Explorer JavaScript source/test/frontend files, must use `tsc --checkJs` with JSDoc types, must not replace runtime validation at untrusted boundaries, and must not expand to repository-wide type-checking without a new focused decision.
-
-Before MR-0004 Base Analysis runtime/storage begins, MR-0003 must receive separate decisions for child-project governed skeleton generation and child-project standard Project Model source controls. The intended direction is that threat-forge should create child projects from a governed skeleton rather than expecting ad-hoc repositories to become analyzable later. That skeleton should include documentation-first gates, governed guides for programmers and LLMs, the same canonical Project Model structure used by threat-forge, repo operation controls, controlled taxonomy declarations, and standard Project Model source validation.
-
-The deferred Base Analysis track should later receive a dedicated command/query contract decision before SQLite schemas, storage adapters, OpenAPI endpoints, or analysis runtime UI are implemented.
 
 ## Pending Requirements
 
@@ -306,13 +365,16 @@ These requirements define the application architecture contract only. Future imp
 
 No new implementation should start before the related requirements and graph relations exist.
 
-Preferred near-term implementation sequence before code:
+Current selected implementation sequence after the child-project governance foundation:
 
-1. MR-0002/MR-0001 read-only Project Model Explorer API/view-model contract for governed documentation and graph data.
-2. MR-0002 first implementation slice for backend project-model reader service/API adapter and frontend read-only documentation/graph explorer.
-3. Resume the deferred MR-0004 Base Analysis command/query/storage track when the visible documentation/graph explorer foundation exists.
+1. add initial child-project governance registry files and a validator for the registry contract;
+2. define and validate taxonomy usage metadata before taxonomy-driven UI, gate or analysis behavior depends on it;
+3. expose taxonomy values, usage, accepted/deprecated semantics and child-extension mappings in the Project Documentation Explorer;
+4. add a gate-planning tool that reads the profile/gate/capability registries and emits an execution plan with evidence before executing full child-project gates;
+5. resume Base Analysis planning only after the registry, taxonomy and planner layers are deterministic;
+6. add STRIDE and STRIDE-AI overlays after Base Analysis and analysis-method applicability semantics are stable.
 
-Expected future implementation areas include:
+Expected future implementation areas remain:
 
 - reusable application architecture, Project Model Explorer interfaces, frontend shell, API boundaries, protected route mechanics, and middleware templates under `MR-0002`;
 - governed project and child project management under `MR-0003`;
@@ -329,7 +391,7 @@ Expected future implementation areas include:
 
 The minimal governed CI workflow has been implemented. Future CI expansion must be introduced through separate ADRs, requirements, graph relations and implementation artifacts rather than extending the minimal workflow opportunistically.
 
-The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, native HTTP read-only server, local serve composition command, frontend data-source boundary, live HTTP opt-in UI, typed HTTP error mapping, filesystem source canonicalization, optional TTL-based snapshot cache decorator and focused JSDoc static type-checking pilot have been implemented. The next selected implementation area is the first bounded MR-0002 JSDoc type-check coverage expansion. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, URL-state/deep-linking, generated OpenAPI client, snapshot payload validation, child-project source adapters, broader cache policy, broader JSDoc type-checking beyond Explorer or repository-wide TypeScript migration must be introduced through separate decisions or focused requirements as appropriate.
+The Project Documentation Explorer OpenAPI contract, dependency-free structural validation gate, native HTTP read-only server, local serve composition command, frontend data-source boundary, live HTTP opt-in UI, typed HTTP error mapping, filesystem source canonicalization, optional TTL-based snapshot cache decorator and focused JSDoc static type-checking pilot have been implemented. Future strict OpenAPI validation with a dedicated third-party tool, default frontend API switch, URL-state/deep-linking, generated OpenAPI client, snapshot payload validation, child-project source adapters, broader cache policy, broader JSDoc type-checking beyond Explorer or repository-wide TypeScript migration must be introduced through separate decisions or focused requirements as appropriate.
 
 ## Pending Validators / Gates
 
@@ -351,6 +413,10 @@ npm run docs:requirement-body-format
 npm run docs:append-first
 npm run docs:lockfile-integrity
 npm run docs:orphan-governed-bodies
+npm run docs:child-project-standard-project-model
+npm run docs:child-project-demo-workspace
+npm run docs:child-project-demo-registration
+npm run docs:child-project-management-api-serve
 npm run docs:openapi-contract
 npm run frontend:build
 npm run test:runtime
@@ -423,28 +489,21 @@ npm run docs:append-first
 
 ## Next Suggested Step
 
-The next safe step is to implement the first bounded Project Documentation Explorer JSDoc type-check coverage expansion.
+The next safe step is to add initial child-project governance registry files and a small deterministic validator for the registry contract already defined by `MR-0003/ADR-0011`.
 
-Recommended implementation scope:
+Recommended scope:
 
-1. add a small backend Explorer file set to `tsconfig.project-documentation-explorer.checkjs.json`;
-2. prefer source-port, service, controller, HTTP server, typed errors, serve and module/composition files before frontend UI files;
-3. add only the JSDoc typedefs/imports needed to make that selected set useful and deterministic;
-4. keep the existing wrong-field negative fixture passing as an expected failure;
-5. keep `npm run repo:check` passing.
+1. create initial registry files under `docs/reference/project-model/registers/child-project-governance/` for applicability classes, capabilities, gates, governance profiles and validation surfaces;
+2. keep values small and based on the already-accepted MR-0003 decisions;
+3. add a validator that checks required fields, unique IDs, cross-references and allowed status/applicability values;
+4. include positive and negative fixture coverage;
+5. wire the validator into `repo:check` only after the tool is deterministic and dogfooded inside threat-forge.
 
-After the JSDoc expansion is implemented and closed, the next major architectural topic should be MR-0003 child-project skeleton and document-source controls before MR-0004 Base Analysis runtime/storage resumes.
+Do not implement full child-project gate orchestration yet.
 
-The child-project control questions to decide next include:
+Do not resume Base Analysis runtime/storage yet.
 
-- whether threat-forge creates a governed child-project skeleton instead of accepting ad-hoc repositories;
-- which files and directories the skeleton must contain on day one;
-- which gates run inside the child project;
-- how the child gate enforces documentation-before-code;
-- how child project documents are declared, canonicalized, hashed and validated before analysis;
-- how programmer and LLM guides are embedded so child work follows the same method.
-
-Do not expand the JSDoc pilot to unrelated modules, convert the repository to TypeScript, rename source files, add transpilation, change Explorer API behavior, replace runtime validation, implement Base Analysis runtime/storage, implement child-project scaffolding, or expand RBAC without the relevant selected workstream and fresh governance records.
+Do not implement taxonomy UI yet, but keep taxonomy usage metadata as the next high-priority planning step after the governance registry validator because taxonomy values must be readable, meaningful and UI-visible before analysis workflows rely on them.
 
 ## Project Documentation Explorer JSDoc Static Type-checking Pilot Closure Micropasso
 
