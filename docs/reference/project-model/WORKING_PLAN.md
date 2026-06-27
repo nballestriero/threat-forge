@@ -996,3 +996,23 @@ This step adds:
 This step intentionally does not change taxonomy schemas, validators, frontend rendering, child-project gate orchestration, analysis write-back, repository mutation, branch protection, or governed child-project commit/push.
 
 The next safe implementation/documentation steps are to define child-project governance profiles and then extend taxonomy registry metadata/view-models so the Project Documentation Explorer can show taxonomy values, accepted/deprecated semantics and usage surfaces.
+
+## Child Project Mandatory Governance Baseline Micropasso
+
+This document-only micropasso defines the universal baseline that every managed child project must satisfy before threat-forge evaluates language-specific, runtime-specific or methodology-specific gates.
+
+The baseline is intentionally independent from final Base Analysis, STRIDE, STRIDE-AI and future methodology gates. It requires every managed child project to provide governed Doc-as-Code, explicit decision-to-artifact traceability semantics and mandatory Threat Analysis lifecycle presence from the beginning of development.
+
+This step adds:
+
+- `MR-0003/ADR-0008` for the mandatory child-project governance baseline;
+- `MR-0003REQ-0037` for the Doc-as-Code baseline;
+- `MR-0003REQ-0038` for decision-to-artifact traceability when implementation artifacts exist;
+- `MR-0003REQ-0039` for explicit no-code applicability evidence when implementation artifacts are absent;
+- `MR-0003REQ-0040` for mandatory Threat Analysis lifecycle presence;
+- `MR-0003REQ-0041` for selecting concrete Threat Analysis methods by project capability;
+- `MR-0003REQ-0042` for capability-specific gates extending, but never replacing, the mandatory baseline.
+
+This step intentionally does not implement child-project gate orchestration, capability detection, Base Analysis, STRIDE, STRIDE-AI, language-specific adapters, UI enforcement, repository write-back or governed child-project commit/push.
+
+The next safe documentation step is to define child-project archetypes and capability facets so future governance profiles can classify which additional gates are mandatory, optional, warning-only or not applicable while preserving this baseline.

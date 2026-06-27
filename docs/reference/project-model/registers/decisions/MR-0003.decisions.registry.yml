@@ -67,3 +67,12 @@ decisions:
     date: 2026-06-27
     macro_requirement_id: MR-0003
     body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0007_body.md
+
+  - id: ADR-0008
+    title: Mandatory child project governance baseline
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-27
+    macro_requirement_id: MR-0003
+    body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0008_body.md

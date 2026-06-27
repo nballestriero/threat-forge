@@ -308,3 +308,56 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0007
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0036_body.md
+
+  - id: MR-0003REQ-0037
+    title: Mandatory child project Doc-as-Code baseline
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0037_body.md
+
+
+  - id: MR-0003REQ-0038
+    title: Mandatory child project decision-to-artifact traceability baseline
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0038_body.md
+
+
+  - id: MR-0003REQ-0039
+    title: Explicit no-code traceability applicability evidence
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0039_body.md
+
+
+  - id: MR-0003REQ-0040
+    title: Mandatory child project Threat Analysis lifecycle presence
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0040_body.md
+
+
+  - id: MR-0003REQ-0041
+    title: Threat Analysis method applicability by capability
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0041_body.md
+
+
+  - id: MR-0003REQ-0042
+    title: Capability-specific gates extend mandatory baseline
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0042_body.md

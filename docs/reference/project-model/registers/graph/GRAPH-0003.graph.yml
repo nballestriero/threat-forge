@@ -333,6 +333,36 @@ nodes:
     type: Requirement
     label: Managed child project governance profile boundary
 
+
+  - id: ADR-0008
+    type: ADR
+    label: Mandatory child project governance baseline
+
+  - id: MR-0003REQ-0037
+    type: Requirement
+    label: Mandatory child project Doc-as-Code baseline
+
+  - id: MR-0003REQ-0038
+    type: Requirement
+    label: Mandatory child project decision-to-artifact traceability baseline
+
+  - id: MR-0003REQ-0039
+    type: Requirement
+    label: Explicit no-code traceability applicability evidence
+
+  - id: MR-0003REQ-0040
+    type: Requirement
+    label: Mandatory child project Threat Analysis lifecycle presence
+
+  - id: MR-0003REQ-0041
+    type: Requirement
+    label: Threat Analysis method applicability by capability
+
+  - id: MR-0003REQ-0042
+    type: Requirement
+    label: Capability-specific gates extend mandatory baseline
+
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1088,6 +1118,62 @@ spo_relations:
     object: MR-0003REQ-0036
 
   - subject: MR-0003REQ-0036
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0008
+
+  - subject: ADR-0008
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0003REQ-0037
+
+  - subject: MR-0003REQ-0037
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0003REQ-0038
+
+  - subject: MR-0003REQ-0038
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0003REQ-0039
+
+  - subject: MR-0003REQ-0039
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0003REQ-0040
+
+  - subject: MR-0003REQ-0040
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0003REQ-0041
+
+  - subject: MR-0003REQ-0041
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0008
+    predicate: justifies
+    object: MR-0003REQ-0042
+
+  - subject: MR-0003REQ-0042
     predicate: belongs_to
     object: MR-0003
 
