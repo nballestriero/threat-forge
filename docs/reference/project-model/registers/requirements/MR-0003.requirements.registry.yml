@@ -410,3 +410,50 @@ requirements:
     derived_from_decision_id: ADR-0009
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0048_body.md
 
+  - id: MR-0003REQ-0049
+    title: Gate applicability class model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0049_body.md
+
+  - id: MR-0003REQ-0050
+    title: Platform self-governance validation surface
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0050_body.md
+
+  - id: MR-0003REQ-0051
+    title: Child project gate validation surface requirement
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0051_body.md
+
+  - id: MR-0003REQ-0052
+    title: Not-applicable and unsupported gate evidence semantics
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0052_body.md
+
+  - id: MR-0003REQ-0053
+    title: Provisional governance profile catalog
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0053_body.md
+
+  - id: MR-0003REQ-0054
+    title: Threat-forge dogfooding requirement for developed governance capabilities
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0054_body.md

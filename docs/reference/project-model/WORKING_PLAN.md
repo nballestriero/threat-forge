@@ -1037,3 +1037,22 @@ This step intentionally does not implement capability detection, final gate matr
 
 The next safe documentation step is to define provisional child-project governance profiles and gate applicability classes using this capability model, while keeping Base Analysis, STRIDE, STRIDE-AI and future methodology gates explicitly provisional until their implementations are available.
 
+## Child Project Provisional Governance Profiles and Gate Applicability Classes Micropasso
+
+This document-only micropasso defines how threat-forge classifies gate applicability and validates gates before final child-project gate orchestration exists.
+
+The decision keeps child-project governance provisional while requiring every developed governance gate to have a validation surface inside threat-forge before it can be used to govern child projects. It also formalizes threat-forge dogfooding: platform capabilities implemented by threat-forge must be exercised by threat-forge self-checks, self-tests, fixtures, generated snapshots, contract tests or runtime tests.
+
+This step adds:
+
+- `MR-0003/ADR-0010` for provisional child-project governance profiles and gate applicability classes;
+- `MR-0003REQ-0049` for gate applicability classes;
+- `MR-0003REQ-0050` for platform self-governance validation surfaces;
+- `MR-0003REQ-0051` for child-project gate validation surface requirements;
+- `MR-0003REQ-0052` for not-applicable and unsupported gate evidence semantics;
+- `MR-0003REQ-0053` for the provisional governance profile catalog;
+- `MR-0003REQ-0054` for threat-forge dogfooding of developed governance capabilities.
+
+This step intentionally does not implement the gate orchestrator, capability detectors, final gate matrix, Base Analysis, STRIDE, STRIDE-AI, language adapters, UI changes, child-project repository mutation, governed child-project commit/push or remote CI enforcement.
+
+The next safe documentation or tooling step is to define a gate applicability/profile registry contract, then implement a read-only profile catalog and a demo/self-test path that reports applicability classes, validation surfaces and evidence without enforcing final method-specific gates.

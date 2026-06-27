@@ -392,6 +392,35 @@ nodes:
     type: Requirement
     label: Capability-specific analysis method planning boundary
 
+
+  - id: ADR-0010
+    type: ADR
+    label: Provisional child project governance profiles and gate applicability classes
+
+  - id: MR-0003REQ-0049
+    type: Requirement
+    label: Gate applicability class model
+
+  - id: MR-0003REQ-0050
+    type: Requirement
+    label: Platform self-governance validation surface
+
+  - id: MR-0003REQ-0051
+    type: Requirement
+    label: Child project gate validation surface requirement
+
+  - id: MR-0003REQ-0052
+    type: Requirement
+    label: Not-applicable and unsupported gate evidence semantics
+
+  - id: MR-0003REQ-0053
+    type: Requirement
+    label: Provisional governance profile catalog
+
+  - id: MR-0003REQ-0054
+    type: Requirement
+    label: Threat-forge dogfooding requirement for developed governance capabilities
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1263,3 +1292,58 @@ spo_relations:
     predicate: belongs_to
     object: MR-0003
 
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0010
+
+  - subject: ADR-0010
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0003REQ-0049
+
+  - subject: MR-0003REQ-0049
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0003REQ-0050
+
+  - subject: MR-0003REQ-0050
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0003REQ-0051
+
+  - subject: MR-0003REQ-0051
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0003REQ-0052
+
+  - subject: MR-0003REQ-0052
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0003REQ-0053
+
+  - subject: MR-0003REQ-0053
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0003REQ-0054
+
+  - subject: MR-0003REQ-0054
+    predicate: belongs_to
+    object: MR-0003
