@@ -159,6 +159,16 @@ nodes:
     label: Child project management storage port runtime tests
     path: backend/tests/MR-0003/child-project-management/child-project-management-storage-port.test.mjs
 
+  - id: MR-0003SRC-0003
+    type: SourceModule
+    label: SQLite child project store adapter
+    path: backend/src/MR-0003/child-project-management/adapters/sqlite-child-project-store.adapter.mjs
+
+  - id: MR-0003TEST-0002
+    type: VerificationArtifact
+    label: SQLite child project store adapter runtime tests
+    path: backend/tests/MR-0003/child-project-management/sqlite-child-project-store.adapter.test.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -474,5 +484,29 @@ spo_relations:
     object: MR-0003REQ-0025
 
   - subject: MR-0003TEST-0001
+    predicate: verifies
+    object: MR-0003REQ-0026
+
+  - subject: MR-0003REQ-0024
+    predicate: implemented_by
+    object: MR-0003SRC-0003
+
+  - subject: MR-0003REQ-0025
+    predicate: implemented_by
+    object: MR-0003SRC-0003
+
+  - subject: MR-0003REQ-0026
+    predicate: implemented_by
+    object: MR-0003SRC-0003
+
+  - subject: MR-0003TEST-0002
+    predicate: verifies
+    object: MR-0003REQ-0024
+
+  - subject: MR-0003TEST-0002
+    predicate: verifies
+    object: MR-0003REQ-0025
+
+  - subject: MR-0003TEST-0002
     predicate: verifies
     object: MR-0003REQ-0026

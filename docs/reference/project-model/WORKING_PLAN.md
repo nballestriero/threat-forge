@@ -846,3 +846,17 @@ The implementation introduces:
 - graph traceability from `MR-0003REQ-0023`, `MR-0003REQ-0025` and `MR-0003REQ-0026` to the new backend source modules and verification artifact.
 
 SQLite remains a future adapter behind this port. Child project Project Model registries, ADR, requirements, bodies and graphs remain canonical in each child repository; the backend storage boundary only models operational platform state used by future backend services and UI read models.
+
+## SQLite Child Project Store Adapter Backend Micropasso
+
+This implementation micropasso adds the first SQLite-backed child-project management storage adapter behind the `ChildProjectStorePort`.
+
+The implementation introduces:
+
+- a SQLite adapter module using Node's built-in `node:sqlite` binding and no additional npm dependency;
+- contained adapter responsibility for child-project operational tables, check runs, gate results and violations;
+- persistence of child project records through the previously defined storage port rather than through controllers or UI contracts;
+- runtime tests proving storage-port conformance, child-project persistence, check-run persistence, latest operational state derivation and foreign-key rejection for unknown child projects;
+- graph traceability from `MR-0003REQ-0024`, `MR-0003REQ-0025` and `MR-0003REQ-0026` to the SQLite adapter and runtime verification artifact.
+
+This step intentionally does not add an HTTP controller, service orchestration, frontend UI, RBAC runtime, repository cloning, skeleton generation, child-project check execution, child-project governed commit/push, database vendor lock-in outside the adapter, or canonical ADR/Requirement/graph storage in SQLite. Child project Project Model registries, ADR, requirements, bodies and graphs remain canonical in each child repository.
