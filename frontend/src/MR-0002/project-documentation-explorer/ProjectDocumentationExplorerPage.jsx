@@ -168,7 +168,7 @@ function EntityDetail({ detail, onBack }) {
  * @param {{client: {loadDocumentation: Function, loadDocumentationEntity: Function}}} props - Page props.
  * @returns {import("react").JSX.Element} Explorer page.
  */
-export function ProjectDocumentationExplorerPage({ client }) {
+export function ProjectDocumentationExplorerPage({ client, context, onBack }) {
   const [model, setModel] = useState(null);
   const [error, setError] = useState(null);
   const [state, setState] = useState({ q: "", filters: {}, selectedId: "" });
@@ -217,8 +217,19 @@ export function ProjectDocumentationExplorerPage({ client }) {
           <h1>Project Documentation Explorer</h1>
           <p>Filter governed documentation, open one entity, then read registry metadata followed by body content.</p>
         </div>
-        <div className="tf-count-pill">{filteredItems.length} / {model.summary?.total_items ?? model.items.length} items</div>
+        <div className="tf-page-title__actions">
+          <div className="tf-count-pill">{filteredItems.length} / {model.summary?.total_items ?? model.items.length} items</div>
+          {typeof onBack === "function" ? <Button onClick={onBack}><Icon token="action.back" /> Back</Button> : null}
+        </div>
       </div>
+
+      {context ? (
+        <Card className="tf-documentation-context-card">
+          <p className="tf-eyebrow">Documentation context</p>
+          <strong>{context.label ?? "Project Model"}</strong>
+          <p>{context.description ?? "Selected Project Documentation Explorer source."}</p>
+        </Card>
+      ) : null}
 
       <DataSourceStatus dataSource={model.data_source ?? client.describeDataSource?.()} />
 

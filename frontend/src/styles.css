@@ -181,7 +181,7 @@ button, input, select { font: inherit; }
   min-width: 0;
 }
 .tf-card h3 { margin: 0 0 12px; }
-.tf-card strong { display: block; font-size: 24px; }
+.tf-card strong { display: block; font-size: 24px; overflow-wrap: anywhere; }
 .tf-card span { color: #666; }
 
 .tf-entity-list { display: grid; gap: 8px; }
@@ -309,7 +309,7 @@ button, input, select { font: inherit; }
 
 .tf-split-view {
   display: grid;
-  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  grid-template-columns: 1fr;
   gap: 18px;
   align-items: start;
 }
@@ -359,5 +359,127 @@ button, input, select { font: inherit; }
 @media (max-width: 980px) {
   .tf-split-view {
     grid-template-columns: 1fr;
+  }
+}
+
+.tf-card strong,
+.tf-card h2,
+.tf-card h3,
+.tf-badge,
+.tf-count-pill {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.tf-stat-card strong {
+  font-size: clamp(20px, 2vw, 24px);
+  line-height: 1.1;
+}
+
+.tf-stat-card--wide {
+  grid-column: span 2;
+}
+
+.tf-card-heading-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+
+.tf-card-heading-row h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.03em;
+}
+
+.tf-governance-project-context {
+  margin-bottom: 18px;
+}
+
+.tf-project-select-bar {
+  grid-template-columns: minmax(260px, 520px);
+}
+
+.tf-governance-plan-workspace {
+  display: grid;
+  gap: 18px;
+}
+
+.tf-governance-plan-list-panel {
+  border: 1px solid #deded8;
+  border-radius: 16px;
+  background: #fff;
+  padding: 16px;
+}
+
+.tf-governance-plan-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+
+.tf-governance-plan-row .tf-entity-row__main strong,
+.tf-governance-plan-row .tf-entity-row__main span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.tf-page-title__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.tf-data-source-card,
+.tf-documentation-context-card {
+  margin-bottom: 18px;
+}
+
+.tf-governance-plan-project-picker,
+.tf-governance-project-detail {
+  display: grid;
+  gap: 18px;
+}
+
+.tf-governance-project-list {
+  grid-template-columns: 1fr;
+}
+
+.tf-governance-project-row .tf-entity-row__main strong,
+.tf-governance-project-row .tf-entity-row__main span,
+.tf-governance-plan-row .tf-entity-row__main strong,
+.tf-governance-plan-row .tf-entity-row__main span,
+.tf-child-project-row .tf-entity-row__main strong,
+.tf-child-project-row .tf-entity-row__main span {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.tf-governance-project-row .tf-badge,
+.tf-governance-gate-card .tf-badge,
+.tf-governance-project-context .tf-badge,
+.tf-governance-plan-detail .tf-badge {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.tf-governance-plan-artifact-header {
+  border-top: 1px solid #e4e4de;
+  padding-top: 18px;
+}
+
+@media (max-width: 720px) {
+  .tf-page-title__actions {
+    justify-content: flex-start;
+    margin-top: 12px;
+  }
+
+  .tf-card-heading-row {
+    display: block;
   }
 }

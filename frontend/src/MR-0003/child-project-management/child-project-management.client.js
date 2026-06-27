@@ -36,6 +36,49 @@ const READ_CAPABILITIES = Object.freeze([
   "child_projects.view_operational_state",
 ]);
 
+const DEMO_CHILD_PROJECT_STATE = Object.freeze({
+  child_project: Object.freeze({
+    id: "demo-child-project",
+    name: "Demo Child Project",
+    repository: Object.freeze({
+      kind: "local",
+      url: null,
+      local_path: ".threat-forge/workspaces/demo-child-project",
+      default_branch: "master",
+    }),
+    project_model: Object.freeze({
+      root: "docs/reference/project-model",
+      governance_profile: "threat-forge-standard-child-project",
+    }),
+    lifecycle_policy: Object.freeze({
+      document_first_required: true,
+      code_traceability_required: true,
+      threat_analysis_pre_code_required: "reserved",
+      governed_commit_push_required: true,
+      direct_push_allowed: false,
+    }),
+    archived: false,
+  }),
+  latest_check_run: Object.freeze({
+    id: "demo-child-project-static-preview",
+    child_project_id: "demo-child-project",
+    checked_at: "static-preview",
+    repository_head: null,
+    branch: "master",
+    overall_status: "pass",
+    gate_results: Object.freeze([
+      Object.freeze({
+        gate_name: "child-project-standard-project-model",
+        status: "pass",
+        summary: "Static preview mirrors the demo child-project registration shape.",
+      }),
+    ]),
+    violations: Object.freeze([]),
+  }),
+});
+
+const DEFAULT_STATIC_CHILD_PROJECT_STATES = Object.freeze([DEMO_CHILD_PROJECT_STATE]);
+
 /**
  * Join a configured frontend API base URL with a governed API pathname.
  *
@@ -101,7 +144,7 @@ function withDataSourceState(payload, dataSource) {
  * @returns {{describeDataSource(): Record<string, unknown>, listChildProjects(): Promise<Record<string, unknown>>, getChildProject(id: string): Promise<Record<string, unknown>>}} Client port.
  */
 export function createStaticChildProjectManagementClient({
-  items = [],
+  items = DEFAULT_STATIC_CHILD_PROJECT_STATES,
   capabilities = READ_CAPABILITIES,
 } = {}) {
   const dataSource = createDataSourceState({
@@ -109,7 +152,7 @@ export function createStaticChildProjectManagementClient({
     effective_source: CHILD_PROJECT_MANAGEMENT_DATA_SOURCES.static,
     fallback: false,
     label: "Static preview",
-    message: "Using an empty static Child Projects preview. Select HTTP mode to read the governed backend API.",
+    message: "Using the static demo child project preview. Select HTTP mode to read the governed backend API.",
   });
 
   const normalizedItems = Array.isArray(items) ? items : [];

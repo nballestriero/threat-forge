@@ -250,15 +250,14 @@ function ProjectModelExplorerLaunchCard({ project = {}, onOpenProjectModel }) {
     <Card>
       <p className="tf-eyebrow">Demo Project Model Explorer</p>
       <h3>Open this child Project Model</h3>
-      <p>Serve the demo workspace Project Model on the Project Documentation Explorer API, then configure the frontend to read that HTTP source.</p>
+      <p>Serve the demo workspace Project Model on the Project Documentation Explorer API. This button opens the documentation page with the child-project HTTP source instead of the platform snapshot.</p>
       <div className="tf-command-list" aria-label="Demo Project Model Explorer launch commands">
         <code>npm run child-project:demo:register</code>
         <code>npm run backend:project-documentation-explorer:serve:demo</code>
-        <code>$env:VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE=&quot;http&quot;</code>
-        <code>$env:VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL=&quot;http://127.0.0.1:4174&quot;</code>
+        <code>$env:VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL=&quot;http://127.0.0.1:4174&quot;</code>
       </div>
       {typeof onOpenProjectModel === "function" ? (
-        <Button onClick={() => onOpenProjectModel(project.id)}><Icon token="navigation.documentation" /> Open Project Documentation Explorer</Button>
+        <Button onClick={() => onOpenProjectModel(project)}><Icon token="navigation.documentation" /> Open Project Documentation Explorer</Button>
       ) : null}
     </Card>
   );

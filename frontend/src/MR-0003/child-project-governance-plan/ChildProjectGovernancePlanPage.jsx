@@ -2,12 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Button, Card, EmptyState, SearchInput, SelectField, StatusBadge } from "../../MR-0002/design-system/components.jsx";
 import { Icon } from "../../MR-0002/design-system/Icon.jsx";
 import {
-  buildGatePlanResultFilterOptions,
   buildGateStatusFilterOptions,
-  filterGatePlanSummaries,
   filterGovernanceGateRows,
   formatGovernancePlanLabel,
-  getGatePlanKey,
   normalizePlanSummary,
 } from "./child-project-governance-plan.state.js";
 
@@ -23,16 +20,21 @@ import {
  * @macroRequirement MR-0003
  *
  * The page renders generated child project governance gate plans through an
- * injected frontend client port. It shows the available profile/target-scope
- * plans, selected plan summary, capability states, gate status/reason/evidence
- * and validation surfaces. It remains read-only and consumes generated plan
- * artifacts or their HTTP API read model; it does not execute gates, read local
- * artifact files directly, mutate child projects, write SQLite state, edit
- * registries, or implement final RBAC administration.
+ * injected frontend client port. It first presents a project list, then opens a
+ * single selected platform/child-project detail on the same page with a back
+ * action, project context, matching profile/target-scope gate plan,
+ * capability states, gate status/reason/evidence and validation surfaces. It
+ * remains read-only and consumes generated plan artifacts or their HTTP API
+ * read model; it does not execute gates, read local artifact files directly,
+ * mutate child projects, write SQLite state, edit registries, or implement
+ * final RBAC administration.
  *
- * Side effects: loads read-only data through the injected client port and keeps
+ * Side effects: loads read-only data through injected client ports and keeps
  * browser-only selection/filter state in React component state.
  */
+
+const PLATFORM_PROJECT_ID = "platform-self";
+const DEMO_CHILD_PROJECT_ID = "demo-child-project";
 
 /**
  * Convert a nullable value to display text.
@@ -45,6 +47,16 @@ function displayValue(value) {
 }
 
 /**
+ * Normalize strings for loose matching between project ids and target scopes.
+ *
+ * @param {unknown} value - Candidate string.
+ * @returns {string} Normalized value.
+ */
+function normalizeMatchValue(value) {
+  return String(value ?? "").trim().toLowerCase().replaceAll("-", "_");
+}
+
+/**
  * Render selected data-source information.
  *
  * @param {{dataSource?: Record<string, unknown>}} props - Data-source props.
@@ -54,7 +66,7 @@ function DataSourceStatus({ dataSource }) {
   if (!dataSource) return null;
 
   return (
-    <Card>
+    <Card className="tf-data-source-card">
       <p className="tf-eyebrow">Data source</p>
       <strong>{dataSource.label ?? "Governance plan data source"}</strong>
       <p>{dataSource.message ?? "Reading governance plan artifacts through the configured frontend client port."}</p>
@@ -74,15 +86,15 @@ function PlanSummaryCards({ items }) {
 
   return (
     <section className="tf-stats-grid" aria-label="Governance plan summary">
-      <Card>
+      <Card className="tf-stat-card">
         <span>Plans</span>
         <strong>{items.length}</strong>
       </Card>
-      <Card>
+      <Card className="tf-stat-card">
         <span>Gate rows</span>
         <strong>{totalGates}</strong>
       </Card>
-      <Card>
+      <Card className="tf-stat-card">
         <span>Pass result</span>
         <strong>{passPlans}</strong>
       </Card>
@@ -91,35 +103,208 @@ function PlanSummaryCards({ items }) {
 }
 
 /**
- * Render the read-only gate plan list.
+ * Return a governance plan summary matching a project option.
  *
- * @param {{items: Array<Record<string, unknown>>, selectedKey?: string, onSelect: Function}} props - List props.
+ * @param {Array<Record<string, unknown>>} items - Available plan summaries.
+ * @param {Record<string, unknown>} option - Selected project option.
+ * @returns {Record<string, unknown>|undefined} Matching plan summary.
+ */
+function findPlanForProjectOption(items, option) {
+  if (!option) return undefined;
+  const normalizedTargetScope = normalizeMatchValue(option.targetScope);
+  const normalizedProfile = normalizeMatchValue(option.profile);
+  const normalizedProjectId = normalizeMatchValue(option.id);
+
+  const exactPair = (items ?? []).find((item) => (
+    normalizeMatchValue(item?.target_scope) === normalizedTargetScope
+    && normalizeMatchValue(item?.profile) === normalizedProfile
+  ));
+  if (exactPair) return exactPair;
+
+  const exactTarget = (items ?? []).find((item) => normalizeMatchValue(item?.target_scope) === normalizedTargetScope);
+  if (exactTarget) return exactTarget;
+
+  const exactProfile = (items ?? []).find((item) => normalizeMatchValue(item?.profile) === normalizedProfile);
+  if (exactProfile) return exactProfile;
+
+  const projectTarget = (items ?? []).find((item) => normalizeMatchValue(item?.target_scope) === normalizedProjectId);
+  if (projectTarget) return projectTarget;
+
+  if (option.kind === "child-project") {
+    return (items ?? []).find((item) => normalizeMatchValue(item?.target_scope).includes("child_project"));
+  }
+
+  return (items ?? [])[0];
+}
+
+/**
+ * Return a readable governance profile for a child project state.
+ *
+ * @param {Record<string, unknown>} state - Child project operational state.
+ * @returns {string} Governance profile id.
+ */
+function getChildProjectGovernanceProfile(state) {
+  const project = state?.child_project ?? {};
+  if (project.id === DEMO_CHILD_PROJECT_ID) return "demo_child_project_governance";
+  const registeredProfile = String(project.project_model?.governance_profile ?? "").trim();
+  if (!registeredProfile || registeredProfile === "threat-forge-standard-child-project") {
+    return "documentation_only_child_project";
+  }
+  return registeredProfile;
+}
+
+/**
+ * Build selectable platform/child project contexts for the governance plan page.
+ *
+ * @param {Array<Record<string, unknown>>} childProjectStates - Child project states.
+ * @returns {Array<Record<string, unknown>>} Selectable project contexts.
+ */
+function buildProjectOptions(childProjectStates) {
+  const platformOption = {
+    id: PLATFORM_PROJECT_ID,
+    kind: "platform",
+    label: "Threat Forge platform",
+    profile: "platform_self_governance",
+    targetScope: "platform_self",
+    state: null,
+  };
+
+  const childOptions = (childProjectStates ?? []).map((state) => {
+    const project = state?.child_project ?? {};
+    const id = String(project.id ?? "").trim();
+    const isDemoProject = id === DEMO_CHILD_PROJECT_ID;
+    return {
+      id,
+      kind: "child-project",
+      label: String(project.name ?? id),
+      profile: getChildProjectGovernanceProfile(state),
+      targetScope: isDemoProject ? "demo_child_project" : "child_project",
+      state,
+    };
+  }).filter((option) => option.id);
+
+  return [platformOption, ...childOptions];
+}
+
+/**
+ * Build lower-cased search text for one project option.
+ *
+ * @param {Record<string, unknown>} option - Project option.
+ * @param {Record<string, unknown>|undefined} plan - Matching plan summary.
+ * @returns {string} Search envelope.
+ */
+function getProjectSearchText(option, plan) {
+  const project = option?.state?.child_project ?? {};
+  const repository = project.repository ?? {};
+  return [
+    option?.id,
+    option?.label,
+    option?.kind,
+    option?.profile,
+    option?.targetScope,
+    project.id,
+    project.name,
+    repository.url,
+    repository.local_path,
+    plan?.result,
+  ].map((value) => String(value ?? "").toLowerCase()).join(" ");
+}
+
+/**
+ * Filter project rows by search text.
+ *
+ * @param {Array<Record<string, unknown>>} options - Project options.
+ * @param {Array<Record<string, unknown>>} plans - Plan summaries.
+ * @param {string} search - Search term.
+ * @returns {Array<Record<string, unknown>>} Filtered project options.
+ */
+function filterProjectOptions(options, plans, search) {
+  const normalizedSearch = String(search ?? "").trim().toLowerCase();
+  if (!normalizedSearch) return options;
+  return (options ?? []).filter((option) => getProjectSearchText(option, findPlanForProjectOption(plans, option)).includes(normalizedSearch));
+}
+
+/**
+ * Render selected project context and the matched gate-plan context.
+ *
+ * @param {{option?: Record<string, unknown>, selectedPlan?: Record<string, unknown>}} props - Project context props.
+ * @returns {import("react").JSX.Element|null} Project card or null.
+ */
+function SelectedProjectCard({ option, selectedPlan }) {
+  if (!option) return null;
+
+  const state = option.state ?? {};
+  const project = state.child_project ?? {};
+  const repository = project.repository ?? {};
+  const latestCheckRun = state.latest_check_run ?? {};
+  const rows = option.kind === "platform" ? [
+    ["Project", "Threat Forge platform"],
+    ["Profile", option.profile],
+    ["Target scope", option.targetScope],
+    ["Selected plan", selectedPlan ? `${selectedPlan.profile} / ${selectedPlan.target_scope}` : "No matching plan"],
+  ] : [
+    ["Project id", project.id],
+    ["Name", project.name],
+    ["Repository", repository.url ?? repository.local_path],
+    ["Default branch", repository.default_branch],
+    ["Registered profile", project.project_model?.governance_profile],
+    ["Planned profile", option.profile],
+    ["Latest check", latestCheckRun.overall_status],
+    ["Selected plan", selectedPlan ? `${selectedPlan.profile} / ${selectedPlan.target_scope}` : "No matching plan"],
+  ];
+
+  return (
+    <Card className="tf-governance-project-context">
+      <div className="tf-card-heading-row">
+        <div>
+          <p className="tf-eyebrow">Selected project</p>
+          <h2>{displayValue(option.label)}</h2>
+        </div>
+        <StatusBadge value={String(selectedPlan?.result ?? latestCheckRun.overall_status ?? "unknown")} />
+      </div>
+      <dl className="tf-metadata-grid">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{displayValue(value)}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+  );
+}
+
+/**
+ * Render the read-only project list used to choose one governance plan context.
+ *
+ * @param {{items: Array<Record<string, unknown>>, plans: Array<Record<string, unknown>>, onSelect: Function}} props - List props.
  * @returns {import("react").JSX.Element} List or empty state.
  */
-function GatePlanList({ items, selectedKey, onSelect }) {
+function ProjectList({ items, plans, onSelect }) {
   if (items.length === 0) {
-    return <EmptyState title="No governance plans">Generate gate plan artifacts and enable HTTP mode to view them here.</EmptyState>;
+    return <EmptyState title="No projects match the current filters">Reset search to see all platform and child project contexts.</EmptyState>;
   }
 
   return (
-    <div className="tf-entity-list">
-      {items.map((item) => {
-        const itemKey = getGatePlanKey(item);
+    <div className="tf-entity-list tf-governance-project-list">
+      {items.map((option) => {
+        const plan = findPlanForProjectOption(plans, option);
+        const status = String(plan?.result ?? option.state?.latest_check_run?.overall_status ?? "unknown");
         return (
           <button
-            key={itemKey}
-            className={`tf-entity-row tf-governance-plan-row ${itemKey === selectedKey ? "is-selected" : ""}`}
+            key={option.id}
+            className="tf-entity-row tf-governance-project-row"
             type="button"
-            onClick={() => onSelect(item)}
+            onClick={() => onSelect(option.id)}
           >
-            <span className="tf-entity-row__icon"><Icon token="navigation.governancePlans" /></span>
+            <span className="tf-entity-row__icon"><Icon token={option.kind === "platform" ? "navigation.documentation" : "navigation.childProjects"} /></span>
             <span className="tf-entity-row__main">
-              <strong>{displayValue(item.profile)}</strong>
-              <span>{displayValue(item.target_scope)} · {displayValue(item.artifact_path)}</span>
+              <strong>{displayValue(option.label)}</strong>
+              <span>{displayValue(option.profile)} · {displayValue(option.targetScope)}</span>
             </span>
             <span className="tf-entity-row__meta">
-              <StatusBadge value={String(item.result ?? "unknown")} label={String(item.result ?? "unknown")} />
-              <span className="tf-badge">{Number(item.gates_evaluated ?? 0)} gates</span>
+              <StatusBadge value={status} label={status} />
+              <span className="tf-badge">{Number(plan?.gates_evaluated ?? 0)} gates</span>
             </span>
           </button>
         );
@@ -162,20 +347,20 @@ function DetailedPlanSummary({ plan }) {
 
   return (
     <section className="tf-stats-grid" aria-label="Selected gate plan summary">
-      <Card>
+      <Card className="tf-stat-card tf-stat-card--wide">
         <span>Profile</span>
         <strong>{displayValue(plan.profile)}</strong>
       </Card>
-      <Card>
+      <Card className="tf-stat-card tf-stat-card--wide">
         <span>Target scope</span>
         <strong>{displayValue(plan.target_scope)}</strong>
       </Card>
-      <Card>
+      <Card className="tf-stat-card">
         <span>Gates evaluated</span>
         <strong>{Number(plan.gates_evaluated ?? 0)}</strong>
       </Card>
       {summaryRows.map((row) => (
-        <Card key={row.status}>
+        <Card className="tf-stat-card" key={row.status}>
           <span>{formatGovernancePlanLabel(row.status)}</span>
           <strong>{row.count}</strong>
         </Card>
@@ -272,11 +457,11 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
 
   if (loading) return <EmptyState title="Loading gate plan">Reading the selected governance gate plan.</EmptyState>;
   if (error) return <EmptyState title="Unable to load gate plan">{error}</EmptyState>;
-  if (!plan) return <EmptyState title="Select a governance plan">Choose a profile/target-scope plan to inspect gate evidence.</EmptyState>;
+  if (!plan) return <EmptyState title="No matching governance plan">No generated plan exists yet for the selected project.</EmptyState>;
 
   return (
-    <section className="tf-detail-view tf-governance-plan-detail" aria-label="Selected governance gate plan">
-      <div className="tf-detail-view__header">
+    <section className="tf-governance-plan-detail" aria-label="Selected governance gate plan">
+      <div className="tf-detail-view__header tf-governance-plan-artifact-header">
         <div>
           <p className="tf-eyebrow">Generated artifact</p>
           <h2>{displayValue(plan.profile)} / {displayValue(plan.target_scope)}</h2>
@@ -309,16 +494,41 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
 }
 
 /**
+ * Render the selected project/detail read flow.
+ *
+ * @param {{option?: Record<string, unknown>, plan?: Record<string, unknown>, detail?: Record<string, unknown>, loading?: boolean, error?: string, onBack: Function}} props - Detail props.
+ * @returns {import("react").JSX.Element} Detail view.
+ */
+function ProjectGatePlanDetail({ option, plan, detail, loading, error, onBack }) {
+  return (
+    <section className="tf-detail-view tf-governance-project-detail" aria-label="Selected governance project">
+      <div className="tf-detail-view__header">
+        <div>
+          <p className="tf-eyebrow">Selected project</p>
+          <h2>{displayValue(option?.label)}</h2>
+          <p>{displayValue(option?.profile)} · {displayValue(option?.targetScope)}</p>
+        </div>
+        <Button onClick={onBack}><Icon token="action.back" /> Back to projects</Button>
+      </div>
+      <SelectedProjectCard option={option} selectedPlan={plan} />
+      <PlanSummaryCards items={plan ? [plan] : []} />
+      <GatePlanDetail detail={detail} loading={loading} error={error} />
+    </section>
+  );
+}
+
+/**
  * Render the read-only governance plan page.
  *
- * @param {{client: {listGatePlans: Function, getGatePlan: Function, describeDataSource?: Function}}} props - Page props.
+ * @param {{client: {listGatePlans: Function, getGatePlan: Function, describeDataSource?: Function}, childProjectClient?: {listChildProjects: Function, getChildProject?: Function, describeDataSource?: Function}}} props - Page props.
  * @returns {import("react").JSX.Element} Page element.
  */
-export function ChildProjectGovernancePlanPage({ client }) {
+export function ChildProjectGovernancePlanPage({ client, childProjectClient }) {
   const [items, setItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [childProjectStates, setChildProjectStates] = useState([]);
+  const [selectedProjectId, setSelectedProjectId] = useState("");
   const [detail, setDetail] = useState(null);
-  const [filters, setFilters] = useState({ q: "", result: "" });
+  const [projectSearch, setProjectSearch] = useState("");
   const [dataSource, setDataSource] = useState(() => client.describeDataSource?.());
   const [loadingList, setLoadingList] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -335,7 +545,6 @@ export function ChildProjectGovernancePlanPage({ client }) {
         const nextItems = Array.isArray(payload.items) ? payload.items : [];
         setItems(nextItems);
         setDataSource(payload.data_source ?? client.describeDataSource?.());
-        setSelectedItem((current) => current ?? nextItems[0] ?? null);
       })
       .catch((loadError) => {
         if (cancelled) return;
@@ -348,15 +557,37 @@ export function ChildProjectGovernancePlanPage({ client }) {
   }, [client]);
 
   useEffect(() => {
-    if (!selectedItem) {
+    if (!childProjectClient) return undefined;
+    let cancelled = false;
+    childProjectClient.listChildProjects()
+      .then((payload) => {
+        if (!cancelled) setChildProjectStates(Array.isArray(payload.items) ? payload.items : []);
+      })
+      .catch(() => {
+        if (!cancelled) setChildProjectStates([]);
+      });
+    return () => { cancelled = true; };
+  }, [childProjectClient]);
+
+  const projectOptions = useMemo(() => buildProjectOptions(childProjectStates), [childProjectStates]);
+  const filteredProjectOptions = useMemo(() => filterProjectOptions(projectOptions, items, projectSearch), [projectOptions, items, projectSearch]);
+  const selectedProjectOption = useMemo(
+    () => projectOptions.find((option) => option.id === selectedProjectId),
+    [projectOptions, selectedProjectId],
+  );
+  const selectedProjectPlan = useMemo(() => findPlanForProjectOption(items, selectedProjectOption), [items, selectedProjectOption]);
+
+  useEffect(() => {
+    if (!selectedProjectPlan) {
       setDetail(null);
+      setDetailError("");
       return undefined;
     }
 
     let cancelled = false;
     setLoadingDetail(true);
     setDetailError("");
-    client.getGatePlan(selectedItem.profile, selectedItem.target_scope)
+    client.getGatePlan(selectedProjectPlan.profile, selectedProjectPlan.target_scope)
       .then((payload) => {
         if (cancelled) return;
         setDetail(payload);
@@ -370,11 +601,7 @@ export function ChildProjectGovernancePlanPage({ client }) {
         if (!cancelled) setLoadingDetail(false);
       });
     return () => { cancelled = true; };
-  }, [client, selectedItem]);
-
-  const resultOptions = useMemo(() => buildGatePlanResultFilterOptions(items), [items]);
-  const filteredItems = useMemo(() => filterGatePlanSummaries(items, filters), [items, filters]);
-  const selectedKey = selectedItem ? getGatePlanKey(selectedItem) : "";
+  }, [client, selectedProjectPlan]);
 
   return (
     <div className="tf-child-project-governance-plan-page">
@@ -382,40 +609,58 @@ export function ChildProjectGovernancePlanPage({ client }) {
         <div>
           <p className="tf-eyebrow">Child project governance</p>
           <h1>Governance gate plans</h1>
-          <p>Read-only view of generated gate plans before executor/orchestrator work.</p>
+          <p>Select a platform or child project, then inspect the generated gate plan and evidence.</p>
         </div>
-        <span className="tf-count-pill">{filteredItems.length} / {items.length} plans</span>
+        <span className="tf-count-pill">{projectOptions.length} projects</span>
       </section>
 
-      <PlanSummaryCards items={items} />
       <DataSourceStatus dataSource={dataSource} />
-
-      <section className="tf-filter-bar" aria-label="Governance plan filters">
-        <SearchInput
-          value={filters.q}
-          onChange={(q) => setFilters((current) => ({ ...current, q }))}
-          placeholder="Search profile, target scope, artifact"
-        />
-        <SelectField
-          label="Plan result"
-          value={filters.result}
-          values={resultOptions}
-          onChange={(result) => setFilters((current) => ({ ...current, result }))}
-        />
-        <Button onClick={() => setFilters({ q: "", result: "" })}>Reset</Button>
-      </section>
 
       {loadingList ? (
         <EmptyState title="Loading governance plans">Reading generated gate-plan artifacts.</EmptyState>
       ) : error ? (
         <EmptyState title="Unable to load governance plans">{error}</EmptyState>
+      ) : selectedProjectOption ? (
+        <ProjectGatePlanDetail
+          option={selectedProjectOption}
+          plan={selectedProjectPlan}
+          detail={detail}
+          loading={loadingDetail}
+          error={detailError}
+          onBack={() => {
+            setSelectedProjectId("");
+            setDetail(null);
+            setDetailError("");
+          }}
+        />
       ) : (
-        <div className="tf-split-view">
-          <section aria-label="Governance plan list">
-            <GatePlanList items={filteredItems} selectedKey={selectedKey} onSelect={setSelectedItem} />
+        <section className="tf-governance-plan-project-picker" aria-label="Project list">
+          <div className="tf-card-heading-row">
+            <div>
+              <p className="tf-eyebrow">Projects</p>
+              <h2>Select a project</h2>
+              <p>Open one row to load the matching governance gate plan on this page.</p>
+            </div>
+            <span className="tf-count-pill">{filteredProjectOptions.length} / {projectOptions.length}</span>
+          </div>
+          <section className="tf-filter-bar" aria-label="Project filters">
+            <SearchInput
+              value={projectSearch}
+              onChange={setProjectSearch}
+              placeholder="Search project, profile, scope, repository"
+            />
+            <Button onClick={() => setProjectSearch("")}><Icon token="action.reset" /> Reset</Button>
           </section>
-          <GatePlanDetail detail={detail} loading={loadingDetail} error={detailError} />
-        </div>
+          <PlanSummaryCards items={items} />
+          <ProjectList
+            items={filteredProjectOptions}
+            plans={items}
+            onSelect={(projectId) => {
+              setSelectedProjectId(String(projectId ?? ""));
+              setProjectSearch("");
+            }}
+          />
+        </section>
       )}
     </div>
   );

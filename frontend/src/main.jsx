@@ -44,7 +44,11 @@ import "./styles.css";
  *
  * The entry point composes the shared shell, protected page frame and the first
  * read-only Project Documentation, Child Projects and Child Project
- * Governance Plan pages using client-port adapters. It does not read YAML, Markdown, graph files, Git state, SQLite,
+ * Governance Plan pages using client-port adapters. The Governance Plan page
+ * receives the child-project client so it can select a project before showing
+ * matching gate-plan details, and child-project Project Model launches switch
+ * the documentation client to the child Project Documentation Explorer HTTP
+ * source rather than reusing the platform snapshot. It does not read YAML, Markdown, graph files, Git state, SQLite,
  * filesystem paths or project-model registries from the browser. Local preview
  * data remains snapshot/static backed by default; explicit frontend
  * configuration may select governed HTTP data sources without changing page
@@ -57,6 +61,13 @@ import "./styles.css";
  * services, generate child projects, run validators or implement identity/RBAC
  * administration.
  */
+
+const DEFAULT_DOCUMENTATION_CONTEXT = Object.freeze({
+  id: "platform-self",
+  kind: "platform",
+  label: "Threat Forge platform",
+  description: "Platform Project Model",
+});
 
 const navigationCapabilities = Object.freeze({
   "project-documentation": "project_model.documentation.read",
@@ -71,13 +82,29 @@ const navigationCapabilities = Object.freeze({
  */
 function GovernanceConsoleApp() {
   const [activeNavigationId, setActiveNavigationId] = useState("project-documentation");
+  const [documentationContext, setDocumentationContext] = useState(DEFAULT_DOCUMENTATION_CONTEXT);
 
-  const documentationClient = useMemo(() => createProjectDocumentationExplorerClient({
+  const platformDocumentationClient = useMemo(() => createProjectDocumentationExplorerClient({
     source: import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE,
     snapshotUrl: "/project-documentation-explorer.snapshot.json",
     httpBaseUrl: import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL,
     snapshotFallback: import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_SNAPSHOT_FALLBACK !== "false",
   }), []);
+
+  const childProjectDocumentationHttpBaseUrl = import.meta.env.VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL
+    || import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_CHILD_HTTP_BASE_URL
+    || "http://127.0.0.1:4174";
+
+  const childProjectDocumentationClient = useMemo(() => createProjectDocumentationExplorerClient({
+    source: "http",
+    snapshotUrl: "/project-documentation-explorer.snapshot.json",
+    httpBaseUrl: childProjectDocumentationHttpBaseUrl,
+    snapshotFallback: false,
+  }), [childProjectDocumentationHttpBaseUrl]);
+
+  const activeDocumentationClient = documentationContext.kind === "child-project"
+    ? childProjectDocumentationClient
+    : platformDocumentationClient;
 
   const childProjectsClient = useMemo(() => createChildProjectManagementClient({
     source: import.meta.env.VITE_CHILD_PROJECT_MANAGEMENT_SOURCE,
@@ -90,20 +117,42 @@ function GovernanceConsoleApp() {
   }), []);
 
   const requiredCapability = navigationCapabilities[activeNavigationId] ?? navigationCapabilities["project-documentation"];
+  const handleNavigate = (navigationId) => {
+    if (navigationId === "project-documentation") {
+      setDocumentationContext(DEFAULT_DOCUMENTATION_CONTEXT);
+    }
+    setActiveNavigationId(navigationId);
+  };
+  const openChildProjectModel = (projectOrId) => {
+    const project = typeof projectOrId === "object" && projectOrId !== null ? projectOrId : { id: projectOrId };
+    setDocumentationContext({
+      id: String(project.id ?? "child-project"),
+      kind: "child-project",
+      label: String(project.name ?? project.id ?? "Child project"),
+      description: "Child Project Model",
+      httpBaseUrl: childProjectDocumentationHttpBaseUrl,
+    });
+    setActiveNavigationId("project-documentation");
+  };
 
   return (
     <GovernanceConsoleShell
       workspaceKind="platform"
       activeNavigationId={activeNavigationId}
-      onNavigate={setActiveNavigationId}
+      onNavigate={handleNavigate}
     >
       <ProtectedPageFrame requiredCapability={requiredCapability}>
         {activeNavigationId === "child-projects" ? (
-          <ChildProjectsPage client={childProjectsClient} onOpenProjectModel={() => setActiveNavigationId("project-documentation")} />
+          <ChildProjectsPage client={childProjectsClient} onOpenProjectModel={openChildProjectModel} />
         ) : activeNavigationId === "child-governance-plans" ? (
-          <ChildProjectGovernancePlanPage client={governancePlanClient} />
+          <ChildProjectGovernancePlanPage client={governancePlanClient} childProjectClient={childProjectsClient} />
         ) : (
-          <ProjectDocumentationExplorerPage client={documentationClient} />
+          <ProjectDocumentationExplorerPage
+            key={documentationContext.id}
+            client={activeDocumentationClient}
+            context={documentationContext}
+            onBack={documentationContext.kind === "child-project" ? () => setActiveNavigationId("child-projects") : undefined}
+          />
         )}
       </ProtectedPageFrame>
     </GovernanceConsoleShell>
