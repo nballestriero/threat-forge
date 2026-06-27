@@ -31,7 +31,9 @@
     "frontend:preview": "vite preview --host 127.0.0.1",
     "backend:project-documentation-explorer:serve": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs",
     "docs:child-project-demo-workspace": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --self-test",
-    "child-project:demo:reset": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --reset"
+    "child-project:demo:reset": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --reset",
+    "docs:child-project-demo-registration": "node backend/tools/MR-0003/register-demo-child-project.mjs --self-test",
+    "child-project:demo:register": "node backend/tools/MR-0003/register-demo-child-project.mjs --register"
   },
   "dependencies": {
     "ajv": "^8.20.0",

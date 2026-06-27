@@ -10,3 +10,6 @@ frontend/public/*.snapshot.json
 
 # Generated child-project demo/runtime workspaces
 .threat-forge/workspaces/
+
+# Generated platform operational state
+.threat-forge/state/

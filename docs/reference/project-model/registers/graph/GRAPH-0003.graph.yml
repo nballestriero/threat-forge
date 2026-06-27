@@ -284,6 +284,16 @@ nodes:
     label: Minimal governed child project demo seed
     path: examples/child-projects/minimal-governed-child-project/README.md
 
+  - id: TOOL-register-demo-child-project
+    type: Tool
+    label: Demo child project SQLite registration tool
+    path: backend/tools/MR-0003/register-demo-child-project.mjs
+
+  - id: VERIFY-child-project-demo-registration-self-test
+    type: VerificationArtifact
+    label: Demo child project SQLite registration self-test gate
+    path: backend/tools/MR-0003/register-demo-child-project.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -913,3 +923,35 @@ spo_relations:
   - subject: VERIFY-child-project-demo-workspace-reset-self-test
     predicate: verifies
     object: MR-0003REQ-0030
+
+  - subject: MR-0003REQ-0025
+    predicate: implemented_by
+    object: TOOL-register-demo-child-project
+
+  - subject: MR-0003REQ-0026
+    predicate: implemented_by
+    object: TOOL-register-demo-child-project
+
+  - subject: MR-0003REQ-0028
+    predicate: implemented_by
+    object: TOOL-register-demo-child-project
+
+  - subject: MR-0003REQ-0029
+    predicate: implemented_by
+    object: TOOL-register-demo-child-project
+
+  - subject: VERIFY-child-project-demo-registration-self-test
+    predicate: verifies
+    object: MR-0003REQ-0025
+
+  - subject: VERIFY-child-project-demo-registration-self-test
+    predicate: verifies
+    object: MR-0003REQ-0026
+
+  - subject: VERIFY-child-project-demo-registration-self-test
+    predicate: verifies
+    object: MR-0003REQ-0028
+
+  - subject: VERIFY-child-project-demo-registration-self-test
+    predicate: verifies
+    object: MR-0003REQ-0029

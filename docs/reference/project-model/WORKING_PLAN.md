@@ -943,3 +943,14 @@ Status: planned implementation boundary converted into tooling.
 - Add reset command `npm run child-project:demo:reset`.
 - Add self-test gate `npm run docs:child-project-demo-workspace` to prove reset can generate a valid child Project Model without mutating the repository working tree.
 - Keep SQLite registration, backend reset actions, UI reset buttons and Project Documentation Explorer child-root opening as later micropassi.
+
+## Micropasso: demo child project SQLite registration tooling
+
+Status: planned implementation boundary converted into tooling.
+
+- Add demo child project SQLite registration command `npm run child-project:demo:register`.
+- Store platform operational demo state under ignored `.threat-forge/state/child-project-management.sqlite`.
+- Keep generated demo workspace files under ignored `.threat-forge/workspaces/demo-child-project/`.
+- Register the demo through the child project management service and `ChildProjectStorePort`, not by writing SQL from UI or controllers.
+- Add self-test gate `npm run docs:child-project-demo-registration` to prove registration produces a readable latest operational state without mutating the default runtime workspace or database.
+- Keep HTTP serving of the SQLite-backed demo state, UI reset buttons, child Project Documentation Explorer opening and governed child-project commit/push as later micropassi.
