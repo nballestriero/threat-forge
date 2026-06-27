@@ -29,6 +29,7 @@ governance_gates:
     target_scopes:
       - platform_self
       - child_project
+      - demo_child_project
     required_capabilities:
       - project_model
     validation_surfaces:
@@ -45,6 +46,7 @@ governance_gates:
     target_scopes:
       - platform_self
       - child_project
+      - demo_child_project
     required_capabilities:
       - project_model
     validation_surfaces:
@@ -61,6 +63,7 @@ governance_gates:
     target_scopes:
       - platform_self
       - child_project
+      - demo_child_project
     required_capabilities:
       - project_model
     validation_surfaces:
@@ -76,6 +79,7 @@ governance_gates:
     target_scopes:
       - platform_self
       - child_project
+      - demo_child_project
     required_capabilities:
       - project_model
     validation_surfaces:
@@ -92,6 +96,7 @@ governance_gates:
     target_scopes:
       - platform_self
       - child_project
+      - demo_child_project
     required_capabilities:
       - project_model
     validation_surfaces:
@@ -254,5 +259,21 @@ governance_gates:
       - threat_forge_repo_check
       - registry_contract_validator
       - negative_fixtures
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: child_governance_gate_plan
+    label: Child governance gate plan
+    description: Plans child project governance gates from governed profiles, applicability classes, capabilities and validation surfaces without executing real gates.
+    owner_macro_requirement: MR-0003
+    applicability_class: platform_self_required
+    target_scopes:
+      - platform_self
+    required_capabilities:
+      - child_project_management
+    validation_surfaces:
+      - threat_forge_repo_check
+      - registry_contract_validator
+      - governance_gate_planner_self_test
     result_when_not_applicable: fail
     unsupported_behavior: fail

@@ -460,6 +460,11 @@ nodes:
     label: Child project governance registry contract negative fixtures
     path: backend/tools/MR-0003/fixtures/child-project-governance-registries/negative
 
+  - id: TOOL-plan-child-project-governance-gates
+    type: Tool
+    label: Child project governance gate planner
+    path: backend/tools/MR-0003/plan-child-project-governance-gates.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1531,3 +1536,26 @@ spo_relations:
     predicate: verifies
     object: MR-0003REQ-0054
 
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: TOOL-plan-child-project-governance-gates
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: TOOL-plan-child-project-governance-gates
+
+  - subject: TOOL-plan-child-project-governance-gates
+    predicate: verifies
+    object: MR-0003REQ-0059
+
+  - subject: TOOL-plan-child-project-governance-gates
+    predicate: verifies
+    object: MR-0003REQ-0060
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0003REQ-0059

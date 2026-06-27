@@ -74,6 +74,10 @@ const expectedScripts = new Map([
     "node backend/tools/MR-0003/check-child-project-governance-registries.mjs",
   ],
   [
+    "docs:child-project-governance-plan",
+    "node backend/tools/MR-0003/plan-child-project-governance-gates.mjs --self-test",
+  ],
+  [
     "test:runtime",
     "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
   ],
@@ -89,6 +93,7 @@ const requiredRunnerTraceabilityMarkers = [
   "@implementsRequirement MR-0000REQ-0023",
   "@implementsRequirement MR-0003REQ-0050",
   "@implementsRequirement MR-0003REQ-0054",
+  "@implementsRequirement MR-0003REQ-0059",
   "@derivedFromDecision MR-0000/ADR-0003",
   "@macroRequirement MR-0000",
   "@macroRequirement MR-0003",
@@ -110,6 +115,7 @@ const requiredRunnerGateScripts = [
   "docs:orphan-governed-bodies",
   "docs:openapi-contract",
   "docs:child-project-governance-registries",
+  "docs:child-project-governance-plan",
   "frontend:build",
   "test:runtime",
 ];

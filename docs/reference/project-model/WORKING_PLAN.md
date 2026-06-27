@@ -1153,3 +1153,21 @@ The implementation introduces:
 This step intentionally does not execute child-project gates, detect capabilities, generate a gate execution plan, implement final gate enforcement, add UI rendering, mutate child-project repositories, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe implementation step is a read-only execution-plan preview that reads these registries and emits gate applicability, planned/not-applicable/unsupported/pass/fail status, reason and evidence for threat-forge and the demo child project without enforcing final methodology-specific gates.
+
+## Child Project Governance Gate Planner Micropasso
+
+This tooling micropasso implements the first read-only gate planning preview after the child-project governance registry validator.
+
+The implementation introduces:
+
+- a deterministic planner `backend/tools/MR-0003/plan-child-project-governance-gates.mjs` that reads the governed child-project governance registry family and expands a selected profile into a gate plan;
+- a root script `npm run child-project:governance:plan` for operator-visible planning of a selected profile and target scope;
+- a self-test script `npm run docs:child-project-governance-plan` that plans representative platform, demo child project and documentation-only child project profiles;
+- a new governed gate `child_governance_gate_plan` and validation surface `governance_gate_planner_self_test` so the planner itself is dogfooded by `npm run repo:check`;
+- graph traceability from `MR-0003REQ-0059` and `MR-0003REQ-0060` to the planner and governed runner.
+
+The planner reports gate id, applicability class, planned status, reason, required capabilities, validation surfaces and evidence. It can emit human-readable output or JSON through `--json`.
+
+This step intentionally does not execute real gates, persist plan artifacts, write SQLite state, mutate child-project repositories, detect capabilities automatically, add backend API endpoints, render the plan in the frontend, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is to export planner output as a stable artifact for platform-self and demo-child profiles, then serve that read-only plan through the Child Project Management API before adding the UI view.

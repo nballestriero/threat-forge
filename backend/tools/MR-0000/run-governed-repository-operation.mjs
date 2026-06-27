@@ -17,11 +17,13 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0003REQ-0029
  * @implementsRequirement MR-0003REQ-0050
  * @implementsRequirement MR-0003REQ-0054
+ * @implementsRequirement MR-0003REQ-0059
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @derivedFromDecision MR-0000/ADR-0008
  * @derivedFromDecision MR-0003/ADR-0004
  * @derivedFromDecision MR-0003/ADR-0010
+ * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0000
  * @macroRequirement MR-0003
  *
@@ -101,6 +103,11 @@ const gateCommands = [
     label: "Child project governance registry contract",
     command: "npm",
     args: ["run", "docs:child-project-governance-registries"],
+  },
+  {
+    label: "Child project governance gate planner self-test",
+    command: "npm",
+    args: ["run", "docs:child-project-governance-plan"],
   },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },

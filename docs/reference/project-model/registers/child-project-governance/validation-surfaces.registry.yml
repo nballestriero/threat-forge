@@ -57,3 +57,9 @@ validation_surfaces:
     description: Gate is exercised by the registry contract validator and its negative fixtures.
     evidence_kind: validator
     command: npm run docs:child-project-governance-registries
+
+  - id: governance_gate_planner_self_test
+    label: Governance gate planner self-test
+    description: Gate planning is exercised by expanding representative platform, demo and documentation-only governance profiles.
+    evidence_kind: self_test
+    command: npm run docs:child-project-governance-plan
