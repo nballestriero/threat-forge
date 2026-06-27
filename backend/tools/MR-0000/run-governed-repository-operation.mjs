@@ -89,6 +89,11 @@ const gateCommands = [
     command: "npm",
     args: ["run", "docs:child-project-demo-registration"],
   },
+  {
+    label: "Child project management API serve self-test",
+    command: "npm",
+    args: ["run", "docs:child-project-management-api-serve"],
+  },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
   { label: "Runtime unit tests", command: "npm", args: ["run", "test:runtime"] },

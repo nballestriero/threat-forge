@@ -954,3 +954,13 @@ Status: planned implementation boundary converted into tooling.
 - Register the demo through the child project management service and `ChildProjectStorePort`, not by writing SQL from UI or controllers.
 - Add self-test gate `npm run docs:child-project-demo-registration` to prove registration produces a readable latest operational state without mutating the default runtime workspace or database.
 - Keep HTTP serving of the SQLite-backed demo state, UI reset buttons, child Project Documentation Explorer opening and governed child-project commit/push as later micropassi.
+
+## Micropasso: child project management SQLite-backed API serve command
+
+Status: planned implementation boundary converted into backend serve tooling.
+
+- Add local backend serve command `npm run backend:child-project-management:serve` for the read-only Child Project Management HTTP API.
+- Read operational state from `.threat-forge/state/child-project-management.sqlite` by default through the existing module composition root and SQLite adapter.
+- Preserve bootstrap registered-user headers and read-only endpoints `GET /api/child-projects` and `GET /api/child-projects/:id`.
+- Add self-test gate `npm run docs:child-project-management-api-serve` that starts a bounded local server on an ephemeral port, seeds a temporary SQLite database, and verifies list/detail responses for `demo-child-project`.
+- Keep frontend launch convenience, UI reset buttons, child Project Documentation Explorer opening and governed child-project commit/push as later micropassi.

@@ -294,6 +294,16 @@ nodes:
     label: Demo child project SQLite registration self-test gate
     path: backend/tools/MR-0003/register-demo-child-project.mjs
 
+  - id: MR-0003SRC-0011
+    type: SourceModule
+    label: Child project management SQLite-backed API serve command
+    path: backend/src/MR-0003/child-project-management/child-project-management.serve.mjs
+
+  - id: VERIFY-child-project-management-api-serve-self-test
+    type: VerificationArtifact
+    label: Child project management API serve self-test gate
+    path: backend/src/MR-0003/child-project-management/child-project-management.serve.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -955,3 +965,35 @@ spo_relations:
   - subject: VERIFY-child-project-demo-registration-self-test
     predicate: verifies
     object: MR-0003REQ-0029
+
+  - subject: MR-0003REQ-0014
+    predicate: implemented_by
+    object: MR-0003SRC-0011
+
+  - subject: MR-0003REQ-0015
+    predicate: implemented_by
+    object: MR-0003SRC-0011
+
+  - subject: MR-0003REQ-0025
+    predicate: implemented_by
+    object: MR-0003SRC-0011
+
+  - subject: MR-0003REQ-0026
+    predicate: implemented_by
+    object: MR-0003SRC-0011
+
+  - subject: VERIFY-child-project-management-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0014
+
+  - subject: VERIFY-child-project-management-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0015
+
+  - subject: VERIFY-child-project-management-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0025
+
+  - subject: VERIFY-child-project-management-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0026

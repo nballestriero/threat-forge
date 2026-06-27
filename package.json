@@ -33,7 +33,9 @@
     "docs:child-project-demo-workspace": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --self-test",
     "child-project:demo:reset": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --reset",
     "docs:child-project-demo-registration": "node backend/tools/MR-0003/register-demo-child-project.mjs --self-test",
-    "child-project:demo:register": "node backend/tools/MR-0003/register-demo-child-project.mjs --register"
+    "docs:child-project-management-api-serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs --self-test",
+    "child-project:demo:register": "node backend/tools/MR-0003/register-demo-child-project.mjs --register",
+    "backend:child-project-management:serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0",
