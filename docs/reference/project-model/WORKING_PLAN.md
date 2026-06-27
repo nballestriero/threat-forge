@@ -833,3 +833,16 @@ This micropasso adds:
 No runtime code, database dependency, schema migration, backend endpoint, UI, RBAC runtime, child-project skeleton generator, repository cloning, or child-project commit/push runner is added by this step.
 
 The next safe implementation step is a small backend child-project management storage port and in-memory/fake adapter test seam, followed by an initial SQLite adapter behind the same port. The service must keep using `Controller -> Service -> Port -> Adapter` and must not expose SQLite details to controllers, UI contracts or Project Model validators.
+
+## Child Project Management Storage Port Backend Micropasso
+
+This implementation micropasso adds the first backend child-project management storage boundary without adding a SQLite adapter, database schema, HTTP API, UI, repository cloning, skeleton generation or RBAC runtime.
+
+The implementation introduces:
+
+- a child-project management contract module for child project records, repository location, governance profile, lifecycle policy, check runs, gate results, violations and operational state list read models;
+- a child-project store port module that defines the replaceable storage adapter method surface used by future services;
+- runtime tests proving that the contracts normalize defaults and that an adapter is accepted only when it implements the complete port;
+- graph traceability from `MR-0003REQ-0023`, `MR-0003REQ-0025` and `MR-0003REQ-0026` to the new backend source modules and verification artifact.
+
+SQLite remains a future adapter behind this port. Child project Project Model registries, ADR, requirements, bodies and graphs remain canonical in each child repository; the backend storage boundary only models operational platform state used by future backend services and UI read models.
