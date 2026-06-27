@@ -465,6 +465,11 @@ nodes:
     label: Child project governance gate planner
     path: backend/tools/MR-0003/plan-child-project-governance-gates.mjs
 
+  - id: VERIFY-child-project-governance-plan-artifacts
+    type: VerificationArtifact
+    label: Child project governance gate plan artifact export self-test
+    path: backend/tools/MR-0003/plan-child-project-governance-gates.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1559,3 +1564,20 @@ spo_relations:
   - subject: TOOL-run-governed-repository-operation
     predicate: verifies
     object: MR-0003REQ-0059
+
+  - subject: VERIFY-child-project-governance-plan-artifacts
+    predicate: verifies
+    object: MR-0003REQ-0059
+
+  - subject: VERIFY-child-project-governance-plan-artifacts
+    predicate: verifies
+    object: MR-0003REQ-0060
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0003REQ-0060
+

@@ -36,6 +36,7 @@
     "docs:child-project-management-api-serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs --self-test",
     "docs:child-project-governance-registries": "node backend/tools/MR-0003/check-child-project-governance-registries.mjs",
     "docs:child-project-governance-plan": "node backend/tools/MR-0003/plan-child-project-governance-gates.mjs --self-test",
+    "docs:child-project-governance-plan-artifacts": "node backend/tools/MR-0003/plan-child-project-governance-gates.mjs --self-test --output-dir artifacts/child-project-governance/gate-plans",
     "child-project:governance:plan": "node backend/tools/MR-0003/plan-child-project-governance-gates.mjs",
     "child-project:demo:register": "node backend/tools/MR-0003/register-demo-child-project.mjs --register",
     "backend:child-project-management:serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs",

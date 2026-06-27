@@ -18,11 +18,13 @@ import { fileURLToPath } from "node:url";
  * executor exists.
  *
  * Side effects: reads repository registry files and writes a human-readable or
- * JSON plan to stdout. In self-test mode it plans representative platform and
- * demo profiles and verifies deterministic planning invariants. It does not
- * execute child-project gates, mutate child projects, write SQLite state,
- * generate persisted plan artifacts, implement Base Analysis/STRIDE/STRIDE-AI,
- * or replace the future gate executor/orchestrator.
+ * JSON plan to stdout. When an output directory is provided, it also writes
+ * deterministic JSON plan artifacts for the selected profile or self-test
+ * profile set under the requested generated-artifact directory. In self-test
+ * mode it plans representative platform and demo profiles and verifies
+ * deterministic planning invariants. It does not execute child-project gates,
+ * mutate child projects, write SQLite state, implement Base Analysis/STRIDE/
+ * STRIDE-AI, or replace the future gate executor/orchestrator.
  */
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -283,7 +285,7 @@ function loadRegistryFamily() {
  * Parses command line arguments.
  *
  * @param {string[]} rawArgs - Raw process arguments.
- * @returns {{ profileId: string|null, targetScope: string|null, capabilityOverrides: Map<string, string>, json: boolean, selfTest: boolean }} Parsed options.
+ * @returns {{ profileId: string|null, targetScope: string|null, capabilityOverrides: Map<string, string>, json: boolean, selfTest: boolean, outputDir: string|null }} Parsed options.
  */
 function parseArgs(rawArgs) {
   const options = {
@@ -292,6 +294,7 @@ function parseArgs(rawArgs) {
     capabilityOverrides: new Map(),
     json: false,
     selfTest: false,
+    outputDir: null,
   };
 
   for (let index = 0; index < rawArgs.length; index += 1) {
@@ -305,6 +308,9 @@ function parseArgs(rawArgs) {
       index += 1;
     } else if (arg === "--target-scope") {
       options.targetScope = rawArgs[index + 1] ?? null;
+      index += 1;
+    } else if (arg === "--output-dir") {
+      options.outputDir = rawArgs[index + 1] ?? null;
       index += 1;
     } else if (arg === "--capability") {
       const rawCapability = String(rawArgs[index + 1] ?? "");
@@ -557,12 +563,56 @@ function printPlan(plan) {
 }
 
 /**
+ * Builds a stable file name for a generated gate plan artifact.
+ *
+ * @param {ReturnType<typeof planProfile>} plan - Gate plan.
+ * @returns {string} File name.
+ */
+function buildPlanArtifactFileName(plan) {
+  return `${plan.profile}.${plan.target_scope}.plan.json`;
+}
+
+/**
+ * Wraps a gate plan in a governed generated-artifact envelope.
+ *
+ * @param {ReturnType<typeof planProfile>} plan - Gate plan.
+ * @returns {Record<string, unknown>} Artifact payload.
+ */
+function buildPlanArtifact(plan) {
+  return {
+    schema_version: 1,
+    artifact_type: "child_project_governance_gate_plan",
+    generated_by: "backend/tools/MR-0003/plan-child-project-governance-gates.mjs",
+    implements_requirements: ["MR-0003REQ-0059", "MR-0003REQ-0060"],
+    registry_directory: normalizeProjectPath(path.relative(rootDir, registryDir)),
+    plan,
+  };
+}
+
+/**
+ * Writes a gate plan artifact to the requested output directory.
+ *
+ * @param {ReturnType<typeof planProfile>} plan - Gate plan.
+ * @param {string|null} outputDir - Output directory, absolute or repository-relative.
+ * @returns {string|null} Written artifact path relative to repository root, or null.
+ */
+function writePlanArtifact(plan, outputDir) {
+  if (!outputDir) return null;
+  const resolvedOutputDir = path.isAbsolute(outputDir) ? outputDir : path.join(rootDir, outputDir);
+  fs.mkdirSync(resolvedOutputDir, { recursive: true });
+  const artifactPath = path.join(resolvedOutputDir, buildPlanArtifactFileName(plan));
+  fs.writeFileSync(artifactPath, `${JSON.stringify(buildPlanArtifact(plan), null, 2)}\n`, "utf8");
+  return normalizeProjectPath(path.relative(rootDir, artifactPath));
+}
+
+/**
  * Runs deterministic self-test planning scenarios.
  *
  * @param {{ profiles: Map<string, Record<string, unknown>>, gates: Map<string, Record<string, unknown>>, surfaces: Map<string, Record<string, unknown>>, statuses: Set<string> }} registries - Registry family.
+ * @param {string|null} outputDir - Optional output directory for generated plan artifacts.
  * @returns {void}
  */
-function runSelfTest(registries) {
+function runSelfTest(registries, outputDir) {
   const platformPlan = planProfile(registries, "platform_self_governance", "platform_self", new Map());
   const demoPlan = planProfile(registries, "demo_child_project_governance", "demo_child_project", new Map());
   const documentationOnlyWithNoCode = planProfile(
@@ -592,6 +642,10 @@ function runSelfTest(registries) {
     process.exit(1);
   }
 
+  const writtenArtifacts = [platformPlan, demoPlan, documentationOnlyWithNoCode]
+    .map((plan) => writePlanArtifact(plan, outputDir))
+    .filter(Boolean);
+
   console.log("Child project governance gate planner self-test passed.");
   console.log("Implemented requirement: MR-0003REQ-0059");
   console.log("Implemented requirement: MR-0003REQ-0060");
@@ -603,6 +657,10 @@ function runSelfTest(registries) {
   console.log(`Platform planned: ${platformPlan.summary.planned}`);
   console.log(`Demo planned: ${demoPlan.summary.planned}`);
   console.log(`Documentation-only planned: ${documentationOnlyWithNoCode.summary.planned}`);
+  if (writtenArtifacts.length > 0) {
+    console.log(`Plan artifacts written: ${writtenArtifacts.length}`);
+    for (const artifactPath of writtenArtifacts) console.log(`Artifact: ${artifactPath}`);
+  }
 }
 
 try {
@@ -610,14 +668,16 @@ try {
   const registries = loadRegistryFamily();
 
   if (options.selfTest) {
-    runSelfTest(registries);
+    runSelfTest(registries, options.outputDir);
   } else {
     const profileId = options.profileId ?? "platform_self_governance";
     const plan = planProfile(registries, profileId, options.targetScope, options.capabilityOverrides);
+    const writtenArtifact = writePlanArtifact(plan, options.outputDir);
     if (options.json) {
       console.log(JSON.stringify(plan, null, 2));
     } else {
       printPlan(plan);
+      if (writtenArtifact) console.log(`Artifact: ${writtenArtifact}`);
     }
     if (plan.result !== "pass") process.exit(1);
   }

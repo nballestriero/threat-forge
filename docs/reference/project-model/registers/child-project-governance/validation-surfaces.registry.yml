@@ -63,3 +63,9 @@ validation_surfaces:
     description: Gate planning is exercised by expanding representative platform, demo and documentation-only governance profiles.
     evidence_kind: self_test
     command: npm run docs:child-project-governance-plan
+
+  - id: governance_gate_plan_artifact_export
+    label: Governance gate plan artifact export
+    description: Gate planning artifacts are generated as deterministic JSON files for representative platform, demo and documentation-only governance profiles.
+    evidence_kind: generated_artifact
+    command: npm run docs:child-project-governance-plan-artifacts

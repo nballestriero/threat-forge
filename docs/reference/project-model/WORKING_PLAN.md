@@ -1171,3 +1171,20 @@ The planner reports gate id, applicability class, planned status, reason, requir
 This step intentionally does not execute real gates, persist plan artifacts, write SQLite state, mutate child-project repositories, detect capabilities automatically, add backend API endpoints, render the plan in the frontend, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is to export planner output as a stable artifact for platform-self and demo-child profiles, then serve that read-only plan through the Child Project Management API before adding the UI view.
+
+## Child Project Governance Gate Plan Artifact Export Micropasso
+
+This tooling micropasso makes the read-only governance gate plan consumable by later backend and frontend work without introducing the final gate executor.
+
+The implementation extends the planner so it can write deterministic JSON plan artifacts under an ignored generated-artifact directory when an output directory is provided. It also introduces:
+
+- a root script `npm run docs:child-project-governance-plan-artifacts` that exports representative platform-self, demo-child-project and documentation-only child-project plans;
+- a governed validation surface `governance_gate_plan_artifact_export` proving that generated plan artifacts can be produced during `npm run repo:check` without mutating tracked files;
+- a governed gate `child_governance_gate_plan_artifacts` selected by the `platform_self_governance` profile;
+- graph traceability from the generated-artifact self-test surface back to `MR-0003REQ-0059` and `MR-0003REQ-0060`.
+
+Generated artifacts remain operational evidence, not canonical Project Model source. The canonical contract remains the child-project governance registry family; the generated plans are read-only projections that future APIs and UI views may consume.
+
+This step intentionally does not execute real gates, persist gate results in SQLite, mutate child projects, expose a backend API endpoint, render a UI view, detect capabilities automatically, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is to serve the generated or computed gate plan through a read-only Child Project Management API endpoint, then render the plan in the UI.

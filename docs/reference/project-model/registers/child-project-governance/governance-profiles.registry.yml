@@ -41,6 +41,7 @@ governance_profiles:
       - child_project_management_api_self_test
       - child_governance_registry_contract
       - child_governance_gate_plan
+      - child_governance_gate_plan_artifacts
 
   - id: demo_child_project_governance
     label: Demo child project governance

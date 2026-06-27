@@ -18,6 +18,7 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0003REQ-0050
  * @implementsRequirement MR-0003REQ-0054
  * @implementsRequirement MR-0003REQ-0059
+ * @implementsRequirement MR-0003REQ-0060
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @derivedFromDecision MR-0000/ADR-0008
@@ -108,6 +109,11 @@ const gateCommands = [
     label: "Child project governance gate planner self-test",
     command: "npm",
     args: ["run", "docs:child-project-governance-plan"],
+  },
+  {
+    label: "Child project governance gate plan artifacts",
+    command: "npm",
+    args: ["run", "docs:child-project-governance-plan-artifacts"],
   },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
