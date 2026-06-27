@@ -82,6 +82,10 @@ const expectedScripts = new Map([
     "node backend/tools/MR-0003/plan-child-project-governance-gates.mjs --self-test --output-dir artifacts/child-project-governance/gate-plans",
   ],
   [
+    "docs:child-project-governance-plan-api-serve",
+    "node backend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.serve.mjs --self-test",
+  ],
+  [
     "test:runtime",
     "node --test backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.service.test.mjs",
   ],
@@ -121,6 +125,7 @@ const requiredRunnerGateScripts = [
   "docs:child-project-governance-registries",
   "docs:child-project-governance-plan",
   "docs:child-project-governance-plan-artifacts",
+  "docs:child-project-governance-plan-api-serve",
   "frontend:build",
   "test:runtime",
 ];

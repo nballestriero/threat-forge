@@ -1188,3 +1188,23 @@ Generated artifacts remain operational evidence, not canonical Project Model sou
 This step intentionally does not execute real gates, persist gate results in SQLite, mutate child projects, expose a backend API endpoint, render a UI view, detect capabilities automatically, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is to serve the generated or computed gate plan through a read-only Child Project Management API endpoint, then render the plan in the UI.
+
+## Child Project Governance Gate Plan Read-only API Micropasso
+
+This backend micropasso serves generated child-project governance gate plan artifacts through a read-only HTTP boundary so the upcoming UI can consume the same deterministic plan evidence produced by the governed runner.
+
+The implementation introduces:
+
+- a local serve command `backend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.serve.mjs`;
+- a self-test script `npm run docs:child-project-governance-plan-api-serve` that starts the API on an ephemeral local port and verifies list, detail, forbidden and read-only method behavior;
+- a local operator serve script `npm run backend:child-project-governance-plan:serve`;
+- read-only endpoints for listing generated gate plan artifacts and fetching one plan by governance profile and target scope;
+- OpenAPI contract coverage for the new read-only plan endpoints;
+- a governed validation surface `governance_gate_plan_api_self_test` and gate `child_governance_gate_plan_api` selected by `platform_self_governance`;
+- graph traceability from `MR-0003REQ-0014`, `MR-0003REQ-0015`, `MR-0003REQ-0059` and `MR-0003REQ-0060` to the API serve boundary and self-test evidence.
+
+Generated plan artifacts remain evidence, not canonical source. The API reads artifacts produced from the governed registry family; it does not execute real gates or mutate child-project repositories.
+
+This step intentionally does not persist gate results in SQLite, implement the final executor/orchestrator, detect capabilities automatically, render the frontend UI, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is a frontend governance-plan view that consumes the read-only API or generated preview data and renders gate status, applicability, reason, evidence and validation surface details.

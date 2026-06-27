@@ -122,8 +122,61 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /api/child-project-governance/gate-plans:
+    get:
+      operationId: listChildProjectGovernanceGatePlans
+      summary: List generated child project governance gate plan artifacts.
+      description: Returns UI-safe summaries of generated gate plan artifacts for platform and child project governance profiles.
+      tags:
+        - ChildProjectGovernancePlan
+      responses:
+        '200':
+          description: Available child project governance gate plan artifacts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildProjectGovernanceGatePlanList'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/child-project-governance/gate-plans/{profile}/{target_scope}:
+    get:
+      operationId: getChildProjectGovernanceGatePlan
+      summary: Get one generated child project governance gate plan artifact.
+      description: Returns one generated gate plan artifact by governance profile and target scope without executing gates or mutating child projects.
+      tags:
+        - ChildProjectGovernancePlan
+      parameters:
+        - $ref: '#/components/parameters/GovernanceProfilePath'
+        - $ref: '#/components/parameters/GovernanceTargetScopePath'
+      responses:
+        '200':
+          description: Child project governance gate plan artifact detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildProjectGovernanceGatePlanDetail'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   parameters:
+    GovernanceProfilePath:
+      name: profile
+      in: path
+      required: true
+      description: Governance profile id used in the generated gate plan artifact file name.
+      schema:
+        type: string
+        minLength: 1
+    GovernanceTargetScopePath:
+      name: target_scope
+      in: path
+      required: true
+      description: Target scope id used in the generated gate plan artifact file name.
+      schema:
+        type: string
+        minLength: 1
     MacroRequirementFilter:
       name: mr
       in: query
@@ -789,6 +842,140 @@ components:
       required:
         - capabilities
         - items
+    ChildProjectGovernanceGatePlanSummary:
+      type: object
+      required:
+        - profile
+        - target_scope
+        - result
+        - gates_evaluated
+        - artifact_path
+      properties:
+        profile:
+          type: string
+        target_scope:
+          type: string
+        result:
+          type: string
+        gates_evaluated:
+          type: integer
+          minimum: 0
+        summary:
+          type: object
+          additionalProperties:
+            type: integer
+        artifact_path:
+          type: string
+    ChildProjectGovernanceGatePlanList:
+      type: object
+      required:
+        - access
+        - artifact_directory
+        - items
+      properties:
+        access:
+          $ref: '#/components/schemas/AccessDecision'
+        artifact_directory:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildProjectGovernanceGatePlanSummary'
+    ChildProjectGovernanceGatePlanGate:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        applicability_class:
+          type: string
+        status:
+          type: string
+        severity:
+          type: string
+        reason:
+          type: string
+        required_capabilities:
+          type: array
+          items:
+            type: string
+        validation_surfaces:
+          type: array
+          items:
+            type: string
+        evidence:
+          type: array
+          items:
+            type: string
+    ChildProjectGovernanceGatePlan:
+      type: object
+      required:
+        - profile
+        - target_scope
+        - result
+        - gates_evaluated
+        - gates
+      properties:
+        profile:
+          type: string
+        target_scope:
+          type: string
+        result:
+          type: string
+        summary:
+          type: object
+          additionalProperties:
+            type: integer
+        gates_evaluated:
+          type: integer
+          minimum: 0
+        capability_states:
+          type: object
+          additionalProperties:
+            type: string
+        gates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildProjectGovernanceGatePlanGate'
+    ChildProjectGovernanceGatePlanArtifact:
+      type: object
+      required:
+        - schema_version
+        - artifact_type
+        - plan
+      properties:
+        schema_version:
+          type: integer
+        artifact_type:
+          type: string
+          const: child_project_governance_gate_plan
+        generated_by:
+          type: string
+        implements_requirements:
+          type: array
+          items:
+            type: string
+        registry_directory:
+          type: string
+        plan:
+          $ref: '#/components/schemas/ChildProjectGovernanceGatePlan'
+    ChildProjectGovernanceGatePlanDetail:
+      type: object
+      required:
+        - access
+        - artifact_path
+        - artifact
+      properties:
+        access:
+          $ref: '#/components/schemas/AccessDecision'
+        artifact_path:
+          type: string
+        artifact:
+          $ref: '#/components/schemas/ChildProjectGovernanceGatePlanArtifact'
     ErrorResponse:
       type: object
       additionalProperties: false

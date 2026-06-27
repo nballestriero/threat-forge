@@ -66,6 +66,18 @@ const expectedOperations = [
     responseSchema: "ChildProjectOperationalState",
     requiredResponses: ["'200'", "'403'", "'404'"],
   },
+  {
+    path: "/api/child-project-governance/gate-plans",
+    operationId: "listChildProjectGovernanceGatePlans",
+    responseSchema: "ChildProjectGovernanceGatePlanList",
+    requiredResponses: ["'200'", "'403'"],
+  },
+  {
+    path: "/api/child-project-governance/gate-plans/{profile}/{target_scope}",
+    operationId: "getChildProjectGovernanceGatePlan",
+    responseSchema: "ChildProjectGovernanceGatePlanDetail",
+    requiredResponses: ["'200'", "'403'", "'404'"],
+  },
 ];
 
 const requiredSchemas = [
@@ -93,6 +105,12 @@ const requiredSchemas = [
   "ChildProjectCheckRun",
   "ChildProjectOperationalState",
   "ChildProjectOperationalStateList",
+  "ChildProjectGovernanceGatePlanSummary",
+  "ChildProjectGovernanceGatePlanList",
+  "ChildProjectGovernanceGatePlanGate",
+  "ChildProjectGovernanceGatePlan",
+  "ChildProjectGovernanceGatePlanArtifact",
+  "ChildProjectGovernanceGatePlanDetail",
   "ErrorResponse",
 ];
 
@@ -108,6 +126,10 @@ const requiredGraphFragments = [
   "id: MR-0003API-0001",
   `path: ${contractProjectPath}`,
   "subject: MR-0003REQ-0014\n    predicate: implemented_by\n    object: MR-0003API-0001",
+  "id: MR-0003API-0002",
+  `path: ${contractProjectPath}`,
+  "subject: MR-0003REQ-0059\n    predicate: implemented_by\n    object: MR-0003API-0002",
+  "subject: MR-0003REQ-0060\n    predicate: implemented_by\n    object: MR-0003API-0002",
 ];
 
 /**
@@ -323,6 +345,8 @@ function validateComponents(componentsSection) {
     "ImplementationStateFilter",
     "AcceptanceStateFilter",
     "SearchFilter",
+    "GovernanceProfilePath",
+    "GovernanceTargetScopePath",
   ]) {
     const parameterPattern = new RegExp(`^    ${escapeRegex(parameterName)}:$`, "mu");
     if (!parameterPattern.test(componentsSection)) {

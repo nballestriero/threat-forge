@@ -470,6 +470,21 @@ nodes:
     label: Child project governance gate plan artifact export self-test
     path: backend/tools/MR-0003/plan-child-project-governance-gates.mjs
 
+  - id: MR-0003SRC-0012
+    type: SourceModule
+    label: Child project governance plan read-only API serve command
+    path: backend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.serve.mjs
+
+  - id: MR-0003API-0002
+    type: SchemaContract
+    label: Child project governance plan read-only API contract
+    path: docs/reference/api/openapi/threat-forge.openapi.yml
+
+  - id: VERIFY-child-project-governance-plan-api-serve-self-test
+    type: VerificationArtifact
+    label: Child project governance plan API serve self-test gate
+    path: backend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.serve.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1581,3 +1596,44 @@ spo_relations:
     predicate: verifies
     object: MR-0003REQ-0060
 
+
+
+  - subject: MR-0003REQ-0014
+    predicate: implemented_by
+    object: MR-0003SRC-0012
+
+  - subject: MR-0003REQ-0015
+    predicate: implemented_by
+    object: MR-0003SRC-0012
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: MR-0003SRC-0012
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: MR-0003SRC-0012
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: MR-0003API-0002
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: MR-0003API-0002
+
+  - subject: VERIFY-child-project-governance-plan-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0014
+
+  - subject: VERIFY-child-project-governance-plan-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0015
+
+  - subject: VERIFY-child-project-governance-plan-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0059
+
+  - subject: VERIFY-child-project-governance-plan-api-serve-self-test
+    predicate: verifies
+    object: MR-0003REQ-0060

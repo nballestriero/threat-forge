@@ -293,3 +293,20 @@ governance_gates:
       - governance_gate_plan_artifact_export
     result_when_not_applicable: fail
     unsupported_behavior: fail
+
+  - id: child_governance_gate_plan_api
+    label: Child governance gate plan API
+    description: Serves generated child project governance gate plan artifacts through a read-only backend API for the upcoming UI view.
+    owner_macro_requirement: MR-0003
+    applicability_class: platform_self_required
+    target_scopes:
+      - platform_self
+    required_capabilities:
+      - child_project_management
+      - backend_api
+    validation_surfaces:
+      - threat_forge_repo_check
+      - governance_gate_plan_artifact_export
+      - governance_gate_plan_api_self_test
+    result_when_not_applicable: fail
+    unsupported_behavior: fail

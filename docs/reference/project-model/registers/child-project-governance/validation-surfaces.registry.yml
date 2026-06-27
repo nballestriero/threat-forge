@@ -69,3 +69,9 @@ validation_surfaces:
     description: Gate planning artifacts are generated as deterministic JSON files for representative platform, demo and documentation-only governance profiles.
     evidence_kind: generated_artifact
     command: npm run docs:child-project-governance-plan-artifacts
+
+  - id: governance_gate_plan_api_self_test
+    label: Governance gate plan API self-test
+    description: Gate starts a bounded local API server on an ephemeral port and validates read-only gate-plan artifact endpoints.
+    evidence_kind: self_test
+    command: npm run docs:child-project-governance-plan-api-serve
