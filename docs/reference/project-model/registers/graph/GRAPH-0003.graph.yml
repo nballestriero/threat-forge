@@ -450,6 +450,16 @@ nodes:
     type: Requirement
     label: Non-applicability and unsupported evidence contract
 
+  - id: TOOL-check-child-project-governance-registries
+    type: Tool
+    label: Child project governance registry contract validator
+    path: backend/tools/MR-0003/check-child-project-governance-registries.mjs
+
+  - id: VERIFY-child-project-governance-registries-negative-fixtures
+    type: VerificationArtifact
+    label: Child project governance registry contract negative fixtures
+    path: backend/tools/MR-0003/fixtures/child-project-governance-registries/negative
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1432,4 +1442,92 @@ spo_relations:
   - subject: MR-0003REQ-0060
     predicate: belongs_to
     object: MR-0003
+
+  - subject: MR-0003REQ-0055
+    predicate: implemented_by
+    object: TOOL-check-child-project-governance-registries
+
+  - subject: MR-0003REQ-0056
+    predicate: implemented_by
+    object: TOOL-check-child-project-governance-registries
+
+  - subject: MR-0003REQ-0057
+    predicate: implemented_by
+    object: TOOL-check-child-project-governance-registries
+
+  - subject: MR-0003REQ-0058
+    predicate: implemented_by
+    object: TOOL-check-child-project-governance-registries
+
+  - subject: MR-0003REQ-0059
+    predicate: implemented_by
+    object: TOOL-check-child-project-governance-registries
+
+  - subject: MR-0003REQ-0060
+    predicate: implemented_by
+    object: TOOL-check-child-project-governance-registries
+
+  - subject: TOOL-check-child-project-governance-registries
+    predicate: verifies
+    object: MR-0003REQ-0055
+
+  - subject: TOOL-check-child-project-governance-registries
+    predicate: verifies
+    object: MR-0003REQ-0056
+
+  - subject: TOOL-check-child-project-governance-registries
+    predicate: verifies
+    object: MR-0003REQ-0057
+
+  - subject: TOOL-check-child-project-governance-registries
+    predicate: verifies
+    object: MR-0003REQ-0058
+
+  - subject: TOOL-check-child-project-governance-registries
+    predicate: verifies
+    object: MR-0003REQ-0059
+
+  - subject: TOOL-check-child-project-governance-registries
+    predicate: verifies
+    object: MR-0003REQ-0060
+
+  - subject: VERIFY-child-project-governance-registries-negative-fixtures
+    predicate: verifies
+    object: MR-0003REQ-0055
+
+  - subject: VERIFY-child-project-governance-registries-negative-fixtures
+    predicate: verifies
+    object: MR-0003REQ-0056
+
+  - subject: VERIFY-child-project-governance-registries-negative-fixtures
+    predicate: verifies
+    object: MR-0003REQ-0057
+
+  - subject: VERIFY-child-project-governance-registries-negative-fixtures
+    predicate: verifies
+    object: MR-0003REQ-0058
+
+  - subject: VERIFY-child-project-governance-registries-negative-fixtures
+    predicate: verifies
+    object: MR-0003REQ-0059
+
+  - subject: VERIFY-child-project-governance-registries-negative-fixtures
+    predicate: verifies
+    object: MR-0003REQ-0060
+
+  - subject: MR-0003REQ-0050
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0003REQ-0050
+
+  - subject: MR-0003REQ-0054
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0003REQ-0054
 

@@ -1,0 +1,234 @@
+schema_version: 1
+registry_id: child-project-governance-profiles
+name: Provisional child project governance profiles
+purpose: Provisional profile catalog composed from the mandatory baseline, capability facets and gate applicability classes.
+
+governance_profiles:
+  - id: platform_self_governance
+    label: threat-forge platform self-governance
+    description: Reference self-governed profile for threat-forge capabilities implemented by the platform repository.
+    target_scope: platform_self
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+      - source_code
+      - backend_api
+      - frontend_ui
+      - persistent_storage
+      - child_project_management
+      - runtime_operations
+    optional_capabilities:
+      - ai_pipeline
+      - rag_pipeline
+      - agentic_tools
+      - deployment
+      - ci_cd
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - code_traceability
+      - openapi_contract
+      - frontend_build
+      - runtime_tests
+      - child_project_demo_workspace_reset
+      - child_project_demo_sqlite_registration
+      - child_project_management_api_self_test
+      - child_governance_registry_contract
+
+  - id: demo_child_project_governance
+    label: Demo child project governance
+    description: Resettable demo child-project profile used to exercise child-project validation surfaces safely.
+    target_scope: demo_child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+    optional_capabilities:
+      - source_code
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - child_project_demo_workspace_reset
+
+  - id: documentation_only_child_project
+    label: Documentation-only child project
+    description: Child project with governed documentation and no implementation artifacts yet.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+    optional_capabilities:
+      - sensitive_data
+      - regulated_data
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+
+  - id: code_child_project
+    label: Code child project
+    description: Child project containing implementation code without assuming API, UI or AI capabilities.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+      - source_code
+    optional_capabilities:
+      - persistent_storage
+      - ci_cd
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - code_traceability
+
+  - id: api_child_project
+    label: API child project
+    description: Child project containing backend API capability and source code.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+      - source_code
+      - backend_api
+    optional_capabilities:
+      - persistent_storage
+      - external_integrations
+      - sensitive_data
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - code_traceability
+      - openapi_contract
+
+  - id: frontend_child_project
+    label: Frontend child project
+    description: Child project containing frontend UI capability and source code.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+      - source_code
+      - frontend_ui
+    optional_capabilities:
+      - backend_api
+      - external_integrations
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - code_traceability
+      - frontend_build
+
+  - id: full_stack_child_project
+    label: Full-stack child project
+    description: Child project combining backend API, frontend UI, storage and runtime operations.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+      - source_code
+      - backend_api
+      - frontend_ui
+      - persistent_storage
+    optional_capabilities:
+      - runtime_operations
+      - external_integrations
+      - ci_cd
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - code_traceability
+      - openapi_contract
+      - frontend_build
+      - runtime_tests
+
+  - id: ai_enabled_child_project
+    label: AI-enabled child project
+    description: Child project containing AI, RAG or agentic capabilities in addition to the mandatory baseline.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+      - source_code
+      - ai_pipeline
+    optional_capabilities:
+      - rag_pipeline
+      - agentic_tools
+      - backend_api
+      - frontend_ui
+      - sensitive_data
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence
+      - code_traceability
+      - taxonomy_usage_visibility
+
+  - id: custom_child_project
+    label: Custom child project
+    description: Explicit fallback profile for mixed or not-yet-modeled project shapes.
+    target_scope: child_project
+    baseline_required: true
+    provisional: true
+    required_capabilities:
+      - project_model
+    optional_capabilities:
+      - source_code
+      - backend_api
+      - frontend_ui
+      - data_pipeline
+      - ai_pipeline
+      - deployment
+      - ci_cd
+    gates:
+      - project_model_skeleton
+      - graph_format
+      - requirement_registry_fields
+      - adr_registry_fields
+      - governed_body_format
+      - orphan_governed_bodies
+      - threat_analysis_lifecycle_presence

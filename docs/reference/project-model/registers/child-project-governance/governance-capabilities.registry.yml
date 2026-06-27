@@ -1,0 +1,106 @@
+schema_version: 1
+registry_id: child-project-governance-capabilities
+name: Child project governance capabilities
+purpose: Controlled capability vocabulary used by child project governance profiles and gate applicability planning.
+
+capability_states:
+  - id: declared
+    label: Declared
+    description: Capability is explicitly declared by the project model.
+
+  - id: detected
+    label: Detected
+    description: Capability is detected from governed repository evidence.
+
+  - id: not_present
+    label: Not present
+    description: Capability is explicitly absent or not detected with sufficient evidence.
+
+  - id: unknown
+    label: Unknown
+    description: Capability has not yet been evaluated.
+
+  - id: unsupported
+    label: Unsupported
+    description: Capability exists but threat-forge has no validator or adapter for it yet.
+
+governance_capabilities:
+  - id: project_model
+    label: Project Model
+    description: Project contains the governed Doc-as-Code project model skeleton, registries, graph and body files.
+    category: baseline
+
+  - id: source_code
+    label: Source code
+    description: Project contains implementation source files, scripts, tools or runtime code that must be traceable when present.
+    category: implementation
+
+  - id: backend_api
+    label: Backend API
+    description: Project exposes backend service endpoints or contracts such as OpenAPI or AsyncAPI.
+    category: implementation
+
+  - id: frontend_ui
+    label: Frontend UI
+    description: Project contains a user interface such as a browser frontend or application shell.
+    category: implementation
+
+  - id: persistent_storage
+    label: Persistent storage
+    description: Project persists operational or application state in files, SQLite, database adapters or external stores.
+    category: runtime
+
+  - id: data_pipeline
+    label: Data pipeline
+    description: Project ingests, transforms, exports or schedules data processing flows.
+    category: runtime
+
+  - id: ai_pipeline
+    label: AI pipeline
+    description: Project contains model, prompt, inference, evaluation or AI runtime behavior.
+    category: analysis
+
+  - id: rag_pipeline
+    label: RAG pipeline
+    description: Project retrieves contextual knowledge through indexes, vector stores or document sources for AI use.
+    category: analysis
+
+  - id: agentic_tools
+    label: Agentic tools
+    description: Project lets AI or automation invoke tools, actions or side-effecting operations.
+    category: analysis
+
+  - id: deployment
+    label: Deployment
+    description: Project contains deployment descriptors, runtime environment configuration or infrastructure definitions.
+    category: operations
+
+  - id: ci_cd
+    label: CI/CD
+    description: Project contains automation workflows for build, test, release or deployment.
+    category: operations
+
+  - id: external_integrations
+    label: External integrations
+    description: Project communicates with third-party systems, APIs, services or external trust boundaries.
+    category: runtime
+
+  - id: sensitive_data
+    label: Sensitive data
+    description: Project handles data with confidentiality, privacy, security or business sensitivity.
+    category: analysis
+
+  - id: regulated_data
+    label: Regulated data
+    description: Project handles data governed by explicit legal, compliance or policy constraints.
+    category: analysis
+
+  - id: runtime_operations
+    label: Runtime operations
+    description: Project has operational runtime concerns such as monitoring, logs, jobs, incidents or production support.
+    category: operations
+
+  - id: child_project_management
+    label: Child project management
+    description: threat-forge platform capability for registering, viewing, checking and reporting managed child projects.
+    category: platform

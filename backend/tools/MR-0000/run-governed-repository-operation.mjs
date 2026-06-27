@@ -15,10 +15,13 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0000REQ-0023
  * @implementsRequirement MR-0003REQ-0022
  * @implementsRequirement MR-0003REQ-0029
+ * @implementsRequirement MR-0003REQ-0050
+ * @implementsRequirement MR-0003REQ-0054
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @derivedFromDecision MR-0000/ADR-0008
  * @derivedFromDecision MR-0003/ADR-0004
+ * @derivedFromDecision MR-0003/ADR-0010
  * @macroRequirement MR-0000
  * @macroRequirement MR-0003
  *
@@ -93,6 +96,11 @@ const gateCommands = [
     label: "Child project management API serve self-test",
     command: "npm",
     args: ["run", "docs:child-project-management-api-serve"],
+  },
+  {
+    label: "Child project governance registry contract",
+    command: "npm",
+    args: ["run", "docs:child-project-governance-registries"],
   },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
@@ -274,6 +282,8 @@ if (mode === "--check") {
   console.log("Implemented requirement: MR-0000REQ-0021");
   console.log("Implemented requirement: MR-0000REQ-0023");
   console.log("Implemented requirement: MR-0003REQ-0022");
+console.log("Implemented requirement: MR-0003REQ-0050");
+console.log("Implemented requirement: MR-0003REQ-0054");
   process.exit(0);
 }
 
@@ -289,3 +299,5 @@ console.log("Implemented requirement: MR-0000REQ-0019");
 console.log("Implemented requirement: MR-0000REQ-0021");
 console.log("Implemented requirement: MR-0000REQ-0023");
 console.log("Implemented requirement: MR-0003REQ-0022");
+console.log("Implemented requirement: MR-0003REQ-0050");
+console.log("Implemented requirement: MR-0003REQ-0054");

@@ -1,0 +1,258 @@
+schema_version: 1
+registry_id: child-project-governance-gates
+name: Child project governance gates
+purpose: Initial governed gate catalog used to validate profile/applicability registry contracts before full orchestration exists.
+
+governance_gates:
+  - id: project_model_skeleton
+    label: Project Model skeleton
+    description: Validates that a managed target exposes the standard governed Project Model skeleton.
+    owner_macro_requirement: MR-0003
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+      - demo_child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - threat_forge_repo_check
+      - demo_child_project_workspace
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: graph_format
+    label: Graph format
+    description: Validates governed graph registry shape and graph node/relation structure.
+    owner_macro_requirement: MR-0001
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - threat_forge_repo_check
+      - project_model_pages
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: requirement_registry_fields
+    label: Requirement registry fields
+    description: Validates governed Requirement registry fields, controlled values and ADR references.
+    owner_macro_requirement: MR-0001
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - threat_forge_repo_check
+      - negative_fixtures
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: adr_registry_fields
+    label: ADR registry fields
+    description: Validates governed ADR registry fields and basic decision metadata.
+    owner_macro_requirement: MR-0001
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - threat_forge_repo_check
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: governed_body_format
+    label: Governed body format
+    description: Validates ADR and Requirement body formats through governed body profiles.
+    owner_macro_requirement: MR-0001
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - threat_forge_repo_check
+      - project_model_pages
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: orphan_governed_bodies
+    label: Orphan governed bodies
+    description: Validates that governed Markdown body files are referenced by project-model registries.
+    owner_macro_requirement: MR-0000
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - threat_forge_repo_check
+    result_when_not_applicable: fail
+    unsupported_behavior: fail
+
+  - id: threat_analysis_lifecycle_presence
+    label: Threat Analysis lifecycle presence
+    description: Ensures a managed child project has a Threat Analysis lifecycle record or planned placeholder.
+    owner_macro_requirement: MR-0003
+    applicability_class: always_required
+    target_scopes:
+      - platform_self
+      - child_project
+      - demo_child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - registry_contract_validator
+    result_when_not_applicable: fail
+    unsupported_behavior: planned
+
+  - id: code_traceability
+    label: Code traceability
+    description: Validates decision-to-code traceability when source code artifacts are present.
+    owner_macro_requirement: MR-0001
+    applicability_class: capability_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - source_code
+    validation_surfaces:
+      - threat_forge_repo_check
+      - negative_fixtures
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: warning
+
+  - id: openapi_contract
+    label: OpenAPI contract
+    description: Validates OpenAPI contract structure for backend API capabilities.
+    owner_macro_requirement: MR-0000
+    applicability_class: capability_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - backend_api
+    validation_surfaces:
+      - threat_forge_repo_check
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: warning
+
+  - id: frontend_build
+    label: Frontend build
+    description: Validates frontend build and generated snapshot when a frontend UI capability is present.
+    owner_macro_requirement: MR-0002
+    applicability_class: capability_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - frontend_ui
+    validation_surfaces:
+      - threat_forge_repo_check
+      - generated_snapshot
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: warning
+
+  - id: runtime_tests
+    label: Runtime tests
+    description: Executes runtime tests for implemented runtime service capabilities.
+    owner_macro_requirement: MR-0002
+    applicability_class: capability_required
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - runtime_operations
+    validation_surfaces:
+      - threat_forge_repo_check
+      - runtime_unit_tests
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: warning
+
+  - id: child_project_demo_workspace_reset
+    label: Demo child project workspace reset
+    description: Validates demo child project reset reproducibility and skeleton validation.
+    owner_macro_requirement: MR-0003
+    applicability_class: demo_required
+    target_scopes:
+      - platform_self
+      - demo_child_project
+    required_capabilities:
+      - child_project_management
+    validation_surfaces:
+      - threat_forge_repo_check
+      - demo_child_project_workspace
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: fail
+
+  - id: child_project_demo_sqlite_registration
+    label: Demo child project SQLite registration
+    description: Validates platform operational registration of the demo child project through SQLite storage.
+    owner_macro_requirement: MR-0003
+    applicability_class: platform_only
+    target_scopes:
+      - platform_self
+    required_capabilities:
+      - child_project_management
+      - persistent_storage
+    validation_surfaces:
+      - threat_forge_repo_check
+      - temporary_sqlite_self_test
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: fail
+
+  - id: child_project_management_api_self_test
+    label: Child Project Management API self-test
+    description: Validates the read-only Child Project Management API serve command.
+    owner_macro_requirement: MR-0003
+    applicability_class: platform_only
+    target_scopes:
+      - platform_self
+    required_capabilities:
+      - child_project_management
+      - backend_api
+    validation_surfaces:
+      - threat_forge_repo_check
+      - child_project_management_api_self_test
+    result_when_not_applicable: not_applicable
+    unsupported_behavior: fail
+
+  - id: taxonomy_usage_visibility
+    label: Taxonomy usage visibility
+    description: Plans validation that governed taxonomy values expose accepted/deprecated state, descriptions and usage surfaces.
+    owner_macro_requirement: MR-0003
+    applicability_class: planned_until_method_available
+    target_scopes:
+      - platform_self
+      - child_project
+    required_capabilities:
+      - project_model
+    validation_surfaces:
+      - registry_contract_validator
+    result_when_not_applicable: planned
+    unsupported_behavior: planned
+
+  - id: child_governance_registry_contract
+    label: Child governance registry contract
+    description: Validates the initial child project governance registry family and cross-registry references.
+    owner_macro_requirement: MR-0003
+    applicability_class: platform_self_required
+    target_scopes:
+      - platform_self
+    required_capabilities:
+      - child_project_management
+    validation_surfaces:
+      - threat_forge_repo_check
+      - registry_contract_validator
+      - negative_fixtures
+    result_when_not_applicable: fail
+    unsupported_behavior: fail

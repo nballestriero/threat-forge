@@ -1136,3 +1136,20 @@ This step intentionally does not add concrete registry files, schemas, validator
 
 The next safe implementation step is to add the first child-project governance registry files and a validator with positive and negative fixtures before creating an execution-plan preview tool.
 
+
+## Child Project Governance Registry Files and Validator Micropasso
+
+This mixed documentation/tooling micropasso implements the first concrete child-project governance registry family after `MR-0003/ADR-0011` without adding the final child-project gate orchestrator.
+
+The implementation introduces:
+
+- governed registry files under `docs/reference/project-model/registers/child-project-governance/` for applicability classes, capabilities, governance gates, governance profiles and validation surfaces;
+- a deterministic validator `backend/tools/MR-0003/check-child-project-governance-registries.mjs` for required registry shape and cross-registry references;
+- negative fixtures proving that missing gate validation surfaces, unknown gate capabilities and unknown profile gate references fail closed;
+- a root script `npm run docs:child-project-governance-registries`;
+- inclusion of the validator in the governed repository runner so the registry contract is dogfooded by `npm run repo:check`;
+- graph traceability from `MR-0003REQ-0055` through `MR-0003REQ-0060` to the validator and verification fixture surface.
+
+This step intentionally does not execute child-project gates, detect capabilities, generate a gate execution plan, implement final gate enforcement, add UI rendering, mutate child-project repositories, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe implementation step is a read-only execution-plan preview that reads these registries and emits gate applicability, planned/not-applicable/unsupported/pass/fail status, reason and evidence for threat-forge and the demo child project without enforcing final methodology-specific gates.

@@ -1,0 +1,80 @@
+schema_version: 1
+registry_id: child-project-governance-gate-applicability-classes
+name: Child project governance gate applicability classes
+purpose: Controlled applicability and execution-result vocabulary for child project governance gate planning.
+
+applicability_classes:
+  - id: always_required
+    label: Always required
+    description: Gate applies to every managed target before capability-specific gates are considered.
+    default_when_not_triggered: fail
+
+  - id: capability_required
+    label: Capability required
+    description: Gate applies when declared or detected capabilities match the gate requirements.
+    default_when_not_triggered: not_applicable
+
+  - id: declared_if_present
+    label: Declared if present
+    description: Capability or artifact must be declared when present in the project.
+    default_when_not_triggered: not_applicable
+
+  - id: planned_until_method_available
+    label: Planned until method available
+    description: Gate is applicable by governance model but remains planned until the corresponding method implementation exists.
+    default_when_not_triggered: planned
+
+  - id: platform_self_required
+    label: Platform self required
+    description: Gate must be exercised against threat-forge itself when the platform implements the governed capability.
+    default_when_not_triggered: fail
+
+  - id: platform_only
+    label: Platform only
+    description: Gate applies only to threat-forge platform operational capabilities and not to child project canonical content.
+    default_when_not_triggered: not_applicable
+
+  - id: child_project_required
+    label: Child project required
+    description: Gate applies to managed child projects when the child governance profile selects it.
+    default_when_not_triggered: fail
+
+  - id: demo_required
+    label: Demo required
+    description: Gate must have a demo child project or fixture validation surface before it is used for production child project governance.
+    default_when_not_triggered: fail
+
+  - id: not_applicable_with_evidence
+    label: Not applicable with evidence
+    description: Gate may be skipped only when the execution plan records a reason and evidence for non-applicability.
+    default_when_not_triggered: not_applicable
+
+  - id: unsupported_with_warning
+    label: Unsupported with warning
+    description: Gate detects a present capability that threat-forge cannot yet validate and must report a warning rather than silent success.
+    default_when_not_triggered: warning
+
+execution_result_statuses:
+  - id: pass
+    label: Pass
+    description: Gate executed and succeeded.
+
+  - id: fail
+    label: Fail
+    description: Gate executed or was mandatory and failed.
+
+  - id: warning
+    label: Warning
+    description: Gate produced a non-blocking warning or unsupported capability notice.
+
+  - id: planned
+    label: Planned
+    description: Gate is applicable by model but waits for a later analysis or tooling implementation.
+
+  - id: not_applicable
+    label: Not applicable
+    description: Gate does not apply and must include reason and evidence.
+
+  - id: unsupported
+    label: Unsupported
+    description: Capability is present but no implementation adapter exists yet.

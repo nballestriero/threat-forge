@@ -1,0 +1,59 @@
+schema_version: 1
+registry_id: child-project-governance-validation-surfaces
+name: Child project governance validation surfaces
+purpose: Controlled validation surfaces proving that governance gates developed by threat-forge are exercised inside threat-forge.
+
+validation_surfaces:
+  - id: threat_forge_repo_check
+    label: Threat-forge repository check
+    description: Gate is exercised by the governed repository check command.
+    evidence_kind: command
+    command: npm run repo:check
+
+  - id: project_model_pages
+    label: Project Model pages generation
+    description: Gate is visible through generated project-model page counts and collection rendering.
+    evidence_kind: command
+    command: npm run docs:pages
+
+  - id: negative_fixtures
+    label: Negative fixtures
+    description: Gate has isolated invalid fixtures proving fail-closed diagnostics.
+    evidence_kind: fixture
+    command: self-test fixture execution
+
+  - id: demo_child_project_workspace
+    label: Demo child project workspace
+    description: Gate is exercised against the resettable demo child project workspace or seed.
+    evidence_kind: demo_workspace
+    command: npm run docs:child-project-demo-workspace
+
+  - id: temporary_sqlite_self_test
+    label: Temporary SQLite self-test
+    description: Gate uses a temporary isolated SQLite database and leaves default runtime state untouched.
+    evidence_kind: self_test
+    command: npm run docs:child-project-demo-registration
+
+  - id: child_project_management_api_self_test
+    label: Child Project Management API self-test
+    description: Gate starts a bounded local API server on an ephemeral port and validates read-only endpoints.
+    evidence_kind: self_test
+    command: npm run docs:child-project-management-api-serve
+
+  - id: generated_snapshot
+    label: Generated frontend snapshot
+    description: Gate is exercised by the Project Documentation Explorer generated frontend snapshot.
+    evidence_kind: generated_artifact
+    command: npm run frontend:project-documentation-explorer:snapshot
+
+  - id: runtime_unit_tests
+    label: Runtime unit tests
+    description: Gate is exercised by runtime tests in the governed repository check.
+    evidence_kind: test
+    command: npm run test:runtime
+
+  - id: registry_contract_validator
+    label: Child project governance registry contract validator
+    description: Gate is exercised by the registry contract validator and its negative fixtures.
+    evidence_kind: validator
+    command: npm run docs:child-project-governance-registries

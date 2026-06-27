@@ -34,6 +34,7 @@
     "child-project:demo:reset": "node backend/tools/MR-0003/reset-demo-child-project-workspace.mjs --reset",
     "docs:child-project-demo-registration": "node backend/tools/MR-0003/register-demo-child-project.mjs --self-test",
     "docs:child-project-management-api-serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs --self-test",
+    "docs:child-project-governance-registries": "node backend/tools/MR-0003/check-child-project-governance-registries.mjs",
     "child-project:demo:register": "node backend/tools/MR-0003/register-demo-child-project.mjs --register",
     "backend:child-project-management:serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs",
     "backend:project-documentation-explorer:serve:demo": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs --root-dir .threat-forge/workspaces/demo-child-project --port 4174"
