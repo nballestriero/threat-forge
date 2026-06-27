@@ -121,6 +121,13 @@ export const childProjectOperationalStateListSchema = z.object({
   items: z.array(childProjectOperationalStateSchema).default([]),
 });
 
+export const childProjectManagementRouteDescriptorSchema = z.object({
+  method: z.enum(["GET"]),
+  path: z.string().min(1),
+  required_capability: z.string().min(1),
+  description: z.string().min(1),
+});
+
 /**
  * Validates a child project management record.
  *

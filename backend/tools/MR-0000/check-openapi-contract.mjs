@@ -13,9 +13,9 @@ import { fileURLToPath } from "node:url";
  * This checker validates the first governed OpenAPI contract without adding a
  * new parser or linter dependency. It intentionally performs deterministic
  * structural checks over the current contract boundary: the contract file must
- * exist, expose only approved read-only Project Documentation Explorer paths,
- * declare operation metadata and responses, and retain the required component
- * schemas used by the frontend-safe view-models.
+ * exist, expose only approved read-only Project Documentation Explorer and
+ * child project management paths, declare operation metadata and responses, and
+ * retain the required component schemas used by the frontend-safe view-models.
  *
  * Side effects: reads the OpenAPI contract and graph registries, writes
  * diagnostics to stdout/stderr, and exits non-zero when the contract drifts.
@@ -32,6 +32,7 @@ const contractProjectPath = "docs/reference/api/openapi/threat-forge.openapi.yml
 const contractPath = path.join(rootDir, contractProjectPath);
 const graph0000Path = path.join(rootDir, "docs", "reference", "project-model", "registers", "graph", "GRAPH-0000.graph.yml");
 const graph0002Path = path.join(rootDir, "docs", "reference", "project-model", "registers", "graph", "GRAPH-0002.graph.yml");
+const graph0003Path = path.join(rootDir, "docs", "reference", "project-model", "registers", "graph", "GRAPH-0003.graph.yml");
 const errors = [];
 
 const expectedOperations = [
@@ -53,6 +54,18 @@ const expectedOperations = [
     responseSchema: "DocumentationDetailViewModel",
     requiredResponses: ["'200'", "'403'", "'404'"],
   },
+  {
+    path: "/api/child-projects",
+    operationId: "listChildProjects",
+    responseSchema: "ChildProjectOperationalStateList",
+    requiredResponses: ["'200'", "'403'"],
+  },
+  {
+    path: "/api/child-projects/{id}",
+    operationId: "getChildProject",
+    responseSchema: "ChildProjectOperationalState",
+    requiredResponses: ["'200'", "'403'", "'404'"],
+  },
 ];
 
 const requiredSchemas = [
@@ -71,6 +84,15 @@ const requiredSchemas = [
   "DocumentationExplorerViewModel",
   "DocumentationFiltersViewModel",
   "DocumentationDetailViewModel",
+  "ChildProjectRepositoryLocation",
+  "ChildProjectModelProfile",
+  "ChildProjectLifecyclePolicy",
+  "ChildProjectRecord",
+  "ChildProjectGateResult",
+  "ChildProjectViolation",
+  "ChildProjectCheckRun",
+  "ChildProjectOperationalState",
+  "ChildProjectOperationalStateList",
   "ErrorResponse",
 ];
 
@@ -83,6 +105,9 @@ const requiredGraphFragments = [
   "id: MR-0002API-0001",
   `path: ${contractProjectPath}`,
   "subject: MR-0002REQ-0045\n    predicate: implemented_by\n    object: MR-0002API-0001",
+  "id: MR-0003API-0001",
+  `path: ${contractProjectPath}`,
+  "subject: MR-0003REQ-0014\n    predicate: implemented_by\n    object: MR-0003API-0001",
 ];
 
 /**
@@ -314,8 +339,9 @@ function validateComponents(componentsSection) {
 function validateGraphTraceability() {
   if (!requireFile(graph0000Path, "MR-0000 graph registry")) return;
   if (!requireFile(graph0002Path, "MR-0002 graph registry")) return;
+  if (!requireFile(graph0003Path, "MR-0003 graph registry")) return;
 
-  const graphText = `${readText(graph0000Path)}\n${readText(graph0002Path)}`;
+  const graphText = `${readText(graph0000Path)}\n${readText(graph0002Path)}\n${readText(graph0003Path)}`;
   for (const fragment of requiredGraphFragments) {
     if (!graphText.includes(fragment)) {
       addError(`Project graph is missing required OpenAPI validation fragment: ${fragment}`);

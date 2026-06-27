@@ -80,6 +80,48 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /api/child-projects:
+    get:
+      operationId: listChildProjects
+      summary: List managed child projects.
+      description: Returns operational lifecycle state for child projects managed by the platform.
+      tags:
+        - ChildProjectManagement
+      responses:
+        '200':
+          description: Child project operational state list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildProjectOperationalStateList'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/child-projects/{id}:
+    get:
+      operationId: getChildProject
+      summary: Get one managed child project.
+      description: Returns operational lifecycle state for one child project managed by the platform.
+      tags:
+        - ChildProjectManagement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Managed child project identifier.
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Child project operational state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChildProjectOperationalState'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   parameters:
     MacroRequirementFilter:
@@ -516,6 +558,237 @@ components:
         - incoming_relations
         - outgoing_relations
         - body
+    ChildProjectRepositoryLocation:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - git
+            - local
+        url:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        local_path:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        default_branch:
+          type: string
+          minLength: 1
+      required:
+        - kind
+        - url
+        - local_path
+        - default_branch
+    ChildProjectModelProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        root:
+          type: string
+          minLength: 1
+        governance_profile:
+          type: string
+          minLength: 1
+      required:
+        - root
+        - governance_profile
+    ChildProjectLifecyclePolicy:
+      type: object
+      additionalProperties: false
+      properties:
+        document_first_required:
+          type: boolean
+        code_traceability_required:
+          type: boolean
+        threat_analysis_pre_code_required:
+          type: string
+          enum:
+            - reserved
+            - required
+            - disabled
+        governed_commit_push_required:
+          type: boolean
+        direct_push_allowed:
+          type: boolean
+      required:
+        - document_first_required
+        - code_traceability_required
+        - threat_analysis_pre_code_required
+        - governed_commit_push_required
+        - direct_push_allowed
+    ChildProjectRecord:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        repository:
+          $ref: '#/components/schemas/ChildProjectRepositoryLocation'
+        project_model:
+          $ref: '#/components/schemas/ChildProjectModelProfile'
+        lifecycle_policy:
+          $ref: '#/components/schemas/ChildProjectLifecyclePolicy'
+        archived:
+          type: boolean
+        created_at:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        updated_at:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+      required:
+        - id
+        - name
+        - repository
+        - project_model
+        - lifecycle_policy
+        - archived
+        - created_at
+        - updated_at
+    ChildProjectGateResult:
+      type: object
+      additionalProperties: false
+      properties:
+        gate_name:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          enum:
+            - pass
+            - fail
+            - warning
+            - skipped
+            - reserved
+            - unknown
+        summary:
+          type: string
+      required:
+        - gate_name
+        - status
+        - summary
+    ChildProjectViolation:
+      type: object
+      additionalProperties: false
+      properties:
+        gate_name:
+          type: string
+          minLength: 1
+        severity:
+          type: string
+          enum:
+            - blocking
+            - warning
+            - info
+        code:
+          type: string
+          minLength: 1
+        path:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        message:
+          type: string
+          minLength: 1
+      required:
+        - gate_name
+        - severity
+        - code
+        - path
+        - message
+    ChildProjectCheckRun:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        child_project_id:
+          type: string
+          minLength: 1
+        checked_at:
+          type: string
+          minLength: 1
+        repository_head:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        branch:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        overall_status:
+          type: string
+          enum:
+            - pass
+            - fail
+            - warning
+            - skipped
+            - reserved
+            - unknown
+        gate_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildProjectGateResult'
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildProjectViolation'
+      required:
+        - id
+        - child_project_id
+        - checked_at
+        - repository_head
+        - branch
+        - overall_status
+        - gate_results
+        - violations
+    ChildProjectOperationalState:
+      type: object
+      additionalProperties: false
+      properties:
+        child_project:
+          $ref: '#/components/schemas/ChildProjectRecord'
+        latest_check_run:
+          oneOf:
+            - $ref: '#/components/schemas/ChildProjectCheckRun'
+            - type: 'null'
+      required:
+        - child_project
+        - latest_check_run
+    ChildProjectOperationalStateList:
+      type: object
+      additionalProperties: false
+      properties:
+        capabilities:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildProjectOperationalState'
+      required:
+        - capabilities
+        - items
     ErrorResponse:
       type: object
       additionalProperties: false

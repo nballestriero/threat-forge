@@ -875,3 +875,20 @@ The implementation introduces:
 - graph traceability from `MR-0003REQ-0025` and `MR-0003REQ-0026` to the service module and verification artifact.
 
 The service preserves the selected `Controller -> Service -> Port -> Adapter` pattern. SQLite remains inside the adapter added in the previous micropasso; canonical child project Project Model registries, ADR, requirements, bodies and graphs remain in the child repository rather than in platform storage.
+
+## Child Project Management Read-only API Backend Micropasso
+
+This implementation micropasso exposes the first read-only backend API boundary for child-project management operational state without adding frontend UI, child-project creation actions, repository cloning, skeleton generation, check execution or governed child-project commit/push.
+
+The implementation introduces:
+
+- a typed child-project management error boundary for stable HTTP error mapping;
+- a bootstrap registered-user access policy for read-only child project list/status capabilities;
+- a child-project management controller that depends on the service and policy only;
+- read-only route descriptors for `GET /api/child-projects` and `GET /api/child-projects/:id`;
+- a native Node.js read-only HTTP adapter for the route descriptors;
+- a child-project management module composition root that wires service, store port, SQLite adapter, policy, controller and routes;
+- OpenAPI contract coverage for the child-project management read-only endpoints;
+- runtime tests proving route composition, capability enforcement, read-only HTTP behavior, list responses, detail responses and not-found mapping.
+
+The API remains read-only. It does not register child projects through HTTP, write checks through HTTP, create SQLite records directly in controllers, run child-project validators, generate skeletons, clone repositories, mutate child project Project Model files, perform Git operations, add UI routes or implement final dynamic RBAC persistence.
