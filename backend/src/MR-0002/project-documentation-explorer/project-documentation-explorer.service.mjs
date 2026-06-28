@@ -25,6 +25,8 @@ import {
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0050
  * @implementsRequirement MR-0002REQ-0054
+ * @implementsRequirement MR-0002REQ-0055
+ * @implementsRequirement MR-0002REQ-0056
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
@@ -47,7 +49,7 @@ import {
 /**
  * @typedef {{mr: string[], kind: string[], status: string[], requirement_type: string[], implementation_state: string[], acceptance_state: string[], q: string}} DocumentationQuery
  * @typedef {{kind: string, path?: string, id?: string}} SourceReference
- * @typedef {Record<string, unknown> & {id: string, local_id?: string, kind: string, title: string, macro_requirement_id?: string, status?: string, requirement_type?: string, decision_type?: string, priority?: string, implementation_state: string, acceptance_state: string, related_requirement_ids: string[], related_adr_ids: string[], source_references: SourceReference[]}} DocumentationItem
+ * @typedef {Record<string, unknown> & {id: string, local_id?: string, kind: string, title: string, macro_requirement_id?: string, status?: string, requirement_type?: string, decision_type?: string, priority?: string, taxonomy_group_id?: string, taxonomy_value_count?: number, implementation_state: string, acceptance_state: string, related_requirement_ids: string[], related_adr_ids: string[], source_references: SourceReference[]}} DocumentationItem
  * @typedef {{format: "markdown", path: string, content_markdown: string, available: boolean, missing_reason?: string}} DocumentationBodyViewModel
  * @typedef {import("./project-model-source.port.mjs").ProjectModelSourcePort} ProjectModelSourcePort
  * @typedef {import("./project-model-source.port.mjs").ProjectModelSourceSnapshot} ProjectModelSourceSnapshot
@@ -159,6 +161,104 @@ function sourceReference(kind, sourcePath) {
   return normalized ? [{ kind, path: normalized }] : [];
 }
 
+
+/**
+ * Creates a safe string array from unknown values.
+ *
+ * @param {unknown} value - Candidate scalar or array.
+ * @returns {string[]} Normalized strings.
+ */
+function toStringArray(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map((entry) => String(entry ?? "").trim()).filter(Boolean);
+}
+
+/**
+ * Builds a readable label from a governed id when no explicit label exists.
+ *
+ * @param {unknown} value - Governed id or label value.
+ * @returns {string} Human-readable fallback label.
+ */
+function toDisplayLabel(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "Unknown";
+  return raw
+    .replaceAll("_", " ")
+    .replace(/\b\w/gu, (letter) => letter.toUpperCase());
+}
+
+/**
+ * Normalizes a taxonomy value registry record for UI-safe explanations.
+ *
+ * @param {Record<string, unknown>} value - Raw taxonomy value record.
+ * @returns {Record<string, unknown>} Normalized taxonomy value explanation.
+ */
+function normalizeTaxonomyValueExplanation(value) {
+  const id = String(value.id ?? "").trim();
+  const label = String(value.label ?? value.name ?? toDisplayLabel(id)).trim();
+  const explanation = {
+    id,
+    label: label || id,
+  };
+
+  const description = String(value.description ?? "").trim();
+  if (description) explanation.description = description;
+
+  const valueFunction = String(value.function ?? "").trim();
+  if (valueFunction) explanation.function = valueFunction;
+
+  if (value.ui && typeof value.ui === "object" && !Array.isArray(value.ui)) explanation.ui = value.ui;
+  if (value.security_analysis && typeof value.security_analysis === "object" && !Array.isArray(value.security_analysis)) {
+    explanation.security_analysis = value.security_analysis;
+  }
+
+  return explanation;
+}
+
+/**
+ * Builds a taxonomy group index by taxonomy id.
+ *
+ * @param {Array<Record<string, unknown>>} taxonomies - Snapshot taxonomy groups.
+ * @returns {Map<string, Record<string, unknown>>} Taxonomy group map.
+ */
+function buildTaxonomyIndex(taxonomies) {
+  const index = new Map();
+  for (const taxonomy of taxonomies ?? []) {
+    const id = String(taxonomy.id ?? "").trim();
+    if (id) index.set(id, taxonomy);
+  }
+  return index;
+}
+
+/**
+ * Builds a taxonomy detail view-model for taxonomy documentation entities.
+ *
+ * @param {DocumentationItem} item - Selected documentation item.
+ * @param {Map<string, Record<string, unknown>>} taxonomyIndex - Taxonomy group index.
+ * @returns {Record<string, unknown>|null} Taxonomy detail payload or null.
+ */
+function buildTaxonomyDetail(item, taxonomyIndex) {
+  if (item.kind !== "taxonomy") return null;
+  const taxonomyId = String(item.taxonomy_group_id ?? item.id ?? "").trim();
+  const taxonomy = taxonomyIndex.get(taxonomyId);
+  if (!taxonomy) return null;
+
+  const values = Array.isArray(taxonomy.values)
+    ? taxonomy.values
+        .filter((value) => value && typeof value === "object" && !Array.isArray(value))
+        .map((value) => normalizeTaxonomyValueExplanation(/** @type {Record<string, unknown>} */ (value)))
+        .filter((value) => value.id)
+    : [];
+
+  return {
+    id: taxonomyId,
+    title: String(taxonomy.title ?? toDisplayLabel(taxonomyId)),
+    source_path: normalizeProjectPath(taxonomy.source_path),
+    value_count: values.length,
+    values,
+  };
+}
+
 /**
  * Normalizes source snapshot records into documentation explorer items.
  *
@@ -235,6 +335,8 @@ function buildDocumentationItems(snapshot) {
     id: String(entry.id ?? ""),
     kind: "taxonomy",
     title: String(entry.title ?? entry.id ?? "taxonomy"),
+    taxonomy_group_id: String(entry.id ?? ""),
+    taxonomy_value_count: Array.isArray(entry.values) ? entry.values.length : 0,
     status: "active",
     implementation_state: "not_applicable",
     acceptance_state: "accepted",
@@ -270,7 +372,15 @@ function matchesQuery(item, query) {
 
   const textQuery = String(query.q ?? "").toLowerCase();
   if (!textQuery) return true;
-  return [item.id, item.title, item.status, item.requirement_type, item.decision_type, item.macro_requirement_id]
+  return [
+    item.id,
+    item.title,
+    item.status,
+    item.requirement_type,
+    item.decision_type,
+    item.macro_requirement_id,
+    item.taxonomy_group_id,
+  ]
     .map((value) => String(value ?? "").toLowerCase())
     .some((value) => value.includes(textQuery));
 }
@@ -506,6 +616,7 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
 
       const incoming = snapshot.graphRelations.filter((relation) => relation.object === normalizedId);
       const outgoing = snapshot.graphRelations.filter((relation) => relation.subject === normalizedId);
+      const taxonomyIndex = buildTaxonomyIndex(snapshot.taxonomies ?? []);
 
       return documentationDetailViewModelSchema.parse({
         access: access ?? {
@@ -518,6 +629,7 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
         incoming_relations: incoming,
         outgoing_relations: outgoing,
         body: await loadBodyViewModel(item, sourcePort),
+        taxonomy: buildTaxonomyDetail(item, taxonomyIndex),
       });
     },
   });

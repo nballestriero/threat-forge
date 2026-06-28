@@ -190,3 +190,12 @@ decisions:
     date: 2026-06-26
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0021_body.md
+
+  - id: ADR-0022
+    title: Project Documentation Explorer taxonomy explanation boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-28
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0022_body.md

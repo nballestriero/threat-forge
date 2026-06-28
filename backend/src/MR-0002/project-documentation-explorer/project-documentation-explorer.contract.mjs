@@ -10,6 +10,8 @@ import { z } from "zod";
  * @implementsRequirement MR-0002REQ-0035
  * @implementsRequirement MR-0002REQ-0036
  * @implementsRequirement MR-0002REQ-0037
+ * @implementsRequirement MR-0002REQ-0055
+ * @implementsRequirement MR-0002REQ-0056
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
@@ -63,6 +65,24 @@ export const sourceReferenceSchema = z.object({
   id: z.string().min(1).optional(),
 });
 
+
+export const taxonomyValueExplanationSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().min(1).optional(),
+  function: z.string().min(1).optional(),
+  ui: z.record(z.unknown()).optional(),
+  security_analysis: z.record(z.unknown()).optional(),
+});
+
+export const taxonomyDetailViewModelSchema = z.object({
+  id: z.string().min(1),
+  title: z.string().min(1),
+  source_path: z.string().min(1).optional(),
+  value_count: z.number().int().nonnegative(),
+  values: z.array(taxonomyValueExplanationSchema),
+});
+
 export const accessDecisionSchema = z.object({
   authenticated: z.boolean(),
   role: z.string().min(1).optional(),
@@ -108,6 +128,8 @@ export const documentationItemSchema = z.object({
   local_id: z.string().min(1).optional(),
   kind: entityKindSchema,
   title: z.string().min(1),
+  taxonomy_group_id: z.string().min(1).optional(),
+  taxonomy_value_count: z.number().int().nonnegative().optional(),
   macro_requirement_id: z.string().min(1).optional(),
   status: z.string().min(1).optional(),
   requirement_type: z.string().min(1).optional(),
@@ -162,6 +184,7 @@ export const documentationDetailViewModelSchema = z.object({
     object: z.string().min(1),
   })).default([]),
   body: documentationBodyViewModelSchema.nullable().default(null),
+  taxonomy: taxonomyDetailViewModelSchema.nullable().default(null),
 });
 
 export const documentationRouteDescriptorSchema = z.object({

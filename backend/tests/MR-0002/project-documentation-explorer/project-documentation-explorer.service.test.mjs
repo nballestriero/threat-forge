@@ -19,6 +19,7 @@ import {
  * @verifiesRequirement MR-0002REQ-0030
  * @verifiesRequirement MR-0002REQ-0035
  * @verifiesRequirement MR-0002REQ-0037
+ * @verifiesRequirement MR-0002REQ-0055
  * @derivedFromDecision MR-0000/ADR-0006
  * @macroRequirement MR-0000
  * @macroRequirement MR-0002
@@ -79,6 +80,20 @@ const fixtureSnapshot = Object.freeze({
     {
       id: "implementation_state",
       title: "Implementation state",
+      source_path: "docs/reference/project-model/registers/taxonomies.registry.yml",
+      values: [
+        {
+          id: "implemented",
+          name: "Implemented",
+          description: "The requirement has a governed implementation relation.",
+          function: "Supports filtering implemented requirements in the documentation explorer.",
+          ui: { color_token: "state.implemented" },
+          security_analysis: {
+            applies_to: ["base_analysis"],
+            analysis_hint: "Implemented requirements can provide traceable evidence for analysis readiness.",
+          },
+        },
+      ],
     },
   ],
   graphRelations: [
@@ -167,4 +182,19 @@ test("loads governed body content for detail view-models through the source port
   );
   assert.match(detail.body.content_markdown, /Governed body resolved through the source port/u);
   assert.equal(detail.outgoing_relations.length, 1);
+});
+
+test("loads taxonomy value explanations for taxonomy detail view-models", async () => {
+  const service = createProjectDocumentationExplorerService({ sourcePort: createFixtureSourcePort() });
+  const detail = await service.getDetail({ id: "implementation_state" });
+
+  assert.equal(detail.item.kind, "taxonomy");
+  assert.equal(detail.item.taxonomy_value_count, 1);
+  assert.equal(detail.taxonomy.id, "implementation_state");
+  assert.equal(detail.taxonomy.value_count, 1);
+  assert.equal(detail.taxonomy.values[0].id, "implemented");
+  assert.equal(detail.taxonomy.values[0].label, "Implemented");
+  assert.match(detail.taxonomy.values[0].description, /governed implementation relation/u);
+  assert.equal(detail.taxonomy.values[0].ui.color_token, "state.implemented");
+  assert.deepEqual(detail.taxonomy.values[0].security_analysis.applies_to, ["base_analysis"]);
 });

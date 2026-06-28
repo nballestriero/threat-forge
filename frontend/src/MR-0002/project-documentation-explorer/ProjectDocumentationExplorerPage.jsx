@@ -15,6 +15,7 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0041
  * @implementsRequirement MR-0002REQ-0049
+ * @implementsRequirement MR-0002REQ-0056
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0006
@@ -113,6 +114,88 @@ function EntityList({ items, onSelect }) {
 }
 
 /**
+ * Render a labeled list of string values when values are available.
+ *
+ * @param {{title: string, values?: unknown[]}} props - List props.
+ * @returns {import("react").JSX.Element|null} Rendered list or null.
+ */
+function OptionalValueList({ title, values }) {
+  const normalized = Array.isArray(values) ? values.map((value) => String(value ?? "").trim()).filter(Boolean) : [];
+  if (normalized.length === 0) return null;
+
+  return (
+    <div>
+      <dt>{title}</dt>
+      <dd>{normalized.join(", ")}</dd>
+    </div>
+  );
+}
+
+/**
+ * Render UI and security-analysis metadata for one taxonomy value.
+ *
+ * @param {{value: Record<string, unknown>}} props - Taxonomy value props.
+ * @returns {import("react").JSX.Element} Taxonomy value card.
+ */
+function TaxonomyValueCard({ value }) {
+  const ui = value.ui && typeof value.ui === "object" ? value.ui : null;
+  const securityAnalysis = value.security_analysis && typeof value.security_analysis === "object" ? value.security_analysis : null;
+
+  return (
+    <article className="tf-card">
+      <div className="tf-entity-row__main">
+        <strong>{value.label ?? value.id}</strong>
+        <span>Raw id: {value.id}</span>
+      </div>
+      {value.description ? <p>{String(value.description)}</p> : null}
+      {value.function ? <p><strong>Function:</strong> {String(value.function)}</p> : null}
+      <dl className="tf-metadata-grid">
+        {ui?.icon_token ? <div><dt>Icon token</dt><dd>{String(ui.icon_token)}</dd></div> : null}
+        {ui?.color_token ? <div><dt>Color token</dt><dd>{String(ui.color_token)}</dd></div> : null}
+        {ui?.graph_shape_token ? <div><dt>Graph shape</dt><dd>{String(ui.graph_shape_token)}</dd></div> : null}
+        {ui?.graph_edge_style_token ? <div><dt>Graph edge style</dt><dd>{String(ui.graph_edge_style_token)}</dd></div> : null}
+        <OptionalValueList title="Applies to" values={securityAnalysis?.applies_to} />
+        {securityAnalysis?.analysis_hint ? <div><dt>Analysis hint</dt><dd>{String(securityAnalysis.analysis_hint)}</dd></div> : null}
+      </dl>
+    </article>
+  );
+}
+
+/**
+ * Render taxonomy value explanations for selected taxonomy entities.
+ *
+ * @param {{taxonomy?: Record<string, unknown>|null}} props - Taxonomy detail props.
+ * @returns {import("react").JSX.Element|null} Taxonomy explanation card or null.
+ */
+function TaxonomyDetail({ taxonomy }) {
+  if (!taxonomy) return null;
+  const values = Array.isArray(taxonomy.values) ? taxonomy.values : [];
+
+  return (
+    <Card>
+      <p className="tf-eyebrow">Taxonomy explanation</p>
+      <h3>{taxonomy.title ?? taxonomy.id}</h3>
+      <p>
+        This section explains the governed values in this taxonomy. The text comes from the backend view-model,
+        which is derived from the taxonomy registry; the frontend only renders the supplied meaning.
+      </p>
+      <dl className="tf-metadata-grid">
+        <div><dt>Taxonomy id</dt><dd>{taxonomy.id}</dd></div>
+        <div><dt>Values</dt><dd>{taxonomy.value_count ?? values.length}</dd></div>
+        {taxonomy.source_path ? <div><dt>Source registry</dt><dd>{taxonomy.source_path}</dd></div> : null}
+      </dl>
+      {values.length > 0 ? (
+        <div className="tf-entity-list">
+          {values.map((value) => <TaxonomyValueCard key={value.id} value={value} />)}
+        </div>
+      ) : (
+        <p>No taxonomy values are registered for this taxonomy.</p>
+      )}
+    </Card>
+  );
+}
+
+/**
  * Render selected entity metadata and body.
  *
  * @param {{detail: Record<string, unknown>, onBack: Function}} props - Detail props.
@@ -128,6 +211,7 @@ function EntityDetail({ detail, onBack }) {
     ["Status", item.status],
     ["Requirement type", item.requirement_type],
     ["Priority", item.priority],
+    ["Taxonomy values", item.taxonomy_value_count],
     ["Implementation", item.implementation_state],
     ["Acceptance", item.acceptance_state],
     ["Body path", body.path],
@@ -154,6 +238,7 @@ function EntityDetail({ detail, onBack }) {
           ))}
         </dl>
       </Card>
+      <TaxonomyDetail taxonomy={detail.taxonomy} />
       <Card>
         <h3>Governed body</h3>
         <MarkdownBody markdown={body.content_markdown} />

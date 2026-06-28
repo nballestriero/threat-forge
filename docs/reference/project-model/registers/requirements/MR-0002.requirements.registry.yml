@@ -435,3 +435,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0021
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0054_body.md
+
+  - id: MR-0002REQ-0055
+    title: Project Documentation Explorer taxonomy explanation view-model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0022
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0055_body.md
+
+  - id: MR-0002REQ-0056
+    title: Project Documentation Explorer taxonomy value detail rendering
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0022
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0056_body.md

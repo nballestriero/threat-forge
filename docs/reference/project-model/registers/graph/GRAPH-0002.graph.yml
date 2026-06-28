@@ -476,6 +476,19 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer JSDoc type-check coverage expansion
 
+
+  - id: ADR-0022
+    type: ADR
+    label: Project Documentation Explorer taxonomy explanation boundary
+
+  - id: MR-0002REQ-0055
+    type: Requirement
+    label: Project Documentation Explorer taxonomy explanation view-model
+
+  - id: MR-0002REQ-0056
+    type: Requirement
+    label: Project Documentation Explorer taxonomy value detail rendering
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1712,3 +1725,59 @@ spo_relations:
   - subject: MR-0002TOOL-0001
     predicate: verifies
     object: MR-0002REQ-0054
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0022
+
+  - subject: ADR-0022
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0055
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0056
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0022
+    predicate: justifies
+    object: MR-0002REQ-0055
+
+  - subject: ADR-0022
+    predicate: justifies
+    object: MR-0002REQ-0056
+
+  - subject: MR-0002REQ-0055
+    predicate: implemented_by
+    object: MR-0002SRC-0001
+
+  - subject: MR-0002REQ-0055
+    predicate: implemented_by
+    object: MR-0002SRC-0004
+
+  - subject: MR-0002REQ-0055
+    predicate: implemented_by
+    object: MR-0002API-0001
+
+  - subject: MR-0002REQ-0056
+    predicate: implemented_by
+    object: MR-0002SRC-0018
+
+  - subject: MR-0002REQ-0056
+    predicate: implemented_by
+    object: MR-0002SRC-0004
+
+  - subject: MR-0002TEST-0001
+    predicate: verifies
+    object: MR-0002REQ-0055
+
+  - subject: MR-0002TEST-0001
+    predicate: verifies
+    object: MR-0002REQ-0056
+  - subject: MR-0002REQ-0056
+    predicate: implemented_by
+    object: MR-0002SRC-0001
+
