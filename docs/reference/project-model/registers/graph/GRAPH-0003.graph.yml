@@ -530,6 +530,12 @@ nodes:
     type: Requirement
     label: Governance gate semantic explanation and technical trace separation
 
+  - id: MR-0003UI-0010
+    type: SourceModule
+    label: Shared information popover component
+    path: frontend/src/MR-0002/design-system/InfoPopover.jsx
+
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1859,3 +1865,8 @@ spo_relations:
   - subject: MR-0003REQ-0065
     predicate: implemented_by
     object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0065
+    predicate: implemented_by
+    object: MR-0003UI-0010
+

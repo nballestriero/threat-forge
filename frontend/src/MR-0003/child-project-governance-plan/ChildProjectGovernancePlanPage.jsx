@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Card, EmptyState, SearchInput, SelectField, StatusBadge } from "../../MR-0002/design-system/components.jsx";
 import { Icon } from "../../MR-0002/design-system/Icon.jsx";
+import { InfoPopover } from "../../MR-0002/design-system/InfoPopover.jsx";
 import {
   buildGateStatusFilterOptions,
   filterGovernanceGateRows,
@@ -578,38 +579,15 @@ function ConceptExplanationCard({ title, item, extraRows = [] }) {
  * @returns {import("react").JSX.Element} Compact overview row.
  */
 function GovernanceOverviewInfoRow({ idPrefix, label, summary, ariaLabel, children }) {
-  const [isHelpOpen, setHelpOpen] = useState(false);
-  const helpId = `${idPrefix.replace(/[^a-zA-Z0-9_-]/g, "-")}-help`;
-
   return (
     <article className="tf-governance-overview-row">
       <div className="tf-governance-overview-row__main">
         <span className="tf-governance-overview-row__label">{label}</span>
         <strong>{displayValue(summary)}</strong>
       </div>
-      <div
-        className={isHelpOpen ? "tf-taxonomy-field-help is-open" : "tf-taxonomy-field-help"}
-        onMouseEnter={() => setHelpOpen(true)}
-        onMouseLeave={() => setHelpOpen(false)}
-        onFocus={() => setHelpOpen(true)}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setHelpOpen(false);
-        }}
-      >
-        <button
-          type="button"
-          className="tf-taxonomy-field-info-button"
-          aria-label={ariaLabel}
-          aria-expanded={isHelpOpen}
-          aria-describedby={isHelpOpen ? helpId : undefined}
-          onClick={() => setHelpOpen((current) => !current)}
-        >
-          i
-        </button>
-        <div id={helpId} className="tf-taxonomy-field-help__panel">
-          {children}
-        </div>
-      </div>
+      <InfoPopover id={idPrefix} ariaLabel={ariaLabel}>
+        {children}
+      </InfoPopover>
     </article>
   );
 }

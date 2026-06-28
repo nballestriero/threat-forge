@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Card, EmptyState, MarkdownBody, SearchInput, SelectField, StatusBadge } from "../design-system/components.jsx";
 import { Icon } from "../design-system/Icon.jsx";
+import { InfoPopover } from "../design-system/InfoPopover.jsx";
 import { countItemsByKind, filterDocumentationItems } from "./project-documentation-explorer.state.js";
 
 /**
@@ -168,38 +169,18 @@ function TaxonomyValueHelpPopover({ value }) {
  * @returns {import("react").JSX.Element} Taxonomy value card.
  */
 function TaxonomyValueCard({ value }) {
-  const [isHelpOpen, setHelpOpen] = useState(false);
-  const helpId = `taxonomy-value-help-${String(value.id ?? "value").replace(/[^a-zA-Z0-9_-]/g, "-")}`;
-
   return (
     <article className="tf-taxonomy-value-card">
       <div className="tf-taxonomy-value-card__main">
         <strong>{value.label ?? value.id}</strong>
         <span>Raw id: {value.id}</span>
       </div>
-      <div
-        className={isHelpOpen ? "tf-taxonomy-field-help is-open" : "tf-taxonomy-field-help"}
-        onMouseEnter={() => setHelpOpen(true)}
-        onMouseLeave={() => setHelpOpen(false)}
-        onFocus={() => setHelpOpen(true)}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setHelpOpen(false);
-        }}
+      <InfoPopover
+        id={`taxonomy-value-${value.id ?? "value"}`}
+        ariaLabel={`Show details for taxonomy value ${value.label ?? value.id}`}
       >
-        <button
-          type="button"
-          className="tf-taxonomy-field-info-button"
-          aria-label={`Show details for taxonomy value ${value.label ?? value.id}`}
-          aria-expanded={isHelpOpen}
-          aria-describedby={isHelpOpen ? helpId : undefined}
-          onClick={() => setHelpOpen((current) => !current)}
-        >
-          i
-        </button>
-        <div id={helpId} className="tf-taxonomy-field-help__panel">
-          <TaxonomyValueHelpPopover value={value} />
-        </div>
-      </div>
+        <TaxonomyValueHelpPopover value={value} />
+      </InfoPopover>
     </article>
   );
 }
@@ -304,10 +285,8 @@ function TaxonomyFieldHelpPopover({ field, allowedValues, currentValue }) {
  * @returns {import("react").JSX.Element} Compact field explanation card.
  */
 function TaxonomyFieldCard({ field }) {
-  const [isHelpOpen, setHelpOpen] = useState(false);
   const allowedValues = Array.isArray(field.allowed_values) ? field.allowed_values : [];
   const currentValue = field.current_value && typeof field.current_value === "object" ? field.current_value : null;
-  const helpId = `taxonomy-field-help-${String(field.field ?? "field").replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 
   return (
     <article className="tf-taxonomy-field-card">
@@ -315,29 +294,12 @@ function TaxonomyFieldCard({ field }) {
         <span className="tf-taxonomy-field-card__label">{field.label ?? field.field}</span>
         <span className="tf-taxonomy-field-card__value">{currentValue?.label ?? currentValue?.id ?? "No current value"}</span>
       </div>
-      <div
-        className={isHelpOpen ? "tf-taxonomy-field-help is-open" : "tf-taxonomy-field-help"}
-        onMouseEnter={() => setHelpOpen(true)}
-        onMouseLeave={() => setHelpOpen(false)}
-        onFocus={() => setHelpOpen(true)}
-        onBlur={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setHelpOpen(false);
-        }}
+      <InfoPopover
+        id={`taxonomy-field-${field.field ?? "field"}`}
+        ariaLabel={`Show allowed values for ${field.label ?? field.field}`}
       >
-        <button
-          type="button"
-          className="tf-taxonomy-field-info-button"
-          aria-label={`Show allowed values for ${field.label ?? field.field}`}
-          aria-expanded={isHelpOpen}
-          aria-describedby={isHelpOpen ? helpId : undefined}
-          onClick={() => setHelpOpen((current) => !current)}
-        >
-          i
-        </button>
-        <div id={helpId} className="tf-taxonomy-field-help__panel">
-          <TaxonomyFieldHelpPopover field={field} allowedValues={allowedValues} currentValue={currentValue} />
-        </div>
-      </div>
+        <TaxonomyFieldHelpPopover field={field} allowedValues={allowedValues} currentValue={currentValue} />
+      </InfoPopover>
     </article>
   );
 }

@@ -485,6 +485,51 @@ button, input, select { font: inherit; }
   }
 }
 
+
+/* Shared information-icon progressive disclosure. */
+.tf-info-popover {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tf-info-popover__button {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #d8d8d2;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: help;
+}
+
+.tf-info-popover__button:hover,
+.tf-info-popover__button:focus-visible {
+  border-color: #111;
+  outline: none;
+}
+
+.tf-info-popover__panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 8;
+  width: min(520px, calc(100vw - 48px));
+}
+
+.tf-info-popover.is-open .tf-info-popover__panel,
+.tf-info-popover:hover .tf-info-popover__panel,
+.tf-info-popover:focus-within .tf-info-popover__panel {
+  display: block;
+}
+
 /* Taxonomy field progressive-disclosure help. */
 .tf-taxonomy-fields-list {
   display: grid;

@@ -501,6 +501,12 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer taxonomy field allowed-value explanation hierarchy
 
+  - id: MR-0002SRC-0024
+    type: SourceModule
+    label: Shared information popover component
+    path: frontend/src/MR-0002/design-system/InfoPopover.jsx
+
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1838,3 +1844,8 @@ spo_relations:
   - subject: MR-0002TEST-0001
     predicate: verifies
     object: MR-0002REQ-0058
+
+  - subject: MR-0002REQ-0058
+    predicate: implemented_by
+    object: MR-0002SRC-0024
+

@@ -1428,3 +1428,16 @@ The implementation changes only shared stylesheet behavior for the existing popo
 This refinement preserves the compact primary UI, hover/focus/click information-icon behavior, backend-provided explanation payloads, gate selection semantics, taxonomy semantics, registries, OpenAPI contracts and runtime behavior. It does not add new UI logic, mutate project data, execute gates, or change snapshot generation semantics.
 
 The next safe step remains visual-system cleanup from the mockup reference: centralize reusable information-icon, badge and progressive-disclosure patterns so Project Documentation Explorer and Governance gate plans share the same compact/detail behavior.
+
+
+## Shared Information Popover Pattern Consolidation Micropasso
+
+This frontend cleanup centralizes the information-icon progressive-disclosure behavior used by Project Documentation Explorer and Governance gate plans.
+
+The implementation introduces a shared `InfoPopover` component under the MR-0002 design-system boundary and replaces page-local hover/focus/click wrappers in taxonomy field rows, taxonomy value rows and governance plan overview rows. The semantic content remains owned by each page and its backend-provided view-model; the shared component owns only the reusable interaction pattern, accessible button, open/closed state and popover panel wiring.
+
+This reduces duplication while preserving the approved UX rule: the primary page stays compact, the current value remains visible, and longer explanations open only when the user hovers, focuses or clicks the information icon. The existing single-column popover styling remains shared so details stay readable.
+
+The cleanup does not change backend contracts, registry semantics, taxonomy values, gate-planning behavior, snapshot generation semantics, child-project mutation behavior, or threat-analysis runtime features.
+
+The next safe step is visual-system refinement from the mockup reference: unify badges, semantic color tokens and spacing across Project Documentation Explorer and Governance gate plans without introducing page-specific inline styling.
