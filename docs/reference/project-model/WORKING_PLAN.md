@@ -1335,3 +1335,23 @@ The view-model explains:
 The API remains read-only. It reads generated plan artifacts and governed registry files, returns a UI-safe explanation view-model, and verifies the explanation contract through the existing bounded API self-test. It does not execute gates, mutate child projects, persist gate results, change canonical registries at runtime, implement the final executor/orchestrator, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is a frontend refinement that renders this `explanation` payload in the Governance gate plans page as inline help, expandable gate rationale and field-level guidance for capabilities and validation surfaces.
+
+## Explainable Child Governance Plan Frontend UI Micropasso
+
+This frontend refinement micropasso renders the study-oriented `explanation` payload from the Child Project Governance Gate Plan API in the Governance Console.
+
+The implementation refines the existing Governance gate plans page so it is usable as a learning surface for child-project governance and future threat-analysis preparation. The page now explains how to read a generated plan, what the technical fields mean, why capabilities and validation surfaces matter, and why each gate was selected by the profile, target-scope and applicability chain.
+
+The UI adds:
+
+- a visible study guide for the selected gate plan;
+- plan-level explanations for profile, target scope and result status;
+- a field guide for `required_capabilities`, `validation_surfaces` and `why_selected`;
+- expandable `Why this gate?` sections on each gate card;
+- capability explanations including meaning, current state, source registry and threat-analysis relevance;
+- validation-surface explanations including what is checked, evidence kind, command and source registry;
+- gate-search coverage over explanation text as well as raw generated artifact fields.
+
+The page remains read-only and browser-bound. It consumes the backend view-model through the existing client port and does not execute gates, mutate child projects, persist gate results, change canonical registries at runtime, implement the final executor/orchestrator, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is to improve the visual affordance of shared help/guide components across other Governance Console pages or add a small registry-detail navigation surface for governed concept ids.

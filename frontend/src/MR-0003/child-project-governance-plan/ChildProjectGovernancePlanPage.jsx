@@ -15,6 +15,9 @@ import {
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0059
  * @implementsRequirement MR-0003REQ-0060
+ * @implementsRequirement MR-0003REQ-0061
+ * @implementsRequirement MR-0003REQ-0062
+ * @implementsRequirement MR-0003REQ-0063
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0003
@@ -387,52 +390,306 @@ function InlineValueList({ values = [] }) {
 }
 
 /**
+ * Return a stable array for optional array-like values.
+ *
+ * @param {unknown} value - Candidate array.
+ * @returns {unknown[]} Array value or empty array.
+ */
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+/**
+ * Build a gate-id to explanation lookup from the backend explanation read model.
+ *
+ * @param {Record<string, unknown>|undefined} explanation - Plan explanation payload.
+ * @returns {Record<string, Record<string, unknown>>} Explanation lookup by gate id.
+ */
+function buildGateExplanationMap(explanation) {
+  return Object.fromEntries(asArray(explanation?.gates)
+    .filter((gate) => gate && typeof gate === "object" && gate.id)
+    .map((gate) => [String(gate.id), gate]));
+}
+
+/**
+ * Render one explanatory paragraph when the value exists.
+ *
+ * @param {{label: string, value?: unknown}} props - Explanation props.
+ * @returns {import("react").JSX.Element|null} Explanation block.
+ */
+function ExplanationParagraph({ label, value }) {
+  if (value == null || value === "") return null;
+  return (
+    <div>
+      <dt>{label}</dt>
+      <dd>{displayValue(value)}</dd>
+    </div>
+  );
+}
+
+/**
+ * Render a compact explanation object as a study card.
+ *
+ * @param {{title: string, item?: Record<string, unknown>, extraRows?: Array<[string, unknown]>}} props - Concept props.
+ * @returns {import("react").JSX.Element|null} Concept card.
+ */
+function ConceptExplanationCard({ title, item, extraRows = [] }) {
+  if (!item) return null;
+
+  return (
+    <Card className="tf-stat-card tf-stat-card--wide">
+      <p className="tf-eyebrow">{title}</p>
+      <h3>{displayValue(item.label ?? item.id)}</h3>
+      <dl className="tf-metadata-grid">
+        <ExplanationParagraph label="Raw value" value={item.id} />
+        <ExplanationParagraph label="Meaning" value={item.concept ?? item.description} />
+        <ExplanationParagraph label="Why it matters" value={item.why_it_matters ?? item.why_it_mattered_for_selection} />
+        <ExplanationParagraph label="Source registry" value={item.source_registry} />
+        {extraRows.map(([label, value]) => <ExplanationParagraph key={label} label={label} value={value} />)}
+      </dl>
+    </Card>
+  );
+}
+
+/**
+ * Render the plan-level study guide returned by the governance explanation API.
+ *
+ * @param {{explanation?: Record<string, unknown>}} props - Plan explanation props.
+ * @returns {import("react").JSX.Element|null} Guide card or null.
+ */
+function PlanStudyGuide({ explanation }) {
+  if (!explanation) return null;
+
+  return (
+    <Card className="tf-documentation-context-card">
+      <p className="tf-eyebrow">Study guide</p>
+      <h3>How to read this governance gate plan</h3>
+      <dl className="tf-metadata-grid">
+        <ExplanationParagraph label="Purpose" value={explanation.purpose} />
+        <ExplanationParagraph label="How to use it" value={explanation.usage} />
+        <ExplanationParagraph label="Read-only boundary" value={explanation.limitations} />
+      </dl>
+      <div>
+        <strong>Source registries</strong>
+        <InlineValueList values={explanation.source_registries} />
+      </div>
+    </Card>
+  );
+}
+
+/**
+ * Render field-level explanations for raw technical values shown by the page.
+ *
+ * @param {{fieldExplanations?: Record<string, Record<string, unknown>>}} props - Field guide props.
+ * @returns {import("react").JSX.Element|null} Field guide card.
+ */
+function FieldExplanationGuide({ fieldExplanations }) {
+  const entries = Object.entries(fieldExplanations ?? {});
+  if (entries.length === 0) return null;
+
+  return (
+    <Card>
+      <p className="tf-eyebrow">Field guide</p>
+      <h3>What the technical fields mean</h3>
+      <div className="tf-governance-gate-list">
+        {entries.map(([field, explanation]) => (
+          <section key={field}>
+            <h4>{displayValue(explanation.question ?? formatGovernancePlanLabel(field))}</h4>
+            <dl className="tf-metadata-grid">
+              <ExplanationParagraph label="Field" value={field} />
+              <ExplanationParagraph label="Meaning" value={explanation.meaning} />
+              <ExplanationParagraph label="Why it matters" value={explanation.why_it_matters} />
+            </dl>
+          </section>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+/**
+ * Render plan-level concept explanations for profile, target scope and result.
+ *
+ * @param {{explanation?: Record<string, unknown>}} props - Explanation props.
+ * @returns {import("react").JSX.Element|null} Concept grid.
+ */
+function PlanConceptExplanations({ explanation }) {
+  if (!explanation) return null;
+
+  return (
+    <section className="tf-stats-grid" aria-label="Governance concept explanations">
+      <ConceptExplanationCard
+        title="Profile"
+        item={explanation.profile}
+        extraRows={[
+          ["Target scope", explanation.profile?.target_scope],
+          ["Baseline required", explanation.profile?.baseline_required],
+          ["Required capabilities", asArray(explanation.profile?.required_capabilities).join(", ")],
+        ]}
+      />
+      <ConceptExplanationCard title="Target scope" item={explanation.target_scope} />
+      <ConceptExplanationCard title="Result" item={explanation.result} />
+    </section>
+  );
+}
+
+/**
+ * Render explanations for one gate's required capabilities.
+ *
+ * @param {{items?: Array<Record<string, unknown>>}} props - Capability explanations.
+ * @returns {import("react").JSX.Element|null} Capability explanation list.
+ */
+function CapabilityExplanationList({ items = [] }) {
+  const capabilities = asArray(items);
+  if (capabilities.length === 0) return null;
+
+  return (
+    <section>
+      <h4>Quali capability richiede?</h4>
+      <div className="tf-governance-gate-list">
+        {capabilities.map((capability) => (
+          <Card key={String(capability.id)}>
+            <h4>{displayValue(capability.label ?? capability.id)}</h4>
+            <dl className="tf-metadata-grid">
+              <ExplanationParagraph label="Raw value" value={capability.id} />
+              <ExplanationParagraph label="Meaning" value={capability.concept ?? capability.description} />
+              <ExplanationParagraph label="Current state" value={capability.state?.label ?? capability.state?.id} />
+              <ExplanationParagraph label="Why it matters" value={capability.why_it_matters} />
+              <ExplanationParagraph label="Source registry" value={capability.source_registry} />
+            </dl>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Render explanations for one gate's validation surfaces.
+ *
+ * @param {{items?: Array<Record<string, unknown>>}} props - Validation surface explanations.
+ * @returns {import("react").JSX.Element|null} Validation surface explanation list.
+ */
+function ValidationSurfaceExplanationList({ items = [] }) {
+  const surfaces = asArray(items);
+  if (surfaces.length === 0) return null;
+
+  return (
+    <section>
+      <h4>Quale superficie valida?</h4>
+      <div className="tf-governance-gate-list">
+        {surfaces.map((surface) => (
+          <Card key={String(surface.id)}>
+            <h4>{displayValue(surface.label ?? surface.id)}</h4>
+            <dl className="tf-metadata-grid">
+              <ExplanationParagraph label="Raw value" value={surface.id} />
+              <ExplanationParagraph label="Meaning" value={surface.concept ?? surface.description} />
+              <ExplanationParagraph label="Evidence kind" value={surface.evidence_kind} />
+              <ExplanationParagraph label="Command" value={surface.command} />
+              <ExplanationParagraph label="Why it matters" value={surface.why_it_matters} />
+              <ExplanationParagraph label="Source registry" value={surface.source_registry} />
+            </dl>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Render the expandable explanation for one generated gate.
+ *
+ * @param {{gate?: Record<string, unknown>, explanation?: Record<string, unknown>}} props - Gate explanation props.
+ * @returns {import("react").JSX.Element|null} Gate explanation details.
+ */
+function GateExplanationDetails({ gate, explanation }) {
+  if (!explanation) return null;
+
+  const selection = explanation.selection_rationale ?? {};
+  return (
+    <details>
+      <summary>Why this gate?</summary>
+      <div className="tf-governance-gate-list">
+        <section>
+          <h4>What this gate checks</h4>
+          <p>{displayValue(explanation.what_it_checks)}</p>
+        </section>
+        <section>
+          <h4>Why it was selected</h4>
+          <p>{displayValue(explanation.why_selected ?? gate?.reason)}</p>
+          <dl className="tf-metadata-grid">
+            <ExplanationParagraph label="Profile includes gate" value={String(Boolean(selection.profile_includes_gate))} />
+            <ExplanationParagraph label="Target scope supported" value={String(Boolean(selection.target_scope_supported_by_gate))} />
+            <ExplanationParagraph label="Profile" value={selection.profile} />
+            <ExplanationParagraph label="Target scope" value={selection.target_scope} />
+            <ExplanationParagraph label="Unsupported behavior" value={selection.unsupported_behavior} />
+            <ExplanationParagraph label="Result when not applicable" value={selection.result_when_not_applicable} />
+          </dl>
+        </section>
+        <ConceptExplanationCard title="Applicability class" item={explanation.applicability_class} />
+        <ConceptExplanationCard title="Status" item={explanation.status} />
+        <CapabilityExplanationList items={explanation.required_capabilities} />
+        <ValidationSurfaceExplanationList items={explanation.validation_surfaces} />
+        <section>
+          <h4>Contribution to threat-analysis readiness</h4>
+          <p>{displayValue(explanation.contributes_to_threat_analysis_readiness)}</p>
+        </section>
+      </div>
+    </details>
+  );
+}
+
+/**
  * Render detailed gate rows.
  *
  * @param {{gates: Array<Record<string, unknown>>}} props - Gate rows.
  * @returns {import("react").JSX.Element} Gate table/list.
  */
-function GateRows({ gates }) {
+function GateRows({ gates, explanationsByGateId = {} }) {
   if (gates.length === 0) {
     return <EmptyState title="No gates match the current filters">Reset search or status filters to see all planned gates.</EmptyState>;
   }
 
   return (
     <div className="tf-governance-gate-list">
-      {gates.map((gate) => (
-        <Card className="tf-governance-gate-card" key={String(gate.id)}>
-          <div className="tf-governance-gate-card__header">
-            <div>
-              <p className="tf-eyebrow">{displayValue(gate.applicability_class)}</p>
-              <h3>{displayValue(gate.label ?? gate.id)}</h3>
+      {gates.map((gate) => {
+        const explanation = explanationsByGateId[String(gate.id)] ?? undefined;
+        return (
+          <Card className="tf-governance-gate-card" key={String(gate.id)}>
+            <div className="tf-governance-gate-card__header">
+              <div>
+                <p className="tf-eyebrow">{displayValue(gate.applicability_class)}</p>
+                <h3>{displayValue(gate.label ?? gate.id)}</h3>
+              </div>
+              <StatusBadge value={String(gate.status ?? "unknown")} label={String(gate.status ?? "unknown")} />
             </div>
-            <StatusBadge value={String(gate.status ?? "unknown")} label={String(gate.status ?? "unknown")} />
-          </div>
-          <dl className="tf-metadata-grid">
+            <dl className="tf-metadata-grid">
+              <div>
+                <dt>Gate id</dt>
+                <dd>{displayValue(gate.id)}</dd>
+              </div>
+              <div>
+                <dt>Severity</dt>
+                <dd>{displayValue(gate.severity)}</dd>
+              </div>
+              <div>
+                <dt>Required capabilities</dt>
+                <dd><InlineValueList values={gate.required_capabilities} /></dd>
+              </div>
+              <div>
+                <dt>Validation surfaces</dt>
+                <dd><InlineValueList values={gate.validation_surfaces} /></dd>
+              </div>
+            </dl>
+            <p className="tf-governance-gate-card__reason">{displayValue(gate.reason)}</p>
             <div>
-              <dt>Gate id</dt>
-              <dd>{displayValue(gate.id)}</dd>
+              <strong>Evidence</strong>
+              <InlineValueList values={gate.evidence} />
             </div>
-            <div>
-              <dt>Severity</dt>
-              <dd>{displayValue(gate.severity)}</dd>
-            </div>
-            <div>
-              <dt>Required capabilities</dt>
-              <dd><InlineValueList values={gate.required_capabilities} /></dd>
-            </div>
-            <div>
-              <dt>Validation surfaces</dt>
-              <dd><InlineValueList values={gate.validation_surfaces} /></dd>
-            </div>
-          </dl>
-          <p className="tf-governance-gate-card__reason">{displayValue(gate.reason)}</p>
-          <div>
-            <strong>Evidence</strong>
-            <InlineValueList values={gate.evidence} />
-          </div>
-        </Card>
-      ))}
+            <GateExplanationDetails gate={gate} explanation={explanation} />
+          </Card>
+        );
+      })}
     </div>
   );
 }
@@ -448,8 +705,13 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
   const artifact = detail?.artifact ?? {};
   const plan = artifact.plan ?? undefined;
   const gates = Array.isArray(plan?.gates) ? plan.gates : [];
+  const explanation = detail?.explanation ?? undefined;
+  const gateExplanationsById = useMemo(() => buildGateExplanationMap(explanation), [explanation]);
   const gateStatusOptions = useMemo(() => buildGateStatusFilterOptions(gates), [gates]);
-  const filteredGates = useMemo(() => filterGovernanceGateRows(gates, gateFilters), [gates, gateFilters]);
+  const filteredGates = useMemo(
+    () => filterGovernanceGateRows(gates, gateFilters, gateExplanationsById),
+    [gates, gateFilters, gateExplanationsById],
+  );
 
   useEffect(() => {
     setGateFilters({ q: "", status: "" });
@@ -470,6 +732,9 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
         <StatusBadge value={String(plan.result ?? "unknown")} label={String(plan.result ?? "unknown")} />
       </div>
 
+      <PlanStudyGuide explanation={explanation} />
+      <PlanConceptExplanations explanation={explanation} />
+      <FieldExplanationGuide fieldExplanations={explanation?.field_explanations} />
       <DetailedPlanSummary plan={plan} />
       <CapabilityStates states={plan.capability_states} />
 
@@ -488,7 +753,7 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
         <Button onClick={() => setGateFilters({ q: "", status: "" })}>Reset</Button>
       </section>
 
-      <GateRows gates={filteredGates} />
+      <GateRows gates={filteredGates} explanationsByGateId={gateExplanationsById} />
     </section>
   );
 }
@@ -609,7 +874,7 @@ export function ChildProjectGovernancePlanPage({ client, childProjectClient }) {
         <div>
           <p className="tf-eyebrow">Child project governance</p>
           <h1>Governance gate plans</h1>
-          <p>Select a platform or child project, then inspect the generated gate plan and evidence.</p>
+          <p>Select a platform or child project, then study which governance gates apply, what each gate checks, and why it was selected.</p>
         </div>
         <span className="tf-count-pill">{projectOptions.length} projects</span>
       </section>
@@ -639,7 +904,7 @@ export function ChildProjectGovernancePlanPage({ client, childProjectClient }) {
             <div>
               <p className="tf-eyebrow">Projects</p>
               <h2>Select a project</h2>
-              <p>Open one row to load the matching governance gate plan on this page.</p>
+              <p>Open one row to load the matching governance gate plan with field explanations and gate rationale.</p>
             </div>
             <span className="tf-count-pill">{filteredProjectOptions.length} / {projectOptions.length}</span>
           </div>

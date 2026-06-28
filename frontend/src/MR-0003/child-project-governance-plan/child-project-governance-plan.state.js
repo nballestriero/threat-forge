@@ -3,14 +3,17 @@
  *
  * @implementsRequirement MR-0003REQ-0059
  * @implementsRequirement MR-0003REQ-0060
+ * @implementsRequirement MR-0003REQ-0061
+ * @implementsRequirement MR-0003REQ-0062
+ * @implementsRequirement MR-0003REQ-0063
  * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0003
  *
  * These helpers derive stable list/detail summaries from generated governance
- * gate plan artifacts. They are intentionally pure: callers provide already
- * loaded JSON read models, and the helpers filter, count and normalize display
- * values without reading files, fetching APIs, executing gates or mutating
- * project state.
+ * gate plan artifacts and optional study-oriented explanation view models.
+ * They are intentionally pure: callers provide already loaded JSON read models,
+ * and the helpers filter, count and normalize display values without reading
+ * files, fetching APIs, executing gates or mutating project state.
  *
  * Side effects: none.
  */
@@ -134,17 +137,69 @@ export function buildGateStatusFilterOptions(gates) {
 }
 
 /**
+ * Return a stable array for optional array-like values.
+ *
+ * @param {unknown} value - Candidate array.
+ * @returns {unknown[]} Stable array.
+ */
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+/**
+ * Return searchable text for one gate explanation view model.
+ *
+ * @param {Record<string, unknown>|undefined} explanation - Gate explanation.
+ * @returns {string[]} Search values.
+ */
+function getGateExplanationSearchValues(explanation) {
+  if (!explanation) return [];
+  return [
+    explanation.what_it_checks,
+    explanation.why_selected,
+    explanation.contributes_to_threat_analysis_readiness,
+    explanation.status?.label,
+    explanation.status?.description,
+    explanation.status?.concept,
+    explanation.applicability_class?.label,
+    explanation.applicability_class?.description,
+    explanation.applicability_class?.concept,
+    ...(asArray(explanation.required_capabilities).flatMap((capability) => [
+      capability.id,
+      capability.label,
+      capability.description,
+      capability.concept,
+      capability.why_it_matters,
+      capability.state?.id,
+      capability.state?.label,
+      capability.state?.description,
+    ])),
+    ...(asArray(explanation.validation_surfaces).flatMap((surface) => [
+      surface.id,
+      surface.label,
+      surface.description,
+      surface.concept,
+      surface.why_it_matters,
+      surface.evidence_kind,
+      surface.command,
+    ])),
+  ];
+}
+
+/**
  * Filter detailed gate rows for the read-only UI.
  *
  * @param {Array<Record<string, unknown>>} gates - Gate detail rows.
  * @param {{q?: string, status?: string}} state - UI filter state.
+ * @param {Record<string, Record<string, unknown>>} gateExplanationsById - Optional explanation lookup.
  * @returns {Array<Record<string, unknown>>} Filtered gates.
  */
-export function filterGovernanceGateRows(gates, state = {}) {
+export function filterGovernanceGateRows(gates, state = {}, gateExplanationsById = {}) {
   const search = String(state.q ?? "").trim().toLowerCase();
   const status = String(state.status ?? "").trim();
 
   return (gates ?? []).filter((gate) => {
+    const gateExplanation = gateExplanationsById[String(gate?.id ?? "")];
     const searchText = [
       gate?.id,
       gate?.label,
@@ -155,6 +210,7 @@ export function filterGovernanceGateRows(gates, state = {}) {
       ...(Array.isArray(gate?.required_capabilities) ? gate.required_capabilities : []),
       ...(Array.isArray(gate?.validation_surfaces) ? gate.validation_surfaces : []),
       ...(Array.isArray(gate?.evidence) ? gate.evidence : []),
+      ...getGateExplanationSearchValues(gateExplanation),
     ].map((value) => String(value ?? "").toLowerCase()).join(" ");
 
     if (search && !searchText.includes(search)) return false;
