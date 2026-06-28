@@ -7,77 +7,181 @@ validation_surfaces:
   - id: threat_forge_repo_check
     label: Threat-forge repository check
     description: Gate is exercised by the governed repository check command.
+    checked_area: Full governed repository check.
+    checked_artifacts:
+      - Project Model registries and body files.
+      - Graph registries.
+      - OpenAPI contract.
+      - Frontend build.
+      - Runtime tests.
+    checked_paths:
+      - docs/reference/project-model/**
+      - docs/reference/api/openapi/threat-forge.openapi.yml
+      - backend/**
+      - frontend/**
+    why_it_matters: This is the umbrella check proving the repository state is internally consistent before it is used for study or threat analysis.
     evidence_kind: command
     command: npm run repo:check
 
   - id: project_model_pages
     label: Project Model pages generation
     description: Gate is visible through generated project-model page counts and collection rendering.
+    checked_area: Generated Project Model documentation pages.
+    checked_artifacts:
+      - Static Project Model HTML pages.
+      - Generated counts for requirements, ADR, graph and taxonomy records.
+    checked_paths:
+      - artifacts/project-model/**
+      - docs/reference/project-model/**
+    why_it_matters: Users need generated pages to inspect governed records without reading raw YAML first.
     evidence_kind: command
     command: npm run docs:pages
 
   - id: negative_fixtures
     label: Negative fixtures
     description: Gate has isolated invalid fixtures proving fail-closed diagnostics.
+    checked_area: Invalid fixture cases for fail-closed validators.
+    checked_artifacts:
+      - Negative fixture JSON files.
+      - Validator diagnostics.
+    checked_paths:
+      - backend/tools/MR-0003/fixtures/child-project-governance-registries/negative/**
+    why_it_matters: Negative fixtures prove that missing or invalid governance records are rejected instead of silently accepted.
     evidence_kind: fixture
     command: self-test fixture execution
 
   - id: demo_child_project_workspace
     label: Demo child project workspace
     description: Gate is exercised against the resettable demo child project workspace or seed.
+    checked_area: Resettable demo child project workspace.
+    checked_artifacts:
+      - Demo child project seed files.
+      - Temporary reset workspace.
+    checked_paths:
+      - examples/child-projects/minimal-governed-child-project/**
+    why_it_matters: The demo workspace lets users study child governance safely without changing production project state.
     evidence_kind: demo_workspace
     command: npm run docs:child-project-demo-workspace
 
   - id: temporary_sqlite_self_test
     label: Temporary SQLite self-test
     description: Gate uses a temporary isolated SQLite database and leaves default runtime state untouched.
+    checked_area: Isolated child project SQLite registration state.
+    checked_artifacts:
+      - Temporary SQLite database.
+      - Registration self-test output.
+    checked_paths:
+      - backend/tools/MR-0003/register-demo-child-project.mjs
+    why_it_matters: The check proves registration behavior without depending on or mutating default runtime storage.
     evidence_kind: self_test
     command: npm run docs:child-project-demo-registration
 
   - id: child_project_management_api_self_test
     label: Child Project Management API self-test
     description: Gate starts a bounded local API server on an ephemeral port and validates read-only endpoints.
+    checked_area: Child Project Management read-only API boundary.
+    checked_artifacts:
+      - GET /api/child-projects.
+      - GET /api/child-projects/{id}.
+    checked_paths:
+      - backend/src/MR-0003/child-project-management/**
+    why_it_matters: The UI and later analysis flows need a stable read-only source for child project identity and status.
     evidence_kind: self_test
     command: npm run docs:child-project-management-api-serve
 
   - id: generated_snapshot
     label: Generated frontend snapshot
     description: Gate is exercised by the Project Documentation Explorer generated frontend snapshot.
+    checked_area: Generated frontend documentation snapshot.
+    checked_artifacts:
+      - Project Documentation Explorer snapshot JSON.
+      - Snapshot-derived frontend collection.
+    checked_paths:
+      - frontend/public/project-documentation-explorer.snapshot.json
+    why_it_matters: Snapshot data keeps the UI usable when the live HTTP documentation source is not active.
     evidence_kind: generated_artifact
     command: npm run frontend:project-documentation-explorer:snapshot
 
   - id: runtime_unit_tests
     label: Runtime unit tests
     description: Gate is exercised by runtime tests in the governed repository check.
+    checked_area: Runtime behavior tests.
+    checked_artifacts:
+      - Node runtime test output.
+      - Service boundary assertions.
+    checked_paths:
+      - backend/tests/**
+      - backend/src/**
+    why_it_matters: Runtime tests provide reproducible evidence that implemented boundaries behave as documented.
     evidence_kind: test
     command: npm run test:runtime
 
   - id: registry_contract_validator
     label: Child project governance registry contract validator
     description: Gate is exercised by the registry contract validator and its negative fixtures.
+    checked_area: Child project governance registry contract.
+    checked_artifacts:
+      - Gate registry records.
+      - Profile registry records.
+      - Capability registry records.
+      - Validation surface registry records.
+    checked_paths:
+      - docs/reference/project-model/registers/child-project-governance/*.registry.yml
+    why_it_matters: The UI can only explain gates reliably when the underlying registries are complete and cross-referenced.
     evidence_kind: validator
     command: npm run docs:child-project-governance-registries
 
   - id: governance_gate_planner_self_test
     label: Governance gate planner self-test
     description: Gate planning is exercised by expanding representative platform, demo and documentation-only governance profiles.
+    checked_area: Deterministic gate planning logic.
+    checked_artifacts:
+      - Planner self-test output.
+      - Representative profile expansion results.
+    checked_paths:
+      - backend/tools/MR-0003/plan-child-project-governance-gates.mjs
+    why_it_matters: Planning self-tests prove that gate selection reasons are reproducible before execution exists.
     evidence_kind: self_test
     command: npm run docs:child-project-governance-plan
 
   - id: governance_gate_plan_artifact_export
     label: Governance gate plan artifact export
     description: Gate planning artifacts are generated as deterministic JSON files for representative platform, demo and documentation-only governance profiles.
+    checked_area: Generated governance gate plan artifacts.
+    checked_artifacts:
+      - Platform self-governance plan JSON.
+      - Demo child project plan JSON.
+      - Documentation-only child project plan JSON.
+    checked_paths:
+      - artifacts/child-project-governance/gate-plans/*.plan.json
+    why_it_matters: Generated artifacts let the UI inspect planned gates without running an executor.
     evidence_kind: generated_artifact
     command: npm run docs:child-project-governance-plan-artifacts
 
   - id: governance_gate_plan_api_self_test
     label: Governance gate plan API self-test
     description: Gate starts a bounded local API server on an ephemeral port and validates read-only gate-plan artifact endpoints.
+    checked_area: Governance gate plan read-only API boundary.
+    checked_artifacts:
+      - Gate plan list endpoint.
+      - Gate plan detail endpoint.
+      - Explanation payload.
+    checked_paths:
+      - backend/src/MR-0003/child-project-governance-plan/**
+    why_it_matters: The UI receives gate explanations from backend data instead of hardcoded frontend copy.
     evidence_kind: self_test
     command: npm run docs:child-project-governance-plan-api-serve
 
   - id: governance_gate_plan_frontend_view
     label: Governance gate plan frontend view
     description: Gate plan artifacts are rendered by the Governance Console read-only frontend build without executing gates or mutating child projects.
+    checked_area: Governance Console gate plan page.
+    checked_artifacts:
+      - Frontend build output.
+      - Gate plan detail rendering.
+    checked_paths:
+      - frontend/src/MR-0003/child-project-governance-plan/**
+      - artifacts/frontend/governance-console/**
+    why_it_matters: Users need the governed explanations rendered as a clear study interface.
     evidence_kind: frontend_build
     command: npm run frontend:build

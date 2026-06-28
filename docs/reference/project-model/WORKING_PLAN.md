@@ -1336,22 +1336,21 @@ The API remains read-only. It reads generated plan artifacts and governed regist
 
 The next safe step is a frontend refinement that renders this `explanation` payload in the Governance gate plans page as inline help, expandable gate rationale and field-level guidance for capabilities and validation surfaces.
 
-## Explainable Child Governance Plan Frontend UI Micropasso
+## Taxonomy-backed Child Governance Explanation Model Micropasso
 
-This frontend refinement micropasso renders the study-oriented `explanation` payload from the Child Project Governance Gate Plan API in the Governance Console.
+This backend/data-model micropasso moves gate explanation knowledge out of frontend copy and into governed child-project governance registry metadata consumed by the backend explanation view-model.
 
-The implementation refines the existing Governance gate plans page so it is usable as a learning surface for child-project governance and future threat-analysis preparation. The page now explains how to read a generated plan, what the technical fields mean, why capabilities and validation surfaces matter, and why each gate was selected by the profile, target-scope and applicability chain.
+The implementation enriches the existing child-project governance registries so gate-plan explanations can answer study-oriented questions directly from governed data:
 
-The UI adds:
+- `governance-gates.registry.yml` now declares, per gate, the checked objects, checked entity types, checked paths, expected result and threat-analysis contribution;
+- `validation-surfaces.registry.yml` now declares, per validation surface, the checked area, checked artifacts, checked paths and why that surface matters;
+- `governance-capabilities.registry.yml` now declares, per capability, what the capability enables and why it matters for threat-analysis readiness;
+- the child-project governance registry validator now fails closed when these explanation fields are missing from canonical registry records;
+- the existing Child Project Governance Gate Plan API explanation view-model now reads and returns those governed fields instead of relying on generic fallback text;
+- the OpenAPI contract describes the enriched explanation payload so the frontend can render checked objects, entity types, paths, expected verification output and technical trace without hardcoding their meaning.
 
-- a visible study guide for the selected gate plan;
-- plan-level explanations for profile, target scope and result status;
-- a field guide for `required_capabilities`, `validation_surfaces` and `why_selected`;
-- expandable `Why this gate?` sections on each gate card;
-- capability explanations including meaning, current state, source registry and threat-analysis relevance;
-- validation-surface explanations including what is checked, evidence kind, command and source registry;
-- gate-search coverage over explanation text as well as raw generated artifact fields.
+For example, the `governed_body_format` gate now explains that it checks governed Markdown body files for ADR records and Requirement records under `docs/reference/project-model/body/decisions/**` and `docs/reference/project-model/body/requirements/**`, using the body format registry as part of the checked model.
 
-The page remains read-only and browser-bound. It consumes the backend view-model through the existing client port and does not execute gates, mutate child projects, persist gate results, change canonical registries at runtime, implement the final executor/orchestrator, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+The API remains read-only. It still serves generated gate plan artifacts and registry-derived explanations; it does not execute gates, mutate child projects, persist gate results, implement the final executor/orchestrator, add language adapters or implement Base Analysis, STRIDE or STRIDE-AI.
 
-The next safe step is to improve the visual affordance of shared help/guide components across other Governance Console pages or add a small registry-detail navigation surface for governed concept ids.
+The next safe step is a frontend refinement that consumes the enriched backend explanation payload and replaces raw evidence markers such as `validation_surface.threat_forge_repo_check exists` with human labels, checked areas, expected verification output and a separate technical trace section.

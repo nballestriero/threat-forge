@@ -911,6 +911,11 @@ components:
           type: array
           items:
             type: string
+        expected_verification_output:
+          type: string
+        technical_trace:
+          type: object
+          additionalProperties: true
     ChildProjectGovernanceGatePlan:
       type: object
       required:
@@ -985,6 +990,18 @@ components:
           type: string
         source_registry:
           type: string
+        enables:
+          type: string
+        checked_area:
+          type: string
+        checked_artifacts:
+          type: array
+          items:
+            type: string
+        checked_paths:
+          type: array
+          items:
+            type: string
     ChildProjectGovernanceGateExplanation:
       type: object
       description: Study-oriented explanation of a planned gate, including what it checks and why it was selected.
@@ -1004,6 +1021,20 @@ components:
           type: string
           minLength: 1
         what_it_checks:
+          type: string
+        checked_objects:
+          type: array
+          items:
+            type: string
+        checked_entity_types:
+          type: array
+          items:
+            type: string
+        checked_paths:
+          type: array
+          items:
+            type: string
+        expected_result:
           type: string
         why_selected:
           type: string
@@ -1028,6 +1059,11 @@ components:
           type: array
           items:
             type: string
+        expected_verification_output:
+          type: string
+        technical_trace:
+          type: object
+          additionalProperties: true
     ChildProjectGovernanceGatePlanExplanation:
       type: object
       description: Read-only view-model explaining a generated child-project governance gate plan for study and UI help surfaces.

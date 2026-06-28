@@ -398,15 +398,24 @@ function validateRegistries() {
   }
 
   for (const capability of capabilities) {
-    requireTextFields(capability, ["label", "description", "category"], "governance_capability");
+    requireTextFields(capability, ["label", "description", "category", "enables", "why_it_matters"], "governance_capability");
   }
 
   for (const surface of validationSurfaces) {
-    requireTextFields(surface, ["label", "description", "evidence_kind"], "validation_surface");
+    requireTextFields(surface, ["label", "description", "evidence_kind", "checked_area", "why_it_matters"], "validation_surface");
+    if (asArray(surface.checked_artifacts).length === 0) {
+      addError(`validation_surface ${surface.id} must define at least one checked_artifact.`);
+    }
   }
 
   for (const gate of gates) {
-    requireTextFields(gate, ["label", "description", "owner_macro_requirement", "applicability_class"], "governance_gate");
+    requireTextFields(gate, ["label", "description", "owner_macro_requirement", "applicability_class", "expected_result", "threat_analysis_contribution"], "governance_gate");
+    if (asArray(gate.checked_objects).length === 0) {
+      addError(`governance_gate ${gate.id} must define at least one checked_object.`);
+    }
+    if (asArray(gate.checked_entity_types).length === 0) {
+      addError(`governance_gate ${gate.id} must define at least one checked_entity_type.`);
+    }
     if (!/^MR-\d{4}$/u.test(String(gate.owner_macro_requirement ?? ""))) {
       addError(`governance_gate ${gate.id} owner_macro_requirement must be an MR id.`);
     }

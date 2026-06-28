@@ -28,79 +28,111 @@ governance_capabilities:
   - id: project_model
     label: Project Model
     description: Project contains the governed Doc-as-Code project model skeleton, registries, graph and body files.
+    enables: Reading governed documentation structure, registries, graph files and body files.
+    why_it_matters: Threat analysis needs a stable project model before it can reason about requirements, decisions, boundaries or evidence.
     category: baseline
 
   - id: source_code
     label: Source code
     description: Project contains implementation source files, scripts, tools or runtime code that must be traceable when present.
+    enables: Connecting implementation files to requirements and decisions through traceability metadata.
+    why_it_matters: Code must be linked to governed intent before it can be trusted as analysis evidence.
     category: implementation
 
   - id: backend_api
     label: Backend API
     description: Project exposes backend service endpoints or contracts such as OpenAPI or AsyncAPI.
+    enables: Describing service endpoints, schemas and read-only API boundaries.
+    why_it_matters: API boundaries become trust boundaries and data-flow surfaces in later threat analysis.
     category: implementation
 
   - id: frontend_ui
     label: Frontend UI
     description: Project contains a user interface such as a browser frontend or application shell.
+    enables: Rendering governed records and explanations for human study.
+    why_it_matters: Users need a readable interface to understand governance and analysis evidence without reading raw registries.
     category: implementation
 
   - id: persistent_storage
     label: Persistent storage
     description: Project persists operational or application state in files, SQLite, database adapters or external stores.
+    enables: Representing files, SQLite databases, adapters or external stores that persist operational state.
+    why_it_matters: Stored state affects assets, data sensitivity, lifecycle and threat boundaries.
     category: runtime
 
   - id: data_pipeline
     label: Data pipeline
     description: Project ingests, transforms, exports or schedules data processing flows.
+    enables: Modeling ingestion, transformation, scheduling or export flows.
+    why_it_matters: Data pipelines create flows and trust boundaries that threat analysis must understand.
     category: runtime
 
   - id: ai_pipeline
     label: AI pipeline
     description: Project contains model, prompt, inference, evaluation or AI runtime behavior.
+    enables: Modeling prompts, models, inference, evaluation and AI runtime behavior.
+    why_it_matters: AI behavior introduces model, prompt, output and misuse risks that must be explicitly analyzed.
     category: analysis
 
   - id: rag_pipeline
     label: RAG pipeline
     description: Project retrieves contextual knowledge through indexes, vector stores or document sources for AI use.
+    enables: Modeling retrieval indexes, vector stores and document context sources.
+    why_it_matters: RAG adds knowledge-source integrity, leakage and prompt-injection surfaces.
     category: analysis
 
   - id: agentic_tools
     label: Agentic tools
     description: Project lets AI or automation invoke tools, actions or side-effecting operations.
+    enables: Modeling automated tool invocation and side-effecting operations.
+    why_it_matters: Agentic actions can cross trust boundaries and must be constrained before execution is trusted.
     category: analysis
 
   - id: deployment
     label: Deployment
     description: Project contains deployment descriptors, runtime environment configuration or infrastructure definitions.
+    enables: Modeling runtime environments, deployment descriptors and infrastructure configuration.
+    why_it_matters: Deployment choices affect exposure, credentials, network boundaries and operational threats.
     category: operations
 
   - id: ci_cd
     label: CI/CD
     description: Project contains automation workflows for build, test, release or deployment.
+    enables: Modeling build, test, release and deployment automation.
+    why_it_matters: CI/CD defines supply-chain and automation paths that can change project behavior.
     category: operations
 
   - id: external_integrations
     label: External integrations
     description: Project communicates with third-party systems, APIs, services or external trust boundaries.
+    enables: Modeling third-party APIs, services and external trust boundaries.
+    why_it_matters: External systems introduce dependencies, data flows and failure modes outside the project.
     category: runtime
 
   - id: sensitive_data
     label: Sensitive data
     description: Project handles data with confidentiality, privacy, security or business sensitivity.
+    enables: Marking confidentiality, privacy, security or business-sensitive data handling.
+    why_it_matters: Sensitive data changes impact, controls and threat-analysis priorities.
     category: analysis
 
   - id: regulated_data
     label: Regulated data
     description: Project handles data governed by explicit legal, compliance or policy constraints.
+    enables: Marking data governed by explicit legal, compliance or policy constraints.
+    why_it_matters: Regulated data requires analysis to preserve compliance-related assumptions and evidence.
     category: analysis
 
   - id: runtime_operations
     label: Runtime operations
     description: Project has operational runtime concerns such as monitoring, logs, jobs, incidents or production support.
+    enables: Modeling monitoring, logs, jobs, incidents and production support boundaries.
+    why_it_matters: Operational surfaces affect detection, auditability, availability and incident response.
     category: operations
 
   - id: child_project_management
     label: Child project management
     description: threat-forge platform capability for registering, viewing, checking and reporting managed child projects.
+    enables: Registering, viewing, checking and reporting managed child projects from the platform.
+    why_it_matters: The platform must manage child projects consistently before comparing or analyzing them.
     category: platform

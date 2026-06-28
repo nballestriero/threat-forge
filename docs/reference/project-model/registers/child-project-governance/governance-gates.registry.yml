@@ -7,6 +7,16 @@ governance_gates:
   - id: project_model_skeleton
     label: Project Model skeleton
     description: Validates that a managed target exposes the standard governed Project Model skeleton.
+    checked_objects:
+      - Standard Project Model directory skeleton.
+      - Required registry families for macro requirements, ADR, requirements and graph.
+    checked_entity_types:
+      - Project Model directory
+      - Registry family
+    checked_paths:
+      - docs/reference/project-model/**
+    expected_result: The target exposes the mandatory Project Model skeleton before any deeper governance gate is trusted.
+    threat_analysis_contribution: Provides the stable documentation structure that later threat analysis can navigate.
     owner_macro_requirement: MR-0003
     applicability_class: always_required
     target_scopes:
@@ -24,6 +34,16 @@ governance_gates:
   - id: graph_format
     label: Graph format
     description: Validates governed graph registry shape and graph node/relation structure.
+    checked_objects:
+      - Governed graph registry files.
+      - Graph node and SPO relation structure.
+    checked_entity_types:
+      - Graph node
+      - SPO relation
+    checked_paths:
+      - docs/reference/project-model/registers/graph/*.graph.yml
+    expected_result: Graph registries parse and expose valid nodes and relations.
+    threat_analysis_contribution: Makes requirements, decisions, artifacts and future threat-analysis records traceable as a graph.
     owner_macro_requirement: MR-0001
     applicability_class: always_required
     target_scopes:
@@ -41,6 +61,16 @@ governance_gates:
   - id: requirement_registry_fields
     label: Requirement registry fields
     description: Validates governed Requirement registry fields, controlled values and ADR references.
+    checked_objects:
+      - Requirement registry records.
+      - Requirement governance metadata fields.
+    checked_entity_types:
+      - Requirement
+    checked_paths:
+      - docs/reference/project-model/registers/requirements/*.requirements.registry.yml
+      - docs/reference/project-model/registers/requirements/requirement-governance.registry.yml
+    expected_result: Requirement records expose the governed fields needed for filtering, status and traceability.
+    threat_analysis_contribution: Lets threat analysis know which requirements are functional, specialized, accepted, implemented and traceable.
     owner_macro_requirement: MR-0001
     applicability_class: always_required
     target_scopes:
@@ -58,6 +88,15 @@ governance_gates:
   - id: adr_registry_fields
     label: ADR registry fields
     description: Validates governed ADR registry fields and basic decision metadata.
+    checked_objects:
+      - ADR registry records.
+      - Decision metadata fields.
+    checked_entity_types:
+      - ADR
+    checked_paths:
+      - docs/reference/project-model/registers/decisions/*.decisions.registry.yml
+    expected_result: ADR records expose stable decision metadata and references to governed body files.
+    threat_analysis_contribution: Connects threat-analysis assumptions to explicit architectural decisions instead of hidden context.
     owner_macro_requirement: MR-0001
     applicability_class: always_required
     target_scopes:
@@ -74,6 +113,20 @@ governance_gates:
   - id: governed_body_format
     label: Governed body format
     description: Validates ADR and Requirement body formats through governed body profiles.
+    checked_objects:
+      - Governed Markdown body files for ADR records.
+      - Governed Markdown body files for Requirement records.
+      - Body format profile declarations used by those records.
+    checked_entity_types:
+      - ADR body
+      - Requirement body
+      - Governed Markdown body
+    checked_paths:
+      - docs/reference/project-model/body/decisions/**
+      - docs/reference/project-model/body/requirements/**
+      - docs/reference/project-model/registers/body-formats.registry.yml
+    expected_result: Every registered ADR or requirement body exists and follows its declared body format profile.
+    threat_analysis_contribution: Keeps decisions and requirements readable by humans and machine-parseable for later threat-analysis study.
     owner_macro_requirement: MR-0001
     applicability_class: always_required
     target_scopes:
@@ -91,6 +144,18 @@ governance_gates:
   - id: orphan_governed_bodies
     label: Orphan governed bodies
     description: Validates that governed Markdown body files are referenced by project-model registries.
+    checked_objects:
+      - Governed Markdown body files.
+      - Registry body_path references.
+    checked_entity_types:
+      - ADR body
+      - Requirement body
+      - Referenced document body
+    checked_paths:
+      - docs/reference/project-model/body/**
+      - docs/reference/project-model/registers/**/*.yml
+    expected_result: Each governed body file is referenced by an authoritative registry record and no orphan body remains.
+    threat_analysis_contribution: Prevents obsolete or disconnected text from being treated as valid threat-analysis evidence.
     owner_macro_requirement: MR-0000
     applicability_class: always_required
     target_scopes:
@@ -107,6 +172,16 @@ governance_gates:
   - id: threat_analysis_lifecycle_presence
     label: Threat Analysis lifecycle presence
     description: Ensures a managed child project has a Threat Analysis lifecycle record or planned placeholder.
+    checked_objects:
+      - Threat analysis lifecycle documentation and planning records.
+      - Analysis snapshot or lifecycle boundaries when implemented.
+    checked_entity_types:
+      - Threat analysis lifecycle
+      - Analysis snapshot
+    checked_paths:
+      - docs/reference/project-model/**
+    expected_result: The target declares how threat analysis lifecycle records will be represented or reports that the method is still planned.
+    threat_analysis_contribution: Makes analysis timing, freshness and snapshot boundaries explicit before execution exists.
     owner_macro_requirement: MR-0003
     applicability_class: always_required
     target_scopes:
@@ -123,6 +198,21 @@ governance_gates:
   - id: code_traceability
     label: Code traceability
     description: Validates decision-to-code traceability when source code artifacts are present.
+    checked_objects:
+      - Implementation source files with governed JSDoc traceability.
+      - Graph implementation artifact nodes.
+    checked_entity_types:
+      - Implementation artifact
+      - Tool
+      - Source module
+    checked_paths:
+      - backend/tools/**
+      - tools/docs/**
+      - backend/src/**
+      - frontend/src/**
+      - docs/reference/project-model/registers/graph/*.graph.yml
+    expected_result: Implemented source files cite governed requirements and have matching graph artifact nodes.
+    threat_analysis_contribution: Allows analysis to connect code behavior back to requirements and decisions.
     owner_macro_requirement: MR-0001
     applicability_class: capability_required
     target_scopes:
@@ -139,6 +229,16 @@ governance_gates:
   - id: openapi_contract
     label: OpenAPI contract
     description: Validates OpenAPI contract structure for backend API capabilities.
+    checked_objects:
+      - OpenAPI contract file.
+      - Registered read-only backend operations and schemas.
+    checked_entity_types:
+      - API contract
+      - Backend operation
+    checked_paths:
+      - docs/reference/api/openapi/threat-forge.openapi.yml
+    expected_result: API operations and schemas keep the governed read-only contract shape.
+    threat_analysis_contribution: Lets threat analysis reason about API boundaries, inputs, outputs and trust surfaces.
     owner_macro_requirement: MR-0000
     applicability_class: capability_required
     target_scopes:
@@ -154,6 +254,18 @@ governance_gates:
   - id: frontend_build
     label: Frontend build
     description: Validates frontend build and generated snapshot when a frontend UI capability is present.
+    checked_objects:
+      - Frontend source and production build output.
+      - Generated Project Documentation Explorer snapshot.
+    checked_entity_types:
+      - Frontend UI
+      - Generated snapshot
+    checked_paths:
+      - frontend/src/**
+      - frontend/public/project-documentation-explorer.snapshot.json
+      - artifacts/frontend/governance-console/**
+    expected_result: The frontend builds successfully and can render governed documentation and governance plan data.
+    threat_analysis_contribution: Makes the study interface reliable enough for users to inspect governed project evidence.
     owner_macro_requirement: MR-0002
     applicability_class: capability_required
     target_scopes:
@@ -170,6 +282,17 @@ governance_gates:
   - id: runtime_tests
     label: Runtime tests
     description: Executes runtime tests for implemented runtime service capabilities.
+    checked_objects:
+      - Runtime service tests.
+      - Backend behavior exercised by node test runner.
+    checked_entity_types:
+      - Runtime test
+      - Service boundary
+    checked_paths:
+      - backend/tests/**
+      - backend/src/**
+    expected_result: Runtime unit tests pass for implemented service boundaries.
+    threat_analysis_contribution: Provides reproducible behavior evidence for runtime boundaries that threat analysis will rely on.
     owner_macro_requirement: MR-0002
     applicability_class: capability_required
     target_scopes:
@@ -186,6 +309,16 @@ governance_gates:
   - id: child_project_demo_workspace_reset
     label: Demo child project workspace reset
     description: Validates demo child project reset reproducibility and skeleton validation.
+    checked_objects:
+      - Demo child project seed.
+      - Resettable child project workspace.
+    checked_entity_types:
+      - Demo child project
+      - Workspace seed
+    checked_paths:
+      - examples/child-projects/minimal-governed-child-project/**
+    expected_result: The demo workspace can be reset and validated without mutating default runtime state.
+    threat_analysis_contribution: Gives a safe study target for explaining child project governance before production execution.
     owner_macro_requirement: MR-0003
     applicability_class: demo_required
     target_scopes:
@@ -202,6 +335,16 @@ governance_gates:
   - id: child_project_demo_sqlite_registration
     label: Demo child project SQLite registration
     description: Validates platform operational registration of the demo child project through SQLite storage.
+    checked_objects:
+      - Demo child project registration workflow.
+      - Temporary SQLite child project database.
+    checked_entity_types:
+      - Child project registration
+      - SQLite state
+    checked_paths:
+      - backend/tools/MR-0003/register-demo-child-project.mjs
+    expected_result: The demo child project can be registered in isolated SQLite state and report a latest pass status.
+    threat_analysis_contribution: Shows how managed projects become discoverable analysis targets without relying on manual memory.
     owner_macro_requirement: MR-0003
     applicability_class: platform_only
     target_scopes:
@@ -218,6 +361,16 @@ governance_gates:
   - id: child_project_management_api_self_test
     label: Child Project Management API self-test
     description: Validates the read-only Child Project Management API serve command.
+    checked_objects:
+      - Child Project Management API serve command.
+      - Read-only child project list and detail endpoints.
+    checked_entity_types:
+      - Backend API
+      - Child project record
+    checked_paths:
+      - backend/src/MR-0003/child-project-management/**
+    expected_result: The API starts on an isolated local port and serves read-only child project data.
+    threat_analysis_contribution: Gives the UI and future analysis flows a stable way to discover child project targets.
     owner_macro_requirement: MR-0003
     applicability_class: platform_only
     target_scopes:
@@ -234,6 +387,17 @@ governance_gates:
   - id: taxonomy_usage_visibility
     label: Taxonomy usage visibility
     description: Plans validation that governed taxonomy values expose accepted/deprecated state, descriptions and usage surfaces.
+    checked_objects:
+      - Governed taxonomy values.
+      - Taxonomy usage and lifecycle metadata.
+    checked_entity_types:
+      - Taxonomy term
+      - Controlled value
+    checked_paths:
+      - docs/reference/project-model/registers/taxonomies/**
+      - docs/reference/project-model/registers/**/*.yml
+    expected_result: Taxonomy terms expose labels, descriptions and usage state so UI filters and explanations stay governed.
+    threat_analysis_contribution: Lets the UI explain controlled values instead of showing opaque ids in analysis and governance views.
     owner_macro_requirement: MR-0003
     applicability_class: planned_until_method_available
     target_scopes:
@@ -249,6 +413,18 @@ governance_gates:
   - id: child_governance_registry_contract
     label: Child governance registry contract
     description: Validates the initial child project governance registry family and cross-registry references.
+    checked_objects:
+      - Child project governance registry family.
+      - Cross-registry references among gates, profiles, capabilities and validation surfaces.
+    checked_entity_types:
+      - Governance gate
+      - Governance profile
+      - Governance capability
+      - Validation surface
+    checked_paths:
+      - docs/reference/project-model/registers/child-project-governance/*.registry.yml
+    expected_result: Registry records are complete, cross-references resolve and representative invalid fixtures fail closed.
+    threat_analysis_contribution: Makes the gate model itself reliable before it is used to judge child projects.
     owner_macro_requirement: MR-0003
     applicability_class: platform_self_required
     target_scopes:
@@ -265,6 +441,17 @@ governance_gates:
   - id: child_governance_gate_plan
     label: Child governance gate plan
     description: Plans child project governance gates from governed profiles, applicability classes, capabilities and validation surfaces without executing real gates.
+    checked_objects:
+      - Governance profile expansion logic.
+      - Planned gate applicability results.
+    checked_entity_types:
+      - Gate plan
+      - Governance profile
+    checked_paths:
+      - backend/tools/MR-0003/plan-child-project-governance-gates.mjs
+      - docs/reference/project-model/registers/child-project-governance/*.registry.yml
+    expected_result: Representative profiles expand into deterministic gate plans with reasons and statuses.
+    threat_analysis_contribution: Shows why a project receives a specific governance plan instead of an unexplained checklist.
     owner_macro_requirement: MR-0003
     applicability_class: platform_self_required
     target_scopes:
@@ -281,6 +468,16 @@ governance_gates:
   - id: child_governance_gate_plan_artifacts
     label: Child governance gate plan artifacts
     description: Exports deterministic JSON artifacts for representative child project governance gate plans so backend and UI work can consume stable generated evidence.
+    checked_objects:
+      - Generated child governance gate plan JSON artifacts.
+      - Representative platform, demo and documentation-only plans.
+    checked_entity_types:
+      - Generated artifact
+      - Gate plan
+    checked_paths:
+      - artifacts/child-project-governance/gate-plans/*.plan.json
+    expected_result: Deterministic JSON artifacts are generated for representative governance profiles.
+    threat_analysis_contribution: Lets the UI and study flows inspect a stable plan without running gates live.
     owner_macro_requirement: MR-0003
     applicability_class: platform_self_required
     target_scopes:
@@ -297,6 +494,17 @@ governance_gates:
   - id: child_governance_gate_plan_api
     label: Child governance gate plan API
     description: Serves generated child project governance gate plan artifacts through a read-only backend API for the upcoming UI view.
+    checked_objects:
+      - Governance gate plan read-only API.
+      - Explanation view-model for selected plans.
+    checked_entity_types:
+      - Backend API
+      - Gate plan explanation
+    checked_paths:
+      - backend/src/MR-0003/child-project-governance-plan/**
+      - docs/reference/api/openapi/threat-forge.openapi.yml
+    expected_result: The API serves list and detail endpoints with a read-only explanation payload.
+    threat_analysis_contribution: Moves gate meaning into backend data so the UI stays aligned with governed records.
     owner_macro_requirement: MR-0003
     applicability_class: platform_self_required
     target_scopes:
@@ -314,6 +522,16 @@ governance_gates:
   - id: child_governance_gate_plan_ui
     label: Child governance gate plan UI
     description: Renders generated child project governance gate plans in the Governance Console read-only UI with profile, status, reason, evidence and validation-surface visibility.
+    checked_objects:
+      - Governance Console gate plan UI.
+      - Read-only gate explanation rendering.
+    checked_entity_types:
+      - Frontend UI
+      - Gate plan explanation
+    checked_paths:
+      - frontend/src/MR-0003/child-project-governance-plan/**
+    expected_result: The UI renders gate names, descriptions, reasons and expandable explanations without executing gates.
+    threat_analysis_contribution: Makes governance gates usable as a study surface for understanding project analysis readiness.
     owner_macro_requirement: MR-0003
     applicability_class: platform_self_required
     target_scopes:

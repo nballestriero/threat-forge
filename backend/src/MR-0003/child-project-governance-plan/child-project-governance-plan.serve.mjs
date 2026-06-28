@@ -537,6 +537,31 @@ function recordDescription(fallback, record) {
 }
 
 /**
+ * Reads a registry record array field as stable strings.
+ *
+ * @param {RegistryRecord|undefined} record - Optional registry record.
+ * @param {string} field - Array field name.
+ * @returns {string[]} String values.
+ */
+function recordStringArray(record, field) {
+  const value = record?.[field];
+  return Array.isArray(value) ? value.map((item) => String(item)).filter(Boolean) : [];
+}
+
+/**
+ * Reads a registry record text field with a fallback.
+ *
+ * @param {RegistryRecord|undefined} record - Optional registry record.
+ * @param {string} field - Text field name.
+ * @param {string} fallback - Fallback text.
+ * @returns {string} Registry text value.
+ */
+function recordText(record, field, fallback) {
+  const value = record?.[field];
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+/**
  * Builds the study-oriented explanation for a selected governance profile.
  *
  * @param {string} profileId - Governance profile id from the generated plan.
@@ -634,6 +659,7 @@ function explainCapability(capabilityId, registries, capabilityStates) {
     label: recordLabel(capabilityId, capability),
     description: recordDescription("Project or platform capability required by this gate.", capability),
     category: capability?.category,
+    enables: recordText(capability, "enables", "Capability behavior is not yet described by the registry."),
     source_registry: "governance-capabilities.registry.yml#governance_capabilities",
     state: {
       id: stateId,
@@ -642,7 +668,7 @@ function explainCapability(capabilityId, registries, capabilityStates) {
       source_registry: "governance-capabilities.registry.yml#capability_states",
     },
     concept: "A required capability is what the project or platform must be able to expose, read, validate, or reason about before this gate can be meaningful.",
-    why_it_matters: "Threat analysis depends on knowing which project capabilities exist; gates are selected from those capabilities rather than from opaque UI choices.",
+    why_it_matters: recordText(capability, "why_it_matters", "Threat analysis depends on knowing which project capabilities exist; gates are selected from those capabilities rather than from opaque UI choices."),
   };
 }
 
@@ -662,9 +688,12 @@ function explainValidationSurface(surfaceId, registries) {
     description: recordDescription("Concrete project, command, fixture, API, or generated artifact surface checked by this gate.", surface),
     evidence_kind: surface?.evidence_kind,
     command: surface?.command,
+    checked_area: recordText(surface, "checked_area", "Concrete project area checked by this validation surface."),
+    checked_artifacts: recordStringArray(surface, "checked_artifacts"),
+    checked_paths: recordStringArray(surface, "checked_paths"),
     source_registry: "validation-surfaces.registry.yml#validation_surfaces",
     concept: "A validation surface is the concrete place where a gate gets evidence: repository checks, registries, generated artifacts, demo workspaces, API self-tests, frontend builds, or runtime tests.",
-    why_it_matters: "It tells the reader what part of the project is actually being checked, so the gate is not just an abstract policy name.",
+    why_it_matters: recordText(surface, "why_it_matters", "It tells the reader what part of the project is actually being checked, so the gate is not just an abstract policy name."),
   };
 }
 
@@ -685,16 +714,25 @@ function explainGate(gate, profile, targetScope, registries, capabilityStates) {
   const gateRecord = gates.get(gate.id);
   const profileGateIds = Array.isArray(profile?.gates) ? profile.gates : [];
   const gateTargetScopes = Array.isArray(gateRecord?.target_scopes) ? gateRecord.target_scopes : [];
-  const requiredCapabilities = Array.isArray(gate.required_capabilities) ? gate.required_capabilities : [];
-  const validationSurfaces = Array.isArray(gate.validation_surfaces) ? gate.validation_surfaces : [];
+  const requiredCapabilities = Array.isArray(gate.required_capabilities)
+    ? gate.required_capabilities
+    : recordStringArray(gateRecord, "required_capabilities");
+  const validationSurfaces = Array.isArray(gate.validation_surfaces)
+    ? gate.validation_surfaces
+    : recordStringArray(gateRecord, "validation_surfaces");
 
   return {
     id: gate.id,
     label: String(gate.label ?? gateRecord?.label ?? humanizeIdentifier(gate.id)),
     source_registry: "governance-gates.registry.yml#governance_gates",
+    summary: recordDescription("Governance gate check selected by the plan.", gateRecord),
     what_it_checks: recordDescription("Governance gate check selected by the plan.", gateRecord),
+    checked_objects: recordStringArray(gateRecord, "checked_objects"),
+    checked_entity_types: recordStringArray(gateRecord, "checked_entity_types"),
+    checked_paths: recordStringArray(gateRecord, "checked_paths"),
+    expected_result: recordText(gateRecord, "expected_result", "The gate produces a governed validation result when executed."),
     why_selected: String(gate.reason ?? "The profile selected this gate for the current target scope."),
-    contributes_to_threat_analysis_readiness: "This gate helps make the project documentation, implementation evidence, or runtime boundary understandable enough to support later threat analysis.",
+    contributes_to_threat_analysis_readiness: recordText(gateRecord, "threat_analysis_contribution", "This gate helps make the project documentation, implementation evidence, or runtime boundary understandable enough to support later threat analysis."),
     status: explainStatus(gate.status, statuses),
     applicability_class: explainApplicabilityClass(gate.applicability_class ?? String(gateRecord?.applicability_class ?? "unknown"), applicabilityClasses),
     selection_rationale: {
@@ -709,6 +747,13 @@ function explainGate(gate, profile, targetScope, registries, capabilityStates) {
     required_capabilities: requiredCapabilities.map((capabilityId) => explainCapability(capabilityId, registries, capabilityStates)),
     validation_surfaces: validationSurfaces.map((surfaceId) => explainValidationSurface(surfaceId, registries)),
     evidence: Array.isArray(gate.evidence) ? gate.evidence : [],
+    expected_verification_output: recordText(gateRecord, "expected_result", "The gate produces a governed validation result when executed."),
+    technical_trace: {
+      raw_evidence_markers: Array.isArray(gate.evidence) ? gate.evidence : [],
+      raw_gate_id: gate.id,
+      raw_validation_surface_ids: validationSurfaces,
+      raw_capability_ids: requiredCapabilities,
+    },
   };
 }
 
@@ -1076,6 +1121,16 @@ export async function runChildProjectGovernancePlanServeSelfTest(logger = consol
     }
     if (!detailResponse.payload?.explanation?.field_explanations?.validation_surfaces) {
       throw new Error("Serve self-test expected validation surface field explanation.");
+    }
+    const explainedGate = detailResponse.payload.explanation.gates[0];
+    if (!Array.isArray(explainedGate.checked_objects) || !explainedGate.checked_objects.includes("Generated child governance gate plan JSON artifacts.")) {
+      throw new Error("Serve self-test expected gate checked-object explanation from registry metadata.");
+    }
+    if (!explainedGate.expected_verification_output) {
+      throw new Error("Serve self-test expected gate expected verification output explanation.");
+    }
+    if (!Array.isArray(explainedGate.validation_surfaces?.[0]?.checked_artifacts)) {
+      throw new Error("Serve self-test expected validation surface checked artifact explanation.");
     }
     if (forbiddenResponse.statusCode !== 403) {
       throw new Error("Serve self-test expected unauthenticated requests to be forbidden.");
