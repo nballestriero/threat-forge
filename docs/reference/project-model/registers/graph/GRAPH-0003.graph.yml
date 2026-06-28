@@ -1851,3 +1851,11 @@ spo_relations:
   - subject: MR-0003REQ-0063
     predicate: implemented_by
     object: MR-0003UI-0009
+
+  - subject: MR-0003REQ-0064
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0065
+    predicate: implemented_by
+    object: MR-0003UI-0007

@@ -663,6 +663,100 @@ button, input, select { font: inherit; }
   display: inline-flex;
 }
 
+
+/* Compact governance plan overview rows keep study metadata available on demand. */
+.tf-governance-overview-list {
+  display: grid;
+  gap: 8px;
+}
+
+.tf-governance-overview-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #deded8;
+  border-radius: 12px;
+  background: #fdfdfb;
+  padding: 10px 12px;
+}
+
+.tf-governance-overview-row__main {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.tf-governance-overview-row__label {
+  color: #555;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tf-governance-overview-row__main strong {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.tf-governance-overview-popover-sections {
+  display: grid;
+  gap: 12px;
+}
+
+.tf-governance-overview-popover-sections section {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e5df;
+}
+
+.tf-governance-overview-popover-sections section:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.tf-governance-overview-popover-sections h5 {
+  margin: 0;
+}
+
+
+/* Information popovers prefer a single readable column over dense metadata grids. */
+.tf-taxonomy-field-popover .tf-metadata-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.tf-taxonomy-field-popover .tf-metadata-grid > div {
+  min-width: 0;
+}
+
+.tf-taxonomy-field-popover .tf-metadata-grid dd {
+  max-width: 100%;
+}
+
+.tf-taxonomy-field-popover .tf-chip-list {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.tf-taxonomy-field-popover .tf-chip-list .tf-badge {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.tf-taxonomy-field-popover__meta {
+  grid-template-columns: 1fr;
+}
+
+.tf-governance-overview-popover-sections .tf-metadata-grid {
+  grid-template-columns: 1fr;
+}
+
 /* Compact taxonomy value rows keep group pages readable while preserving detail on demand. */
 .tf-taxonomy-value-card {
   position: relative;
@@ -694,4 +788,48 @@ button, input, select { font: inherit; }
   color: #666;
   font-size: 12px;
   overflow-wrap: anywhere;
+}
+
+.tf-governance-gate-explanation-flow {
+  display: grid;
+  gap: 12px;
+}
+
+.tf-governance-gate-section,
+.tf-governance-gate-disclosure {
+  border: 1px solid #e5e5df;
+  border-radius: 14px;
+  background: #fbfbf9;
+  padding: 12px;
+}
+
+.tf-governance-gate-section h4,
+.tf-governance-gate-disclosure h4 {
+  margin: 0 0 8px;
+}
+
+.tf-governance-gate-section p:last-child {
+  margin-bottom: 0;
+}
+
+.tf-governance-gate-disclosure summary {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.tf-governance-gate-disclosure summary span {
+  color: #111;
+  font-weight: 700;
+}
+
+.tf-governance-gate-disclosure summary small {
+  color: #666;
+}
+
+.tf-governance-gate-disclosure[open] summary {
+  margin-bottom: 12px;
 }

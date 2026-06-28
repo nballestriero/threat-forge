@@ -18,6 +18,8 @@ import {
  * @implementsRequirement MR-0003REQ-0061
  * @implementsRequirement MR-0003REQ-0062
  * @implementsRequirement MR-0003REQ-0063
+ * @implementsRequirement MR-0003REQ-0064
+ * @implementsRequirement MR-0003REQ-0065
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0003
@@ -570,49 +572,114 @@ function ConceptExplanationCard({ title, item, extraRows = [] }) {
 }
 
 /**
- * Render the plan-level study guide returned by the governance explanation API.
+ * Render a compact inline overview row whose details open only on demand.
  *
- * @param {{explanation?: Record<string, unknown>}} props - Plan explanation props.
- * @returns {import("react").JSX.Element|null} Guide card or null.
+ * @param {{idPrefix: string, label: string, summary?: unknown, ariaLabel: string, children: import("react").ReactNode}} props - Overview row props.
+ * @returns {import("react").JSX.Element} Compact overview row.
  */
-function PlanStudyGuide({ explanation }) {
-  if (!explanation) return null;
+function GovernanceOverviewInfoRow({ idPrefix, label, summary, ariaLabel, children }) {
+  const [isHelpOpen, setHelpOpen] = useState(false);
+  const helpId = `${idPrefix.replace(/[^a-zA-Z0-9_-]/g, "-")}-help`;
 
   return (
-    <Card className="tf-documentation-context-card">
-      <p className="tf-eyebrow">Study guide</p>
-      <h3>How to read this governance gate plan</h3>
-      <dl className="tf-metadata-grid">
-        <ExplanationParagraph label="Purpose" value={explanation.purpose} />
-        <ExplanationParagraph label="How to use it" value={explanation.usage} />
-        <ExplanationParagraph label="Read-only boundary" value={explanation.limitations} />
-      </dl>
-      <div>
-        <strong>Source registries</strong>
-        <InlineValueList values={explanation.source_registries} />
+    <article className="tf-governance-overview-row">
+      <div className="tf-governance-overview-row__main">
+        <span className="tf-governance-overview-row__label">{label}</span>
+        <strong>{displayValue(summary)}</strong>
       </div>
-    </Card>
+      <div
+        className={isHelpOpen ? "tf-taxonomy-field-help is-open" : "tf-taxonomy-field-help"}
+        onMouseEnter={() => setHelpOpen(true)}
+        onMouseLeave={() => setHelpOpen(false)}
+        onFocus={() => setHelpOpen(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setHelpOpen(false);
+        }}
+      >
+        <button
+          type="button"
+          className="tf-taxonomy-field-info-button"
+          aria-label={ariaLabel}
+          aria-expanded={isHelpOpen}
+          aria-describedby={isHelpOpen ? helpId : undefined}
+          onClick={() => setHelpOpen((current) => !current)}
+        >
+          i
+        </button>
+        <div id={helpId} className="tf-taxonomy-field-help__panel">
+          {children}
+        </div>
+      </div>
+    </article>
   );
 }
 
 /**
- * Render field-level explanations for raw technical values shown by the page.
+ * Render the plan-level study guide returned by the governance explanation API inside an on-demand popover.
+ *
+ * @param {{explanation?: Record<string, unknown>}} props - Plan explanation props.
+ * @returns {import("react").JSX.Element} Guide popover.
+ */
+function PlanStudyGuidePopover({ explanation }) {
+  return (
+    <div className="tf-taxonomy-field-popover" role="tooltip">
+      <p className="tf-eyebrow">Study guide</p>
+      <h4>How to read this governance gate plan</h4>
+      <dl className="tf-metadata-grid">
+        <ExplanationParagraph label="Purpose" value={explanation?.purpose} />
+        <ExplanationParagraph label="How to use it" value={explanation?.usage} />
+        <ExplanationParagraph label="Read-only boundary" value={explanation?.limitations} />
+      </dl>
+      <div>
+        <strong>Source registries</strong>
+        <InlineValueList values={explanation?.source_registries} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Render one concept explanation inside an on-demand popover.
+ *
+ * @param {{title: string, item?: Record<string, unknown>, extraRows?: Array<[string, unknown]>}} props - Concept props.
+ * @returns {import("react").JSX.Element|null} Concept popover.
+ */
+function ConceptExplanationPopover({ title, item, extraRows = [] }) {
+  if (!item) return null;
+
+  return (
+    <div className="tf-taxonomy-field-popover" role="tooltip">
+      <p className="tf-eyebrow">{title}</p>
+      <h4>{displayValue(item.label ?? item.id)}</h4>
+      <dl className="tf-metadata-grid">
+        <ExplanationParagraph label="Raw value" value={item.id} />
+        <ExplanationParagraph label="Meaning" value={item.concept ?? item.description} />
+        <ExplanationParagraph label="Why it matters" value={item.why_it_matters ?? item.why_it_mattered_for_selection} />
+        <ExplanationParagraph label="Source registry" value={item.source_registry} />
+        {extraRows.map(([rowLabel, value]) => <ExplanationParagraph key={rowLabel} label={rowLabel} value={value} />)}
+      </dl>
+    </div>
+  );
+}
+
+/**
+ * Render field-level explanations for raw technical values shown by the page inside an on-demand popover.
  *
  * @param {{fieldExplanations?: Record<string, Record<string, unknown>>}} props - Field guide props.
- * @returns {import("react").JSX.Element|null} Field guide card.
+ * @returns {import("react").JSX.Element|null} Field guide popover.
  */
-function FieldExplanationGuide({ fieldExplanations }) {
+function FieldExplanationGuidePopover({ fieldExplanations }) {
   const entries = Object.entries(fieldExplanations ?? {});
   if (entries.length === 0) return null;
 
   return (
-    <Card>
+    <div className="tf-taxonomy-field-popover" role="tooltip">
       <p className="tf-eyebrow">Field guide</p>
-      <h3>What the technical fields mean</h3>
-      <div className="tf-governance-gate-list">
+      <h4>What the technical fields mean</h4>
+      <div className="tf-governance-overview-popover-sections">
         {entries.map(([field, explanation]) => (
           <section key={field}>
-            <h4>{displayValue(explanation.question ?? formatGovernancePlanLabel(field))}</h4>
+            <h5>{displayValue(explanation.question ?? formatGovernancePlanLabel(field))}</h5>
             <dl className="tf-metadata-grid">
               <ExplanationParagraph label="Field" value={field} />
               <ExplanationParagraph label="Meaning" value={explanation.meaning} />
@@ -621,33 +688,78 @@ function FieldExplanationGuide({ fieldExplanations }) {
           </section>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
 
 /**
- * Render plan-level concept explanations for profile, target scope and result.
+ * Render plan-level study metadata as compact rows with information icons.
  *
  * @param {{explanation?: Record<string, unknown>}} props - Explanation props.
- * @returns {import("react").JSX.Element|null} Concept grid.
+ * @returns {import("react").JSX.Element|null} Compact overview card.
  */
-function PlanConceptExplanations({ explanation }) {
+function PlanOverviewInfo({ explanation }) {
   if (!explanation) return null;
 
   return (
-    <section className="tf-stats-grid" aria-label="Governance concept explanations">
-      <ConceptExplanationCard
-        title="Profile"
-        item={explanation.profile}
-        extraRows={[
-          ["Target scope", explanation.profile?.target_scope],
-          ["Baseline required", explanation.profile?.baseline_required],
-          ["Required capabilities", asArray(explanation.profile?.required_capabilities).join(", ")],
-        ]}
-      />
-      <ConceptExplanationCard title="Target scope" item={explanation.target_scope} />
-      <ConceptExplanationCard title="Result" item={explanation.result} />
-    </section>
+    <Card className="tf-documentation-context-card">
+      <p className="tf-eyebrow">Plan overview</p>
+      <h3>Read this plan progressively</h3>
+      <p>
+        Keep the page compact by reading the current profile, target scope and result first.
+        Use the information icon when you want the full study explanation.
+      </p>
+      <div className="tf-governance-overview-list">
+        <GovernanceOverviewInfoRow
+          idPrefix="governance-study-guide"
+          label="Study guide"
+          summary="Read-only explanation"
+          ariaLabel="Show study guide details"
+        >
+          <PlanStudyGuidePopover explanation={explanation} />
+        </GovernanceOverviewInfoRow>
+        <GovernanceOverviewInfoRow
+          idPrefix="governance-profile"
+          label="Profile"
+          summary={explanation.profile?.label ?? explanation.profile?.id}
+          ariaLabel="Show governance profile details"
+        >
+          <ConceptExplanationPopover
+            title="Profile"
+            item={explanation.profile}
+            extraRows={[
+              ["Target scope", explanation.profile?.target_scope],
+              ["Baseline required", explanation.profile?.baseline_required],
+              ["Required capabilities", asArray(explanation.profile?.required_capabilities).join(", ")],
+            ]}
+          />
+        </GovernanceOverviewInfoRow>
+        <GovernanceOverviewInfoRow
+          idPrefix="governance-target-scope"
+          label="Target scope"
+          summary={explanation.target_scope?.label ?? explanation.target_scope?.id}
+          ariaLabel="Show target scope details"
+        >
+          <ConceptExplanationPopover title="Target scope" item={explanation.target_scope} />
+        </GovernanceOverviewInfoRow>
+        <GovernanceOverviewInfoRow
+          idPrefix="governance-result"
+          label="Result"
+          summary={explanation.result?.label ?? explanation.result?.id}
+          ariaLabel="Show result details"
+        >
+          <ConceptExplanationPopover title="Result" item={explanation.result} />
+        </GovernanceOverviewInfoRow>
+        <GovernanceOverviewInfoRow
+          idPrefix="governance-field-guide"
+          label="Field guide"
+          summary="Capability, validation surface and rationale"
+          ariaLabel="Show field guide details"
+        >
+          <FieldExplanationGuidePopover fieldExplanations={explanation.field_explanations} />
+        </GovernanceOverviewInfoRow>
+      </div>
+    </Card>
   );
 }
 
@@ -719,6 +831,40 @@ function ValidationSurfaceExplanationList({ items = [] }) {
 }
 
 /**
+ * Render one compact semantic section for an expanded governance gate.
+ *
+ * @param {{eyebrow: string, title: string, children: import("react").ReactNode}} props - Section props.
+ * @returns {import("react").JSX.Element} Semantic gate section.
+ */
+function GateExplanationSection({ eyebrow, title, children }) {
+  return (
+    <section className="tf-governance-gate-section">
+      <p className="tf-eyebrow">{eyebrow}</p>
+      <h4>{title}</h4>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Render a collapsible semantic subsection so expanded gates stay readable.
+ *
+ * @param {{title: string, summary: string, children: import("react").ReactNode}} props - Details props.
+ * @returns {import("react").JSX.Element} Collapsible gate subsection.
+ */
+function GateExplanationDisclosure({ title, summary, children }) {
+  return (
+    <details className="tf-governance-gate-disclosure">
+      <summary>
+        <span>{title}</span>
+        <small>{summary}</small>
+      </summary>
+      <div>{children}</div>
+    </details>
+  );
+}
+
+/**
  * Render the expanded explanation for one generated gate using backend-provided semantics.
  *
  * @param {{gate?: Record<string, unknown>, explanation?: Record<string, unknown>}} props - Gate explanation props.
@@ -728,20 +874,11 @@ function GateExplanationDetails({ gate, explanation }) {
   if (!explanation) return null;
 
   const selection = explanation.selection_rationale ?? {};
+  const capabilities = asArray(explanation.required_capabilities);
+  const surfaces = asArray(explanation.validation_surfaces);
   return (
-    <div className="tf-governance-gate-list">
-      <section>
-        <h4>What this gate checks</h4>
-        <p>{displayValue(explanation.what_it_checks ?? explanation.summary)}</p>
-        <dl className="tf-metadata-grid">
-          <ExplanationArrayBlock label="Objects checked" values={explanation.checked_objects} />
-          <ExplanationArrayBlock label="Entity types checked" values={explanation.checked_entity_types} />
-          <ExplanationArrayBlock label="Paths checked" values={explanation.checked_paths} />
-        </dl>
-      </section>
-
-      <section>
-        <h4>Why this gate is selected</h4>
+    <div className="tf-governance-gate-explanation-flow">
+      <GateExplanationSection eyebrow="1 · Selection" title="Why this gate?">
         <p>{displayValue(explanation.why_selected ?? gate?.reason)}</p>
         <dl className="tf-metadata-grid">
           <ExplanationParagraph label="Profile includes this gate" value={String(Boolean(selection.profile_includes_gate))} />
@@ -749,23 +886,44 @@ function GateExplanationDetails({ gate, explanation }) {
           <ExplanationParagraph label="Profile" value={selection.profile} />
           <ExplanationParagraph label="Target scope" value={selection.target_scope} />
         </dl>
-      </section>
+      </GateExplanationSection>
 
-      <section>
-        <h4>Expected result when executed</h4>
+      <GateExplanationSection eyebrow="2 · Validation" title="What does it check?">
+        <p>{displayValue(explanation.what_it_checks ?? explanation.summary)}</p>
+        <dl className="tf-metadata-grid">
+          <ExplanationArrayBlock label="Objects checked" values={explanation.checked_objects} />
+          <ExplanationArrayBlock label="Entity types checked" values={explanation.checked_entity_types} />
+          <ExplanationArrayBlock label="Paths checked" values={explanation.checked_paths} />
+        </dl>
+      </GateExplanationSection>
+
+      {surfaces.length > 0 ? (
+        <GateExplanationDisclosure
+          title="Checked areas"
+          summary={`${surfaces.length} validation surface${surfaces.length === 1 ? "" : "s"}`}
+        >
+          <ValidationSurfaceExplanationList items={surfaces} />
+        </GateExplanationDisclosure>
+      ) : null}
+
+      {capabilities.length > 0 ? (
+        <GateExplanationDisclosure
+          title="Required capabilities"
+          summary={`${capabilities.length} required capabilit${capabilities.length === 1 ? "y" : "ies"}`}
+        >
+          <CapabilityExplanationList items={capabilities} />
+        </GateExplanationDisclosure>
+      ) : null}
+
+      <GateExplanationSection eyebrow="3 · Expected outcome" title="Expected result">
         <p>{displayValue(explanation.expected_result ?? explanation.expected_verification_output)}</p>
-      </section>
+      </GateExplanationSection>
 
-      <CapabilityExplanationList items={explanation.required_capabilities} />
-      <ValidationSurfaceExplanationList items={explanation.validation_surfaces} />
-
-      <section>
-        <h4>Contribution to threat-analysis readiness</h4>
+      <GateExplanationSection eyebrow="4 · Threat analysis" title="Contribution to threat-analysis readiness">
         <p>{displayValue(explanation.contributes_to_threat_analysis_readiness)}</p>
-      </section>
+      </GateExplanationSection>
 
-      <section>
-        <h4>Planning status</h4>
+      <GateExplanationDisclosure title="Planning status" summary={displayValue(explanation.status?.label ?? gate?.status)}>
         <dl className="tf-metadata-grid">
           <ExplanationParagraph label="Status" value={explanation.status?.label ?? explanation.status?.id ?? gate?.status} />
           <ExplanationParagraph label="Status meaning" value={explanation.status?.description ?? explanation.status?.concept} />
@@ -774,7 +932,7 @@ function GateExplanationDetails({ gate, explanation }) {
           <ExplanationParagraph label="Unsupported behavior" value={selection.unsupported_behavior} />
           <ExplanationParagraph label="Result when not applicable" value={selection.result_when_not_applicable} />
         </dl>
-      </section>
+      </GateExplanationDisclosure>
 
       <TechnicalTraceDetails gate={gate} explanation={explanation} />
     </div>
@@ -904,9 +1062,7 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
       </div>
 
       <ExplanationAvailabilityNotice explanation={explanation} />
-      <PlanStudyGuide explanation={explanation} />
-      <PlanConceptExplanations explanation={explanation} />
-      <FieldExplanationGuide fieldExplanations={explanation?.field_explanations} />
+      <PlanOverviewInfo explanation={explanation} />
       <DetailedPlanSummary plan={plan} />
       <CapabilityStates states={plan.capability_states} />
 

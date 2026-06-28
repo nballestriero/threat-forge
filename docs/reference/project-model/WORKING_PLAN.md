@@ -1384,3 +1384,47 @@ The implementation changes taxonomy value rows so the primary page shows only th
 This keeps taxonomy group pages readable when values such as `icon_token`, `color_token`, `graph_shape_token` and `graph_edge_style_token` have explanatory text. The frontend still renders backend-supplied taxonomy meaning only; it does not hardcode taxonomy semantics, mutate registries, change backend contracts, change snapshot generation semantics or add taxonomy governed Markdown bodies.
 
 The next safe implementation step remains the Governance gate plan UI hierarchy refinement: compact gate rows first, semantic explanation sections on expansion, and technical trace at the end.
+
+## Governance Gate Plan Explanation Hierarchy Frontend Refinement Micropasso
+
+This frontend refinement applies the explainable UI hierarchy defined by `MR-0003REQ-0064` and `MR-0003REQ-0065` to the Governance gate plans page.
+
+The implementation keeps the gate list compact by default: each gate row continues to show the gate label, short explanation, status and a single show/hide details action. When a gate is expanded, the detail flow now presents semantic sections in study order:
+
+- why the gate is selected for the current profile and target scope;
+- what the gate checks;
+- checked areas as a collapsible validation-surface subsection;
+- required capabilities as a collapsible capability subsection;
+- expected result;
+- contribution to threat-analysis readiness;
+- planning status as secondary detail;
+- technical trace at the end.
+
+The refinement keeps raw ids and planner evidence out of the primary reading path. It uses shared stylesheet classes for gate sections and disclosures instead of inline styling, preserving the uniform Governance Console visual language.
+
+This step does not add a gate executor, persist gate results, mutate child projects, change governed registries at runtime, alter backend API contracts, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is to continue the visual-system cleanup from the mockup reference: centralize reusable information-icon, badge and semantic disclosure patterns so Project Documentation Explorer and Governance gate plans share the same compact/detail behavior.
+
+## Governance Gate Plan Overview Progressive-Disclosure Refinement Micropasso
+
+This frontend refinement keeps the top-level governance plan explanation compact while preserving access to the full study-oriented meaning.
+
+The implementation replaces the always-open plan explanation blocks with compact overview rows for Study guide, Profile, Target scope, Result and Field guide. Each row shows the current headline value first and moves the longer explanation behind a small information icon that opens on mouse hover, keyboard focus or click/tap. The detailed meaning remains derived from the backend explanation payload; the frontend only changes how that meaning is disclosed.
+
+This keeps the top of the Governance gate plans page readable without losing the governed explanation model. It aligns the page with the same progressive-disclosure behavior already used for taxonomy-backed document fields and taxonomy value details in the Project Documentation Explorer.
+
+The refinement uses shared stylesheet classes and the same information-icon interaction pattern rather than introducing a separate visual language. It does not change gate selection semantics, backend contracts, registry content, gate execution behavior, child-project mutation, snapshot generation semantics, or threat-analysis runtime features.
+
+The next safe step is to continue the visual-system cleanup from the mockup reference: centralize reusable information-icon, badge and semantic disclosure patterns so Project Documentation Explorer and Governance gate plans share the same compact/detail behavior.
+
+
+## Information Popover Readability Refinement Micropasso
+
+This frontend style refinement keeps information-icon panels readable by rendering their detail text in a single vertical column.
+
+The implementation changes only shared stylesheet behavior for the existing popover/help surfaces. Metadata grids inside information popovers no longer inherit multi-column page layouts; labels, meanings, raw values, source registries, allowed values and field-guide descriptions stack vertically so users can read them without scanning across columns. Badge lists inside popovers wrap naturally instead of forcing dense horizontal reading.
+
+This refinement preserves the compact primary UI, hover/focus/click information-icon behavior, backend-provided explanation payloads, gate selection semantics, taxonomy semantics, registries, OpenAPI contracts and runtime behavior. It does not add new UI logic, mutate project data, execute gates, or change snapshot generation semantics.
+
+The next safe step remains visual-system cleanup from the mockup reference: centralize reusable information-icon, badge and progressive-disclosure patterns so Project Documentation Explorer and Governance gate plans share the same compact/detail behavior.
