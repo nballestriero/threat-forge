@@ -1572,3 +1572,15 @@ This tooling fix keeps the local UI test environment runner cross-platform by in
 The original runner worked in POSIX-like verification but could report `npm.cmd run docs:child-project-governance-plan-artifacts exited with null` on Windows because `.cmd` process spawning may not return a normal exit status without shell handling. The fix preserves non-Windows behavior, adds Windows-only shell execution, and improves startup diagnostics when a foreground command fails to start or exits due to a signal.
 
 This does not change the runner boundary, generated artifacts, backend services, frontend data-source configuration, governed registries, gate-planning semantics, repository verification, commit behavior or push behavior.
+
+## Governance Console Navigation Icon Refinement Micropasso
+
+This frontend visual-system refinement improves the Governance Console sidebar while keeping the UI compact and governed by shared MR-0002 design-system boundaries.
+
+The implementation keeps sidebar navigation records in the centralized `shellNavigation` token registry, resolves concrete glyphs only through the shared `Icon` adapter and renders a consistent icon cell in the shared shell. Navigation entries may declare semantic icon tone and compact state labels in the token registry, but feature pages do not choose sidebar icons directly.
+
+Active, hover and disabled states now use shared stylesheet classes and CSS custom properties rather than inline colors or page-local styles. The selected page is highlighted with a lightweight surface treatment instead of a heavy full-contrast block, while disabled future capabilities remain legible and visibly planned without becoming interactive.
+
+This step does not add page-local SVG assets, introduce an external icon dependency, change route/capability policy behavior, implement disabled future pages, alter backend contracts, mutate registries at runtime, or change Project Documentation Explorer and Governance gate plan read-model semantics.
+
+The next safe step is to continue the mockup-driven visual-system cleanup by centralizing broader semantic UI color tokens before normalizing status badge semantics.

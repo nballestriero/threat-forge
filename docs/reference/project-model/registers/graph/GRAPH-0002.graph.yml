@@ -524,6 +524,23 @@ nodes:
     label: Local UI test environment runner
     path: tools/dev/run-ui-test-environment.mjs
 
+  - id: ADR-0025
+    type: ADR
+    label: Governance Console navigation icon refinement boundary
+
+  - id: MR-0002REQ-0061
+    type: Requirement
+    label: Governance Console semantic navigation icon registry
+
+  - id: MR-0002REQ-0062
+    type: Requirement
+    label: Governance Console navigation item state styling
+
+  - id: MR-0002SRC-0025
+    type: SourceModule
+    label: Governance Console shared stylesheet
+    path: frontend/src/styles.css
+
 
 spo_relations:
   - subject: MR-0002
@@ -1907,3 +1924,52 @@ spo_relations:
     predicate: verifies
     object: MR-0002REQ-0060
 
+
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0025
+
+  - subject: ADR-0025
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0061
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0062
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0025
+    predicate: justifies
+    object: MR-0002REQ-0061
+
+  - subject: ADR-0025
+    predicate: justifies
+    object: MR-0002REQ-0062
+
+  - subject: MR-0002REQ-0061
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0061
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0061
+    predicate: implemented_by
+    object: MR-0002SRC-0014
+
+  - subject: MR-0002REQ-0062
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0062
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0062
+    predicate: implemented_by
+    object: MR-0002SRC-0025

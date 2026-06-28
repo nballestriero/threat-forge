@@ -484,3 +484,19 @@ requirements:
     derived_from_decision_id: ADR-0024
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0060_body.md
 
+
+  - id: MR-0002REQ-0061
+    title: Governance Console semantic navigation icon registry
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0025
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0061_body.md
+
+  - id: MR-0002REQ-0062
+    title: Governance Console navigation item state styling
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0025
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0062_body.md

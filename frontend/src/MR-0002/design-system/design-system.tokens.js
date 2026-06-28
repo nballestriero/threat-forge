@@ -6,9 +6,12 @@
  * @implementsRequirement MR-0002REQ-0025
  * @implementsRequirement MR-0002REQ-0039
  * @implementsRequirement MR-0002REQ-0040
+ * @implementsRequirement MR-0002REQ-0061
+ * @implementsRequirement MR-0002REQ-0062
  * @implementsRequirement MR-0003REQ-0013
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
+ * @derivedFromDecision MR-0002/ADR-0025
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0002
@@ -23,22 +26,66 @@
  * Side effects: none. This module exports immutable token maps only.
  */
 export const shellNavigation = Object.freeze([
-  { id: "project-documentation", label: "Project Documentation", icon: "navigation.projectDocumentation", capability: "project_model.documentation.read" },
-  { id: "graph", label: "Graph Explorer", icon: "navigation.graph", capability: "project_model.graph.read", disabled: true },
-  { id: "threat-analysis", label: "Threat Analysis", icon: "navigation.threatAnalysis", capability: "threat_analysis.read", disabled: true },
-  { id: "child-projects", label: "Child Projects", icon: "navigation.childProjects", capability: "child_projects.view_operational_state", platformOnly: true },
-  { id: "child-governance-plans", label: "Governance Plans", icon: "navigation.governancePlans", capability: "child_project_governance_plan.read", platformOnly: true },
-  { id: "reports", label: "Reports", icon: "navigation.reports", capability: "reports.read", disabled: true },
+  {
+    id: "project-documentation",
+    label: "Project Documentation",
+    icon: "navigation.projectDocumentation",
+    iconTone: "documentation",
+    capability: "project_model.documentation.read",
+  },
+  {
+    id: "graph",
+    label: "Graph Explorer",
+    icon: "navigation.graph",
+    iconTone: "model",
+    capability: "project_model.graph.read",
+    disabled: true,
+    stateLabel: "Planned",
+  },
+  {
+    id: "threat-analysis",
+    label: "Threat Analysis",
+    icon: "navigation.threatAnalysis",
+    iconTone: "security",
+    capability: "threat_analysis.read",
+    disabled: true,
+    stateLabel: "Planned",
+  },
+  {
+    id: "child-projects",
+    label: "Child Projects",
+    icon: "navigation.childProjects",
+    iconTone: "workspace",
+    capability: "child_projects.view_operational_state",
+    platformOnly: true,
+  },
+  {
+    id: "child-governance-plans",
+    label: "Governance Plans",
+    icon: "navigation.governancePlans",
+    iconTone: "governance",
+    capability: "child_project_governance_plan.read",
+    platformOnly: true,
+  },
+  {
+    id: "reports",
+    label: "Reports",
+    icon: "navigation.reports",
+    iconTone: "reporting",
+    capability: "reports.read",
+    disabled: true,
+    stateLabel: "Planned",
+  },
 ]);
 
 export const iconTokens = Object.freeze({
   navigation: Object.freeze({
-    projectDocumentation: "book-open",
-    graph: "network",
-    threatAnalysis: "shield",
-    childProjects: "folder-tree",
-    governancePlans: "list-check",
-    reports: "chart",
+    projectDocumentation: "document-search",
+    graph: "connected-nodes",
+    threatAnalysis: "shield-analysis",
+    childProjects: "project-board",
+    governancePlans: "clipboard-check",
+    reports: "bar-chart",
   }),
   action: Object.freeze({
     back: "arrow-left",

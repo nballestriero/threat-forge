@@ -1,4 +1,4 @@
-import { Icon } from "../design-system/Icon.jsx";
+import { Icon, ThreatForgeMark } from "../design-system/Icon.jsx";
 import { shellNavigation } from "../design-system/design-system.tokens.js";
 
 /**
@@ -13,11 +13,14 @@ import { shellNavigation } from "../design-system/design-system.tokens.js";
  * @implementsRequirement MR-0002REQ-0024
  * @implementsRequirement MR-0002REQ-0039
  * @implementsRequirement MR-0002REQ-0041
+ * @implementsRequirement MR-0002REQ-0061
+ * @implementsRequirement MR-0002REQ-0062
  * @implementsRequirement MR-0003REQ-0012
  * @implementsRequirement MR-0003REQ-0013
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
+ * @derivedFromDecision MR-0002/ADR-0025
  * @derivedFromDecision MR-0003/ADR-0002
  * @macroRequirement MR-0002
  *
@@ -44,19 +47,28 @@ function Navigation({ workspaceKind, activeNavigationId, onNavigate }) {
   const items = shellNavigation.filter((item) => workspaceKind === "platform" || !item.platformOnly);
   return (
     <nav className="tf-navigation" aria-label="Governance Console">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          className={`tf-navigation__item ${item.id === activeNavigationId ? "is-active" : ""}`}
-          type="button"
-          disabled={item.disabled || typeof onNavigate !== "function"}
-          title={item.disabled ? "Planned capability" : item.label}
-          onClick={() => onNavigate?.(item.id)}
-        >
-          <Icon token={item.icon} />
-          <span>{item.label}</span>
-        </button>
-      ))}
+      {items.map((item) => {
+        const isActive = item.id === activeNavigationId;
+        const isDisabled = item.disabled || typeof onNavigate !== "function";
+        const iconToneClass = item.iconTone ? `tf-navigation__icon-cell--${item.iconTone}` : "";
+        return (
+          <button
+            key={item.id}
+            className={`tf-navigation__item ${isActive ? "is-active" : ""} ${isDisabled ? "is-disabled" : ""}`}
+            type="button"
+            disabled={isDisabled}
+            aria-current={isActive ? "page" : undefined}
+            title={item.disabled ? "Planned capability" : item.label}
+            onClick={() => onNavigate?.(item.id)}
+          >
+            <span className={`tf-navigation__icon-cell ${iconToneClass}`}>
+              <Icon token={item.icon} className="tf-navigation__icon" />
+            </span>
+            <span className="tf-navigation__label">{item.label}</span>
+            {item.stateLabel ? <span className="tf-navigation__state">{item.stateLabel}</span> : null}
+          </button>
+        );
+      })}
     </nav>
   );
 }
@@ -72,7 +84,7 @@ export function GovernanceConsoleShell({ children, workspaceKind = "platform", a
     <div className="tf-shell">
       <aside className="tf-sidebar">
         <div className="tf-brand">
-          <div className="tf-brand__mark">TF</div>
+          <ThreatForgeMark className="tf-brand__mark" />
           <div>
             <strong>Threat Forge</strong>
             <span>{workspaceKind === "platform" ? "Platform workspace" : "Child project workspace"}</span>
