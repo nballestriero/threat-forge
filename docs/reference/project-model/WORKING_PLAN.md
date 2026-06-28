@@ -1584,3 +1584,15 @@ Active, hover and disabled states now use shared stylesheet classes and CSS cust
 This step does not add page-local SVG assets, introduce an external icon dependency, change route/capability policy behavior, implement disabled future pages, alter backend contracts, mutate registries at runtime, or change Project Documentation Explorer and Governance gate plan read-model semantics.
 
 The next safe step is to continue the mockup-driven visual-system cleanup by centralizing broader semantic UI color tokens before normalizing status badge semantics.
+
+## Semantic UI Color Token Centralization Micropasso
+
+This frontend style micropasso centralizes Governance Console color semantics before the next badge and shell hierarchy refinements.
+
+The implementation adds semantic color groups to the shared MR-0002 design-system token registry and maps the shared stylesheet root to matching CSS custom properties. Component selectors now consume semantic custom properties for common text, surface, border, focus, shadow, navigation, brand and status accent treatments instead of repeating raw color values throughout the stylesheet.
+
+The visual appearance is intended to remain stable and lightweight. This step does not change layout, spacing, typography, badge classification behavior, backend contracts, snapshot generation, child-project mutation behavior, or threat-analysis runtime features.
+
+Known bug to resolve in a dedicated micropasso: when a child project is selected and the user opens Documents, the UI can still show threat-forge platform documents through a fallback path. The child-project documentation view must not silently fall back to platform documents; it should show the child-project source, an explicit empty state, or an explicit source error.
+
+The next safe step is to normalize status badge semantics using the centralized status accent tokens, then address the child-project documentation no-fallback bug with a focused backend/frontend data-source micropasso.

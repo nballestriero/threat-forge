@@ -227,3 +227,12 @@ decisions:
     date: 2026-06-28
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0025_body.md
+
+  - id: ADR-0026
+    title: Governance Console semantic color token boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-28
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0026_body.md

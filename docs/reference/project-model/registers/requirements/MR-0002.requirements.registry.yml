@@ -500,3 +500,19 @@ requirements:
     priority: medium
     derived_from_decision_id: ADR-0025
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0062_body.md
+
+  - id: MR-0002REQ-0063
+    title: Governance Console semantic color token registry
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0026
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0063_body.md
+
+  - id: MR-0002REQ-0064
+    title: Governance Console stylesheet semantic color consumption
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0026
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0064_body.md
