@@ -208,3 +208,13 @@ decisions:
     date: 2026-06-28
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0023_body.md
+
+  - id: ADR-0024
+    title: Local UI test environment runner boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-28
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0024_body.md
+

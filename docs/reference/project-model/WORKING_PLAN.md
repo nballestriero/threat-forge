@@ -1454,3 +1454,29 @@ The refinement remains centralized in the shared stylesheet. Feature pages conti
 This step does not change backend contracts, registry content, gate planning, snapshot generation, child-project mutation behavior, documentation loading, or threat-analysis runtime features.
 
 The next safe step is a governed developer-experience tool that starts and stops the local UI test environment in one command pair, covering the Project Documentation Explorer backend, Governance gate plan backend and frontend dev server without replacing `repo:check`.
+
+
+## Local UI Test Environment Runner Micropasso
+
+This governed developer-experience micropasso adds a repeatable way to start, inspect and stop the local UI test environment used for Governance Console review.
+
+The implementation introduces `tools/dev/run-ui-test-environment.mjs` and exposes three npm scripts:
+
+- `npm run dev:ui-test:start`
+- `npm run dev:ui-test:status`
+- `npm run dev:ui-test:stop`
+
+The start command generates child-project governance plan artifacts through the existing governed artifact-generation script, then spawns the existing Project Documentation Explorer backend, Child Project Governance Plan backend and Vite frontend. The frontend is started with explicit HTTP live data-source environment variables so UI review uses the live backends instead of stale snapshots where appropriate.
+
+The tool writes PID metadata and logs under `.threat-forge/state/ui-test-environment/`, which is generated platform operational state. The stop command terminates only the recorded spawned processes and removes the PID registry file. The status command reports recorded PIDs, log paths and liveness.
+
+This tool is local developer convenience. It does not replace `repo:check`, mutate governed registries, execute final governance gates, persist gate results, write child-project state, commit files, push to git, run Base Analysis, STRIDE or STRIDE-AI.
+
+
+## Local UI Test Environment Runner Windows Spawn Fix Micropasso
+
+This tooling fix keeps the local UI test environment runner cross-platform by invoking npm through a shell on Windows when starting foreground setup commands or long-running local services.
+
+The original runner worked in POSIX-like verification but could report `npm.cmd run docs:child-project-governance-plan-artifacts exited with null` on Windows because `.cmd` process spawning may not return a normal exit status without shell handling. The fix preserves non-Windows behavior, adds Windows-only shell execution, and improves startup diagnostics when a foreground command fails to start or exits due to a signal.
+
+This does not change the runner boundary, generated artifacts, backend services, frontend data-source configuration, governed registries, gate-planning semantics, repository verification, commit behavior or push behavior.

@@ -467,3 +467,20 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0023
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0058_body.md
+
+  - id: MR-0002REQ-0059
+    title: Local UI test environment start command
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0024
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0059_body.md
+
+  - id: MR-0002REQ-0060
+    title: Local UI test environment stop and status commands
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0024
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0060_body.md
+

@@ -507,6 +507,24 @@ nodes:
     path: frontend/src/MR-0002/design-system/InfoPopover.jsx
 
 
+  - id: ADR-0024
+    type: ADR
+    label: Local UI test environment runner boundary
+
+  - id: MR-0002REQ-0059
+    type: Requirement
+    label: Local UI test environment start command
+
+  - id: MR-0002REQ-0060
+    type: Requirement
+    label: Local UI test environment stop and status commands
+
+  - id: MR-0002TOOL-0002
+    type: Tool
+    label: Local UI test environment runner
+    path: tools/dev/run-ui-test-environment.mjs
+
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1848,4 +1866,44 @@ spo_relations:
   - subject: MR-0002REQ-0058
     predicate: implemented_by
     object: MR-0002SRC-0024
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0024
+
+  - subject: ADR-0024
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0059
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0060
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0024
+    predicate: justifies
+    object: MR-0002REQ-0059
+
+  - subject: ADR-0024
+    predicate: justifies
+    object: MR-0002REQ-0060
+
+  - subject: MR-0002REQ-0059
+    predicate: implemented_by
+    object: MR-0002TOOL-0002
+
+  - subject: MR-0002REQ-0060
+    predicate: implemented_by
+    object: MR-0002TOOL-0002
+
+  - subject: MR-0002TOOL-0002
+    predicate: verifies
+    object: MR-0002REQ-0059
+
+  - subject: MR-0002TOOL-0002
+    predicate: verifies
+    object: MR-0002REQ-0060
 
