@@ -529,3 +529,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0012
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0063_body.md
+
+  - id: MR-0003REQ-0064
+    title: Governance gate plan compact list and inline expansion hierarchy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0064_body.md
+
+  - id: MR-0003REQ-0065
+    title: Governance gate semantic explanation and technical trace separation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0065_body.md

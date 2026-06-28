@@ -489,6 +489,18 @@ nodes:
     type: Requirement
     label: Project Documentation Explorer taxonomy value detail rendering
 
+  - id: ADR-0023
+    type: ADR
+    label: Project Documentation Explorer taxonomy field UX hierarchy
+
+  - id: MR-0002REQ-0057
+    type: Requirement
+    label: Project Documentation Explorer stable list-detail hierarchy
+
+  - id: MR-0002REQ-0058
+    type: Requirement
+    label: Project Documentation Explorer taxonomy field allowed-value explanation hierarchy
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -1781,3 +1793,27 @@ spo_relations:
     predicate: implemented_by
     object: MR-0002SRC-0001
 
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0023
+
+  - subject: ADR-0023
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0057
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0058
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0023
+    predicate: justifies
+    object: MR-0002REQ-0057
+
+  - subject: ADR-0023
+    predicate: justifies
+    object: MR-0002REQ-0058

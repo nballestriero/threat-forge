@@ -119,34 +119,41 @@ The Project Documentation Explorer must therefore evolve from showing that taxon
 
 ## Current Micropasso
 
-Define the explainable child-governance concept boundary before implementing backend/API or frontend changes.
+Define the shared UX hierarchy for explainable Project Documentation Explorer taxonomy fields and Governance gate plan explanations before adding more UI code.
 
-This micropasso keeps the gate executor, orchestrator, child-project mutation, Base Analysis runtime/storage, STRIDE and STRIDE-AI work parked. It adds only governed documentation, registry records and graph relations for study-oriented governance concepts, gate-selection rationale, capability explanations and validation-surface explanations.
+This micropasso is document-only. It adds governed ADRs, requirements, body files and graph relations for:
 
-This micropasso is document-only and updates only this working plan. It records the closure of the governance-plan visibility slice and sets the next safe objective.
+- keeping Project Documentation Explorer filters at the top, document results below the filters and selected details below the list;
+- rendering taxonomy-backed document fields with current value, source taxonomy and allowed values with descriptions;
+- keeping Governance gate plans as compact gate lists with inline expandable details;
+- separating primary semantic gate explanations from secondary technical trace.
 
-It does not add ADRs, requirements, graph records, registry files, validators, APIs, frontend behavior, Base Analysis runtime, STRIDE, STRIDE-AI, child-project gate execution, child-project repository mutation or taxonomy runtime implementation.
+This micropasso keeps gate execution, orchestrator behavior, child-project mutation, Base Analysis runtime/storage, STRIDE and STRIDE-AI work parked. It also avoids hardcoding final UI copy or colors. Future implementation must consume backend/registry-provided explanations and reuse shared visual styles or centralized semantic badges.
 
-The next implementation-bearing workstream should start from the tagged UI-visible baseline and focus on taxonomy/registry explainability in the Governance Console before final gate execution or analysis-method work.
+The next implementation-bearing workstream should implement the documented hierarchy in small UI steps while preserving the read-only Explorer and Governance Console navigation patterns.
 
 ## Current Workstream Order
 
-The recommended order from the current tagged baseline is:
+The recommended order from the current baseline is:
 
-1. `docs: define explainable child governance concept boundary` — this document-only micropasso, adding the semantic contract for study-oriented concepts, gate-selection rationale, capability explanations and validation-surface explanations.
-2. `backend: expose governance concept explanation and gate rationale view-model` — read governed registry and plan data to provide explanation details without executing gates.
-3. `frontend: render Governance gate plans explanations and page guidance` — add page purpose/use guidance, gate detail explanations, capability explanations, validation-surface explanations and rationale panels while preserving read-only navigation.
-4. `frontend/backend: expose and render taxonomy values and usage in Explorer` — complete the broader taxonomy visibility work so accepted/deprecated values, usage fields, UI/report/filter surfaces and child-extension mappings are inspectable.
-5. `tooling/backend: define child-project governance gate execution result persistence boundary` — decide whether results live first as artifacts, SQLite state, or both before implementing execution.
-6. `tooling: execute planned child-project governance gates for platform/demo surfaces` — only after the planner, artifact, API and UI explainability layers are deterministic.
-7. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics, plan visibility and result evidence are deterministic.
-8. `docs/backend/frontend: STRIDE overlay planning and implementation` — after Base Analysis is stable enough to provide canonical elements, boundaries, flows and evidence.
-9. `docs/backend/frontend: STRIDE-AI overlay planning and implementation` — after AI/RAG/agent capabilities, taxonomy contracts and Base Analysis inputs are stable.
-10. quality hardening backlog — parser hardening, stronger graph/link validation, provenance automation, coverage expansion, lint/formatting and future advisory-to-gate promotions.
+1. `frontend: render taxonomy field allowed values in documentation detail` — implement `MR-0002REQ-0057` and `MR-0002REQ-0058` by keeping filters at the top, results below and selected detail below the list while showing current taxonomy value plus allowed values and descriptions.
+2. `frontend: improve governance gate explanation hierarchy` — implement `MR-0003REQ-0064` and `MR-0003REQ-0065` by rendering compact gate rows, inline expansion, primary semantic sections and secondary technical trace.
+3. `docs: refine taxonomy explanation text for documentation explorer` — progressively improve taxonomy labels, descriptions, functions and security-analysis hints so the new UI has clearer governed content to display.
+4. `frontend/style: centralize semantic badges and taxonomy/gate status styles` — only if needed after inspecting existing shared CSS/design-system conventions.
+5. `frontend: link governance explanations to Project Documentation Explorer details` — connect gate explanations, taxonomy records, requirements, ADRs and graph references for guided study navigation.
+6. `tooling/backend: define child-project governance gate execution result persistence boundary` — decide whether executed results live first as artifacts, SQLite state, or both before implementing execution.
+7. `tooling: execute planned child-project governance gates for platform/demo surfaces` — only after the planner, artifact, API and UI explainability layers are deterministic and understandable.
+8. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics, plan visibility and result evidence are deterministic.
+9. `docs/backend/frontend: STRIDE overlay planning and implementation` — after Base Analysis is stable enough to provide canonical elements, boundaries, flows and evidence.
+10. `docs/backend/frontend: STRIDE-AI overlay planning and implementation` — after AI/RAG/agent capabilities, taxonomy contracts and Base Analysis inputs are stable.
+11. quality hardening backlog — parser hardening, stronger graph/link validation, provenance automation, coverage expansion, lint/formatting and future advisory-to-gate promotions.
 
-The registry validator, planner, plan artifact export, read-only API and first Governance Console view are no longer pending sequence items; they are completed milestone inputs for the next workstream.
+The registry validator, planner, plan artifact export, read-only API, gate explanation backend, taxonomy explanation backend and first explanation-rendering UIs are completed inputs for this hierarchy-focused workstream.
 
 ## Completed Milestones
+
+- Project Documentation Explorer taxonomy field UX hierarchy, represented by `MR-0002/ADR-0023`, `MR-0002REQ-0057` and `MR-0002REQ-0058`, defining filters-top/list-below/detail-below navigation and taxonomy-backed field allowed-value explanations.
+- Governance gate plan explanation hierarchy, represented by `MR-0003/ADR-0013`, `MR-0003REQ-0064` and `MR-0003REQ-0065`, defining compact gate rows, inline expansion, semantic explanation order and secondary technical trace.
 
 - Explainable child governance concept boundary, represented by `MR-0003/ADR-0012` and `MR-0003REQ-0061` through `MR-0003REQ-0063`, defining study-oriented concept explanations, gate-selection rationale and capability/validation-surface explanation semantics before executor/orchestrator work.
 - Child governance plan UI-visible milestone `project-model-child-governance-plan-ui-visible-complete`, tagged on `bdbbe10` after the Governance Console could render governance gate plans with project selection/detail navigation and child documentation launch correction.
@@ -560,24 +567,27 @@ npm run context:zip -- --include-git --name threat-forge-handoff-with-git-after-
 
 ## Next Suggested Step
 
-The next safe implementation-bearing step is to link governance-plan values to governed taxonomy and registry detail views.
+The next safe implementation-bearing step is to render taxonomy-backed document fields with allowed-value explanations in the Project Documentation Explorer.
 
 Recommended scope:
 
-1. keep the current Governance gate plans page read-only;
-2. make profile IDs, target scopes, gate IDs, capability IDs, applicability classes, execution statuses and validation surfaces explainable;
-3. link those values to existing governed registry/taxonomy records or expose a small read-only registry-detail view-model;
-4. preserve the same project-list/detail navigation pattern established by the UI-visible milestone;
-5. avoid implementing the final child-project gate executor in this step;
-6. avoid resuming Base Analysis runtime/storage in this step.
-
-The purpose is to complete the taxonomy-as-governed-contract promise before the UI or future executor relies on opaque strings.
+1. keep Project Documentation Explorer filters at the top;
+2. keep the result list below the filters;
+3. keep the selected document detail below the list;
+4. for taxonomy-backed fields, show current value first;
+5. show the source taxonomy and all allowed values supplied by the backend;
+6. show each allowed value label, description, function and security-analysis hint when available;
+7. keep raw ids as secondary technical metadata;
+8. avoid hardcoding taxonomy value meanings in JSX;
+9. avoid adding taxonomy editing, Base Analysis runtime/storage or gate execution.
 
 Suggested commit title:
 
 ```text
-frontend/backend: link governance plan values to registry details
+frontend: render taxonomy field allowed values in documentation detail
 ```
+
+After that, improve the Governance gate plans hierarchy using the same principle: compact first, explanation second, technical trace last.
 
 ## Project Documentation Explorer JSDoc Static Type-checking Pilot Closure Micropasso
 

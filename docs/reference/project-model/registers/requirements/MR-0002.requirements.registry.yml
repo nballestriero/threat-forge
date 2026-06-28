@@ -451,3 +451,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0022
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0056_body.md
+
+  - id: MR-0002REQ-0057
+    title: Project Documentation Explorer stable list-detail hierarchy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0023
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0057_body.md
+
+  - id: MR-0002REQ-0058
+    title: Project Documentation Explorer taxonomy field allowed-value explanation hierarchy
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0023
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0058_body.md

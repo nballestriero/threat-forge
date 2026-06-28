@@ -518,6 +518,18 @@ nodes:
     type: Requirement
     label: Capability and validation surface explanation semantics
 
+  - id: ADR-0013
+    type: ADR
+    label: Governance gate plan explanation hierarchy
+
+  - id: MR-0003REQ-0064
+    type: Requirement
+    label: Governance gate plan compact list and inline expansion hierarchy
+
+  - id: MR-0003REQ-0065
+    type: Requirement
+    label: Governance gate semantic explanation and technical trace separation
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1747,30 +1759,6 @@ spo_relations:
     predicate: implemented_by
     object: MR-0003UI-0009
 
-  - subject: MR-0003REQ-0061
-    predicate: implemented_by
-    object: MR-0003UI-0007
-
-  - subject: MR-0003REQ-0062
-    predicate: implemented_by
-    object: MR-0003UI-0007
-
-  - subject: MR-0003REQ-0063
-    predicate: implemented_by
-    object: MR-0003UI-0007
-
-  - subject: MR-0003REQ-0061
-    predicate: implemented_by
-    object: MR-0003UI-0009
-
-  - subject: MR-0003REQ-0062
-    predicate: implemented_by
-    object: MR-0003UI-0009
-
-  - subject: MR-0003REQ-0063
-    predicate: implemented_by
-    object: MR-0003UI-0009
-
   - subject: MR-0003REQ-0059
     predicate: implemented_by
     object: MR-0003UI-0004
@@ -1815,3 +1803,51 @@ spo_relations:
     predicate: justifies
     object: MR-0003REQ-0063
 
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0013
+
+  - subject: ADR-0013
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0064
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0065
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0013
+    predicate: justifies
+    object: MR-0003REQ-0064
+
+  - subject: ADR-0013
+    predicate: justifies
+    object: MR-0003REQ-0065
+
+  - subject: MR-0003REQ-0061
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0062
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0063
+    predicate: implemented_by
+    object: MR-0003UI-0007
+
+  - subject: MR-0003REQ-0061
+    predicate: implemented_by
+    object: MR-0003UI-0009
+
+  - subject: MR-0003REQ-0062
+    predicate: implemented_by
+    object: MR-0003UI-0009
+
+  - subject: MR-0003REQ-0063
+    predicate: implemented_by
+    object: MR-0003UI-0009

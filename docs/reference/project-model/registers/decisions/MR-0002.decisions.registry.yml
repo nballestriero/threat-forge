@@ -199,3 +199,12 @@ decisions:
     date: 2026-06-28
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0022_body.md
+
+  - id: ADR-0023
+    title: Project Documentation Explorer taxonomy field UX hierarchy
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-28
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0023_body.md

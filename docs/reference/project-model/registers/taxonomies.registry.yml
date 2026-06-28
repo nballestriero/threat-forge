@@ -628,124 +628,203 @@ taxonomies:
   base_analysis_status:
     - id: draft
       name: Draft
-      function: Indicates a Base Analysis is being prepared and can contain incomplete or unreviewed elements.
-      description: Use this status before the analysis is ready for governed review.
+      function: Marks a Base Analysis as an editable working draft whose actors, components, resources, boundaries and flows may still be incomplete.
+      description: Use this status while collecting or sketching the base model. The analysis can support discussion and study, but it must not be treated as reviewed input for STRIDE, STRIDE-AI, PASTA or gate decisions.
       ui:
         icon_token: status.draft
         color_token: status.draft
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Draft status tells reviewers that threat-analysis conclusions are provisional because the underlying inventory and flows may still change.
 
     - id: ready_for_review
       name: Ready for review
-      function: Indicates a Base Analysis has enough candidate inventory, flows and rationale to be reviewed.
-      description: Use this status when the analysis is not yet consolidated but is prepared for authorized review.
+      function: Marks a Base Analysis as complete enough to be reviewed against its source snapshot, documentation and modeled flows.
+      description: Use this status when the model has enough actors, components, resources, boundaries, flows and rationale for a reviewer to decide whether it can become consolidated.
       ui:
         icon_token: status.review
         color_token: status.review
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Ready-for-review status separates modeling work from accepted analysis evidence and helps prevent premature methodology overlays.
 
     - id: consolidated
       name: Consolidated
-      function: Indicates a Base Analysis has been reviewed, accepted and versioned for overlay use.
-      description: Use this status when the analysis can be referenced by STRIDE, STRIDE-AI, PASTA or future overlays.
+      function: Marks a reviewed and accepted Base Analysis version as the current stable baseline for overlays and reports.
+      description: Use this status only after review confirms that the model is coherent, traceable and suitable as the base for STRIDE, STRIDE-AI, PASTA or future methodology overlays.
       ui:
         icon_token: status.consolidated
         color_token: status.ok
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+          - reporting
+        analysis_hint: Consolidated status identifies the baseline that later threats, findings and recommendations should reference for reproducibility.
 
     - id: stale_warning
       name: Stale warning
-      function: Indicates relevant changes may make the analysis outdated but policy does not require blocking progression.
-      description: Use this status when review should be prompted but the current policy treats the stale condition as non-blocking.
+      function: Marks a Base Analysis as probably outdated by project changes while still allowed for non-blocking review or study.
+      description: Use this status when source files, graph records, APIs, components or flows changed and reviewers should check whether the analysis still reflects the project.
       ui:
         icon_token: status.warning
         color_token: status.warning
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - ci_cd
+          - methodology_overlays
+        analysis_hint: A stale warning highlights possible analysis drift without blocking all work, making the risk visible to users and reviewers.
 
     - id: stale_blocking
       name: Stale blocking
-      function: Indicates relevant changes make the analysis too outdated for gated progression under current policy.
-      description: Use this status when CI/CD or governed operations must block until review, rebase or supersede occurs.
+      function: Marks a Base Analysis as too outdated to support governed progression under the current policy.
+      description: Use this status when relevant project changes invalidate the analysis enough that gate execution, CI/CD progression or overlay reuse must stop until review, rebase or supersession occurs.
       ui:
         icon_token: status.blocking
         color_token: status.error
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - ci_cd
+          - methodology_overlays
+        analysis_hint: Blocking stale status prevents threat analysis from being reused after material model, contract or documentation changes.
 
     - id: requires_review
       name: Requires review
-      function: Indicates a lifecycle, taxonomy, evidence or source-snapshot change requires human or governed review.
-      description: Use this status when an explicit review decision is needed before the analysis can be treated as current.
+      function: Marks an analysis state that needs an explicit review decision before it can be trusted as current.
+      description: Use this status when lifecycle changes, taxonomy changes, source-snapshot changes or evidence changes require a human or governed review decision.
       ui:
         icon_token: status.review_required
         color_token: status.warning
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - governance
+        analysis_hint: Requires-review status makes uncertainty explicit and supports accountable acceptance before security conclusions are reused.
 
     - id: requires_rebase
       name: Requires rebase
-      function: Indicates the analysis must be rebased to a newer source or taxonomy snapshot.
-      description: Use this status when the previous analysis remains auditable but cannot represent the current project state without rebase work.
+      function: Marks an analysis that must be moved onto a newer source, taxonomy or graph snapshot before it can represent the current project.
+      description: Use this status when the old version remains auditable but cannot be treated as current without reconciling it with newer project evidence.
       ui:
         icon_token: status.rebase
         color_token: status.warning
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Rebase status preserves historical traceability while preventing older model assumptions from silently driving current threat analysis.
 
     - id: superseded
       name: Superseded
-      function: Indicates a newer Base Analysis version replaces this one for current analysis and policy purposes.
-      description: Use this status while retaining the old version for audit and reproducibility.
+      function: Marks an analysis version that has been replaced by a newer baseline for current work.
+      description: Use this status when the version remains part of the audit trail but new overlays, findings and policy decisions should use the newer analysis instead.
       ui:
         icon_token: status.superseded
         color_token: status.inactive
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - reporting
+        analysis_hint: Superseded status helps users distinguish historical evidence from the baseline that currently owns threat-analysis decisions.
 
     - id: archived
       name: Archived
-      function: Indicates the analysis is retained for history or audit but is no longer active for new overlays or policy decisions.
-      description: Use this status when the analysis should remain readable but not current.
+      function: Marks an analysis version retained for history, audit or reproducibility rather than active analysis work.
+      description: Use this status when the analysis should remain readable and linkable but must not be used as the active base for new overlays or gate decisions.
       ui:
         icon_token: status.archived
         color_token: status.inactive
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - audit
+        analysis_hint: Archived status keeps old analysis evidence available while preventing it from being mistaken for the current threat-analysis baseline.
 
   base_candidate_review_status:
     - id: candidate
       name: Candidate
-      function: Indicates an element was discovered, proposed, imported or manually created but has not been accepted or rejected.
-      description: Use this status for candidate actors, components, resources, boundaries or flows before governed review.
+      function: Marks a discovered or proposed actor, component, resource, boundary or flow that has not yet been accepted into the canonical Base Analysis.
+      description: Use this status for items imported from documentation, source inspection, user input or automated discovery before a reviewer decides whether they belong in the base model.
       ui:
         icon_token: review.candidate
         color_token: review.candidate
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - review
+        analysis_hint: Candidate status keeps possible model elements visible without letting unreviewed elements drive threat enumeration.
 
     - id: accepted
       name: Accepted
-      function: Indicates the candidate was reviewed and accepted into the Base Analysis inventory or flow model.
-      description: Use this status only when the acceptance decision has sufficient traceability or review evidence.
+      function: Marks a reviewed candidate as part of the accepted Base Analysis inventory or flow model.
+      description: Use this status when there is enough source traceability, reviewer context or governed evidence to treat the element as part of the canonical base model.
       ui:
         icon_token: review.accepted
         color_token: status.ok
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+        analysis_hint: Accepted elements are the model objects that later STRIDE, STRIDE-AI, PASTA or reporting steps should analyze.
 
     - id: rejected
       name: Rejected
-      function: Indicates the candidate was reviewed and rejected as incorrect, unsupported, duplicate, irrelevant or out of scope.
-      description: Use this status to preserve review traceability without adding the candidate to the accepted base inventory.
+      function: Marks a reviewed candidate as intentionally excluded from the accepted Base Analysis.
+      description: Use this status when the candidate is incorrect, unsupported, duplicate, irrelevant or outside the analysis boundary, while retaining the decision for traceability.
       ui:
         icon_token: review.rejected
         color_token: status.error
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - review
+        analysis_hint: Rejected status documents why a possible threat-analysis object was not modeled, reducing ambiguity in later reviews.
 
     - id: needs_more_evidence
       name: Needs more evidence
-      function: Indicates the candidate may be valid but lacks enough source traceability, review context or evidence for acceptance.
-      description: Use this status when further documentation, graph links, source evidence or reviewer input is required.
+      function: Marks a candidate that may be valid but lacks enough source evidence, reviewer context or graph traceability for acceptance.
+      description: Use this status when the next action is to gather documentation, inspect source, add graph links or ask for review input before accepting or rejecting the candidate.
       ui:
         icon_token: review.needs_evidence
         color_token: status.warning
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - review
+        analysis_hint: Needs-more-evidence status prevents weakly supported model elements from being promoted into threat analysis too early.
 
     - id: duplicate
       name: Duplicate
-      function: Indicates the candidate duplicates another accepted or pending element and should be merged, linked or discarded.
-      description: Use this status when a candidate should not create a new canonical base element because an equivalent element already exists.
+      function: Marks a candidate that overlaps an existing accepted or pending element and should be merged, linked or discarded.
+      description: Use this status when the item should not create a separate canonical actor, component, resource, boundary or flow because an equivalent element already exists.
       ui:
         icon_token: review.duplicate
         color_token: status.inactive
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - review
+        analysis_hint: Duplicate status helps avoid inflated attack surfaces and duplicated threat-analysis work.
 
     - id: proposed_base_correction
       name: Proposed base correction
-      function: Indicates the candidate was proposed as a correction from an overlay, finding, review or stale analysis process.
-      description: Use this status when a methodology or lifecycle process identifies a possible base model correction that must be reviewed before changing the base.
+      function: Marks a candidate correction discovered by an overlay, finding, review or stale-analysis process.
+      description: Use this status when downstream security work suggests the base model is wrong or incomplete and the proposed correction must be reviewed before changing the accepted baseline.
       ui:
         icon_token: review.base_correction
         color_token: status.review
+      security_analysis:
+        applies_to:
+          - base_analysis
+          - methodology_overlays
+          - review
+        analysis_hint: Proposed-base-correction status creates a feedback loop from threat analysis back into the base model without mutating it automatically.
 
   taxonomy_extension_scope:
     - id: global
