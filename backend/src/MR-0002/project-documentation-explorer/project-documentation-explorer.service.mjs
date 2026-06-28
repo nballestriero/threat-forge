@@ -27,6 +27,7 @@ import {
  * @implementsRequirement MR-0002REQ-0054
  * @implementsRequirement MR-0002REQ-0055
  * @implementsRequirement MR-0002REQ-0056
+ * @implementsRequirement MR-0002REQ-0058
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
@@ -57,6 +58,147 @@ import {
 
 const acceptedStatuses = new Set(["accepted", "approved", "active"]);
 const notAcceptedStatuses = new Set(["proposed", "draft", "rejected", "deprecated", "superseded"]);
+
+const contractTaxonomyFields = Object.freeze({
+  kind: {
+    label: "Entity kind",
+    source: "contract",
+    description: "Classifies which governed documentation entity is open in the detail view.",
+    values: {
+      macro_requirement: { label: "Macro requirement", description: "A top-level governed capability area that groups decisions, requirements and implementation evidence." },
+      requirement: { label: "Requirement", description: "A governed behavior, constraint or property that can be traced to decisions, implementation and verification evidence." },
+      adr: { label: "ADR", description: "An architecture decision record that explains a governed decision and its consequences." },
+      taxonomy: { label: "Taxonomy", description: "A governed controlled-vocabulary group with allowed values and reusable explanations." },
+      graph_node: { label: "Graph node", description: "A governed node in the project-model graph used for traceability and navigation." },
+      document: { label: "Document", description: "A governed documentation artifact that does not fit a more specific entity kind." },
+    },
+  },
+  implementation_state: {
+    label: "Implementation state",
+    source: "contract",
+    description: "Explains whether the opened entity has implementation evidence linked through the governed graph.",
+    values: {
+      implemented: { label: "Implemented", description: "The requirement has at least one implementation artifact linked by governed graph relations." },
+      partially_implemented: { label: "Partially implemented", description: "Implementation evidence exists but does not yet cover the whole governed intent." },
+      not_implemented: { label: "Not implemented", description: "No implementation artifact is linked yet." },
+      not_applicable: { label: "Not applicable", description: "Implementation status is not meaningful for this entity kind." },
+      unknown: { label: "Unknown", description: "The implementation state could not be derived from available governed data." },
+    },
+  },
+  acceptance_state: {
+    label: "Acceptance state",
+    source: "derived",
+    description: "Normalizes lifecycle status into an accepted/not-accepted view for filtering and study.",
+    values: {
+      accepted: { label: "Accepted", description: "The entity lifecycle status is accepted, approved or active." },
+      not_accepted: { label: "Not accepted", description: "The entity is proposed, draft, rejected, deprecated or superseded." },
+      not_applicable: { label: "Not applicable", description: "Acceptance state is not meaningful for this entity kind." },
+      unknown: { label: "Unknown", description: "The lifecycle status could not be normalized safely." },
+    },
+  },
+});
+
+/**
+ * Builds a normalized value explanation from controlled metadata.
+ *
+ * @param {string} id - Controlled value id.
+ * @param {Record<string, unknown>} [metadata] - Optional value metadata.
+ * @param {string} currentValue - Current selected value.
+ * @returns {Record<string, unknown>} Value explanation.
+ */
+function buildControlledValueExplanation(id, metadata = {}, currentValue = "") {
+  const normalizedId = String(id ?? "").trim();
+  const explanation = {
+    id: normalizedId,
+    label: String(metadata.label ?? metadata.name ?? toDisplayLabel(normalizedId)),
+    current: normalizedId === currentValue,
+  };
+
+  const description = String(metadata.description ?? "").trim();
+  if (description) explanation.description = description;
+
+  const valueFunction = String(metadata.function ?? "").trim();
+  if (valueFunction) explanation.function = valueFunction;
+
+  if (metadata.ui && typeof metadata.ui === "object" && !Array.isArray(metadata.ui)) explanation.ui = metadata.ui;
+  if (metadata.security_analysis && typeof metadata.security_analysis === "object" && !Array.isArray(metadata.security_analysis)) {
+    explanation.security_analysis = metadata.security_analysis;
+  }
+
+  return explanation;
+}
+
+/**
+ * Builds an allowed-value field explanation from a contract-controlled field.
+ *
+ * @param {DocumentationItem} item - Selected documentation item.
+ * @param {string} field - Field name.
+ * @returns {Record<string, unknown>|null} Field explanation or null.
+ */
+function buildContractFieldExplanation(item, field) {
+  const config = contractTaxonomyFields[field];
+  const currentValue = String(item[field] ?? "").trim();
+  if (!config || !currentValue) return null;
+
+  const allowedValues = Object.entries(config.values).map(([id, metadata]) => buildControlledValueExplanation(id, metadata, currentValue));
+  const current = allowedValues.find((value) => value.current) ?? buildControlledValueExplanation(currentValue, {}, currentValue);
+
+  return {
+    field,
+    label: config.label,
+    current_value: current,
+    allowed_values: allowedValues,
+    source: config.source,
+    description: config.description,
+  };
+}
+
+/**
+ * Builds a field explanation from observed repository values when no stricter taxonomy registry exists yet.
+ *
+ * @param {DocumentationItem} item - Selected documentation item.
+ * @param {DocumentationItem[]} items - All documentation items.
+ * @param {string} field - Field name.
+ * @param {string} label - Display label.
+ * @returns {Record<string, unknown>|null} Field explanation or null.
+ */
+function buildObservedFieldExplanation(item, items, field, label) {
+  const currentValue = String(item[field] ?? "").trim();
+  if (!currentValue) return null;
+
+  const values = [...new Set(items.map((candidate) => String(candidate[field] ?? "").trim()).filter(Boolean))].sort();
+  const allowedValues = values.map((value) => buildControlledValueExplanation(value, {
+    description: "This value is observed in the current governed documentation registry. It is shown so readers can compare the current field against the values currently used by similar records.",
+  }, currentValue));
+
+  return {
+    field,
+    label,
+    current_value: allowedValues.find((value) => value.current) ?? buildControlledValueExplanation(currentValue, {}, currentValue),
+    allowed_values: allowedValues,
+    source: "observed",
+    description: "Values currently observed for this field in the Project Documentation Explorer collection.",
+  };
+}
+
+/**
+ * Builds taxonomy-style allowed-value explanations for the selected documentation item fields.
+ *
+ * @param {DocumentationItem} item - Selected documentation item.
+ * @param {DocumentationItem[]} items - All documentation items.
+ * @returns {Array<Record<string, unknown>>} Field explanations.
+ */
+function buildTaxonomyFieldExplanations(item, items) {
+  return [
+    buildContractFieldExplanation(item, "kind"),
+    buildObservedFieldExplanation(item, items, "status", "Status"),
+    buildObservedFieldExplanation(item, items, "requirement_type", "Requirement type"),
+    buildObservedFieldExplanation(item, items, "decision_type", "Decision type"),
+    buildObservedFieldExplanation(item, items, "priority", "Priority"),
+    buildContractFieldExplanation(item, "implementation_state"),
+    buildContractFieldExplanation(item, "acceptance_state"),
+  ].filter(Boolean);
+}
 
 /**
  * Converts path separators to stable forward slashes.
@@ -630,6 +772,7 @@ export function createProjectDocumentationExplorerService({ sourcePort }) {
         outgoing_relations: outgoing,
         body: await loadBodyViewModel(item, sourcePort),
         taxonomy: buildTaxonomyDetail(item, taxonomyIndex),
+        taxonomy_fields: buildTaxonomyFieldExplanations(item, items),
       });
     },
   });

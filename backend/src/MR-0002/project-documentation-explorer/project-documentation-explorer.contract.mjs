@@ -12,6 +12,7 @@ import { z } from "zod";
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0055
  * @implementsRequirement MR-0002REQ-0056
+ * @implementsRequirement MR-0002REQ-0058
  * @derivedFromDecision MR-0002/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0008
  * @derivedFromDecision MR-0002/ADR-0009
@@ -81,6 +82,27 @@ export const taxonomyDetailViewModelSchema = z.object({
   source_path: z.string().min(1).optional(),
   value_count: z.number().int().nonnegative(),
   values: z.array(taxonomyValueExplanationSchema),
+});
+
+
+export const taxonomyFieldValueExplanationSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().min(1).optional(),
+  function: z.string().min(1).optional(),
+  current: z.boolean().default(false),
+  ui: z.record(z.unknown()).optional(),
+  security_analysis: z.record(z.unknown()).optional(),
+});
+
+export const taxonomyFieldExplanationSchema = z.object({
+  field: z.string().min(1),
+  label: z.string().min(1),
+  current_value: taxonomyFieldValueExplanationSchema.nullable().default(null),
+  allowed_values: z.array(taxonomyFieldValueExplanationSchema),
+  source: z.enum(["contract", "registry", "derived", "observed"]),
+  source_taxonomy: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
 });
 
 export const accessDecisionSchema = z.object({
@@ -185,6 +207,7 @@ export const documentationDetailViewModelSchema = z.object({
   })).default([]),
   body: documentationBodyViewModelSchema.nullable().default(null),
   taxonomy: taxonomyDetailViewModelSchema.nullable().default(null),
+  taxonomy_fields: z.array(taxonomyFieldExplanationSchema).default([]),
 });
 
 export const documentationRouteDescriptorSchema = z.object({

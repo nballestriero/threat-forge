@@ -518,6 +518,67 @@ components:
       required:
         - id
         - label
+    TaxonomyFieldValueExplanation:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          minLength: 1
+        label:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        function:
+          type: string
+          minLength: 1
+        current:
+          type: boolean
+        ui:
+          type: object
+          additionalProperties: true
+        security_analysis:
+          type: object
+          additionalProperties: true
+      required:
+        - id
+        - label
+        - current
+    TaxonomyFieldExplanation:
+      type: object
+      additionalProperties: false
+      properties:
+        field:
+          type: string
+          minLength: 1
+        label:
+          type: string
+          minLength: 1
+        current_value:
+          oneOf:
+            - $ref: '#/components/schemas/TaxonomyFieldValueExplanation'
+            - type: 'null'
+        allowed_values:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxonomyFieldValueExplanation'
+        source:
+          type: string
+          enum: [contract, registry, derived, observed]
+        source_taxonomy:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+      required:
+        - field
+        - label
+        - current_value
+        - allowed_values
+        - source
     TaxonomyDetailViewModel:
       type: object
       additionalProperties: false
@@ -661,6 +722,10 @@ components:
           oneOf:
             - $ref: '#/components/schemas/TaxonomyDetailViewModel'
             - type: 'null'
+        taxonomy_fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxonomyFieldExplanation'
         body:
           oneOf:
             - $ref: '#/components/schemas/DocumentationBodyViewModel'
@@ -671,6 +736,7 @@ components:
         - incoming_relations
         - outgoing_relations
         - taxonomy
+        - taxonomy_fields
         - body
     ChildProjectRepositoryLocation:
       type: object

@@ -16,6 +16,7 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @implementsRequirement MR-0002REQ-0041
  * @implementsRequirement MR-0002REQ-0049
  * @implementsRequirement MR-0002REQ-0056
+ * @implementsRequirement MR-0002REQ-0058
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0006
@@ -132,24 +133,23 @@ function OptionalValueList({ title, values }) {
 }
 
 /**
- * Render UI and security-analysis metadata for one taxonomy value.
+ * Render a help popover containing full meaning for one taxonomy value.
  *
  * @param {{value: Record<string, unknown>}} props - Taxonomy value props.
- * @returns {import("react").JSX.Element} Taxonomy value card.
+ * @returns {import("react").JSX.Element} Taxonomy value help popover.
  */
-function TaxonomyValueCard({ value }) {
+function TaxonomyValueHelpPopover({ value }) {
   const ui = value.ui && typeof value.ui === "object" ? value.ui : null;
   const securityAnalysis = value.security_analysis && typeof value.security_analysis === "object" ? value.security_analysis : null;
 
   return (
-    <article className="tf-card">
-      <div className="tf-entity-row__main">
-        <strong>{value.label ?? value.id}</strong>
-        <span>Raw id: {value.id}</span>
-      </div>
+    <div className="tf-taxonomy-field-popover" role="tooltip">
+      <p className="tf-eyebrow">Taxonomy value details</p>
+      <h4>{value.label ?? value.id}</h4>
+      <p>Raw id: {value.id}</p>
       {value.description ? <p>{String(value.description)}</p> : null}
       {value.function ? <p><strong>Function:</strong> {String(value.function)}</p> : null}
-      <dl className="tf-metadata-grid">
+      <dl className="tf-taxonomy-field-popover__meta">
         {ui?.icon_token ? <div><dt>Icon token</dt><dd>{String(ui.icon_token)}</dd></div> : null}
         {ui?.color_token ? <div><dt>Color token</dt><dd>{String(ui.color_token)}</dd></div> : null}
         {ui?.graph_shape_token ? <div><dt>Graph shape</dt><dd>{String(ui.graph_shape_token)}</dd></div> : null}
@@ -157,6 +157,49 @@ function TaxonomyValueCard({ value }) {
         <OptionalValueList title="Applies to" values={securityAnalysis?.applies_to} />
         {securityAnalysis?.analysis_hint ? <div><dt>Analysis hint</dt><dd>{String(securityAnalysis.analysis_hint)}</dd></div> : null}
       </dl>
+    </div>
+  );
+}
+
+/**
+ * Render UI and security-analysis metadata for one taxonomy value as compact row with on-demand details.
+ *
+ * @param {{value: Record<string, unknown>}} props - Taxonomy value props.
+ * @returns {import("react").JSX.Element} Taxonomy value card.
+ */
+function TaxonomyValueCard({ value }) {
+  const [isHelpOpen, setHelpOpen] = useState(false);
+  const helpId = `taxonomy-value-help-${String(value.id ?? "value").replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+
+  return (
+    <article className="tf-taxonomy-value-card">
+      <div className="tf-taxonomy-value-card__main">
+        <strong>{value.label ?? value.id}</strong>
+        <span>Raw id: {value.id}</span>
+      </div>
+      <div
+        className={isHelpOpen ? "tf-taxonomy-field-help is-open" : "tf-taxonomy-field-help"}
+        onMouseEnter={() => setHelpOpen(true)}
+        onMouseLeave={() => setHelpOpen(false)}
+        onFocus={() => setHelpOpen(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setHelpOpen(false);
+        }}
+      >
+        <button
+          type="button"
+          className="tf-taxonomy-field-info-button"
+          aria-label={`Show details for taxonomy value ${value.label ?? value.id}`}
+          aria-expanded={isHelpOpen}
+          aria-describedby={isHelpOpen ? helpId : undefined}
+          onClick={() => setHelpOpen((current) => !current)}
+        >
+          i
+        </button>
+        <div id={helpId} className="tf-taxonomy-field-help__panel">
+          <TaxonomyValueHelpPopover value={value} />
+        </div>
+      </div>
     </article>
   );
 }
@@ -191,6 +234,134 @@ function TaxonomyDetail({ taxonomy }) {
       ) : (
         <p>No taxonomy values are registered for this taxonomy.</p>
       )}
+    </Card>
+  );
+}
+
+
+
+/**
+ * Render one allowed value for a taxonomy-backed document field inside an on-demand help popover.
+ *
+ * @param {{value: Record<string, unknown>}} props - Value explanation props.
+ * @returns {import("react").JSX.Element} Allowed value row.
+ */
+function TaxonomyFieldAllowedValue({ value }) {
+  return (
+    <li className={value.current ? "tf-taxonomy-field-popover__value is-current" : "tf-taxonomy-field-popover__value"}>
+      <span className="tf-taxonomy-field-popover__value-title">
+        <strong>{value.label ?? value.id}</strong>
+        {value.current ? <span className="tf-badge">Current</span> : null}
+      </span>
+      <span className="tf-taxonomy-field-popover__value-id">{value.id}</span>
+      {value.description ? <span>{String(value.description)}</span> : null}
+      {value.function ? <span><strong>Function:</strong> {String(value.function)}</span> : null}
+    </li>
+  );
+}
+
+/**
+ * Render the hover/focus/click help popover for one taxonomy-backed document field.
+ *
+ * @param {{field: Record<string, unknown>, allowedValues: Array<Record<string, unknown>>, currentValue: Record<string, unknown>|null}} props - Popover props.
+ * @returns {import("react").JSX.Element} Field help popover.
+ */
+function TaxonomyFieldHelpPopover({ field, allowedValues, currentValue }) {
+  return (
+    <div className="tf-taxonomy-field-popover" role="tooltip">
+      <p className="tf-eyebrow">Field details</p>
+      <h4>{field.label ?? field.field}</h4>
+      {field.description ? <p>{String(field.description)}</p> : null}
+      {currentValue ? (
+        <div className="tf-taxonomy-field-popover__current">
+          <span>Current value</span>
+          <strong>{currentValue.label ?? currentValue.id}</strong>
+          <small>Raw value: {currentValue.id}</small>
+        </div>
+      ) : null}
+      {allowedValues.length > 0 ? (
+        <>
+          <h5>Allowed values</h5>
+          <ul className="tf-taxonomy-field-popover__values">
+            {allowedValues.map((value) => <TaxonomyFieldAllowedValue key={value.id} value={value} />)}
+          </ul>
+        </>
+      ) : (
+        <p>No allowed values are available for this field.</p>
+      )}
+      <dl className="tf-taxonomy-field-popover__meta">
+        {field.source_taxonomy ? <div><dt>Source taxonomy</dt><dd>{String(field.source_taxonomy)}</dd></div> : null}
+        {field.source ? <div><dt>Source</dt><dd>{String(field.source)}</dd></div> : null}
+      </dl>
+    </div>
+  );
+}
+
+/**
+ * Render current value for one controlled document field while keeping allowed values available on demand.
+ *
+ * @param {{field: Record<string, unknown>}} props - Field explanation props.
+ * @returns {import("react").JSX.Element} Compact field explanation card.
+ */
+function TaxonomyFieldCard({ field }) {
+  const [isHelpOpen, setHelpOpen] = useState(false);
+  const allowedValues = Array.isArray(field.allowed_values) ? field.allowed_values : [];
+  const currentValue = field.current_value && typeof field.current_value === "object" ? field.current_value : null;
+  const helpId = `taxonomy-field-help-${String(field.field ?? "field").replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+
+  return (
+    <article className="tf-taxonomy-field-card">
+      <div className="tf-taxonomy-field-card__main">
+        <span className="tf-taxonomy-field-card__label">{field.label ?? field.field}</span>
+        <span className="tf-taxonomy-field-card__value">{currentValue?.label ?? currentValue?.id ?? "No current value"}</span>
+      </div>
+      <div
+        className={isHelpOpen ? "tf-taxonomy-field-help is-open" : "tf-taxonomy-field-help"}
+        onMouseEnter={() => setHelpOpen(true)}
+        onMouseLeave={() => setHelpOpen(false)}
+        onFocus={() => setHelpOpen(true)}
+        onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setHelpOpen(false);
+        }}
+      >
+        <button
+          type="button"
+          className="tf-taxonomy-field-info-button"
+          aria-label={`Show allowed values for ${field.label ?? field.field}`}
+          aria-expanded={isHelpOpen}
+          aria-describedby={isHelpOpen ? helpId : undefined}
+          onClick={() => setHelpOpen((current) => !current)}
+        >
+          i
+        </button>
+        <div id={helpId} className="tf-taxonomy-field-help__panel">
+          <TaxonomyFieldHelpPopover field={field} allowedValues={allowedValues} currentValue={currentValue} />
+        </div>
+      </div>
+    </article>
+  );
+}
+/**
+ * Render taxonomy-backed field explanations for selected documentation details.
+ *
+ * @param {{fields?: Array<Record<string, unknown>>}} props - Field explanation props.
+ * @returns {import("react").JSX.Element|null} Field explanation section.
+ */
+function TaxonomyFieldsDetail({ fields }) {
+  const normalized = Array.isArray(fields) ? fields : [];
+  if (normalized.length === 0) return null;
+
+  return (
+    <Card>
+      <p className="tf-eyebrow">Taxonomy fields</p>
+      <h3>Current values and allowed values</h3>
+      <p>
+        These fields use controlled values supplied by the backend view-model. The page stays compact by showing the
+        current value first; use the information icon to inspect allowed values and their meaning on demand.
+      </p>
+      <div className="tf-taxonomy-fields-list">
+        {normalized.map((field) => <TaxonomyFieldCard key={field.field} field={field} />)}
+      </div>
     </Card>
   );
 }
@@ -239,6 +410,7 @@ function EntityDetail({ detail, onBack }) {
         </dl>
       </Card>
       <TaxonomyDetail taxonomy={detail.taxonomy} />
+      <TaxonomyFieldsDetail fields={detail.taxonomy_fields} />
       <Card>
         <h3>Governed body</h3>
         <MarkdownBody markdown={body.content_markdown} />

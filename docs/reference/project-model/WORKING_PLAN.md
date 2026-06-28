@@ -567,27 +567,27 @@ npm run context:zip -- --include-git --name threat-forge-handoff-with-git-after-
 
 ## Next Suggested Step
 
-The next safe implementation-bearing step is to render taxonomy-backed document fields with allowed-value explanations in the Project Documentation Explorer.
+The taxonomy-backed document field allowed-value rendering slice is now ready to be committed. It implements the Project Documentation Explorer hierarchy by keeping filters at the top, keeping document detail below the list, and showing controlled field current values together with allowed values supplied by the backend view-model.
+
+The next safe implementation-bearing step is to improve the Governance gate plans hierarchy using the same principle: compact first, explanation second, technical trace last.
 
 Recommended scope:
 
-1. keep Project Documentation Explorer filters at the top;
-2. keep the result list below the filters;
-3. keep the selected document detail below the list;
-4. for taxonomy-backed fields, show current value first;
-5. show the source taxonomy and all allowed values supplied by the backend;
-6. show each allowed value label, description, function and security-analysis hint when available;
-7. keep raw ids as secondary technical metadata;
-8. avoid hardcoding taxonomy value meanings in JSX;
-9. avoid adding taxonomy editing, Base Analysis runtime/storage or gate execution.
+1. keep Governance gate plans read-only;
+2. keep the selected project context visible;
+3. render the gate list as compact cards first;
+4. show name, description and status before deeper details;
+5. keep inline expand/collapse behavior for each gate;
+6. order expanded content as why selected, what it checks, checked areas, required capabilities, expected result and threat-analysis contribution;
+7. move raw ids, evidence markers and registry references into a collapsed Technical trace section;
+8. avoid hardcoding gate meanings in JSX;
+9. avoid adding gate execution, orchestration, mutation or Base Analysis runtime/storage.
 
 Suggested commit title:
 
 ```text
-frontend: render taxonomy field allowed values in documentation detail
+frontend: improve governance gate explanation hierarchy
 ```
-
-After that, improve the Governance gate plans hierarchy using the same principle: compact first, explanation second, technical trace last.
 
 ## Project Documentation Explorer JSDoc Static Type-checking Pilot Closure Micropasso
 
@@ -1364,3 +1364,23 @@ For example, the `governed_body_format` gate now explains that it checks governe
 The API remains read-only. It still serves generated gate plan artifacts and registry-derived explanations; it does not execute gates, mutate child projects, persist gate results, implement the final executor/orchestrator, add language adapters or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is a frontend refinement that consumes the enriched backend explanation payload and replaces raw evidence markers such as `validation_surface.threat_forge_repo_check exists` with human labels, checked areas, expected verification output and a separate technical trace section.
+
+## Project Documentation Explorer Taxonomy Field Hover Detail Refinement Micropasso
+
+This frontend refinement keeps taxonomy-backed document metadata compact while preserving access to governed allowed-value explanations.
+
+The implementation changes the Project Documentation Explorer detail view so taxonomy-backed fields show the current value inline by default and move allowed values, raw ids, source taxonomy and value descriptions behind a small information icon. The help surface opens on mouse hover, keyboard focus or click/tap, and closes when focus or hover leaves the help target. This follows the explainable UI hierarchy defined for `MR-0002REQ-0058`: the primary detail page shows the field and current value first, while deeper meaning remains available on demand.
+
+The refinement introduces shared stylesheet classes for the compact field rows, information icon and popover rather than placing inline colors or local styling in JSX. It preserves the existing top filter bar, list/detail placement and backend-driven taxonomy view-model; it does not change taxonomy registries, OpenAPI, backend contracts, snapshot generation semantics, mutation behavior, or governed Markdown body loading.
+
+The next safe implementation step remains the Governance gate plan UI hierarchy refinement: compact gate rows first, semantic explanation sections on expansion, and technical trace at the end.
+
+## Project Documentation Explorer Taxonomy Value Hover Detail Refinement Micropasso
+
+This frontend refinement applies the same progressive-disclosure rule to taxonomy group detail pages.
+
+The implementation changes taxonomy value rows so the primary page shows only the value label, raw id and an information icon. Longer registry-derived descriptions, function text, UI presentation tokens, graph presentation tokens and security-analysis hints move into the on-demand help surface. The help surface opens on mouse hover, keyboard focus or click/tap, matching the taxonomy-backed document field behavior.
+
+This keeps taxonomy group pages readable when values such as `icon_token`, `color_token`, `graph_shape_token` and `graph_edge_style_token` have explanatory text. The frontend still renders backend-supplied taxonomy meaning only; it does not hardcode taxonomy semantics, mutate registries, change backend contracts, change snapshot generation semantics or add taxonomy governed Markdown bodies.
+
+The next safe implementation step remains the Governance gate plan UI hierarchy refinement: compact gate rows first, semantic explanation sections on expansion, and technical trace at the end.

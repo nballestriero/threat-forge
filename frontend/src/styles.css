@@ -5,6 +5,7 @@
  * @implementsRequirement MR-0002REQ-0023
  * @implementsRequirement MR-0002REQ-0024
  * @implementsRequirement MR-0002REQ-0039
+ * @implementsRequirement MR-0002REQ-0058
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @macroRequirement MR-0002
@@ -482,4 +483,215 @@ button, input, select { font: inherit; }
   .tf-card-heading-row {
     display: block;
   }
+}
+
+/* Taxonomy field progressive-disclosure help. */
+.tf-taxonomy-fields-list {
+  display: grid;
+  gap: 8px;
+}
+
+.tf-taxonomy-field-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #deded8;
+  border-radius: 12px;
+  background: #fdfdfb;
+  padding: 10px 12px;
+}
+
+.tf-taxonomy-field-card__main {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.tf-taxonomy-field-card__label {
+  color: #555;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tf-taxonomy-field-card__value {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #d8d8d2;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  padding: 4px 8px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.tf-taxonomy-field-help {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tf-taxonomy-field-info-button {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #d8d8d2;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: help;
+}
+
+.tf-taxonomy-field-info-button:hover,
+.tf-taxonomy-field-info-button:focus-visible {
+  border-color: #111;
+  outline: none;
+}
+
+.tf-taxonomy-field-help__panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 8;
+  width: min(520px, calc(100vw - 48px));
+}
+
+.tf-taxonomy-field-help.is-open .tf-taxonomy-field-help__panel,
+.tf-taxonomy-field-help:hover .tf-taxonomy-field-help__panel,
+.tf-taxonomy-field-help:focus-within .tf-taxonomy-field-help__panel {
+  display: block;
+}
+
+.tf-taxonomy-field-popover {
+  border: 1px solid #cfcfc8;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  padding: 14px;
+  color: #111;
+}
+
+.tf-taxonomy-field-popover h4,
+.tf-taxonomy-field-popover h5,
+.tf-taxonomy-field-popover p {
+  margin-top: 0;
+}
+
+.tf-taxonomy-field-popover__current {
+  display: grid;
+  gap: 3px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #e5e5df;
+  border-radius: 10px;
+  background: #f7f7f5;
+}
+
+.tf-taxonomy-field-popover__current span,
+.tf-taxonomy-field-popover__current small,
+.tf-taxonomy-field-popover__value-id {
+  color: #666;
+  font-size: 12px;
+}
+
+.tf-taxonomy-field-popover__values {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.tf-taxonomy-field-popover__value {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #e5e5df;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.tf-taxonomy-field-popover__value.is-current {
+  border-color: #111;
+}
+
+.tf-taxonomy-field-popover__value-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tf-taxonomy-field-popover__meta {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #e5e5df;
+}
+
+.tf-taxonomy-field-popover__meta dt {
+  color: #666;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tf-taxonomy-field-popover__meta dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.tf-card .tf-taxonomy-field-popover strong {
+  display: inline;
+  font-size: inherit;
+  overflow-wrap: anywhere;
+}
+
+.tf-card .tf-taxonomy-field-popover .tf-badge {
+  display: inline-flex;
+}
+
+/* Compact taxonomy value rows keep group pages readable while preserving detail on demand. */
+.tf-taxonomy-value-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #deded8;
+  border-radius: 12px;
+  background: #fdfdfb;
+  padding: 10px 12px;
+}
+
+.tf-taxonomy-value-card__main {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.tf-taxonomy-value-card__main strong {
+  display: block;
+  color: #111;
+  font-size: 14px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.tf-taxonomy-value-card__main span {
+  color: #666;
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }

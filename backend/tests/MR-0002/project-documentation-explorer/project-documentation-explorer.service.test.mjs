@@ -198,3 +198,20 @@ test("loads taxonomy value explanations for taxonomy detail view-models", async 
   assert.equal(detail.taxonomy.values[0].ui.color_token, "state.implemented");
   assert.deepEqual(detail.taxonomy.values[0].security_analysis.applies_to, ["base_analysis"]);
 });
+
+
+test("loads controlled allowed values for documentation detail fields", async () => {
+  const service = createProjectDocumentationExplorerService({ sourcePort: createFixtureSourcePort() });
+  const detail = await service.getDetail({ id: "MR-0002REQ-TEST-0001" });
+
+  const implementationField = detail.taxonomy_fields.find((field) => field.field === "implementation_state");
+  assert.equal(implementationField.label, "Implementation state");
+  assert.equal(implementationField.current_value.id, "implemented");
+  assert.equal(implementationField.current_value.current, true);
+  assert.ok(implementationField.allowed_values.some((value) => value.id === "not_implemented"));
+  assert.match(implementationField.allowed_values.find((value) => value.id === "implemented").description, /implementation artifact/u);
+
+  const statusField = detail.taxonomy_fields.find((field) => field.field === "status");
+  assert.equal(statusField.current_value.id, "approved");
+  assert.equal(statusField.source, "observed");
+});
