@@ -78,6 +78,61 @@ function DataSourceStatus({ dataSource }) {
 }
 
 /**
+ * Render the always-visible study introduction for the governance gate plan page.
+ *
+ * @returns {import("react").JSX.Element} Study-oriented page guide.
+ */
+function GovernancePlanStudyIntro() {
+  return (
+    <Card className="tf-documentation-context-card">
+      <p className="tf-eyebrow">Study guide</p>
+      <strong>How to read Governance gate plans</strong>
+      <p>
+        This page explains which governance checks apply to the platform or a child project,
+        what each check protects, and why the check was selected for the current profile and target scope.
+      </p>
+      <dl className="tf-detail-grid">
+        <div>
+          <dt>Capability</dt>
+          <dd>The ability ThreatForge or the child project must have before a gate can be meaningful, such as reading governed documentation or validating requirement bodies.</dd>
+        </div>
+        <div>
+          <dt>Validation surface</dt>
+          <dd>The concrete part of the project that a gate checks, such as governed Markdown bodies, registries, graph relations, OpenAPI contracts, frontend build output or runtime tests.</dd>
+        </div>
+        <div>
+          <dt>Why this gate?</dt>
+          <dd>The rationale that connects project scope, governance profile, required capability, validation surface and threat-analysis readiness.</dd>
+        </div>
+      </dl>
+      <p>
+        This view is read-only: it helps study and audit the plan, but it does not execute gates, mutate repositories, or start a threat-analysis runtime.
+      </p>
+    </Card>
+  );
+}
+
+/**
+ * Render a visible hint when the selected detail source does not provide explanation payloads.
+ *
+ * @param {{explanation?: Record<string, unknown>}} props - Explanation availability props.
+ * @returns {import("react").JSX.Element|null} Missing explanation notice.
+ */
+function ExplanationAvailabilityNotice({ explanation }) {
+  if (explanation) return null;
+
+  return (
+    <Card className="tf-documentation-context-card">
+      <p className="tf-eyebrow">Explanation payload</p>
+      <strong>Gate explanations are not available from the current detail source</strong>
+      <p>
+        The static plan values below are still shown, but the expanded study cards require the read-only HTTP governance-plan API version that exposes the explanation view-model.
+      </p>
+    </Card>
+  );
+}
+
+/**
  * Render compact plan statistics.
  *
  * @param {{items: Array<Record<string, unknown>>}} props - Summary props.
@@ -732,6 +787,7 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
         <StatusBadge value={String(plan.result ?? "unknown")} label={String(plan.result ?? "unknown")} />
       </div>
 
+      <ExplanationAvailabilityNotice explanation={explanation} />
       <PlanStudyGuide explanation={explanation} />
       <PlanConceptExplanations explanation={explanation} />
       <FieldExplanationGuide fieldExplanations={explanation?.field_explanations} />
@@ -880,6 +936,7 @@ export function ChildProjectGovernancePlanPage({ client, childProjectClient }) {
       </section>
 
       <DataSourceStatus dataSource={dataSource} />
+      <GovernancePlanStudyIntro />
 
       {loadingList ? (
         <EmptyState title="Loading governance plans">Reading generated gate-plan artifacts.</EmptyState>
