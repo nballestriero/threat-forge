@@ -1596,3 +1596,18 @@ The visual appearance is intended to remain stable and lightweight. This step do
 Known bug to resolve in a dedicated micropasso: when a child project is selected and the user opens Documents, the UI can still show threat-forge platform documents through a fallback path. The child-project documentation view must not silently fall back to platform documents; it should show the child-project source, an explicit empty state, or an explicit source error.
 
 The next safe step is to normalize status badge semantics using the centralized status accent tokens, then address the child-project documentation no-fallback bug with a focused backend/frontend data-source micropasso.
+
+
+## Status Badge Semantic Normalization Micropasso
+
+This frontend design-system micropasso normalizes shared Governance Console status badge semantics without changing backend status values.
+
+The implementation adds a centralized status-badge semantic registry to the MR-0002 design-system token module. Raw read-model values such as `accepted`, `approved`, `pass`, `fail`, `planned`, `not_applicable`, `unsupported`, `not_implemented` and `partially_implemented` now map to compact UI tones, readable labels and shared icon tokens. The shared `StatusBadge` component uses that registry to emit stable semantic tone classes while preserving the raw status class only as metadata. Unknown values remain visible through a neutral fallback instead of disappearing or inheriting a misleading success/danger treatment.
+
+The shared stylesheet renders badge tone classes with centralized CSS custom properties introduced by the semantic color token micropasso. Project Documentation Explorer, Child Projects and Governance gate plans continue to pass raw status values from their read-models; feature pages do not choose badge colors directly.
+
+This step does not change backend contracts, generated status ids, child-project gate-planning semantics, filters, routing, snapshot loading, child-project mutation behavior or threat-analysis runtime features.
+
+Known bug remains for a dedicated micropasso: when a child project is selected and the user opens Documents, the UI must not silently fall back to threat-forge platform documents.
+
+The next safe step is to refine shell navigation and topbar hierarchy, or to switch to the child-project documentation no-fallback bug if functional correctness takes priority over visual polish.

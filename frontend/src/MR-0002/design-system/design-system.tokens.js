@@ -10,11 +10,13 @@
  * @implementsRequirement MR-0002REQ-0062
  * @implementsRequirement MR-0002REQ-0063
  * @implementsRequirement MR-0002REQ-0064
+ * @implementsRequirement MR-0002REQ-0065
  * @implementsRequirement MR-0003REQ-0013
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0025
  * @derivedFromDecision MR-0002/ADR-0026
+ * @derivedFromDecision MR-0002/ADR-0027
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0002
@@ -26,7 +28,8 @@
  * UI slices. The concrete icon glyph mapping is intentionally replaceable and
  * must remain hidden behind the shared Icon component. Shared color roles
  * are named semantically so stylesheet variables and later visual refinements
- * can stay aligned without page-local palettes.
+ * can stay aligned without page-local palettes. Status badge semantics also
+ * map raw read-model values to compact tones, labels and icon tokens.
  *
  * Side effects: none. This module exports immutable token maps only.
  */
@@ -111,35 +114,67 @@ export const iconTokens = Object.freeze({
     accepted: "check-circle",
     approved: "check-circle",
     active: "check-circle",
+    success: "check-circle",
     pass: "check-circle",
+    verified: "badge-check",
+    implemented: "badge-check",
     fail: "x",
+    rejected: "x",
+    danger: "x",
     warning: "circle-dashed",
+    info: "circle-help",
+    neutral: "circle-dashed",
     planned: "clock",
+    disabled: "circle-dashed",
     unsupported: "circle-help",
     not_applicable: "circle-dashed",
     draft: "circle-dashed",
-    implemented: "badge-check",
+    candidate: "circle-dashed",
     not_implemented: "clock",
     partially_implemented: "circle-dashed",
     unknown: "circle-help",
   }),
 });
 
-export const statusLabels = Object.freeze({
-  accepted: "Accepted",
-  approved: "Approved",
-  active: "Active",
-  implemented: "Implemented",
-  not_implemented: "To do",
-  partially_implemented: "Partial",
-  unknown: "Unknown",
-  not_applicable: "N/A",
-  planned: "Planned",
-  pass: "Pass",
-  fail: "Fail",
-  warning: "Warning",
-  unsupported: "Unsupported",
+export const defaultStatusBadgeSemantic = Object.freeze({
+  label: "Unknown",
+  tone: "neutral",
+  icon: "unknown",
 });
+
+export const statusBadgeSemantics = Object.freeze({
+  accepted: Object.freeze({ label: "Accepted", tone: "success", icon: "accepted" }),
+  approved: Object.freeze({ label: "Approved", tone: "success", icon: "approved" }),
+  active: Object.freeze({ label: "Active", tone: "success", icon: "active" }),
+  implemented: Object.freeze({ label: "Implemented", tone: "success", icon: "implemented" }),
+  verified: Object.freeze({ label: "Verified", tone: "success", icon: "verified" }),
+  pass: Object.freeze({ label: "Pass", tone: "success", icon: "pass" }),
+
+  warning: Object.freeze({ label: "Warning", tone: "warning", icon: "warning" }),
+  stale_warning: Object.freeze({ label: "Stale warning", tone: "warning", icon: "warning" }),
+  ready_for_review: Object.freeze({ label: "Ready for review", tone: "warning", icon: "warning" }),
+  needs_more_evidence: Object.freeze({ label: "Needs more evidence", tone: "warning", icon: "warning" }),
+  partially_implemented: Object.freeze({ label: "Partial", tone: "warning", icon: "partially_implemented" }),
+
+  fail: Object.freeze({ label: "Fail", tone: "danger", icon: "fail" }),
+  rejected: Object.freeze({ label: "Rejected", tone: "danger", icon: "rejected" }),
+  stale_blocking: Object.freeze({ label: "Stale blocking", tone: "danger", icon: "danger" }),
+
+  planned: Object.freeze({ label: "Planned", tone: "planned", icon: "planned" }),
+  not_implemented: Object.freeze({ label: "To do", tone: "planned", icon: "not_implemented" }),
+
+  unsupported: Object.freeze({ label: "Unsupported", tone: "info", icon: "unsupported" }),
+  candidate: Object.freeze({ label: "Candidate", tone: "info", icon: "candidate" }),
+
+  draft: Object.freeze({ label: "Draft", tone: "neutral", icon: "draft" }),
+  unknown: Object.freeze({ label: "Unknown", tone: "neutral", icon: "unknown" }),
+  not_applicable: Object.freeze({ label: "N/A", tone: "neutral", icon: "not_applicable" }),
+  disabled: Object.freeze({ label: "Disabled", tone: "disabled", icon: "disabled" }),
+});
+
+export const statusLabels = Object.freeze(
+  Object.fromEntries(Object.entries(statusBadgeSemantics).map(([key, value]) => [key, value.label])),
+);
 
 export const semanticColorTokens = Object.freeze({
   canvas: Object.freeze({
@@ -185,6 +220,24 @@ export const semanticColorTokens = Object.freeze({
     warning: "--tf-status-warning-accent",
     danger: "--tf-status-danger-accent",
     info: "--tf-status-info-accent",
+    planned: "--tf-status-planned-accent",
+    disabled: "--tf-status-disabled-accent",
+  }),
+  statusSurface: Object.freeze({
+    neutralBackground: "--tf-status-neutral-bg",
+    neutralBorder: "--tf-status-neutral-border",
+    successBackground: "--tf-status-success-bg",
+    successBorder: "--tf-status-success-border",
+    warningBackground: "--tf-status-warning-bg",
+    warningBorder: "--tf-status-warning-border",
+    dangerBackground: "--tf-status-danger-bg",
+    dangerBorder: "--tf-status-danger-border",
+    infoBackground: "--tf-status-info-bg",
+    infoBorder: "--tf-status-info-border",
+    plannedBackground: "--tf-status-planned-bg",
+    plannedBorder: "--tf-status-planned-border",
+    disabledBackground: "--tf-status-disabled-bg",
+    disabledBorder: "--tf-status-disabled-border",
   }),
 });
 

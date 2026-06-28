@@ -1,5 +1,5 @@
 import { Icon } from "./Icon.jsx";
-import { statusLabels } from "./design-system.tokens.js";
+import { defaultStatusBadgeSemantic, statusBadgeSemantics } from "./design-system.tokens.js";
 
 /**
  * @file Shared MR-0002 frontend design-system components.
@@ -9,8 +9,10 @@ import { statusLabels } from "./design-system.tokens.js";
  * @implementsRequirement MR-0002REQ-0024
  * @implementsRequirement MR-0002REQ-0039
  * @implementsRequirement MR-0002REQ-0041
+ * @implementsRequirement MR-0002REQ-0066
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
+ * @derivedFromDecision MR-0002/ADR-0027
  * @macroRequirement MR-0002
  *
  * These components define the first reusable presentation primitives for the
@@ -84,6 +86,26 @@ export function SelectField({ label, value, values, onChange }) {
 }
 
 /**
+ * Normalize a raw read-model status value into a stable design-system key.
+ *
+ * @param {string} value - Raw status value.
+ * @returns {string} Normalized status key.
+ */
+function normalizeStatusKey(value) {
+  return value.trim().toLowerCase().replaceAll("-", "_").replace(/[^a-z0-9_]+/g, "_").replace(/^_+|_+$/g, "");
+}
+
+/**
+ * Convert a normalized status key into a safe CSS class suffix.
+ *
+ * @param {string} statusKey - Normalized status key.
+ * @returns {string} CSS-safe status suffix.
+ */
+function toStatusClassSuffix(statusKey) {
+  return statusKey.replaceAll("_", "-") || "unknown";
+}
+
+/**
  * Shared status badge.
  *
  * @param {{value?: string, label?: string}} props - Badge props.
@@ -91,9 +113,15 @@ export function SelectField({ label, value, values, onChange }) {
  */
 export function StatusBadge({ value, label }) {
   if (!value) return null;
+  const statusKey = normalizeStatusKey(String(value));
+  const statusSemantic = statusBadgeSemantics[statusKey] ?? defaultStatusBadgeSemantic;
+  const statusTone = statusSemantic.tone ?? defaultStatusBadgeSemantic.tone;
+  const statusIcon = statusSemantic.icon ?? defaultStatusBadgeSemantic.icon;
+  const statusLabel = label ?? statusSemantic.label ?? value;
+
   return (
-    <span className={`tf-badge tf-badge--${String(value).replaceAll("_", "-")}`}>
-      <Icon token={`status.${value}`} /> {label ?? statusLabels[value] ?? value}
+    <span className={`tf-badge tf-badge--tone-${statusTone} tf-badge--${toStatusClassSuffix(statusKey)}`} data-status-tone={statusTone}>
+      <Icon token={`status.${statusIcon}`} /> {statusLabel}
     </span>
   );
 }

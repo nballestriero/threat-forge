@@ -9,11 +9,13 @@
  * @implementsRequirement MR-0002REQ-0062
  * @implementsRequirement MR-0002REQ-0063
  * @implementsRequirement MR-0002REQ-0064
+ * @implementsRequirement MR-0002REQ-0066
  * @implementsRequirement MR-0003REQ-0065
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0025
  * @derivedFromDecision MR-0002/ADR-0026
+ * @derivedFromDecision MR-0002/ADR-0027
  * @macroRequirement MR-0002
  *
  * This stylesheet implements the first minimal monochrome Governance Console
@@ -61,14 +63,30 @@
   --tf-status-warning-accent: #9b6a00;
   --tf-status-danger-accent: #a33a3a;
   --tf-status-info-accent: #4b6584;
-  --tf-info-bg: #f5f7fb;
-  --tf-info-border: #d8deeb;
-  --tf-success-bg: #f1f8f3;
-  --tf-success-border: #cfe4d4;
-  --tf-warning-bg: #fff8e8;
-  --tf-warning-border: #ead8aa;
-  --tf-danger-bg: #fff0f0;
-  --tf-danger-border: #e6c3c3;
+  --tf-status-planned-accent: var(--tf-status-info-accent);
+  --tf-status-disabled-accent: var(--tf-color-text-soft);
+  --tf-status-neutral-bg: var(--tf-color-surface-muted);
+  --tf-status-neutral-border: var(--tf-color-border-muted);
+  --tf-status-success-bg: #f1f8f3;
+  --tf-status-success-border: #cfe4d4;
+  --tf-status-warning-bg: #fff8e8;
+  --tf-status-warning-border: #ead8aa;
+  --tf-status-danger-bg: #fff0f0;
+  --tf-status-danger-border: #e6c3c3;
+  --tf-status-info-bg: #f5f7fb;
+  --tf-status-info-border: #d8deeb;
+  --tf-status-planned-bg: var(--tf-status-info-bg);
+  --tf-status-planned-border: var(--tf-status-info-border);
+  --tf-status-disabled-bg: var(--tf-color-surface-subtle);
+  --tf-status-disabled-border: var(--tf-color-border-soft);
+  --tf-info-bg: var(--tf-status-info-bg);
+  --tf-info-border: var(--tf-status-info-border);
+  --tf-success-bg: var(--tf-status-success-bg);
+  --tf-success-border: var(--tf-status-success-border);
+  --tf-warning-bg: var(--tf-status-warning-bg);
+  --tf-warning-border: var(--tf-status-warning-border);
+  --tf-danger-bg: var(--tf-status-danger-bg);
+  --tf-danger-border: var(--tf-status-danger-border);
 
   --tf-surface: var(--tf-color-surface-panel);
   --tf-surface-muted: var(--tf-color-surface-muted);
@@ -342,14 +360,17 @@ button, input, select { font: inherit; }
 .tf-entity-row__meta { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 
 .tf-badge {
+  --tf-badge-border: var(--tf-status-neutral-border);
+  --tf-badge-bg: var(--tf-status-neutral-bg);
+  --tf-badge-accent: var(--tf-status-neutral-accent);
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid var(--tf-color-border-muted);
+  border: 1px solid var(--tf-badge-border);
   border-radius: 999px;
   padding: 4px 8px;
   color: var(--tf-color-text-subtle);
-  background: var(--tf-surface-muted);
+  background: var(--tf-badge-bg);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
@@ -361,43 +382,50 @@ button, input, select { font: inherit; }
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--tf-status-neutral-accent);
+  background: var(--tf-badge-accent);
   flex: 0 0 auto;
 }
-.tf-badge--success {
-  border-color: var(--tf-success-border);
-  background: var(--tf-success-bg);
+
+.tf-badge--tone-success {
+  --tf-badge-border: var(--tf-status-success-border);
+  --tf-badge-bg: var(--tf-status-success-bg);
+  --tf-badge-accent: var(--tf-status-success-accent);
 }
 
-.tf-badge--success::before {
-  background: var(--tf-status-success-accent);
+.tf-badge--tone-warning {
+  --tf-badge-border: var(--tf-status-warning-border);
+  --tf-badge-bg: var(--tf-status-warning-bg);
+  --tf-badge-accent: var(--tf-status-warning-accent);
 }
 
-.tf-badge--warning {
-  border-color: var(--tf-warning-border);
-  background: var(--tf-warning-bg);
+.tf-badge--tone-danger {
+  --tf-badge-border: var(--tf-status-danger-border);
+  --tf-badge-bg: var(--tf-status-danger-bg);
+  --tf-badge-accent: var(--tf-status-danger-accent);
 }
 
-.tf-badge--warning::before {
-  background: var(--tf-status-warning-accent);
+.tf-badge--tone-info {
+  --tf-badge-border: var(--tf-status-info-border);
+  --tf-badge-bg: var(--tf-status-info-bg);
+  --tf-badge-accent: var(--tf-status-info-accent);
 }
 
-.tf-badge--danger {
-  border-color: var(--tf-danger-border);
-  background: var(--tf-danger-bg);
+.tf-badge--tone-planned {
+  --tf-badge-border: var(--tf-status-planned-border);
+  --tf-badge-bg: var(--tf-status-planned-bg);
+  --tf-badge-accent: var(--tf-status-planned-accent);
 }
 
-.tf-badge--danger::before {
-  background: var(--tf-status-danger-accent);
+.tf-badge--tone-neutral {
+  --tf-badge-border: var(--tf-status-neutral-border);
+  --tf-badge-bg: var(--tf-status-neutral-bg);
+  --tf-badge-accent: var(--tf-status-neutral-accent);
 }
 
-.tf-badge--info {
-  border-color: var(--tf-info-border);
-  background: var(--tf-info-bg);
-}
-
-.tf-badge--info::before {
-  background: var(--tf-status-info-accent);
+.tf-badge--tone-disabled {
+  --tf-badge-border: var(--tf-status-disabled-border);
+  --tf-badge-bg: var(--tf-status-disabled-bg);
+  --tf-badge-accent: var(--tf-status-disabled-accent);
 }
 
 .tf-detail-view { display: grid; gap: 12px; }
@@ -1128,67 +1156,25 @@ button, input, select { font: inherit; }
   line-height: 1.45;
 }
 
+/* Raw status classes are retained as metadata only. Primary rendering is owned by
+   the normalized tf-badge--tone-* classes emitted by the shared StatusBadge. */
 .tf-badge--pass,
 .tf-badge--accepted,
 .tf-badge--implemented,
-.tf-badge--verified {
-  border-color: var(--tf-success-border);
-  background: var(--tf-success-bg);
-}
-
+.tf-badge--verified,
 .tf-badge--warning,
 .tf-badge--stale-warning,
 .tf-badge--ready-for-review,
 .tf-badge--needs-more-evidence,
-.tf-badge--partially-implemented {
-  border-color: var(--tf-warning-border);
-  background: var(--tf-warning-bg);
-}
-
+.tf-badge--partially-implemented,
 .tf-badge--fail,
 .tf-badge--rejected,
-.tf-badge--stale-blocking {
-  border-color: var(--tf-danger-border);
-  background: var(--tf-danger-bg);
-}
-
+.tf-badge--stale-blocking,
 .tf-badge--planned,
 .tf-badge--candidate,
 .tf-badge--draft,
 .tf-badge--unknown,
 .tf-badge--unsupported,
 .tf-badge--not-applicable {
-  border-color: var(--tf-info-border);
-  background: var(--tf-info-bg);
-}
-
-
-.tf-badge--pass::before,
-.tf-badge--accepted::before,
-.tf-badge--implemented::before,
-.tf-badge--verified::before {
-  background: var(--tf-status-success-accent);
-}
-
-.tf-badge--warning::before,
-.tf-badge--stale-warning::before,
-.tf-badge--ready-for-review::before,
-.tf-badge--needs-more-evidence::before,
-.tf-badge--partially-implemented::before {
-  background: var(--tf-status-warning-accent);
-}
-
-.tf-badge--fail::before,
-.tf-badge--rejected::before,
-.tf-badge--stale-blocking::before {
-  background: var(--tf-status-danger-accent);
-}
-
-.tf-badge--planned::before,
-.tf-badge--candidate::before,
-.tf-badge--draft::before,
-.tf-badge--unknown::before,
-.tf-badge--unsupported::before,
-.tf-badge--not-applicable::before {
-  background: var(--tf-status-info-accent);
+  color: var(--tf-color-text-subtle);
 }
