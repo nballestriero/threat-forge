@@ -467,6 +467,41 @@ function buildGateExplanationMap(explanation) {
 }
 
 /**
+ * Build the short description shown before a gate is expanded.
+ *
+ * @param {Record<string, unknown>} gate - Gate row.
+ * @param {Record<string, unknown>|undefined} explanation - Optional gate explanation.
+ * @returns {string} Human-readable summary.
+ */
+function getGateShortDescription(gate, explanation) {
+  return String(
+    explanation?.what_it_checks
+      ?? gate?.description
+      ?? gate?.reason
+      ?? "Open this gate to study what it checks and why it belongs to the selected project plan.",
+  );
+}
+
+/**
+ * Render the generated verification evidence values with an explicit study label.
+ *
+ * @param {{values?: unknown[]}} props - Evidence values.
+ * @returns {import("react").JSX.Element} Evidence explanation block.
+ */
+function VerificationEvidenceList({ values = [] }) {
+  return (
+    <div>
+      <strong>Verification evidence</strong>
+      <p className="tf-governance-gate-card__reason">
+        Evidence means the artifact, command output, file path, registry entry or result value that supports this gate row.
+        It is the proof source to inspect when you want to understand how the gate is justified; this page does not execute the gate.
+      </p>
+      <InlineValueList values={values} />
+    </div>
+  );
+}
+
+/**
  * Render one explanatory paragraph when the value exists.
  *
  * @param {{label: string, value?: unknown}} props - Explanation props.
@@ -639,7 +674,7 @@ function ValidationSurfaceExplanationList({ items = [] }) {
             <dl className="tf-metadata-grid">
               <ExplanationParagraph label="Raw value" value={surface.id} />
               <ExplanationParagraph label="Meaning" value={surface.concept ?? surface.description} />
-              <ExplanationParagraph label="Evidence kind" value={surface.evidence_kind} />
+              <ExplanationParagraph label="Expected proof type" value={surface.evidence_kind} />
               <ExplanationParagraph label="Command" value={surface.command} />
               <ExplanationParagraph label="Why it matters" value={surface.why_it_matters} />
               <ExplanationParagraph label="Source registry" value={surface.source_registry} />
@@ -695,53 +730,92 @@ function GateExplanationDetails({ gate, explanation }) {
 }
 
 /**
- * Render detailed gate rows.
+ * Render detailed gate rows as compact expandable list items.
  *
- * @param {{gates: Array<Record<string, unknown>>}} props - Gate rows.
- * @returns {import("react").JSX.Element} Gate table/list.
+ * @param {{gates: Array<Record<string, unknown>>, explanationsByGateId?: Record<string, Record<string, unknown>>}} props - Gate rows.
+ * @returns {import("react").JSX.Element} Gate list.
  */
 function GateRows({ gates, explanationsByGateId = {} }) {
+  const [expandedGateIds, setExpandedGateIds] = useState(() => new Set());
+
   if (gates.length === 0) {
     return <EmptyState title="No gates match the current filters">Reset search or status filters to see all planned gates.</EmptyState>;
+  }
+
+  /**
+   * Toggle one gate explanation in the current list.
+   *
+   * @param {unknown} gateId - Gate identifier.
+   * @returns {void}
+   */
+  function toggleGate(gateId) {
+    const normalizedGateId = String(gateId ?? "");
+    setExpandedGateIds((current) => {
+      const next = new Set(current);
+      if (next.has(normalizedGateId)) next.delete(normalizedGateId);
+      else next.add(normalizedGateId);
+      return next;
+    });
   }
 
   return (
     <div className="tf-governance-gate-list">
       {gates.map((gate) => {
-        const explanation = explanationsByGateId[String(gate.id)] ?? undefined;
+        const gateId = String(gate.id ?? "");
+        const explanation = explanationsByGateId[gateId] ?? undefined;
+        const isExpanded = expandedGateIds.has(gateId);
+        const description = getGateShortDescription(gate, explanation);
         return (
-          <Card className="tf-governance-gate-card" key={String(gate.id)}>
-            <div className="tf-governance-gate-card__header">
-              <div>
-                <p className="tf-eyebrow">{displayValue(gate.applicability_class)}</p>
-                <h3>{displayValue(gate.label ?? gate.id)}</h3>
+          <Card className="tf-governance-gate-card" key={gateId}>
+            <button
+              type="button"
+              className="tf-entity-row tf-governance-gate-summary-row"
+              onClick={() => toggleGate(gateId)}
+              aria-expanded={isExpanded}
+            >
+              <span className="tf-entity-row__icon"><Icon token="navigation.documentation" /></span>
+              <span className="tf-entity-row__main">
+                <strong>{displayValue(gate.label ?? gate.id)}</strong>
+                <span>{displayValue(description)}</span>
+              </span>
+              <span className="tf-entity-row__meta">
+                <StatusBadge value={String(gate.status ?? "unknown")} label={String(gate.status ?? "unknown")} />
+                <span className="tf-badge">{isExpanded ? "Hide details" : "Show details"}</span>
+              </span>
+            </button>
+
+            {isExpanded ? (
+              <div className="tf-governance-gate-card__details">
+                <dl className="tf-metadata-grid">
+                  <div>
+                    <dt>Gate id</dt>
+                    <dd>{displayValue(gate.id)}</dd>
+                  </div>
+                  <div>
+                    <dt>Severity</dt>
+                    <dd>{displayValue(gate.severity)}</dd>
+                  </div>
+                  <div>
+                    <dt>Applicability class</dt>
+                    <dd>{displayValue(gate.applicability_class)}</dd>
+                  </div>
+                  <div>
+                    <dt>Why this gate is in the plan</dt>
+                    <dd>{displayValue(explanation?.why_selected ?? gate.reason)}</dd>
+                  </div>
+                  <div>
+                    <dt>Required capabilities</dt>
+                    <dd><InlineValueList values={gate.required_capabilities} /></dd>
+                  </div>
+                  <div>
+                    <dt>Validation surfaces</dt>
+                    <dd><InlineValueList values={gate.validation_surfaces} /></dd>
+                  </div>
+                </dl>
+                <VerificationEvidenceList values={gate.evidence} />
+                <GateExplanationDetails gate={gate} explanation={explanation} />
               </div>
-              <StatusBadge value={String(gate.status ?? "unknown")} label={String(gate.status ?? "unknown")} />
-            </div>
-            <dl className="tf-metadata-grid">
-              <div>
-                <dt>Gate id</dt>
-                <dd>{displayValue(gate.id)}</dd>
-              </div>
-              <div>
-                <dt>Severity</dt>
-                <dd>{displayValue(gate.severity)}</dd>
-              </div>
-              <div>
-                <dt>Required capabilities</dt>
-                <dd><InlineValueList values={gate.required_capabilities} /></dd>
-              </div>
-              <div>
-                <dt>Validation surfaces</dt>
-                <dd><InlineValueList values={gate.validation_surfaces} /></dd>
-              </div>
-            </dl>
-            <p className="tf-governance-gate-card__reason">{displayValue(gate.reason)}</p>
-            <div>
-              <strong>Evidence</strong>
-              <InlineValueList values={gate.evidence} />
-            </div>
-            <GateExplanationDetails gate={gate} explanation={explanation} />
+            ) : null}
           </Card>
         );
       })}
@@ -798,7 +872,7 @@ function GatePlanDetail({ detail, loading = false, error = "" }) {
         <SearchInput
           value={gateFilters.q}
           onChange={(q) => setGateFilters((current) => ({ ...current, q }))}
-          placeholder="Search gates, reasons, evidence"
+          placeholder="Search gates, descriptions, reasons, verification evidence"
         />
         <SelectField
           label="Gate status"
