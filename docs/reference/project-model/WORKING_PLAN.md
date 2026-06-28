@@ -1315,3 +1315,23 @@ This step intentionally does not add a gate executor, persist gate results, muta
 
 It closes the UI-visible planning slice now tagged as `project-model-child-governance-plan-ui-visible-complete`.
 
+
+## Explainable Child Governance Plan Backend View-model Micropasso
+
+This backend micropasso implements the first read-only study-oriented view-model after `MR-0003/ADR-0012` and the explainable child governance concept boundary.
+
+The implementation extends the existing Child Project Governance Gate Plan API detail endpoint so it still returns the generated artifact, but also returns an `explanation` object derived from governed child-project governance registries. The explanation makes profile, target scope, result status, gate rationale, required capabilities, validation surfaces and applicability classes understandable without requiring a user to read raw YAML registry ids.
+
+The view-model explains:
+
+- what the selected governance profile means and why it matters;
+- what target scope means for platform-self, demo-child and child-project plans;
+- what each gate checks;
+- why each gate was selected by the profile/target-scope/applicability chain;
+- what required capabilities mean for threat-analysis readiness;
+- what validation surfaces are and which commands, fixtures, APIs, generated artifacts or UI builds provide evidence;
+- why planned, pass, fail, warning, unsupported and not-applicable status values must not be confused.
+
+The API remains read-only. It reads generated plan artifacts and governed registry files, returns a UI-safe explanation view-model, and verifies the explanation contract through the existing bounded API self-test. It does not execute gates, mutate child projects, persist gate results, change canonical registries at runtime, implement the final executor/orchestrator, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is a frontend refinement that renders this `explanation` payload in the Governance gate plans page as inline help, expandable gate rationale and field-level guidance for capabilities and validation surfaces.

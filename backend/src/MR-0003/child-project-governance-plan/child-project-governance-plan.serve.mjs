@@ -12,8 +12,12 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0059
  * @implementsRequirement MR-0003REQ-0060
+ * @implementsRequirement MR-0003REQ-0061
+ * @implementsRequirement MR-0003REQ-0062
+ * @implementsRequirement MR-0003REQ-0063
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0011
+ * @derivedFromDecision MR-0003/ADR-0012
  * @macroRequirement MR-0003
  *
  * This module serves the generated child project governance gate plan artifacts
@@ -36,6 +40,7 @@ const defaultRootDir = path.resolve(path.dirname(currentFilePath), "..", "..", "
 const defaultHost = "127.0.0.1";
 const defaultPort = 4176;
 const defaultArtifactDir = path.join(defaultRootDir, "artifacts", "child-project-governance", "gate-plans");
+const defaultRegistryDir = path.join(defaultRootDir, "docs", "reference", "project-model", "registers", "child-project-governance");
 const requiredCapability = "child_project_governance_plan.read";
 const safeIdentifierPattern = /^[a-z0-9][a-z0-9._-]*$/u;
 const jsonContentType = "application/json; charset=utf-8";
@@ -50,12 +55,16 @@ const optionNameMap = new Map([
   ["port", "port"],
   ["artifact-dir", "artifactDir"],
   ["artifactDir", "artifactDir"],
+  ["registry-dir", "registryDir"],
+  ["registryDir", "registryDir"],
 ]);
 
 /**
- * @typedef {{profile: string, target_scope: string, result?: string, summary?: Record<string, number>, gates_evaluated?: number, gates?: unknown[]}} GovernanceGatePlan
+ * @typedef {{id: string, label?: string, description?: string, [key: string]: unknown}} RegistryRecord
+ * @typedef {{profile: string, target_scope: string, result?: string, summary?: Record<string, number>, gates_evaluated?: number, capability_states?: Record<string, string>, gates?: GovernanceGatePlanGate[]}} GovernanceGatePlan
+ * @typedef {{id: string, label?: string, applicability_class?: string, status?: string, severity?: string, reason?: string, required_capabilities?: string[], validation_surfaces?: string[], evidence?: string[]}} GovernanceGatePlanGate
  * @typedef {{schema_version: number, artifact_type: string, generated_by?: string, implements_requirements?: string[], registry_directory?: string, plan: GovernanceGatePlan}} GovernanceGatePlanArtifact
- * @typedef {{artifactDir?: string, principalResolver?: (request: import("node:http").IncomingMessage) => Record<string, unknown>}} ChildProjectGovernancePlanServeAppOptions
+ * @typedef {{artifactDir?: string, registryDir?: string, principalResolver?: (request: import("node:http").IncomingMessage) => Record<string, unknown>}} ChildProjectGovernancePlanServeAppOptions
  * @typedef {ChildProjectGovernancePlanServeAppOptions & {host?: string, port?: number, logger?: Pick<Console, "log"|"error">}} ChildProjectGovernancePlanServeCommandOptions
  */
 
@@ -111,11 +120,177 @@ function normalizeArtifactDir(value) {
 }
 
 /**
+ * Resolves a repository-relative or absolute governance registry directory.
+ *
+ * @param {string|undefined|null} value - Registry directory option.
+ * @returns {string} Absolute registry directory.
+ */
+function normalizeRegistryDir(value) {
+  const rawPath = String(value ?? defaultRegistryDir).trim() || defaultRegistryDir;
+  return path.isAbsolute(rawPath) ? path.resolve(rawPath) : path.resolve(defaultRootDir, rawPath);
+}
+
+/**
+ * Reads UTF-8 text from a repository file.
+ *
+ * @param {string} filePath - Absolute file path.
+ * @returns {string} File text without BOM and CRLF drift.
+ */
+function readText(filePath) {
+  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "").replace(/\r\n/gu, "\n");
+}
+
+/**
+ * Removes simple single or double quotes from a scalar value.
+ *
+ * @param {string} value - Raw scalar text.
+ * @returns {string} Unquoted scalar text.
+ */
+function stripQuotes(value) {
+  const trimmed = String(value ?? "").trim();
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+/**
+ * Parses a simple scalar value used by child governance registries.
+ *
+ * @param {string} value - Raw scalar text.
+ * @returns {string|number|boolean|null|Array<object>|object} Parsed scalar.
+ */
+function parseScalar(value) {
+  const trimmed = String(value ?? "").trim();
+  if (trimmed === "[]") return [];
+  if (trimmed === "{}") return {};
+  if (trimmed === "true") return true;
+  if (trimmed === "false") return false;
+  if (trimmed === "null") return null;
+  if (/^-?\d+$/u.test(trimmed)) return Number.parseInt(trimmed, 10);
+  return stripQuotes(trimmed);
+}
+
+/**
+ * Counts leading space indentation for a YAML line.
+ *
+ * @param {string} line - YAML line.
+ * @returns {number} Number of leading spaces.
+ */
+function countIndent(line) {
+  return line.match(/^ */u)?.[0].length ?? 0;
+}
+
+/**
+ * Parses the restricted YAML subset used by governed child governance registries.
+ *
+ * @param {string} text - YAML text.
+ * @returns {Record<string, unknown>} Parsed YAML object.
+ */
+function parseYaml(text) {
+  const root = {};
+  const stack = [{ indent: -1, value: root }];
+  const lines = String(text ?? "").replace(/^\uFEFF/u, "").replace(/\r\n/gu, "\n").split("\n");
+
+  function getParent(indent) {
+    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+      stack.pop();
+    }
+    return stack[stack.length - 1].value;
+  }
+
+  function nextMeaningfulLine(startIndex) {
+    for (let index = startIndex + 1; index < lines.length; index += 1) {
+      if (lines[index].trim() && !lines[index].trimStart().startsWith("#")) return lines[index];
+    }
+    return "";
+  }
+
+  function readBlock(startIndex, baseIndent) {
+    const block = [];
+    let index = startIndex;
+    while (index + 1 < lines.length) {
+      const next = lines[index + 1];
+      const nextIndent = countIndent(next);
+      if (next.trim() && nextIndent <= baseIndent) break;
+      index += 1;
+      const sliceAt = Math.min(baseIndent + 2, next.length);
+      block.push(next.slice(sliceAt));
+    }
+    return { text: block.join("\n").replace(/\n$/u, ""), nextIndex: index };
+  }
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const raw = lines[index];
+    if (!raw.trim() || raw.trimStart().startsWith("#")) continue;
+
+    const indent = countIndent(raw);
+    const trimmed = raw.trim();
+
+    if (trimmed.startsWith("- ")) {
+      const parent = getParent(indent);
+      if (!Array.isArray(parent)) continue;
+
+      const itemText = trimmed.slice(2).trim();
+      const colonIndex = itemText.indexOf(":");
+
+      if (colonIndex === -1) {
+        parent.push(parseScalar(itemText));
+        continue;
+      }
+
+      const key = itemText.slice(0, colonIndex).trim();
+      const rawValue = itemText.slice(colonIndex + 1).trim();
+      const obj = {};
+      parent.push(obj);
+
+      if (rawValue === "|") {
+        const block = readBlock(index, indent);
+        obj[key] = block.text;
+        index = block.nextIndex;
+      } else if (rawValue === "") {
+        const nextLine = nextMeaningfulLine(index);
+        const value = nextLine.trim().startsWith("- ") ? [] : {};
+        obj[key] = value;
+        stack.push({ indent, value: obj });
+        stack.push({ indent: indent + 2, value });
+      } else {
+        obj[key] = parseScalar(rawValue);
+        stack.push({ indent, value: obj });
+      }
+      continue;
+    }
+
+    const colonIndex = trimmed.indexOf(":");
+    if (colonIndex === -1) continue;
+
+    const key = trimmed.slice(0, colonIndex).trim();
+    const rawValue = trimmed.slice(colonIndex + 1).trim();
+    const parent = getParent(indent);
+
+    if (rawValue === "|") {
+      const block = readBlock(index, indent);
+      parent[key] = block.text;
+      index = block.nextIndex;
+    } else if (rawValue === "") {
+      const nextLine = nextMeaningfulLine(index);
+      const value = nextLine.trim().startsWith("- ") ? [] : {};
+      parent[key] = value;
+      stack.push({ indent, value });
+    } else {
+      parent[key] = parseScalar(rawValue);
+    }
+  }
+
+  return root;
+}
+
+/**
  * Parses CLI/environment options for the local serve command.
  *
  * @param {string[]} [argv] - CLI arguments, excluding `node` and script path.
  * @param {Record<string, string|undefined>} [env] - Environment variables.
- * @returns {{host: string, port: number, artifactDir: string, selfTest: boolean}} Normalized serve options.
+ * @returns {{host: string, port: number, artifactDir: string, registryDir: string, selfTest: boolean}} Normalized serve options.
  */
 export function parseChildProjectGovernancePlanServeOptions(argv = process.argv.slice(2), env = process.env) {
   /** @type {Record<string, string>} */
@@ -123,6 +298,7 @@ export function parseChildProjectGovernancePlanServeOptions(argv = process.argv.
     host: env.TF_CHILD_PROJECT_GOVERNANCE_PLAN_HOST || defaultHost,
     port: env.TF_CHILD_PROJECT_GOVERNANCE_PLAN_PORT || String(defaultPort),
     artifactDir: env.TF_CHILD_PROJECT_GOVERNANCE_PLAN_ARTIFACT_DIR || defaultArtifactDir,
+    registryDir: env.TF_CHILD_PROJECT_GOVERNANCE_PLAN_REGISTRY_DIR || defaultRegistryDir,
   };
   let selfTest = false;
 
@@ -151,6 +327,7 @@ export function parseChildProjectGovernancePlanServeOptions(argv = process.argv.
     host: String(options.host || defaultHost),
     port: normalizePort(options.port),
     artifactDir: normalizeArtifactDir(options.artifactDir),
+    registryDir: normalizeRegistryDir(options.registryDir),
     selfTest,
   });
 }
@@ -270,6 +447,321 @@ function readPlanArtifact(artifactPath) {
 }
 
 /**
+ * Reads one child governance registry file from the configured registry directory.
+ *
+ * @param {string} registryDir - Absolute registry directory.
+ * @param {string} fileName - Registry file name.
+ * @returns {Record<string, unknown>} Parsed registry object.
+ */
+function readGovernanceRegistry(registryDir, fileName) {
+  const registryPath = path.join(registryDir, fileName);
+  if (!fs.existsSync(registryPath)) {
+    throw new Error(`Missing child governance registry file: ${normalizeProjectPath(path.relative(defaultRootDir, registryPath))}.`);
+  }
+  return parseYaml(readText(registryPath));
+}
+
+/**
+ * Converts an array of registry records into an id-indexed map.
+ *
+ * @param {unknown} records - Registry record array.
+ * @returns {Map<string, RegistryRecord>} Registry records by id.
+ */
+function indexRecordsById(records) {
+  const indexed = new Map();
+  if (!Array.isArray(records)) return indexed;
+  for (const record of records) {
+    if (record && typeof record === "object" && typeof record.id === "string") {
+      indexed.set(record.id, /** @type {RegistryRecord} */ (record));
+    }
+  }
+  return indexed;
+}
+
+/**
+ * Loads child governance registries needed to explain a generated gate plan.
+ *
+ * @param {string} registryDir - Absolute child governance registry directory.
+ * @returns {Record<string, unknown>} Indexed registry read model.
+ */
+function loadGovernanceExplanationRegistries(registryDir) {
+  const capabilitiesRegistry = readGovernanceRegistry(registryDir, "governance-capabilities.registry.yml");
+  const surfacesRegistry = readGovernanceRegistry(registryDir, "validation-surfaces.registry.yml");
+  const gatesRegistry = readGovernanceRegistry(registryDir, "governance-gates.registry.yml");
+  const profilesRegistry = readGovernanceRegistry(registryDir, "governance-profiles.registry.yml");
+  const applicabilityRegistry = readGovernanceRegistry(registryDir, "gate-applicability-classes.registry.yml");
+
+  return Object.freeze({
+    registry_directory: normalizeProjectPath(path.relative(defaultRootDir, registryDir)),
+    capabilities: indexRecordsById(capabilitiesRegistry.governance_capabilities),
+    capability_states: indexRecordsById(capabilitiesRegistry.capability_states),
+    validation_surfaces: indexRecordsById(surfacesRegistry.validation_surfaces),
+    gates: indexRecordsById(gatesRegistry.governance_gates),
+    profiles: indexRecordsById(profilesRegistry.governance_profiles),
+    applicability_classes: indexRecordsById(applicabilityRegistry.applicability_classes),
+    execution_result_statuses: indexRecordsById(applicabilityRegistry.execution_result_statuses),
+  });
+}
+
+/**
+ * Converts an identifier into a fallback human label.
+ *
+ * @param {string} value - Identifier.
+ * @returns {string} Human-readable fallback label.
+ */
+function humanizeIdentifier(value) {
+  const words = String(value ?? "").replace(/[._-]+/gu, " ").trim();
+  return words ? words.charAt(0).toUpperCase() + words.slice(1) : "Unknown";
+}
+
+/**
+ * Returns a registry record label with a stable fallback.
+ *
+ * @param {string} id - Record id.
+ * @param {RegistryRecord|undefined} record - Optional registry record.
+ * @returns {string} Display label.
+ */
+function recordLabel(id, record) {
+  return String(record?.label ?? humanizeIdentifier(id));
+}
+
+/**
+ * Returns a registry record description with a stable fallback.
+ *
+ * @param {string} fallback - Fallback description.
+ * @param {RegistryRecord|undefined} record - Optional registry record.
+ * @returns {string} Display description.
+ */
+function recordDescription(fallback, record) {
+  return String(record?.description ?? fallback);
+}
+
+/**
+ * Builds the study-oriented explanation for a selected governance profile.
+ *
+ * @param {string} profileId - Governance profile id from the generated plan.
+ * @param {RegistryRecord|undefined} profile - Profile registry record.
+ * @returns {Record<string, unknown>} Profile explanation view model.
+ */
+function explainProfile(profileId, profile) {
+  return {
+    id: profileId,
+    label: recordLabel(profileId, profile),
+    description: recordDescription("Governance profile selected for this gate plan.", profile),
+    source_registry: "governance-profiles.registry.yml",
+    concept: "A governance profile is the named baseline that chooses which capabilities and gates are relevant for a target project type.",
+    why_it_matters: "The profile explains why a plan contains this gate set instead of treating every project as identical.",
+    target_scope: profile?.target_scope,
+    baseline_required: profile?.baseline_required,
+    provisional: profile?.provisional,
+    required_capabilities: Array.isArray(profile?.required_capabilities) ? profile.required_capabilities : [],
+    optional_capabilities: Array.isArray(profile?.optional_capabilities) ? profile.optional_capabilities : [],
+  };
+}
+
+/**
+ * Builds the study-oriented explanation for the target scope field.
+ *
+ * @param {string} targetScope - Target scope id from the generated plan.
+ * @returns {Record<string, unknown>} Target-scope explanation view model.
+ */
+function explainTargetScope(targetScope) {
+  return {
+    id: targetScope,
+    label: humanizeIdentifier(targetScope),
+    concept: "Target scope identifies which kind of project or platform surface the profile is being planned against.",
+    why_it_matters: "Gate selection changes when the target is threat-forge itself, a resettable demo child project, or a managed child project.",
+  };
+}
+
+/**
+ * Builds an execution status explanation.
+ *
+ * @param {string|undefined} statusId - Execution status id.
+ * @param {Map<string, RegistryRecord>} statuses - Execution status registry map.
+ * @returns {Record<string, unknown>} Status explanation.
+ */
+function explainStatus(statusId, statuses) {
+  const id = String(statusId ?? "unknown");
+  const record = statuses.get(id);
+  return {
+    id,
+    label: recordLabel(id, record),
+    description: recordDescription("Execution or planning status for this gate.", record),
+    source_registry: "gate-applicability-classes.registry.yml#execution_result_statuses",
+    concept: "Execution result status says whether the gate passed, failed, is planned, is unsupported, or does not apply.",
+    why_it_matters: "Users must distinguish a planned or unsupported gate from a successful validation result.",
+  };
+}
+
+/**
+ * Builds an applicability-class explanation.
+ *
+ * @param {string|undefined} classId - Applicability class id.
+ * @param {Map<string, RegistryRecord>} applicabilityClasses - Applicability class registry map.
+ * @returns {Record<string, unknown>} Applicability explanation.
+ */
+function explainApplicabilityClass(classId, applicabilityClasses) {
+  const id = String(classId ?? "unknown");
+  const record = applicabilityClasses.get(id);
+  return {
+    id,
+    label: recordLabel(id, record),
+    description: recordDescription("Rule family used to decide whether the gate applies.", record),
+    source_registry: "gate-applicability-classes.registry.yml#applicability_classes",
+    default_when_not_triggered: record?.default_when_not_triggered,
+    concept: "Applicability class is the rule family used by the planner to decide whether a gate must appear in this plan.",
+    why_it_mattered_for_selection: "It explains whether the gate is always required, capability-driven, platform-only, demo-only, or non-applicable with evidence.",
+  };
+}
+
+/**
+ * Builds a capability explanation for one gate requirement.
+ *
+ * @param {string} capabilityId - Capability id.
+ * @param {Record<string, unknown>} registries - Indexed governance registries.
+ * @param {Record<string, string>} capabilityStates - Capability states from the generated plan.
+ * @returns {Record<string, unknown>} Capability explanation.
+ */
+function explainCapability(capabilityId, registries, capabilityStates) {
+  const capabilities = /** @type {Map<string, RegistryRecord>} */ (registries.capabilities);
+  const states = /** @type {Map<string, RegistryRecord>} */ (registries.capability_states);
+  const capability = capabilities.get(capabilityId);
+  const stateId = String(capabilityStates[capabilityId] ?? "unknown");
+  const state = states.get(stateId);
+  return {
+    id: capabilityId,
+    label: recordLabel(capabilityId, capability),
+    description: recordDescription("Project or platform capability required by this gate.", capability),
+    category: capability?.category,
+    source_registry: "governance-capabilities.registry.yml#governance_capabilities",
+    state: {
+      id: stateId,
+      label: recordLabel(stateId, state),
+      description: recordDescription("Capability state recorded by the generated plan.", state),
+      source_registry: "governance-capabilities.registry.yml#capability_states",
+    },
+    concept: "A required capability is what the project or platform must be able to expose, read, validate, or reason about before this gate can be meaningful.",
+    why_it_matters: "Threat analysis depends on knowing which project capabilities exist; gates are selected from those capabilities rather than from opaque UI choices.",
+  };
+}
+
+/**
+ * Builds a validation-surface explanation for one gate.
+ *
+ * @param {string} surfaceId - Validation surface id.
+ * @param {Record<string, unknown>} registries - Indexed governance registries.
+ * @returns {Record<string, unknown>} Validation surface explanation.
+ */
+function explainValidationSurface(surfaceId, registries) {
+  const surfaces = /** @type {Map<string, RegistryRecord>} */ (registries.validation_surfaces);
+  const surface = surfaces.get(surfaceId);
+  return {
+    id: surfaceId,
+    label: recordLabel(surfaceId, surface),
+    description: recordDescription("Concrete project, command, fixture, API, or generated artifact surface checked by this gate.", surface),
+    evidence_kind: surface?.evidence_kind,
+    command: surface?.command,
+    source_registry: "validation-surfaces.registry.yml#validation_surfaces",
+    concept: "A validation surface is the concrete place where a gate gets evidence: repository checks, registries, generated artifacts, demo workspaces, API self-tests, frontend builds, or runtime tests.",
+    why_it_matters: "It tells the reader what part of the project is actually being checked, so the gate is not just an abstract policy name.",
+  };
+}
+
+/**
+ * Builds an explainable rationale for a generated gate plan item.
+ *
+ * @param {GovernanceGatePlanGate} gate - Gate item from the generated plan artifact.
+ * @param {RegistryRecord|undefined} profile - Selected profile registry record.
+ * @param {string} targetScope - Plan target scope.
+ * @param {Record<string, unknown>} registries - Indexed governance registries.
+ * @param {Record<string, string>} capabilityStates - Capability states from the generated plan.
+ * @returns {Record<string, unknown>} Gate explanation view model.
+ */
+function explainGate(gate, profile, targetScope, registries, capabilityStates) {
+  const gates = /** @type {Map<string, RegistryRecord>} */ (registries.gates);
+  const applicabilityClasses = /** @type {Map<string, RegistryRecord>} */ (registries.applicability_classes);
+  const statuses = /** @type {Map<string, RegistryRecord>} */ (registries.execution_result_statuses);
+  const gateRecord = gates.get(gate.id);
+  const profileGateIds = Array.isArray(profile?.gates) ? profile.gates : [];
+  const gateTargetScopes = Array.isArray(gateRecord?.target_scopes) ? gateRecord.target_scopes : [];
+  const requiredCapabilities = Array.isArray(gate.required_capabilities) ? gate.required_capabilities : [];
+  const validationSurfaces = Array.isArray(gate.validation_surfaces) ? gate.validation_surfaces : [];
+
+  return {
+    id: gate.id,
+    label: String(gate.label ?? gateRecord?.label ?? humanizeIdentifier(gate.id)),
+    source_registry: "governance-gates.registry.yml#governance_gates",
+    what_it_checks: recordDescription("Governance gate check selected by the plan.", gateRecord),
+    why_selected: String(gate.reason ?? "The profile selected this gate for the current target scope."),
+    contributes_to_threat_analysis_readiness: "This gate helps make the project documentation, implementation evidence, or runtime boundary understandable enough to support later threat analysis.",
+    status: explainStatus(gate.status, statuses),
+    applicability_class: explainApplicabilityClass(gate.applicability_class ?? String(gateRecord?.applicability_class ?? "unknown"), applicabilityClasses),
+    selection_rationale: {
+      profile: profile?.id,
+      target_scope: targetScope,
+      profile_includes_gate: profileGateIds.includes(gate.id),
+      target_scope_supported_by_gate: gateTargetScopes.includes(targetScope),
+      raw_reason: gate.reason,
+      result_when_not_applicable: gateRecord?.result_when_not_applicable,
+      unsupported_behavior: gateRecord?.unsupported_behavior,
+    },
+    required_capabilities: requiredCapabilities.map((capabilityId) => explainCapability(capabilityId, registries, capabilityStates)),
+    validation_surfaces: validationSurfaces.map((surfaceId) => explainValidationSurface(surfaceId, registries)),
+    evidence: Array.isArray(gate.evidence) ? gate.evidence : [],
+  };
+}
+
+/**
+ * Builds the study-oriented plan explanation view model.
+ *
+ * @param {GovernanceGatePlanArtifact} artifact - Generated plan artifact.
+ * @param {string} registryDir - Absolute registry directory.
+ * @returns {Record<string, unknown>} Explanation view model.
+ */
+function buildGatePlanExplanation(artifact, registryDir) {
+  const registries = loadGovernanceExplanationRegistries(registryDir);
+  const profiles = /** @type {Map<string, RegistryRecord>} */ (registries.profiles);
+  const profile = profiles.get(artifact.plan.profile);
+  const capabilityStates = artifact.plan.capability_states ?? {};
+  const gates = Array.isArray(artifact.plan.gates) ? artifact.plan.gates : [];
+
+  return {
+    purpose: "Explain the generated child project governance gate plan as a study-oriented read model.",
+    usage: "Use this explanation to understand what each gate checks, why the profile selected it, what capabilities it requires, and which validation surfaces provide evidence.",
+    limitations: "This view is read-only. It does not execute gates, mutate child projects, update registries, run repositories, or replace the generated plan artifact.",
+    source_registries: [
+      `${registries.registry_directory}/governance-profiles.registry.yml`,
+      `${registries.registry_directory}/governance-gates.registry.yml`,
+      `${registries.registry_directory}/governance-capabilities.registry.yml`,
+      `${registries.registry_directory}/validation-surfaces.registry.yml`,
+      `${registries.registry_directory}/gate-applicability-classes.registry.yml`,
+    ],
+    field_explanations: {
+      required_capabilities: {
+        question: "Quali capability richiede?",
+        meaning: "Capabilities describe what the project or platform must be able to expose, read, validate, or reason about for a gate to be meaningful.",
+        why_it_matters: "They connect governance checks to real project capabilities, which is necessary before threat analysis can reason about assets, boundaries, flows, APIs, UI, storage, AI, or operations.",
+      },
+      validation_surfaces: {
+        question: "Quale superficie valida?",
+        meaning: "Validation surfaces describe the concrete files, registries, commands, generated artifacts, fixtures, APIs, UI builds, or tests that provide gate evidence.",
+        why_it_matters: "They show what is actually checked and prevent the gate plan from becoming a list of opaque policy labels.",
+      },
+      why_selected: {
+        question: "Perché questo gate è stato scelto?",
+        meaning: "The rationale combines the selected profile, target scope, applicability class, capability state, validation surfaces, and generated planner reason.",
+        why_it_matters: "A user studying threat analysis must see why a check exists before trusting its result or using it as evidence.",
+      },
+    },
+    profile: explainProfile(artifact.plan.profile, profile),
+    target_scope: explainTargetScope(artifact.plan.target_scope),
+    result: explainStatus(artifact.plan.result, /** @type {Map<string, RegistryRecord>} */ (registries.execution_result_statuses)),
+    gates: gates.map((gate) => explainGate(gate, profile, artifact.plan.target_scope, registries, capabilityStates)),
+  };
+}
+
+/**
  * Lists available plan artifact file paths.
  *
  * @param {string} artifactDir - Artifact directory.
@@ -319,18 +811,21 @@ function listGatePlans(artifactDir) {
  * Loads one gate plan artifact by profile and target scope.
  *
  * @param {string} artifactDir - Artifact directory.
+ * @param {string} registryDir - Registry directory.
  * @param {string} profile - Governance profile id.
  * @param {string} targetScope - Target scope id.
- * @returns {{artifact_path: string, artifact: GovernanceGatePlanArtifact}} Detail payload.
+ * @returns {{artifact_path: string, artifact: GovernanceGatePlanArtifact, explanation: Record<string, unknown>}} Detail payload.
  */
-function getGatePlan(artifactDir, profile, targetScope) {
+function getGatePlan(artifactDir, registryDir, profile, targetScope) {
   const artifactPath = path.join(artifactDir, buildArtifactFileName(profile, targetScope));
   if (!fs.existsSync(artifactPath)) {
     throw Object.assign(new Error(`Gate plan artifact not found: ${profile}/${targetScope}.`), { statusCode: 404, code: "not_found" });
   }
+  const artifact = readPlanArtifact(artifactPath);
   return {
     artifact_path: normalizeProjectPath(path.relative(defaultRootDir, artifactPath)),
-    artifact: readPlanArtifact(artifactPath),
+    artifact,
+    explanation: buildGatePlanExplanation(artifact, registryDir),
   };
 }
 
@@ -342,6 +837,7 @@ function getGatePlan(artifactDir, profile, targetScope) {
  */
 export function createChildProjectGovernancePlanHttpHandler(options = {}) {
   const artifactDir = normalizeArtifactDir(options.artifactDir);
+  const registryDir = normalizeRegistryDir(options.registryDir);
   const principalResolver = options.principalResolver ?? resolveChildProjectGovernancePlanHeaderPrincipal;
 
   return async function childProjectGovernancePlanHttpHandler(request, response) {
@@ -385,7 +881,7 @@ export function createChildProjectGovernancePlanHttpHandler(options = {}) {
 
       const profile = decodeURIComponent(match[1]);
       const targetScope = decodeURIComponent(match[2]);
-      writeJson(response, 200, { access, ...getGatePlan(artifactDir, profile, targetScope) });
+      writeJson(response, 200, { access, ...getGatePlan(artifactDir, registryDir, profile, targetScope) });
     } catch (error) {
       const statusCode = Number(error?.statusCode ?? 500);
       const code = String(error?.code ?? "internal_error");
@@ -403,14 +899,16 @@ export function createChildProjectGovernancePlanHttpHandler(options = {}) {
  */
 export function createChildProjectGovernancePlanServeApp(options = {}) {
   const artifactDir = normalizeArtifactDir(options.artifactDir);
+  const registryDir = normalizeRegistryDir(options.registryDir);
   const server = http.createServer(createChildProjectGovernancePlanHttpHandler({
     artifactDir,
+    registryDir,
     principalResolver: options.principalResolver,
   }));
 
   return Object.freeze({
     server,
-    options: Object.freeze({ artifactDir }),
+    options: Object.freeze({ artifactDir, registryDir }),
   });
 }
 
@@ -424,9 +922,11 @@ export async function startChildProjectGovernancePlanServeCommand(options = {}) 
   const host = String(options.host || defaultHost);
   const port = normalizePort(options.port ?? defaultPort);
   const artifactDir = normalizeArtifactDir(options.artifactDir);
+  const registryDir = normalizeRegistryDir(options.registryDir);
   const logger = options.logger ?? console;
   const app = createChildProjectGovernancePlanServeApp({
     artifactDir,
+    registryDir,
     principalResolver: options.principalResolver,
   });
 
@@ -441,8 +941,9 @@ export async function startChildProjectGovernancePlanServeCommand(options = {}) 
   logger.log(`Child Project Governance Plan read-only API listening on ${url}`);
   logger.log("Use x-threat-forge-authenticated: true and x-threat-forge-role: registered_user headers for bootstrap access.");
   logger.log(`Artifact directory: ${normalizeProjectPath(path.relative(defaultRootDir, artifactDir))}`);
+  logger.log(`Registry directory: ${normalizeProjectPath(path.relative(defaultRootDir, registryDir))}`);
 
-  return Object.freeze({ server: app.server, url, artifactDir });
+  return Object.freeze({ server: app.server, url, artifactDir, registryDir });
 }
 
 /**
@@ -564,6 +1065,18 @@ export async function runChildProjectGovernancePlanServeSelfTest(logger = consol
     if (detailResponse.statusCode !== 200 || detailResponse.payload?.artifact?.plan?.profile !== "platform_self_governance") {
       throw new Error("Serve self-test expected platform_self_governance detail artifact.");
     }
+    if (detailResponse.payload?.explanation?.profile?.id !== "platform_self_governance") {
+      throw new Error("Serve self-test expected profile explanation for platform_self_governance.");
+    }
+    if (!Array.isArray(detailResponse.payload?.explanation?.gates) || detailResponse.payload.explanation.gates.length !== 1) {
+      throw new Error("Serve self-test expected one explainable gate rationale.");
+    }
+    if (!detailResponse.payload?.explanation?.field_explanations?.required_capabilities) {
+      throw new Error("Serve self-test expected required capability field explanation.");
+    }
+    if (!detailResponse.payload?.explanation?.field_explanations?.validation_surfaces) {
+      throw new Error("Serve self-test expected validation surface field explanation.");
+    }
     if (forbiddenResponse.statusCode !== 403) {
       throw new Error("Serve self-test expected unauthenticated requests to be forbidden.");
     }
@@ -579,6 +1092,9 @@ export async function runChildProjectGovernancePlanServeSelfTest(logger = consol
     logger.log("Implemented requirement: MR-0003REQ-0015");
     logger.log("Implemented requirement: MR-0003REQ-0059");
     logger.log("Implemented requirement: MR-0003REQ-0060");
+    logger.log("Implemented requirement: MR-0003REQ-0061");
+    logger.log("Implemented requirement: MR-0003REQ-0062");
+    logger.log("Implemented requirement: MR-0003REQ-0063");
   } finally {
     await new Promise((resolve) => app.server.close(resolve));
     fs.rmSync(tempRoot, { recursive: true, force: true });
