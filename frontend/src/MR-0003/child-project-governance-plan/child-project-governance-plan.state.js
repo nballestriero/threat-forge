@@ -155,9 +155,15 @@ function asArray(value) {
 function getGateExplanationSearchValues(explanation) {
   if (!explanation) return [];
   return [
+    explanation.summary,
     explanation.what_it_checks,
     explanation.why_selected,
+    explanation.expected_result,
+    explanation.expected_verification_output,
     explanation.contributes_to_threat_analysis_readiness,
+    ...(asArray(explanation.checked_objects)),
+    ...(asArray(explanation.checked_entity_types)),
+    ...(asArray(explanation.checked_paths)),
     explanation.status?.label,
     explanation.status?.description,
     explanation.status?.concept,
@@ -169,6 +175,7 @@ function getGateExplanationSearchValues(explanation) {
       capability.label,
       capability.description,
       capability.concept,
+      capability.enables,
       capability.why_it_matters,
       capability.state?.id,
       capability.state?.label,
@@ -179,6 +186,9 @@ function getGateExplanationSearchValues(explanation) {
       surface.label,
       surface.description,
       surface.concept,
+      surface.checked_area,
+      ...(asArray(surface.checked_artifacts)),
+      ...(asArray(surface.checked_paths)),
       surface.why_it_matters,
       surface.evidence_kind,
       surface.command,

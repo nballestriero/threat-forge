@@ -483,21 +483,49 @@ function getGateShortDescription(gate, explanation) {
 }
 
 /**
- * Render the generated verification evidence values with an explicit study label.
+ * Render a labelled array value only when it has content.
  *
- * @param {{values?: unknown[]}} props - Evidence values.
- * @returns {import("react").JSX.Element} Evidence explanation block.
+ * @param {{label: string, values?: unknown[]}} props - Labelled values.
+ * @returns {import("react").JSX.Element|null} Labelled value list.
  */
-function VerificationEvidenceList({ values = [] }) {
+function ExplanationArrayBlock({ label, values = [] }) {
+  const normalizedValues = asArray(values).filter((value) => value != null && value !== "");
+  if (normalizedValues.length === 0) return null;
+
   return (
     <div>
-      <strong>Verification evidence</strong>
-      <p className="tf-governance-gate-card__reason">
-        Evidence means the artifact, command output, file path, registry entry or result value that supports this gate row.
-        It is the proof source to inspect when you want to understand how the gate is justified; this page does not execute the gate.
-      </p>
-      <InlineValueList values={values} />
+      <dt>{label}</dt>
+      <dd><InlineValueList values={normalizedValues} /></dd>
     </div>
+  );
+}
+
+/**
+ * Render raw ids and planner evidence as technical trace, not as the primary explanation.
+ *
+ * @param {{gate?: Record<string, unknown>, explanation?: Record<string, unknown>}} props - Trace props.
+ * @returns {import("react").JSX.Element} Technical trace details.
+ */
+function TechnicalTraceDetails({ gate, explanation }) {
+  const trace = explanation?.technical_trace ?? {};
+  const rawEvidence = asArray(trace.raw_evidence_markers).length > 0 ? trace.raw_evidence_markers : gate?.evidence;
+  const rawValidationSurfaces = asArray(trace.raw_validation_surface_ids).length > 0 ? trace.raw_validation_surface_ids : gate?.validation_surfaces;
+  const rawCapabilities = asArray(trace.raw_capability_ids).length > 0 ? trace.raw_capability_ids : gate?.required_capabilities;
+
+  return (
+    <details>
+      <summary>Technical trace</summary>
+      <p className="tf-governance-gate-card__reason">
+        Technical trace keeps the raw registry ids and planner evidence markers for auditability.
+        These values are useful for maintainers, but the primary sections above explain their meaning in human language.
+      </p>
+      <dl className="tf-metadata-grid">
+        <ExplanationParagraph label="Raw gate id" value={trace.raw_gate_id ?? gate?.id} />
+        <ExplanationArrayBlock label="Raw capability ids" values={rawCapabilities} />
+        <ExplanationArrayBlock label="Raw validation surface ids" values={rawValidationSurfaces} />
+        <ExplanationArrayBlock label="Planner evidence markers" values={rawEvidence} />
+      </dl>
+    </details>
   );
 }
 
@@ -635,17 +663,18 @@ function CapabilityExplanationList({ items = [] }) {
 
   return (
     <section>
-      <h4>Quali capability richiede?</h4>
+      <h4>Required capabilities</h4>
+      <p className="tf-governance-gate-card__reason">
+        These are the abilities the platform or child project must expose before the gate can be meaningful.
+      </p>
       <div className="tf-governance-gate-list">
         {capabilities.map((capability) => (
           <Card key={String(capability.id)}>
             <h4>{displayValue(capability.label ?? capability.id)}</h4>
             <dl className="tf-metadata-grid">
-              <ExplanationParagraph label="Raw value" value={capability.id} />
-              <ExplanationParagraph label="Meaning" value={capability.concept ?? capability.description} />
+              <ExplanationParagraph label="What it enables" value={capability.enables ?? capability.description} />
               <ExplanationParagraph label="Current state" value={capability.state?.label ?? capability.state?.id} />
               <ExplanationParagraph label="Why it matters" value={capability.why_it_matters} />
-              <ExplanationParagraph label="Source registry" value={capability.source_registry} />
             </dl>
           </Card>
         ))}
@@ -666,18 +695,21 @@ function ValidationSurfaceExplanationList({ items = [] }) {
 
   return (
     <section>
-      <h4>Quale superficie valida?</h4>
+      <h4>Checked areas</h4>
+      <p className="tf-governance-gate-card__reason">
+        A checked area is the concrete repository, API, fixture, generated artifact, command or test surface that the gate uses for validation.
+      </p>
       <div className="tf-governance-gate-list">
         {surfaces.map((surface) => (
           <Card key={String(surface.id)}>
             <h4>{displayValue(surface.label ?? surface.id)}</h4>
             <dl className="tf-metadata-grid">
-              <ExplanationParagraph label="Raw value" value={surface.id} />
-              <ExplanationParagraph label="Meaning" value={surface.concept ?? surface.description} />
-              <ExplanationParagraph label="Expected proof type" value={surface.evidence_kind} />
+              <ExplanationParagraph label="Area" value={surface.checked_area ?? surface.description} />
+              <ExplanationParagraph label="Proof type" value={surface.evidence_kind} />
               <ExplanationParagraph label="Command" value={surface.command} />
+              <ExplanationArrayBlock label="Artifacts checked" values={surface.checked_artifacts} />
+              <ExplanationArrayBlock label="Paths checked" values={surface.checked_paths} />
               <ExplanationParagraph label="Why it matters" value={surface.why_it_matters} />
-              <ExplanationParagraph label="Source registry" value={surface.source_registry} />
             </dl>
           </Card>
         ))}
@@ -687,7 +719,7 @@ function ValidationSurfaceExplanationList({ items = [] }) {
 }
 
 /**
- * Render the expandable explanation for one generated gate.
+ * Render the expanded explanation for one generated gate using backend-provided semantics.
  *
  * @param {{gate?: Record<string, unknown>, explanation?: Record<string, unknown>}} props - Gate explanation props.
  * @returns {import("react").JSX.Element|null} Gate explanation details.
@@ -697,35 +729,55 @@ function GateExplanationDetails({ gate, explanation }) {
 
   const selection = explanation.selection_rationale ?? {};
   return (
-    <details>
-      <summary>Why this gate?</summary>
-      <div className="tf-governance-gate-list">
-        <section>
-          <h4>What this gate checks</h4>
-          <p>{displayValue(explanation.what_it_checks)}</p>
-        </section>
-        <section>
-          <h4>Why it was selected</h4>
-          <p>{displayValue(explanation.why_selected ?? gate?.reason)}</p>
-          <dl className="tf-metadata-grid">
-            <ExplanationParagraph label="Profile includes gate" value={String(Boolean(selection.profile_includes_gate))} />
-            <ExplanationParagraph label="Target scope supported" value={String(Boolean(selection.target_scope_supported_by_gate))} />
-            <ExplanationParagraph label="Profile" value={selection.profile} />
-            <ExplanationParagraph label="Target scope" value={selection.target_scope} />
-            <ExplanationParagraph label="Unsupported behavior" value={selection.unsupported_behavior} />
-            <ExplanationParagraph label="Result when not applicable" value={selection.result_when_not_applicable} />
-          </dl>
-        </section>
-        <ConceptExplanationCard title="Applicability class" item={explanation.applicability_class} />
-        <ConceptExplanationCard title="Status" item={explanation.status} />
-        <CapabilityExplanationList items={explanation.required_capabilities} />
-        <ValidationSurfaceExplanationList items={explanation.validation_surfaces} />
-        <section>
-          <h4>Contribution to threat-analysis readiness</h4>
-          <p>{displayValue(explanation.contributes_to_threat_analysis_readiness)}</p>
-        </section>
-      </div>
-    </details>
+    <div className="tf-governance-gate-list">
+      <section>
+        <h4>What this gate checks</h4>
+        <p>{displayValue(explanation.what_it_checks ?? explanation.summary)}</p>
+        <dl className="tf-metadata-grid">
+          <ExplanationArrayBlock label="Objects checked" values={explanation.checked_objects} />
+          <ExplanationArrayBlock label="Entity types checked" values={explanation.checked_entity_types} />
+          <ExplanationArrayBlock label="Paths checked" values={explanation.checked_paths} />
+        </dl>
+      </section>
+
+      <section>
+        <h4>Why this gate is selected</h4>
+        <p>{displayValue(explanation.why_selected ?? gate?.reason)}</p>
+        <dl className="tf-metadata-grid">
+          <ExplanationParagraph label="Profile includes this gate" value={String(Boolean(selection.profile_includes_gate))} />
+          <ExplanationParagraph label="Target scope supported" value={String(Boolean(selection.target_scope_supported_by_gate))} />
+          <ExplanationParagraph label="Profile" value={selection.profile} />
+          <ExplanationParagraph label="Target scope" value={selection.target_scope} />
+        </dl>
+      </section>
+
+      <section>
+        <h4>Expected result when executed</h4>
+        <p>{displayValue(explanation.expected_result ?? explanation.expected_verification_output)}</p>
+      </section>
+
+      <CapabilityExplanationList items={explanation.required_capabilities} />
+      <ValidationSurfaceExplanationList items={explanation.validation_surfaces} />
+
+      <section>
+        <h4>Contribution to threat-analysis readiness</h4>
+        <p>{displayValue(explanation.contributes_to_threat_analysis_readiness)}</p>
+      </section>
+
+      <section>
+        <h4>Planning status</h4>
+        <dl className="tf-metadata-grid">
+          <ExplanationParagraph label="Status" value={explanation.status?.label ?? explanation.status?.id ?? gate?.status} />
+          <ExplanationParagraph label="Status meaning" value={explanation.status?.description ?? explanation.status?.concept} />
+          <ExplanationParagraph label="Applicability" value={explanation.applicability_class?.label ?? explanation.applicability_class?.id ?? gate?.applicability_class} />
+          <ExplanationParagraph label="Applicability meaning" value={explanation.applicability_class?.description ?? explanation.applicability_class?.concept} />
+          <ExplanationParagraph label="Unsupported behavior" value={selection.unsupported_behavior} />
+          <ExplanationParagraph label="Result when not applicable" value={selection.result_when_not_applicable} />
+        </dl>
+      </section>
+
+      <TechnicalTraceDetails gate={gate} explanation={explanation} />
+    </div>
   );
 }
 
@@ -786,34 +838,24 @@ function GateRows({ gates, explanationsByGateId = {} }) {
 
             {isExpanded ? (
               <div className="tf-governance-gate-card__details">
-                <dl className="tf-metadata-grid">
-                  <div>
-                    <dt>Gate id</dt>
-                    <dd>{displayValue(gate.id)}</dd>
-                  </div>
-                  <div>
-                    <dt>Severity</dt>
-                    <dd>{displayValue(gate.severity)}</dd>
-                  </div>
-                  <div>
-                    <dt>Applicability class</dt>
-                    <dd>{displayValue(gate.applicability_class)}</dd>
-                  </div>
-                  <div>
-                    <dt>Why this gate is in the plan</dt>
-                    <dd>{displayValue(explanation?.why_selected ?? gate.reason)}</dd>
-                  </div>
-                  <div>
-                    <dt>Required capabilities</dt>
-                    <dd><InlineValueList values={gate.required_capabilities} /></dd>
-                  </div>
-                  <div>
-                    <dt>Validation surfaces</dt>
-                    <dd><InlineValueList values={gate.validation_surfaces} /></dd>
-                  </div>
-                </dl>
-                <VerificationEvidenceList values={gate.evidence} />
-                <GateExplanationDetails gate={gate} explanation={explanation} />
+                {explanation ? (
+                  <GateExplanationDetails gate={gate} explanation={explanation} />
+                ) : (
+                  <>
+                    <p className="tf-governance-gate-card__reason">
+                      This data source does not expose the taxonomy-backed explanation payload yet, so the UI can only show technical plan values.
+                    </p>
+                    <dl className="tf-metadata-grid">
+                      <ExplanationParagraph label="Gate id" value={gate.id} />
+                      <ExplanationParagraph label="Severity" value={gate.severity} />
+                      <ExplanationParagraph label="Applicability class" value={gate.applicability_class} />
+                      <ExplanationParagraph label="Why this gate is in the plan" value={gate.reason} />
+                      <ExplanationArrayBlock label="Required capabilities" values={gate.required_capabilities} />
+                      <ExplanationArrayBlock label="Validation surfaces" values={gate.validation_surfaces} />
+                    </dl>
+                    <TechnicalTraceDetails gate={gate} explanation={explanation} />
+                  </>
+                )}
               </div>
             ) : null}
           </Card>
