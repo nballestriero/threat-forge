@@ -47,33 +47,33 @@ Child projects must produce analyzable documentation, not only human-readable do
 
 ## Active Objective
 
-The child-project governance foundation has been closed and milestone-tagged as `project-model-child-project-governance-foundation-complete` on HEAD `5649e72`.
+The child-project governance plan UI visibility workstream is now closed and milestone-tagged as `project-model-child-governance-plan-ui-visible-complete` on HEAD `bdbbe10`.
 
-That foundation established the following MR-0003 decision chain:
-
-- `MR-0003/ADR-0007` — parent/child ownership and governed taxonomy responsibility boundary;
-- `MR-0003/ADR-0008` — mandatory child-project governance baseline;
-- `MR-0003/ADR-0009` — child-project archetypes and governance capability model;
-- `MR-0003/ADR-0010` — provisional child-project governance profiles and gate applicability classes;
-- `MR-0003/ADR-0011` — gate applicability and profile registry contract.
-
-The active objective is now to realign the working plan before new implementation work starts.
-
-This alignment records the ordered path from the foundation milestone to the next safe implementation sequence:
+This completed the first end-to-end, read-only governance-plan visibility slice for platform and child projects:
 
 ```text
-1. preserve the child-project governance foundation as a closed milestone;
-2. carry forward expert-review quality constraints before adding new tools;
-3. elevate taxonomy visibility and usage semantics as a cross-cutting priority;
-4. add governed child-project governance registries and a small validator before orchestration;
-5. expose taxonomy values and usage in the Project Documentation Explorer before relying on taxonomy-driven UI or analysis workflows;
-6. add a gate-planning tool before running full child-project gate orchestration;
-7. resume Base Analysis only after the governance registries, taxonomy semantics and planning outputs are deterministic.
+child-project governance registries
+→ deterministic registry validator
+→ profile-driven gate planner
+→ generated plan artifacts
+→ read-only HTTP API
+→ Governance Console UI view
+→ project-list/detail navigation and child documentation launch correction
 ```
 
-The previous Project Documentation Explorer, JSDoc, live HTTP, caching and child-project demo workstreams remain closed. They remain available as validation surfaces and dogfooding evidence, but they are no longer the active planning topic.
+The UI-visible milestone established that governance gate plans can be inspected by selecting a platform or child project, viewing profile/target/project details, reviewing gate applicability/status/reason/evidence, and navigating back to the project list without executing gates or mutating child repositories.
 
-The Base Analysis runtime/storage/API direction remains parked. It should resume only after the registry, taxonomy and gate-planning workstreams below are explicitly completed or reprioritized through a focused governance decision.
+The active objective is now handoff and next-workstream preparation. The next implementation-bearing work should not add a gate executor yet. It should first make the UI values explainable by linking governance-plan values back to governed taxonomy and registry detail views.
+
+The recommended next workstream is:
+
+```text
+frontend/backend: link governance plan values to taxonomy and registry details
+```
+
+That workstream should connect visible values such as governance profile, target scope, gate id, capability, applicability class, execution status and validation surface to their governed source records and descriptions. This keeps the earlier taxonomy planning note active: taxonomy/registry values must be inspectable contracts, not opaque enum strings.
+
+The Base Analysis runtime/storage/API direction remains parked. It should resume only after governance-plan values are explainable in the UI, or after an explicit decision reprioritizes the executor/orchestrator ahead of taxonomy/registry detail linking.
 
 ## Quality Constraints Carried Forward
 
@@ -117,36 +117,39 @@ The Project Documentation Explorer must therefore evolve from showing that taxon
 
 ## Current Micropasso
 
-Align the working plan after the `project-model-child-project-governance-foundation-complete` milestone.
+Align the working plan after the `project-model-child-governance-plan-ui-visible-complete` milestone and prepare a handoff for the next chat.
 
-This micropasso is document-only and updates only this working plan.
+This micropasso is document-only and updates only this working plan. It records the closure of the governance-plan visibility slice and sets the next safe objective.
 
-It does not add ADRs, requirements, graph records, registry files, validators, APIs, frontend behavior, Base Analysis runtime, STRIDE, STRIDE-AI, child-project orchestration or taxonomy runtime implementation.
+It does not add ADRs, requirements, graph records, registry files, validators, APIs, frontend behavior, Base Analysis runtime, STRIDE, STRIDE-AI, child-project gate execution, child-project repository mutation or taxonomy runtime implementation.
 
-The purpose is to decide the order of work after the child-project governance foundation and to carry forward two planning constraints:
-
-```text
-expert-review quality constraints
-+ taxonomy values as governed, UI-visible contracts
-```
-
-The next implementation-bearing workstream should not start until this plan is aligned and committed.
+The next implementation-bearing workstream should start from the tagged UI-visible baseline and focus on taxonomy/registry explainability in the Governance Console before final gate execution or analysis-method work.
 
 ## Current Workstream Order
 
-The recommended order is:
+The recommended order from the current tagged baseline is:
 
-1. `docs: align working plan after child project governance foundation milestone` — this document-only alignment.
-2. `docs/tooling: add child project governance registry files and validator` — initial registry files for applicability classes, capabilities, gates, profiles and validation surfaces, plus a small deterministic validator.
-3. `docs/tooling: define taxonomy usage metadata registry contract` — make taxonomy value usage semantics explicit before UI or analysis workflows depend on them.
-4. `backend/frontend: expose and render taxonomy values and usage in Explorer` — show accepted/deprecated values, descriptions, usage fields, UI/report/filter surfaces and extension mappings.
-5. `tooling: plan child project governance gates from profile registry` — compute gate plans with pass/fail/warn/planned/not_applicable/unsupported evidence before executing full child gates.
-6. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics and planner output are deterministic.
+1. `docs: align working plan after child governance plan UI-visible milestone` — this document-only handoff update.
+2. `frontend/backend: link governance plan values to taxonomy and registry details` — make visible governance-plan values explainable by linking profile, gate, capability, applicability class, execution status and validation surface values to their governed records and descriptions.
+3. `frontend/backend: expose and render taxonomy values and usage in Explorer` — complete the broader taxonomy visibility work so accepted/deprecated values, usage fields, UI/report/filter surfaces and child-extension mappings are inspectable.
+4. `tooling/backend: define child-project governance gate execution result persistence boundary` — decide whether results live first as artifacts, SQLite state, or both before implementing execution.
+5. `tooling: execute planned child-project governance gates for platform/demo surfaces` — only after the planner, artifact, API and UI explainability layers are deterministic.
+6. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics, plan visibility and result evidence are deterministic.
 7. `docs/backend/frontend: STRIDE overlay planning and implementation` — after Base Analysis is stable enough to provide canonical elements, boundaries, flows and evidence.
 8. `docs/backend/frontend: STRIDE-AI overlay planning and implementation` — after AI/RAG/agent capabilities, taxonomy contracts and Base Analysis inputs are stable.
 9. quality hardening backlog — parser hardening, stronger graph/link validation, provenance automation, coverage expansion, lint/formatting and future advisory-to-gate promotions.
 
+The registry validator, planner, plan artifact export, read-only API and first Governance Console view are no longer pending sequence items; they are completed milestone inputs for the next workstream.
+
 ## Completed Milestones
+
+- Child governance plan UI-visible milestone `project-model-child-governance-plan-ui-visible-complete`, tagged on `bdbbe10` after the Governance Console could render governance gate plans with project selection/detail navigation and child documentation launch correction.
+- Governance plan project selection and layout improvement, pushed as `bdbbe10`, with project-list based selection, same-page detail, `Back to projects`, data-source placement immediately below the page heading, long-value wrapping, static demo child visibility and child Project Documentation Explorer launch using the child HTTP source without platform snapshot fallback.
+- Child Project Governance Gate Plan UI, pushed as `e34f89f`, adding the first read-only Governance Console view for generated gate plans.
+- Child Project Governance Plan read-only API, pushed as `255a36f`, exposing list and detail endpoints for generated gate-plan artifacts and expanding the OpenAPI contract to 7 read-only operations and 31 required schemas.
+- Child Project Governance Gate Plan artifact export, pushed as `bc6cc8f`, writing platform-self, demo-child and documentation-only plan artifacts under `artifacts/child-project-governance/gate-plans/`.
+- Child Project Governance Gate Planner, pushed as `420702d`, expanding governed profile/capability/gate registries into deterministic planned gate evidence for representative profiles.
+- Child Project Governance registry files and validator, pushed as `66e624c`, adding the governed child-project governance registry family and deterministic validator with negative fixtures.
 
 - Child-project governance foundation milestone `project-model-child-project-governance-foundation-complete`, tagged on `5649e72` after `repo:check` passed and the working tree was clean.
 - Parent-child ownership and governed taxonomy responsibility boundary, represented by `MR-0003/ADR-0007` and `MR-0003REQ-0031` through `MR-0003REQ-0036`.
@@ -240,23 +243,23 @@ The recommended order is:
 
 ## Pending Decisions
 
-The requirement-model and common body-format architecture decisions are represented by ADRs.
-
 The child-project governance foundation is closed through `MR-0003/ADR-0011` and milestone-tagged as `project-model-child-project-governance-foundation-complete`.
 
-Do not revise that foundation opportunistically. Future work must instantiate it through focused registry, validator, planner, UI or analysis decisions.
+The child governance plan visibility slice is closed through the `project-model-child-governance-plan-ui-visible-complete` milestone. It implemented registry validation, planning, artifact export, read-only API and UI visibility without implementing the final gate executor.
+
+Do not revise those foundations opportunistically. Future work must instantiate them through focused registry, taxonomy, UI-detail, executor, persistence or analysis decisions.
 
 Near-term pending decisions, in order, are:
 
-1. whether the initial child-project governance registry files should be introduced as pure documentation records first or together with a small validator in the same micropasso;
-2. the exact schema/shape for taxonomy usage metadata so taxonomy values become explainable contracts rather than opaque enum strings;
-3. the Explorer API/view-model shape needed to expose taxonomy values, accepted/deprecated semantics, usage fields and child extension mappings;
-4. the first gate-planning output contract before any tool executes a full set of child-project gates;
-5. the re-entry point for Base Analysis once registry, taxonomy and planner outputs are deterministic.
+1. the exact UI/API linking model from visible governance-plan values to their governed registry/taxonomy detail records;
+2. the exact schema/shape for broader taxonomy usage metadata so taxonomy values become explainable contracts rather than opaque enum strings;
+3. whether Governance Console value explanations should reuse Project Documentation Explorer detail endpoints, dedicated registry-detail endpoints, generated snapshot data, or a small composed view-model;
+4. the result-persistence boundary for executed child-project governance gates: generated artifacts, SQLite child-project management state, or both;
+5. the re-entry point for Base Analysis once registry, taxonomy, planning and UI explainability outputs are deterministic.
 
 The expert-review quality constraints remain planning guidance: schema-first, controlled vocabularies, clear provenance/freshness semantics, explicit authority/canonical ownership, deterministic diagnostics and separation between strong gates and advisory quality signals.
 
-The taxonomy visibility note is a priority before Base Analysis and STRIDE/STRIDE-AI implementation: taxonomy values must become inspectable contracts, not only internal enum strings used by filters or validators.
+The taxonomy visibility note is a priority before Base Analysis and STRIDE/STRIDE-AI implementation: taxonomy and registry values must become inspectable contracts, not only internal enum strings used by filters, validators or UI badges.
 
 Any new decision must be added to the relevant decision registry and graph before derived requirements or implementation work starts.
 
@@ -365,13 +368,21 @@ These requirements define the application architecture contract only. Future imp
 
 No new implementation should start before the related requirements and graph relations exist.
 
-Current selected implementation sequence after the child-project governance foundation:
+The child-project governance plan visibility slice is now implemented through:
 
-1. add initial child-project governance registry files and a validator for the registry contract;
-2. define and validate taxonomy usage metadata before taxonomy-driven UI, gate or analysis behavior depends on it;
-3. expose taxonomy values, usage, accepted/deprecated semantics and child-extension mappings in the Project Documentation Explorer;
-4. add a gate-planning tool that reads the profile/gate/capability registries and emits an execution plan with evidence before executing full child-project gates;
-5. resume Base Analysis planning only after the registry, taxonomy and planner layers are deterministic;
+1. child-project governance registry files and validator;
+2. profile-driven gate planner;
+3. generated gate-plan artifact export;
+4. read-only governance-plan API;
+5. Governance Console governance-plan view with project-list/detail navigation.
+
+The next selected implementation sequence is:
+
+1. link visible governance-plan values to governed taxonomy/registry details;
+2. expose broader taxonomy values, usage, accepted/deprecated semantics and child-extension mappings in the Project Documentation Explorer or a dedicated registry-detail view;
+3. define the child-project governance execution-result persistence boundary before executing planned gates;
+4. add a minimal executor for already-planned platform/demo validation surfaces;
+5. resume Base Analysis planning only after the registry, taxonomy, planning, UI explainability and result-evidence layers are deterministic;
 6. add STRIDE and STRIDE-AI overlays after Base Analysis and analysis-method applicability semantics are stable.
 
 Expected future implementation areas remain:
@@ -417,11 +428,22 @@ npm run docs:child-project-standard-project-model
 npm run docs:child-project-demo-workspace
 npm run docs:child-project-demo-registration
 npm run docs:child-project-management-api-serve
+npm run docs:child-project-governance-registries
+npm run docs:child-project-governance-plan
+npm run docs:child-project-governance-plan-artifacts
+npm run docs:child-project-governance-plan-api-serve
 npm run docs:openapi-contract
 npm run frontend:build
 npm run test:runtime
 npm run repo:check
 ```
+
+The child-project governance visibility gates now validate:
+
+- the child-project governance registry family and cross-registry references;
+- deterministic gate planning for representative platform, demo child and documentation-only profiles;
+- deterministic generation of read-only gate-plan artifacts;
+- the read-only Governance Plan API serve boundary.
 
 The stabilization gate sequence from `MR-0000/ADR-0006` is now implemented:
 
@@ -439,13 +461,13 @@ The minimal GitHub Actions CI workflow now runs the governed local check path:
   npm run repo:check
 ```
 
-The OpenAPI structural validation gate now checks `docs/reference/api/openapi/threat-forge.openapi.yml` for the expected read-only operations, required schemas, required operation metadata and allowed HTTP methods.
+The OpenAPI structural validation gate now checks `docs/reference/api/openapi/threat-forge.openapi.yml` for the expected read-only operations, required schemas, required operation metadata and allowed HTTP methods. The current contract includes Project Documentation Explorer, Child Project Management and Child Project Governance Plan read-only operations.
 
 The runtime unit test gate now includes HTTP smoke coverage for the Project Documentation Explorer read-only boundary and local serve command, frontend data-source behavior, typed HTTP error behavior, filesystem source canonicalization and snapshot cache behavior in addition to the existing service-level query normalization, graph-derived filtering and governed body loading coverage.
 
 The Project Documentation Explorer JSDoc static type-checking pilot gate now runs a focused `tsc --checkJs` check over selected Explorer source/test files and a negative fixture that verifies field-name drift is rejected. The next governed expansion may add more Explorer files to that same gate, but the gate remains scoped to MR-0002 Explorer files and does not replace runtime boundary validation.
 
-Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning, guide-format validation and broader test coverage, but none of these is part of the Project Documentation Explorer live HTTP/caching closure micropasso.
+Future gates should be added only after their requirements, graph relations and implementation artifacts exist. Candidate future work remains strict OpenAPI validation with a dedicated tool decision, snapshot payload validation, YAML parser hardening, audit/license/secrets scanning, guide-format validation and broader test coverage, but none of these is part of the current child-governance-plan UI-visible milestone.
 
 ## Routine Repository Operation Policy
 
@@ -464,46 +486,92 @@ Handoff instructions should prefer the governed commands above and should explai
 
 For handoff, verify live repository state with Git commands rather than relying on this file for dynamic facts.
 
+Current handoff baseline after the latest completed milestone:
+
+```text
+Expected branch: master tracking origin/master
+Expected HEAD: bdbbe10
+Expected tag at HEAD: project-model-child-governance-plan-ui-visible-complete
+Expected working tree: clean
+Latest milestone scope: child governance plan UI visible
+```
+
+Recent commits at handoff:
+
+```text
+bdbbe10 frontend: improve governance plan project selection and layout
+e34f89f frontend: render child project governance plan view
+255a36f backend: serve child project governance plan read-only API
+bc6cc8f tooling: export child project governance gate plan artifacts
+420702d tooling: plan child project governance gates from profile registry
+```
+
 Minimum handoff checks:
 
 ```text
 git status --short --branch
+git rev-parse --short HEAD
 git log --oneline -5
 git tag --points-at HEAD
 git remote -v
-npm run docs:graph-format
-npm run docs:pages
-node tools/docs/check-docs-structure.mjs
-npm run docs:adr-registry-fields
-npm run docs:requirement-registry-fields
-npm run docs:code-traceability
-npm run docs:project-documentation-explorer-jsdoc-typecheck
-npm run docs:repo-operation-governance
-npm run docs:body-format-registry
-npm run docs:markdown-body-parser
-npm run docs:adr-body-format
-npm run docs:requirement-body-format
-npm run docs:append-first
+npm run repo:check
 ```
 
+Focused UI smoke-check commands for the current milestone:
+
+```text
+npm run docs:child-project-governance-plan-artifacts
+npm run backend:child-project-governance-plan:serve
+npm run backend:project-documentation-explorer:serve:demo
+```
+
+Frontend demo environment:
+
+```text
+VITE_CHILD_PROJECT_GOVERNANCE_PLAN_SOURCE=http
+VITE_CHILD_PROJECT_GOVERNANCE_PLAN_HTTP_BASE_URL=http://127.0.0.1:4176
+VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL=http://127.0.0.1:4174
+npm run frontend:dev
+```
+
+Manual UI checks after starting the demo services:
+
+```text
+Child Projects shows the Demo Child Project.
+Open Project Documentation Explorer from the demo child shows the child documentation, not threat-forge platform documentation.
+Governance gate plans shows project cards instead of a project dropdown.
+Selecting a project loads the detail in the same page.
+Back to projects returns to the project list.
+Data source appears immediately below the Governance gate plans heading and subheading.
+Long profile/target/gate values wrap inside their cards.
+```
+
+A complete handoff ZIP can be generated with:
+
+```text
+npm run context:zip -- --include-git --name threat-forge-handoff-with-git-after-governance-plan-ui-visible.zip
+```
 
 ## Next Suggested Step
 
-The next safe step is to add initial child-project governance registry files and a small deterministic validator for the registry contract already defined by `MR-0003/ADR-0011`.
+The next safe implementation-bearing step is to link governance-plan values to governed taxonomy and registry detail views.
 
 Recommended scope:
 
-1. create initial registry files under `docs/reference/project-model/registers/child-project-governance/` for applicability classes, capabilities, gates, governance profiles and validation surfaces;
-2. keep values small and based on the already-accepted MR-0003 decisions;
-3. add a validator that checks required fields, unique IDs, cross-references and allowed status/applicability values;
-4. include positive and negative fixture coverage;
-5. wire the validator into `repo:check` only after the tool is deterministic and dogfooded inside threat-forge.
+1. keep the current Governance gate plans page read-only;
+2. make profile IDs, target scopes, gate IDs, capability IDs, applicability classes, execution statuses and validation surfaces explainable;
+3. link those values to existing governed registry/taxonomy records or expose a small read-only registry-detail view-model;
+4. preserve the same project-list/detail navigation pattern established by the UI-visible milestone;
+5. avoid implementing the final child-project gate executor in this step;
+6. avoid resuming Base Analysis runtime/storage in this step.
 
-Do not implement full child-project gate orchestration yet.
+The purpose is to complete the taxonomy-as-governed-contract promise before the UI or future executor relies on opaque strings.
 
-Do not resume Base Analysis runtime/storage yet.
+Suggested commit title:
 
-Do not implement taxonomy UI yet, but keep taxonomy usage metadata as the next high-priority planning step after the governance registry validator because taxonomy values must be readable, meaningful and UI-visible before analysis workflows rely on them.
+```text
+frontend/backend: link governance plan values to registry details
+```
 
 ## Project Documentation Explorer JSDoc Static Type-checking Pilot Closure Micropasso
 
@@ -1228,3 +1296,16 @@ The UI consumes generated evidence through a client port. It does not execute ga
 This step intentionally does not persist gate results, implement the final executor/orchestrator, link every UI value to the taxonomy/registry detail view, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is to link governance plan values back to registry/taxonomy detail views or add a minimal UI launch recipe for running the governance-plan API alongside the Governance Console.
+
+## Child Project Governance Plan Project Selection and Layout Micropasso
+
+This frontend refinement micropasso completes the first usable Governance gate plans navigation pattern after the initial read-only UI.
+
+The implementation refines the Governance Console so the Governance gate plans page presents platform and child projects as selectable cards rather than as a dropdown. Selecting a project loads its detail in the same page, shows project/profile/target/gate-plan data, and provides a `Back to projects` return action. The data-source status is placed immediately below the page heading and subheading, and long profile, target, capability, gate and validation-surface values wrap inside their cards rather than overflowing.
+
+The same refinement also preserves child-project visibility in the Child Projects page and ensures the demo child `Open Project Documentation Explorer` path uses the child Project Documentation Explorer HTTP source instead of falling back to threat-forge platform snapshot data. If the child documentation server is not available, the UI must fail clearly rather than silently showing platform documentation.
+
+This step intentionally does not add a gate executor, persist gate results, mutate child projects, change canonical registries at runtime, add language adapters, or implement Base Analysis, STRIDE or STRIDE-AI.
+
+It closes the UI-visible planning slice now tagged as `project-model-child-governance-plan-ui-visible-complete`.
+
