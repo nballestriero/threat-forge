@@ -63,17 +63,19 @@ child-project governance registries
 
 The UI-visible milestone established that governance gate plans can be inspected by selecting a platform or child project, viewing profile/target/project details, reviewing gate applicability/status/reason/evidence, and navigating back to the project list without executing gates or mutating child repositories.
 
-The active objective is now handoff and next-workstream preparation. The next implementation-bearing work should not add a gate executor yet. It should first make the UI values explainable by linking governance-plan values back to governed taxonomy and registry detail views.
+The active objective is now explainable governance preparation. The next implementation-bearing work should not add a gate executor yet. It should first make Governance Console values study-oriented and explainable by linking governance-plan concepts back to governed taxonomy, registry and planning-rationale detail views.
 
-The recommended next workstream is:
+The current document-only micropasso defines the semantic boundary for this explainability work in `MR-0003/ADR-0012`, `MR-0003REQ-0061`, `MR-0003REQ-0062` and `MR-0003REQ-0063`.
+
+The recommended next implementation-bearing workstream is:
 
 ```text
-frontend/backend: link governance plan values to taxonomy and registry details
+backend/frontend: expose and render governance concept explanations and gate rationale
 ```
 
-That workstream should connect visible values such as governance profile, target scope, gate id, capability, applicability class, execution status and validation surface to their governed source records and descriptions. This keeps the earlier taxonomy planning note active: taxonomy/registry values must be inspectable contracts, not opaque enum strings.
+That workstream should connect visible values such as governance profile, target scope, gate id, capability, applicability class, execution status and validation surface to governed source records, human explanations and gate-selection rationale. Capability and validation-surface values must be presented as explained study concepts, not as raw ids. Each gate should be able to answer what it checks, why it was selected, which capabilities it requires, which surfaces validate it, and how the gate contributes to analyzable documentation and future threat analysis.
 
-The Base Analysis runtime/storage/API direction remains parked. It should resume only after governance-plan values are explainable in the UI, or after an explicit decision reprioritizes the executor/orchestrator ahead of taxonomy/registry detail linking.
+The Base Analysis runtime/storage/API direction remains parked. It should resume only after governance-plan concepts and gate rationales are explainable in the UI, or after an explicit decision reprioritizes the executor/orchestrator ahead of taxonomy/registry detail linking.
 
 ## Quality Constraints Carried Forward
 
@@ -117,7 +119,9 @@ The Project Documentation Explorer must therefore evolve from showing that taxon
 
 ## Current Micropasso
 
-Align the working plan after the `project-model-child-governance-plan-ui-visible-complete` milestone and prepare a handoff for the next chat.
+Define the explainable child-governance concept boundary before implementing backend/API or frontend changes.
+
+This micropasso keeps the gate executor, orchestrator, child-project mutation, Base Analysis runtime/storage, STRIDE and STRIDE-AI work parked. It adds only governed documentation, registry records and graph relations for study-oriented governance concepts, gate-selection rationale, capability explanations and validation-surface explanations.
 
 This micropasso is document-only and updates only this working plan. It records the closure of the governance-plan visibility slice and sets the next safe objective.
 
@@ -129,20 +133,22 @@ The next implementation-bearing workstream should start from the tagged UI-visib
 
 The recommended order from the current tagged baseline is:
 
-1. `docs: align working plan after child governance plan UI-visible milestone` — this document-only handoff update.
-2. `frontend/backend: link governance plan values to taxonomy and registry details` — make visible governance-plan values explainable by linking profile, gate, capability, applicability class, execution status and validation surface values to their governed records and descriptions.
-3. `frontend/backend: expose and render taxonomy values and usage in Explorer` — complete the broader taxonomy visibility work so accepted/deprecated values, usage fields, UI/report/filter surfaces and child-extension mappings are inspectable.
-4. `tooling/backend: define child-project governance gate execution result persistence boundary` — decide whether results live first as artifacts, SQLite state, or both before implementing execution.
-5. `tooling: execute planned child-project governance gates for platform/demo surfaces` — only after the planner, artifact, API and UI explainability layers are deterministic.
-6. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics, plan visibility and result evidence are deterministic.
-7. `docs/backend/frontend: STRIDE overlay planning and implementation` — after Base Analysis is stable enough to provide canonical elements, boundaries, flows and evidence.
-8. `docs/backend/frontend: STRIDE-AI overlay planning and implementation` — after AI/RAG/agent capabilities, taxonomy contracts and Base Analysis inputs are stable.
-9. quality hardening backlog — parser hardening, stronger graph/link validation, provenance automation, coverage expansion, lint/formatting and future advisory-to-gate promotions.
+1. `docs: define explainable child governance concept boundary` — this document-only micropasso, adding the semantic contract for study-oriented concepts, gate-selection rationale, capability explanations and validation-surface explanations.
+2. `backend: expose governance concept explanation and gate rationale view-model` — read governed registry and plan data to provide explanation details without executing gates.
+3. `frontend: render Governance gate plans explanations and page guidance` — add page purpose/use guidance, gate detail explanations, capability explanations, validation-surface explanations and rationale panels while preserving read-only navigation.
+4. `frontend/backend: expose and render taxonomy values and usage in Explorer` — complete the broader taxonomy visibility work so accepted/deprecated values, usage fields, UI/report/filter surfaces and child-extension mappings are inspectable.
+5. `tooling/backend: define child-project governance gate execution result persistence boundary` — decide whether results live first as artifacts, SQLite state, or both before implementing execution.
+6. `tooling: execute planned child-project governance gates for platform/demo surfaces` — only after the planner, artifact, API and UI explainability layers are deterministic.
+7. `docs/backend: resume Base Analysis model/runtime planning` — only after governance registries, taxonomy semantics, plan visibility and result evidence are deterministic.
+8. `docs/backend/frontend: STRIDE overlay planning and implementation` — after Base Analysis is stable enough to provide canonical elements, boundaries, flows and evidence.
+9. `docs/backend/frontend: STRIDE-AI overlay planning and implementation` — after AI/RAG/agent capabilities, taxonomy contracts and Base Analysis inputs are stable.
+10. quality hardening backlog — parser hardening, stronger graph/link validation, provenance automation, coverage expansion, lint/formatting and future advisory-to-gate promotions.
 
 The registry validator, planner, plan artifact export, read-only API and first Governance Console view are no longer pending sequence items; they are completed milestone inputs for the next workstream.
 
 ## Completed Milestones
 
+- Explainable child governance concept boundary, represented by `MR-0003/ADR-0012` and `MR-0003REQ-0061` through `MR-0003REQ-0063`, defining study-oriented concept explanations, gate-selection rationale and capability/validation-surface explanation semantics before executor/orchestrator work.
 - Child governance plan UI-visible milestone `project-model-child-governance-plan-ui-visible-complete`, tagged on `bdbbe10` after the Governance Console could render governance gate plans with project selection/detail navigation and child documentation launch correction.
 - Governance plan project selection and layout improvement, pushed as `bdbbe10`, with project-list based selection, same-page detail, `Back to projects`, data-source placement immediately below the page heading, long-value wrapping, static demo child visibility and child Project Documentation Explorer launch using the child HTTP source without platform snapshot fallback.
 - Child Project Governance Gate Plan UI, pushed as `e34f89f`, adding the first read-only Governance Console view for generated gate plans.

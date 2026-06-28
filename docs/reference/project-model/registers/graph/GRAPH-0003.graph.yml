@@ -501,6 +501,23 @@ nodes:
     label: Child project governance plan frontend state helpers
     path: frontend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.state.js
 
+
+  - id: ADR-0012
+    type: ADR
+    label: Explainable child governance concepts and gate rationale boundary
+
+  - id: MR-0003REQ-0061
+    type: Requirement
+    label: Study-oriented governance concept explanation contract
+
+  - id: MR-0003REQ-0062
+    type: Requirement
+    label: Governance gate selection rationale contract
+
+  - id: MR-0003REQ-0063
+    type: Requirement
+    label: Capability and validation surface explanation semantics
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1705,4 +1722,36 @@ spo_relations:
   - subject: MR-0003REQ-0015
     predicate: implemented_by
     object: MR-0003UI-0004
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0012
+
+  - subject: ADR-0012
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0061
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0062
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0063
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0003REQ-0061
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0003REQ-0062
+
+  - subject: ADR-0012
+    predicate: justifies
+    object: MR-0003REQ-0063
 

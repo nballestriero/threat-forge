@@ -505,3 +505,27 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0011
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0060_body.md
+
+  - id: MR-0003REQ-0061
+    title: Study-oriented governance concept explanation contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0061_body.md
+
+  - id: MR-0003REQ-0062
+    title: Governance gate selection rationale contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0062_body.md
+
+  - id: MR-0003REQ-0063
+    title: Capability and validation surface explanation semantics
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0063_body.md
