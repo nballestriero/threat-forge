@@ -1,5 +1,97 @@
 # Working Plan
 
+# Immediate UI Refinement Working Plan
+
+This section defines the next prioritized work after the governed local UI test environment runner.
+
+The current priority is to continue the Governance Console visual refinement started with compact details, shared `InfoPopover`, semantic badges, spacing and local UI test tooling. The next work MUST keep the default UI concise and readable, with deeper explanations available on demand through `i` progressive-disclosure controls.
+
+## Immediate Priorities
+
+1. `frontend: refine governance console navigation icons`
+   - Improve the sidebar/menu icons to match the mockup direction.
+   - Keep icon definitions centralized through the existing design-system/token approach.
+   - Avoid scattered inline SVG definitions in page components.
+   - Avoid inline colors.
+   - Cover at least Project Documentation, Governance Gate Plans, Child Projects and Threat Analysis navigation entries.
+   - Improve active, hover, focus and disabled navigation states without making the UI visually noisy.
+
+2. `frontend/style: centralize semantic UI color tokens`
+   - Keep the black/white GitHub/ChatGPT-like baseline.
+   - Centralize light semantic accents for success/pass, warning/planned, danger/fail/blocking, info/neutral, active navigation, selected rows and focus/hover states.
+   - Reuse existing CSS variables where possible.
+   - Avoid one-off component colors.
+
+3. `frontend: normalize status badge semantics`
+   - Make badges consistent across Project Documentation Explorer and Governance Gate Plans.
+   - Treat pass, accepted, implemented and verified as positive states.
+   - Treat planned, candidate and draft as informational states.
+   - Treat stale warning, needs more evidence and partially implemented as warning states.
+   - Treat fail, rejected and stale blocking as blocking states.
+   - Treat unsupported, unknown and not applicable as neutral states.
+
+4. `frontend/style: refine shell navigation and topbar hierarchy`
+   - Make sidebar spacing, active item shape, topbar weight and page content rhythm closer to the mockup.
+   - Keep the layout simple and readable.
+   - Do not introduce new backend behavior.
+
+5. `frontend: show live data source status`
+   - Show whether the Project Documentation Explorer UI is using snapshot data or live HTTP data.
+   - Show whether Governance Gate Plans are using generated artifacts through the local HTTP backend.
+   - Make the state visible during `npm run dev:ui-test:start` sessions.
+
+6. `frontend: link governance explanations to documentation details`
+   - Link gate explanations and technical traces to related ADR, requirement and taxonomy details.
+   - Keep raw ids secondary.
+   - Preserve read-only behavior.
+
+## Guardrails
+
+- Read the relevant body format profiles and registries before adding or editing ADR/REQ bodies.
+- Do not infer required body sections.
+- Keep all code/tool changes linked through requirement, ADR, graph and JSDoc.
+- Keep registries and graphs append-first unless a governed append-first manifest explicitly allows protected changes.
+- Keep details behind progressive disclosure when they are not necessary for the default reading path.
+- Keep icon, badge and color styling centralized.
+- Do not replace `repo:check` with developer convenience tooling.
+- Use the governed runner for commit and push.
+
+## Completed UI Foundation
+
+The following UI foundation is complete and should not be lost while refining the menu and visual system:
+
+- Project Documentation Explorer compact list/detail hierarchy.
+- Taxonomy fields and taxonomy value explanations available behind `i` controls.
+- Governance Gate Plans compact list and inline details.
+- Governance plan overview details available behind `i` controls.
+- Shared `InfoPopover` behavior for hover, focus and click/tap progressive disclosure.
+- Single-column readable popover panels.
+- Semantic badge and spacing refinement.
+- Governed local UI test environment runner:
+  - `npm run dev:ui-test:start`
+  - `npm run dev:ui-test:status`
+  - `npm run dev:ui-test:stop`
+
+## Handoff Baseline
+
+Latest confirmed baseline after the local UI test environment runner:
+
+- Branch: `master`, tracking `origin/master`.
+- Latest confirmed commit: `50da41b tooling: add local UI test environment runner`.
+- Repository status after governed push: clean and aligned with `origin/master`.
+- Metrics:
+  - Macro requirements: 10
+  - Taxonomies: 101
+  - Requirements: 241
+  - ADR: 73
+  - Graph nodes: 427
+  - SPO relations: 1050
+  - Governed Markdown body files: 324
+  - Project Documentation Explorer snapshot: 336 items / 336 details
+  - Runtime tests: 31 pass
+
+
+
 ## Purpose
 
 This working plan is the lightweight operational state document for threat-forge project-model work.
