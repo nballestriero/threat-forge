@@ -1441,3 +1441,16 @@ This reduces duplication while preserving the approved UX rule: the primary page
 The cleanup does not change backend contracts, registry semantics, taxonomy values, gate-planning behavior, snapshot generation semantics, child-project mutation behavior, or threat-analysis runtime features.
 
 The next safe step is visual-system refinement from the mockup reference: unify badges, semantic color tokens and spacing across Project Documentation Explorer and Governance gate plans without introducing page-specific inline styling.
+
+
+## Semantic Badge and Visual Rhythm Refinement Micropasso
+
+This frontend style refinement applies the mockup reference as a visual-system cleanup without changing read-model semantics.
+
+The implementation adds shared visual tokens for surface, border and light semantic status treatments; refines badge weight and status-specific background/border accents; improves card, row, information-icon and gate-section spacing; and keeps the monochrome Governance Console style while adding subtle semantic cues for success, warning, danger and informational states.
+
+The refinement remains centralized in the shared stylesheet. Feature pages continue to use existing design-system components and existing backend-provided view-model values. No inline colors, page-local design systems or hardcoded taxonomy/gate semantics are introduced.
+
+This step does not change backend contracts, registry content, gate planning, snapshot generation, child-project mutation behavior, documentation loading, or threat-analysis runtime features.
+
+The next safe step is a governed developer-experience tool that starts and stops the local UI test environment in one command pair, covering the Project Documentation Explorer backend, Governance gate plan backend and frontend dev server without replacing `repo:check`.
