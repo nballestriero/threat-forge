@@ -778,6 +778,43 @@ components:
       required:
         - root
         - governance_profile
+    ChildProjectDocumentationSource:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+            - available
+            - unconfigured
+            - unsupported
+            - unavailable
+        source_type:
+          oneOf:
+            - type: string
+              enum:
+                - filesystem
+                - http
+            - type: 'null'
+        repository_local_path:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        project_model_root:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: 'null'
+        message:
+          type: string
+          minLength: 1
+      required:
+        - status
+        - source_type
+        - repository_local_path
+        - project_model_root
+        - message
     ChildProjectLifecyclePolicy:
       type: object
       additionalProperties: false
@@ -816,6 +853,8 @@ components:
           $ref: '#/components/schemas/ChildProjectRepositoryLocation'
         project_model:
           $ref: '#/components/schemas/ChildProjectModelProfile'
+        documentation_source:
+          $ref: '#/components/schemas/ChildProjectDocumentationSource'
         lifecycle_policy:
           $ref: '#/components/schemas/ChildProjectLifecyclePolicy'
         archived:
@@ -835,6 +874,7 @@ components:
         - name
         - repository
         - project_model
+        - documentation_source
         - lifecycle_policy
         - archived
         - created_at

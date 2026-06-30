@@ -1661,3 +1661,23 @@ The platform Project Documentation Explorer remains on its platform endpoint, wh
 This step remains local developer convenience. It does not implement production per-child source routing, mutate governed child Project Models, add write APIs, or change child-project registration storage.
 
 The next safe step is to replace the single demo child documentation URL with a project-scoped backend resolver that reads registered child-project source metadata for real projects.
+
+## Registered Child Project Documentation Source Resolver Micropasso
+
+This backend micropasso moves real child project documentation source selection out of the single demo-only frontend URL pattern and into a project-scoped backend resolver.
+
+Commit target: `backend: resolve child project documentation sources from registered projects`.
+
+Governed records added:
+
+- `MR-0003/ADR-0014` — Child project documentation source resolver boundary.
+- `MR-0003REQ-0066` — Registered child project documentation source resolver.
+- `MR-0003REQ-0067` — Child project documentation source unavailable semantics.
+
+The implementation adds a child project documentation source resolver under the MR-0003 child project management boundary. The resolver derives source metadata from registered child project records: local child projects with a valid Project Model root inside the registered workspace resolve to an available filesystem descriptor, while missing local paths, Git-only registrations, absent Project Model roots and escaping Project Model roots resolve to explicit non-available states.
+
+The child project management read model now carries this derived documentation source metadata. This prepares the next project-scoped documentation API slice without requiring the frontend to infer child sources from a global environment variable and without reintroducing platform documentation fallback behavior.
+
+This step does not add a child documentation proxy endpoint, clone Git repositories, mutate child Project Models, replace the demo child local UI test source, add write APIs or change frontend routing.
+
+The next safe step is to add a read-only project-scoped child documentation API that uses the registered source resolver and returns either child Project Documentation Explorer data or the explicit resolver status.

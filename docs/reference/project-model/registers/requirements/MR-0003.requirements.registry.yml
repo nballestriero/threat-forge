@@ -545,3 +545,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0013
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0065_body.md
+
+  - id: MR-0003REQ-0066
+    title: Registered child project documentation source resolver
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0014
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0066_body.md
+
+  - id: MR-0003REQ-0067
+    title: Child project documentation source unavailable semantics
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0014
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0067_body.md

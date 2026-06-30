@@ -536,6 +536,28 @@ nodes:
     path: frontend/src/MR-0002/design-system/InfoPopover.jsx
 
 
+  - id: ADR-0014
+    type: ADR
+    label: Child project documentation source resolver boundary
+
+  - id: MR-0003REQ-0066
+    type: Requirement
+    label: Registered child project documentation source resolver
+
+  - id: MR-0003REQ-0067
+    type: Requirement
+    label: Child project documentation source unavailable semantics
+
+  - id: MR-0003SRC-0013
+    type: SourceModule
+    label: Child project documentation source resolver
+    path: backend/src/MR-0003/child-project-management/child-project-documentation-source.resolver.mjs
+
+  - id: MR-0003TEST-0005
+    type: VerificationArtifact
+    label: Child project documentation source resolver runtime tests
+    path: backend/tests/MR-0003/child-project-management/child-project-documentation-source.resolver.test.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1869,4 +1891,60 @@ spo_relations:
   - subject: MR-0003REQ-0065
     predicate: implemented_by
     object: MR-0003UI-0010
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0014
+
+  - subject: ADR-0014
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0066
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0067
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0014
+    predicate: justifies
+    object: MR-0003REQ-0066
+
+  - subject: ADR-0014
+    predicate: justifies
+    object: MR-0003REQ-0067
+
+  - subject: MR-0003REQ-0066
+    predicate: implemented_by
+    object: MR-0003SRC-0013
+
+  - subject: MR-0003REQ-0066
+    predicate: implemented_by
+    object: MR-0003SRC-0001
+
+  - subject: MR-0003REQ-0066
+    predicate: implemented_by
+    object: MR-0003SRC-0004
+
+  - subject: MR-0003REQ-0067
+    predicate: implemented_by
+    object: MR-0003SRC-0013
+
+  - subject: MR-0003REQ-0067
+    predicate: implemented_by
+    object: MR-0003SRC-0001
+
+  - subject: MR-0003REQ-0067
+    predicate: implemented_by
+    object: MR-0003SRC-0004
+
+  - subject: MR-0003TEST-0005
+    predicate: verifies
+    object: MR-0003REQ-0066
+
+  - subject: MR-0003TEST-0005
+    predicate: verifies
+    object: MR-0003REQ-0067
 

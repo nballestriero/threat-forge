@@ -5,6 +5,7 @@ import "./project-documentation-explorer.http-server.test.mjs";
 import "./project-documentation-explorer.serve.test.mjs";
 import "./project-documentation-explorer.frontend-client.test.mjs";
 import "./project-documentation-explorer.ui-test-environment.test.mjs";
+import "../../MR-0003/child-project-management/child-project-documentation-source.resolver.test.mjs";
 import "./project-documentation-explorer.filesystem-source-adapter.test.mjs";
 import "./project-documentation-explorer.snapshot-cache.test.mjs";
 

@@ -5,7 +5,10 @@ import { z } from "zod";
  *
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0066
+ * @implementsRequirement MR-0003REQ-0067
  * @derivedFromDecision MR-0003/ADR-0005
+ * @derivedFromDecision MR-0003/ADR-0014
  * @macroRequirement MR-0003
  *
  * These contracts define the backend-facing and UI-safe shapes used to manage
@@ -62,6 +65,24 @@ export const childProjectRepositoryLocationSchema = z.object({
   default_branch: z.string().min(1).default("master"),
 });
 
+
+export const childProjectDocumentationSourceStatusSchema = z.enum([
+  "available",
+  "unconfigured",
+  "unsupported",
+  "unavailable",
+]);
+
+export const childProjectDocumentationSourceTypeSchema = z.enum(["filesystem", "http"]).nullable();
+
+export const childProjectDocumentationSourceSchema = z.object({
+  status: childProjectDocumentationSourceStatusSchema.default("unconfigured"),
+  source_type: childProjectDocumentationSourceTypeSchema.default(null),
+  repository_local_path: z.string().min(1).nullable().default(null),
+  project_model_root: z.string().min(1).nullable().default(null),
+  message: z.string().min(1).default("Child project documentation source is not configured."),
+});
+
 export const childProjectModelProfileSchema = z.object({
   root: z.string().min(1).default("docs/reference/project-model"),
   governance_profile: z.string().min(1).default("threat-forge-standard-child-project"),
@@ -80,6 +101,7 @@ export const childProjectRecordSchema = z.object({
   name: z.string().min(1),
   repository: childProjectRepositoryLocationSchema,
   project_model: childProjectModelProfileSchema.default({}),
+  documentation_source: childProjectDocumentationSourceSchema.default({}),
   lifecycle_policy: childProjectLifecyclePolicySchema.default({}),
   archived: z.boolean().default(false),
   created_at: z.string().min(1).nullable().default(null),
@@ -146,6 +168,16 @@ export function parseChildProjectRecord(payload) {
  */
 export function parseChildProjectCheckRun(payload) {
   return childProjectCheckRunSchema.parse(payload);
+}
+
+/**
+ * Validates a child project documentation source descriptor.
+ *
+ * @param {unknown} payload - Candidate documentation source descriptor.
+ * @returns {z.infer<typeof childProjectDocumentationSourceSchema>} Parsed documentation source descriptor.
+ */
+export function parseChildProjectDocumentationSource(payload) {
+  return childProjectDocumentationSourceSchema.parse(payload);
 }
 
 /**
