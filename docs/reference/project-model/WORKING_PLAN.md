@@ -1743,3 +1743,44 @@ The Project Documentation Explorer page renders a compact live documentation sou
 This step is UI visibility only. It does not change backend documentation endpoint semantics, add write APIs, remove the platform snapshot fallback for platform views, clone remote projects or implement dynamic RBAC administration.
 
 The next safe step is to close the project-scoped child documentation UI milestone with a governed tag once the visual behavior is manually verified.
+
+## Project-Scoped Child Documentation UI Milestone Closure Micropasso
+
+This document-only milestone closure records that the project-scoped child Project Documentation Explorer flow is complete for the governed local demo slice.
+
+Commit target: `docs: close project-scoped child documentation UI milestone`.
+
+Milestone tag target after the governed commit lands cleanly on `master`: `project-model-child-documentation-project-scoped-ui-complete`.
+
+The closed implementation chain is:
+
+- `07feb97` — `frontend: prevent child project documentation fallback to platform documents`.
+- `8c80f26` — `dev: serve demo child project documentation source in local UI test environment`.
+- `3a252b8` — `backend: resolve child project documentation sources from registered projects`.
+- `9ecb871` — `backend: expose project-scoped child documentation API`.
+- `f6c50ee` — `frontend: load selected child project documents through project-scoped API`.
+- `875b6ca` — `frontend: show live documentation data source status`.
+
+The completed governed flow is now:
+
+```text
+registered child project
+→ child documentation source resolver
+→ project-scoped child documentation API
+→ selected-child Documents UI route
+→ visible live documentation source status
+```
+
+The milestone is complete when the current HEAD remains clean, governed checks pass, and manual UI review confirms that selecting `Demo Child Project` and opening `Documents` loads child-project documentation through the project-scoped platform API instead of falling back to threat-forge platform documentation.
+
+The closed behavior includes these guarantees:
+
+- child project document views do not use threat-forge platform snapshots or platform documentation endpoints as fallback;
+- missing, unsupported or unavailable child documentation sources remain explicit UI states;
+- the local UI test tool starts the platform Project Documentation Explorer, demo child Project Documentation Explorer, Child Project Management API, Child Project Governance Plan API and frontend together;
+- the frontend selected-child document route uses the Child Project Management API project-scoped documentation endpoints as the primary path;
+- the Project Documentation Explorer shows whether the current documentation source is live, snapshot-backed, fallback-backed or unavailable.
+
+The milestone intentionally does not include child Project Model mutation, write APIs, Git repository cloning, remote project onboarding, dynamic RBAC administration, Base Analysis runtime/storage, STRIDE overlays or STRIDE-AI overlays.
+
+The next safe step after tagging the milestone is to expose registered child project documentation source details in the Child Projects UI so real projects can show which workspace/source is registered, whether the source is currently available, and why a source is unavailable before users open the Documents view.
