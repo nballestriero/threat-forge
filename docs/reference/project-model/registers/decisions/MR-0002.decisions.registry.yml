@@ -265,3 +265,12 @@ decisions:
     date: 2026-06-30
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0029_body.md
+
+  - id: ADR-0030
+    title: Demo Child Project Documentation UI Test Source Boundary
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-30
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0030_body.md

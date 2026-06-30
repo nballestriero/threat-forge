@@ -1641,3 +1641,23 @@ The implementation separates platform and child Project Documentation Explorer f
 Local demo use now requires explicitly configuring the child documentation source before opening child documents. If the source is missing or unreachable, the Project Documentation Explorer renders a child-project-specific unavailable/error state rather than valid-looking ThreatForge platform documents.
 
 The next safe step is to show live data-source status more prominently in the shell and page header so users can see whether they are reading platform snapshot, platform HTTP, child HTTP, or unavailable child source data.
+
+## Demo Child Project Documentation UI Test Source Micropasso
+
+This local developer-environment micropasso makes the Demo Child Project document view useful after the no-fallback fix.
+
+Commit target: `dev: serve demo child project documentation source in local UI test environment`.
+
+Governed records added:
+
+- `MR-0002/ADR-0030` — Demo Child Project Documentation UI Test Source Boundary.
+- `MR-0002REQ-0071` — Local UI Test Demo Child Documentation Service.
+- `MR-0002REQ-0072` — Local UI Test Frontend Child Documentation Configuration.
+
+The implementation extends `npm run dev:ui-test:start` so it resets the generated demo child-project workspace, starts a dedicated read-only Project Documentation Explorer backend for that workspace on a separate endpoint, and configures the Vite frontend with an explicit child Project Documentation Explorer HTTP base URL.
+
+The platform Project Documentation Explorer remains on its platform endpoint, while the demo child Project Documentation Explorer uses a separate endpoint. This keeps the no-fallback boundary intact: the frontend can read demo child documents during local review only because a child-specific source is running, not because it substituted platform records.
+
+This step remains local developer convenience. It does not implement production per-child source routing, mutate governed child Project Models, add write APIs, or change child-project registration storage.
+
+The next safe step is to replace the single demo child documentation URL with a project-scoped backend resolver that reads registered child-project source metadata for real projects.

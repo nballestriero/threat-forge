@@ -566,3 +566,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0029
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0070_body.md
+
+  - id: MR-0002REQ-0071
+    title: Local UI Test Demo Child Documentation Service
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0030
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0071_body.md
+
+  - id: MR-0002REQ-0072
+    title: Local UI Test Frontend Child Documentation Configuration
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0030
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0072_body.md

@@ -42,7 +42,7 @@
     "child-project:demo:register": "node backend/tools/MR-0003/register-demo-child-project.mjs --register",
     "backend:child-project-management:serve": "node backend/src/MR-0003/child-project-management/child-project-management.serve.mjs",
     "backend:child-project-governance-plan:serve": "node backend/src/MR-0003/child-project-governance-plan/child-project-governance-plan.serve.mjs",
-    "backend:project-documentation-explorer:serve:demo": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs --root-dir .threat-forge/workspaces/demo-child-project --port 4174",
+    "backend:project-documentation-explorer:serve:demo": "node backend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.serve.mjs --root-dir .threat-forge/workspaces/demo-child-project --port 4178",
     "dev:ui-test:start": "node tools/dev/run-ui-test-environment.mjs --start",
     "dev:ui-test:stop": "node tools/dev/run-ui-test-environment.mjs --stop",
     "dev:ui-test:status": "node tools/dev/run-ui-test-environment.mjs --status"

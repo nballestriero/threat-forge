@@ -592,6 +592,24 @@ nodes:
     label: Child Project Documentation unavailable UI state
 
 
+
+  - id: ADR-0030
+    type: ADR
+    label: Demo Child Project Documentation UI Test Source Boundary
+
+  - id: MR-0002REQ-0071
+    type: Requirement
+    label: Local UI Test Demo Child Documentation Service
+
+  - id: MR-0002REQ-0072
+    type: Requirement
+    label: Local UI Test Frontend Child Documentation Configuration
+
+  - id: MR-0002TEST-0007
+    type: VerificationArtifact
+    label: Local UI test environment service wiring tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.ui-test-environment.test.mjs
+
 spo_relations:
   - subject: MR-0002
     predicate: has_decision
@@ -2201,4 +2219,44 @@ spo_relations:
   - subject: MR-0002REQ-0070
     predicate: implemented_by
     object: MR-0002SRC-0010
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0030
+
+  - subject: ADR-0030
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0071
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0072
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0030
+    predicate: justifies
+    object: MR-0002REQ-0071
+
+  - subject: ADR-0030
+    predicate: justifies
+    object: MR-0002REQ-0072
+
+  - subject: MR-0002REQ-0071
+    predicate: implemented_by
+    object: MR-0002TOOL-0002
+
+  - subject: MR-0002REQ-0072
+    predicate: implemented_by
+    object: MR-0002TOOL-0002
+
+  - subject: MR-0002TEST-0007
+    predicate: verifies
+    object: MR-0002REQ-0071
+
+  - subject: MR-0002TEST-0007
+    predicate: verifies
+    object: MR-0002REQ-0072
 

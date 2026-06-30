@@ -8,21 +8,25 @@ import { spawn, spawnSync } from "node:child_process";
  *
  * @implementsRequirement MR-0002REQ-0059
  * @implementsRequirement MR-0002REQ-0060
+ * @implementsRequirement MR-0002REQ-0071
+ * @implementsRequirement MR-0002REQ-0072
  * @derivedFromDecision MR-0002/ADR-0024
+ * @derivedFromDecision MR-0002/ADR-0030
  * @macroRequirement MR-0002
  *
  * This developer tool starts, stops and reports the local read-only UI test
  * environment used to inspect the Governance Console with live HTTP data:
- * Project Documentation Explorer backend, Child Project Governance Plan backend
- * and Vite frontend configured to read both live endpoints.
+ * Project Documentation Explorer backend, demo child-project Project Documentation
+ * Explorer backend, Child Project Governance Plan backend and Vite frontend
+ * configured to read the live platform and demo child-project endpoints.
  *
- * Side effects: on start it generates child-project governance plan artifacts,
- * spawns local developer processes, writes PID metadata and logs under
+ * Side effects: on start it resets the generated demo child-project workspace,
+ * generates child-project governance plan artifacts, spawns local developer
+ * processes, and writes PID metadata and logs under
  * `.threat-forge/state/ui-test-environment/`; on stop it terminates only the
  * recorded spawned processes and removes the PID file. It does not mutate
- * governed registries, execute governance gates beyond the existing artifact
- * generation command, write child project state, replace `repo:check`, commit
- * files or push to git.
+ * governed registries, execute final governance gates, write versioned child
+ * project sources, replace `repo:check`, commit files or push to git.
  */
 
 const REPOSITORY_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -30,6 +34,8 @@ const STATE_DIRECTORY = resolve(REPOSITORY_ROOT, ".threat-forge/state/ui-test-en
 const PID_FILE = resolve(STATE_DIRECTORY, "processes.json");
 const DEFAULT_PROJECT_DOCUMENTATION_EXPLORER_URL = "http://127.0.0.1:4174";
 const DEFAULT_CHILD_PROJECT_GOVERNANCE_PLAN_URL = "http://127.0.0.1:4176";
+const DEFAULT_DEMO_CHILD_PROJECT_DOCUMENTATION_EXPLORER_URL = "http://127.0.0.1:4178";
+const DEFAULT_FRONTEND_URL = "http://127.0.0.1:5173";
 
 /**
  * Return the platform-specific npm command.
@@ -155,6 +161,80 @@ function runForegroundNpm(args) {
 }
 
 /**
+ * Create the endpoint registry used by the local UI test environment.
+ *
+ * @param {{projectDocumentationExplorerUrl?: string, demoChildProjectDocumentationExplorerUrl?: string, childProjectGovernancePlanUrl?: string, frontendUrl?: string}} [options] - Endpoint overrides.
+ * @returns {Readonly<Record<string, string>>} Frozen endpoint registry.
+ */
+export function createUiTestEnvironmentEndpoints({
+  projectDocumentationExplorerUrl = DEFAULT_PROJECT_DOCUMENTATION_EXPLORER_URL,
+  demoChildProjectDocumentationExplorerUrl = DEFAULT_DEMO_CHILD_PROJECT_DOCUMENTATION_EXPLORER_URL,
+  childProjectGovernancePlanUrl = DEFAULT_CHILD_PROJECT_GOVERNANCE_PLAN_URL,
+  frontendUrl = DEFAULT_FRONTEND_URL,
+} = {}) {
+  return Object.freeze({
+    project_documentation_explorer: projectDocumentationExplorerUrl,
+    demo_child_project_documentation_explorer: demoChildProjectDocumentationExplorerUrl,
+    child_project_governance_plan: childProjectGovernancePlanUrl,
+    frontend: frontendUrl,
+  });
+}
+
+/**
+ * Create the long-running service definitions for the local UI test environment.
+ *
+ * @param {{endpoints?: Record<string, string>}} [options] - Service options.
+ * @returns {ReadonlyArray<{name: string, args: string[], env?: Record<string, string>}>>} Service definitions.
+ */
+export function createUiTestEnvironmentServices({ endpoints = createUiTestEnvironmentEndpoints() } = {}) {
+  return Object.freeze([
+    {
+      name: "project-documentation-explorer",
+      args: ["run", "backend:project-documentation-explorer:serve"],
+    },
+    {
+      name: "demo-child-project-documentation-explorer",
+      args: ["run", "backend:project-documentation-explorer:serve:demo"],
+    },
+    {
+      name: "child-project-governance-plan",
+      args: ["run", "backend:child-project-governance-plan:serve"],
+    },
+    {
+      name: "frontend",
+      args: ["run", "frontend:dev"],
+      env: {
+        VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE: "http",
+        VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL: endpoints.project_documentation_explorer,
+        VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL: endpoints.demo_child_project_documentation_explorer,
+        VITE_CHILD_PROJECT_GOVERNANCE_PLAN_SOURCE: "http",
+        VITE_CHILD_PROJECT_GOVERNANCE_PLAN_HTTP_BASE_URL: endpoints.child_project_governance_plan,
+      },
+    },
+  ]);
+}
+
+/**
+ * Create a deterministic process registry payload.
+ *
+ * @param {{processes?: Array<Record<string, unknown>>, endpoints?: Record<string, string>, repositoryRoot?: string, now?: () => string}} [options] - Registry options.
+ * @returns {Readonly<Record<string, unknown>>} Registry payload.
+ */
+export function createUiTestEnvironmentProcessRegistry({
+  processes = [],
+  endpoints = createUiTestEnvironmentEndpoints(),
+  repositoryRoot = REPOSITORY_ROOT,
+  now = () => new Date().toISOString(),
+} = {}) {
+  return Object.freeze({
+    started_at: now(),
+    repository_root: repositoryRoot,
+    endpoints,
+    processes,
+  });
+}
+
+/**
  * Start the complete local UI test environment.
  *
  * @returns {void}
@@ -167,40 +247,16 @@ function startEnvironment() {
     throw new Error(`UI test environment already appears to be running. Stop it first with npm run dev:ui-test:stop. Running PIDs: ${runningProcesses.map((record) => record.pid).join(", ")}`);
   }
 
+  runForegroundNpm(["run", "child-project:demo:reset"]);
   runForegroundNpm(["run", "docs:child-project-governance-plan-artifacts"]);
 
-  const services = [
-    {
-      name: "project-documentation-explorer",
-      args: ["run", "backend:project-documentation-explorer:serve"],
-    },
-    {
-      name: "child-project-governance-plan",
-      args: ["run", "backend:child-project-governance-plan:serve"],
-    },
-    {
-      name: "frontend",
-      args: ["run", "frontend:dev"],
-      env: {
-        VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE: "http",
-        VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL: DEFAULT_PROJECT_DOCUMENTATION_EXPLORER_URL,
-        VITE_CHILD_PROJECT_GOVERNANCE_PLAN_SOURCE: "http",
-        VITE_CHILD_PROJECT_GOVERNANCE_PLAN_HTTP_BASE_URL: DEFAULT_CHILD_PROJECT_GOVERNANCE_PLAN_URL,
-      },
-    },
-  ];
-
+  const endpoints = createUiTestEnvironmentEndpoints();
+  const services = createUiTestEnvironmentServices({ endpoints });
   const processes = services.map(spawnService);
-  writeFileSync(PID_FILE, JSON.stringify({
-    started_at: new Date().toISOString(),
-    repository_root: REPOSITORY_ROOT,
-    endpoints: {
-      project_documentation_explorer: DEFAULT_PROJECT_DOCUMENTATION_EXPLORER_URL,
-      child_project_governance_plan: DEFAULT_CHILD_PROJECT_GOVERNANCE_PLAN_URL,
-      frontend: "http://127.0.0.1:5173",
-    },
+  writeFileSync(PID_FILE, JSON.stringify(createUiTestEnvironmentProcessRegistry({
+    endpoints,
     processes,
-  }, null, 2));
+  }), null, 2));
 
   console.log("Local UI test environment started.");
   for (const record of processes) {
@@ -286,16 +342,44 @@ function printUsage() {
   console.log("Usage: node tools/dev/run-ui-test-environment.mjs --start|--stop|--status");
 }
 
-const command = process.argv[2];
-try {
-  if (command === "--start") startEnvironment();
-  else if (command === "--stop") stopEnvironment();
-  else if (command === "--status") printStatus();
-  else {
-    printUsage();
+/**
+ * Determine whether this module is being executed as the CLI entrypoint.
+ *
+ * @param {string} [moduleUrl] - Current module URL.
+ * @param {string|undefined} [entrypointPath] - Process entrypoint path.
+ * @returns {boolean} True when this module is the process entrypoint.
+ */
+export function isUiTestEnvironmentRunnerCliEntrypoint(moduleUrl = import.meta.url, entrypointPath = process.argv[1]) {
+  if (!entrypointPath) return false;
+  try {
+    return resolve(fileURLToPath(moduleUrl)) === resolve(entrypointPath);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Run the local UI test environment CLI command.
+ *
+ * @param {string[]} [argv] - CLI arguments excluding node and script path.
+ * @returns {void}
+ */
+export function runUiTestEnvironmentRunnerCli(argv = process.argv.slice(2)) {
+  const command = argv[0];
+  try {
+    if (command === "--start") startEnvironment();
+    else if (command === "--stop") stopEnvironment();
+    else if (command === "--status") printStatus();
+    else {
+      printUsage();
+      process.exitCode = 1;
+    }
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   }
-} catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
+}
+
+if (isUiTestEnvironmentRunnerCliEntrypoint()) {
+  runUiTestEnvironmentRunnerCli();
 }
