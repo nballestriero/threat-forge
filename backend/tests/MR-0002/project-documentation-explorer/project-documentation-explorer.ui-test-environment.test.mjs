@@ -12,8 +12,11 @@ import {
  *
  * @verifiesRequirement MR-0002REQ-0071
  * @verifiesRequirement MR-0002REQ-0072
+ * @verifiesRequirement MR-0003REQ-0071
  * @derivedFromDecision MR-0002/ADR-0030
+ * @derivedFromDecision MR-0003/ADR-0016
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0003
  *
  * These tests verify deterministic service wiring for the developer-only UI test
  * environment. They do not spawn backend services, start Vite, mutate the demo
@@ -26,12 +29,17 @@ test("wires the demo child Project Documentation Explorer as a separate local se
   const services = createUiTestEnvironmentServices({ endpoints });
 
   assert.equal(endpoints.project_documentation_explorer, "http://127.0.0.1:4174");
+  assert.equal(endpoints.child_project_management, "http://127.0.0.1:4175");
   assert.equal(endpoints.demo_child_project_documentation_explorer, "http://127.0.0.1:4178");
   assert.notEqual(endpoints.demo_child_project_documentation_explorer, endpoints.project_documentation_explorer);
 
   const childDocumentationService = services.find((service) => service.name === "demo-child-project-documentation-explorer");
   assert.ok(childDocumentationService, "expected demo child documentation service");
   assert.deepEqual(childDocumentationService.args, ["run", "backend:project-documentation-explorer:serve:demo"]);
+
+  const childProjectManagementService = services.find((service) => service.name === "child-project-management");
+  assert.ok(childProjectManagementService, "expected child project management service");
+  assert.deepEqual(childProjectManagementService.args, ["run", "backend:child-project-management:serve"]);
 });
 
 test("configures the frontend with the demo child documentation HTTP source", () => {
@@ -42,14 +50,17 @@ test("configures the frontend with the demo child documentation HTTP source", ()
   assert.ok(frontendService, "expected frontend service");
   assert.equal(frontendService.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL, endpoints.project_documentation_explorer);
   assert.equal(frontendService.env.VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL, endpoints.demo_child_project_documentation_explorer);
+  assert.equal(frontendService.env.VITE_CHILD_PROJECT_MANAGEMENT_SOURCE, "http");
+  assert.equal(frontendService.env.VITE_CHILD_PROJECT_MANAGEMENT_HTTP_BASE_URL, endpoints.child_project_management);
   assert.equal(frontendService.env.VITE_CHILD_PROJECT_GOVERNANCE_PLAN_HTTP_BASE_URL, endpoints.child_project_governance_plan);
 
   const registry = createUiTestEnvironmentProcessRegistry({
     endpoints,
-    processes: [{ name: "demo-child-project-documentation-explorer", pid: 1234 }],
+    processes: [{ name: "demo-child-project-documentation-explorer", pid: 1234 }, { name: "child-project-management", pid: 1235 }],
     repositoryRoot: "/repo",
     now: () => "2026-06-30T00:00:00.000Z",
   });
   assert.equal(registry.endpoints.demo_child_project_documentation_explorer, "http://127.0.0.1:4178");
-  assert.deepEqual(registry.processes, [{ name: "demo-child-project-documentation-explorer", pid: 1234 }]);
+  assert.equal(registry.endpoints.child_project_management, "http://127.0.0.1:4175");
+  assert.deepEqual(registry.processes, [{ name: "demo-child-project-documentation-explorer", pid: 1234 }, { name: "child-project-management", pid: 1235 }]);
 });

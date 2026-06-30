@@ -10,15 +10,19 @@ import { spawn, spawnSync } from "node:child_process";
  * @implementsRequirement MR-0002REQ-0060
  * @implementsRequirement MR-0002REQ-0071
  * @implementsRequirement MR-0002REQ-0072
+ * @implementsRequirement MR-0003REQ-0071
  * @derivedFromDecision MR-0002/ADR-0024
  * @derivedFromDecision MR-0002/ADR-0030
+ * @derivedFromDecision MR-0003/ADR-0016
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0003
  *
  * This developer tool starts, stops and reports the local read-only UI test
  * environment used to inspect the Governance Console with live HTTP data:
  * Project Documentation Explorer backend, demo child-project Project Documentation
- * Explorer backend, Child Project Governance Plan backend and Vite frontend
- * configured to read the live platform and demo child-project endpoints.
+ * Explorer backend, Child Project Management backend, Child Project Governance
+ * Plan backend and Vite frontend configured to read the live platform and
+ * project-scoped demo child-project endpoints.
  *
  * Side effects: on start it resets the generated demo child-project workspace,
  * generates child-project governance plan artifacts, spawns local developer
@@ -33,6 +37,7 @@ const REPOSITORY_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../.."
 const STATE_DIRECTORY = resolve(REPOSITORY_ROOT, ".threat-forge/state/ui-test-environment");
 const PID_FILE = resolve(STATE_DIRECTORY, "processes.json");
 const DEFAULT_PROJECT_DOCUMENTATION_EXPLORER_URL = "http://127.0.0.1:4174";
+const DEFAULT_CHILD_PROJECT_MANAGEMENT_URL = "http://127.0.0.1:4175";
 const DEFAULT_CHILD_PROJECT_GOVERNANCE_PLAN_URL = "http://127.0.0.1:4176";
 const DEFAULT_DEMO_CHILD_PROJECT_DOCUMENTATION_EXPLORER_URL = "http://127.0.0.1:4178";
 const DEFAULT_FRONTEND_URL = "http://127.0.0.1:5173";
@@ -163,17 +168,19 @@ function runForegroundNpm(args) {
 /**
  * Create the endpoint registry used by the local UI test environment.
  *
- * @param {{projectDocumentationExplorerUrl?: string, demoChildProjectDocumentationExplorerUrl?: string, childProjectGovernancePlanUrl?: string, frontendUrl?: string}} [options] - Endpoint overrides.
+ * @param {{projectDocumentationExplorerUrl?: string, childProjectManagementUrl?: string, demoChildProjectDocumentationExplorerUrl?: string, childProjectGovernancePlanUrl?: string, frontendUrl?: string}} [options] - Endpoint overrides.
  * @returns {Readonly<Record<string, string>>} Frozen endpoint registry.
  */
 export function createUiTestEnvironmentEndpoints({
   projectDocumentationExplorerUrl = DEFAULT_PROJECT_DOCUMENTATION_EXPLORER_URL,
+  childProjectManagementUrl = DEFAULT_CHILD_PROJECT_MANAGEMENT_URL,
   demoChildProjectDocumentationExplorerUrl = DEFAULT_DEMO_CHILD_PROJECT_DOCUMENTATION_EXPLORER_URL,
   childProjectGovernancePlanUrl = DEFAULT_CHILD_PROJECT_GOVERNANCE_PLAN_URL,
   frontendUrl = DEFAULT_FRONTEND_URL,
 } = {}) {
   return Object.freeze({
     project_documentation_explorer: projectDocumentationExplorerUrl,
+    child_project_management: childProjectManagementUrl,
     demo_child_project_documentation_explorer: demoChildProjectDocumentationExplorerUrl,
     child_project_governance_plan: childProjectGovernancePlanUrl,
     frontend: frontendUrl,
@@ -197,6 +204,10 @@ export function createUiTestEnvironmentServices({ endpoints = createUiTestEnviro
       args: ["run", "backend:project-documentation-explorer:serve:demo"],
     },
     {
+      name: "child-project-management",
+      args: ["run", "backend:child-project-management:serve"],
+    },
+    {
       name: "child-project-governance-plan",
       args: ["run", "backend:child-project-governance-plan:serve"],
     },
@@ -207,6 +218,8 @@ export function createUiTestEnvironmentServices({ endpoints = createUiTestEnviro
         VITE_PROJECT_DOCUMENTATION_EXPLORER_SOURCE: "http",
         VITE_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL: endpoints.project_documentation_explorer,
         VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL: endpoints.demo_child_project_documentation_explorer,
+        VITE_CHILD_PROJECT_MANAGEMENT_SOURCE: "http",
+        VITE_CHILD_PROJECT_MANAGEMENT_HTTP_BASE_URL: endpoints.child_project_management,
         VITE_CHILD_PROJECT_GOVERNANCE_PLAN_SOURCE: "http",
         VITE_CHILD_PROJECT_GOVERNANCE_PLAN_HTTP_BASE_URL: endpoints.child_project_governance_plan,
       },
@@ -248,6 +261,7 @@ function startEnvironment() {
   }
 
   runForegroundNpm(["run", "child-project:demo:reset"]);
+  runForegroundNpm(["run", "child-project:demo:register"]);
   runForegroundNpm(["run", "docs:child-project-governance-plan-artifacts"]);
 
   const endpoints = createUiTestEnvironmentEndpoints();

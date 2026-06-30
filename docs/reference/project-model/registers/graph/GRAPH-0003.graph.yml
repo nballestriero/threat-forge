@@ -576,6 +576,39 @@ nodes:
     label: Project-scoped child documentation API runtime tests
     path: backend/tests/MR-0003/child-project-management/child-project-documentation-api.test.mjs
 
+
+  - id: ADR-0016
+    type: ADR
+    label: Child project documentation frontend project-scoped routing boundary
+
+  - id: MR-0003REQ-0070
+    type: Requirement
+    label: Frontend project-scoped child documentation loading
+
+  - id: MR-0003REQ-0071
+    type: Requirement
+    label: Local UI test child management API wiring
+
+  - id: MR-0003UI-0011
+    type: SourceModule
+    label: Project Documentation Explorer project-scoped child frontend client
+    path: frontend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.client.js
+
+  - id: TOOL-run-ui-test-environment
+    type: Tool
+    label: Local UI test environment runner
+    path: tools/dev/run-ui-test-environment.mjs
+
+  - id: MR-0003TEST-0007
+    type: VerificationArtifact
+    label: Project-scoped child documentation frontend client tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.frontend-client.test.mjs
+
+  - id: MR-0003TEST-0008
+    type: VerificationArtifact
+    label: Local UI test child management API wiring tests
+    path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.ui-test-environment.test.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -2077,3 +2110,52 @@ spo_relations:
   - subject: MR-0003REQ-0069
     predicate: implemented_by
     object: MR-0003SRC-0011
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0016
+
+  - subject: ADR-0016
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0070
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0071
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0016
+    predicate: justifies
+    object: MR-0003REQ-0070
+
+  - subject: ADR-0016
+    predicate: justifies
+    object: MR-0003REQ-0071
+
+  - subject: MR-0003REQ-0070
+    predicate: implemented_by
+    object: MR-0003UI-0001
+
+  - subject: MR-0003REQ-0070
+    predicate: implemented_by
+    object: MR-0003UI-0004
+
+  - subject: MR-0003REQ-0070
+    predicate: implemented_by
+    object: MR-0003UI-0011
+
+  - subject: MR-0003REQ-0071
+    predicate: implemented_by
+    object: TOOL-run-ui-test-environment
+
+  - subject: MR-0003TEST-0007
+    predicate: verifies
+    object: MR-0003REQ-0070
+
+  - subject: MR-0003TEST-0008
+    predicate: verifies
+    object: MR-0003REQ-0071
+

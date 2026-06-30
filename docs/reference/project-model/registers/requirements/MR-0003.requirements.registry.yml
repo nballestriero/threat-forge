@@ -577,3 +577,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0015
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0069_body.md
+
+  - id: MR-0003REQ-0070
+    title: Frontend project-scoped child documentation loading
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0016
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0070_body.md
+
+  - id: MR-0003REQ-0071
+    title: Local UI test child management API wiring
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0016
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0071_body.md

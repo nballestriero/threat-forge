@@ -1701,3 +1701,25 @@ Unavailable, unconfigured or unsupported child documentation sources return expl
 This step remains read-only. It does not add child project write APIs, clone Git repositories, mutate child Project Models, replace the existing platform Project Documentation Explorer endpoints, or change frontend routing yet.
 
 The next safe step is to update the frontend child project document view to load selected child documents through these project-scoped platform endpoints instead of a global child documentation URL.
+
+## Frontend Project-Scoped Child Documentation Loading Micropasso
+
+This frontend integration micropasso completes the selected child project document flow by routing the UI through the project-scoped Child Project Management API introduced in the previous backend step.
+
+Commit target: `frontend: load selected child project documents through project-scoped API`.
+
+Governed records added:
+
+- `MR-0003/ADR-0016` — Child project documentation frontend project-scoped routing boundary.
+- `MR-0003REQ-0070` — Frontend project-scoped child documentation loading.
+- `MR-0003REQ-0071` — Local UI test child management API wiring.
+
+The implementation adds a Project Documentation Explorer-compatible frontend client that reads child documents from `/api/child-projects/{childProjectId}/documentation` and child entity details from `/api/child-projects/{childProjectId}/documentation/entities/{entityId}`. The Governance Console now keeps the selected child project id in documentation context and uses the project-scoped API for child Documents views when Child Project Management HTTP mode is configured.
+
+If the Child Project Management API is not configured, child project Documents still fail closed with an explicit unavailable state. Platform document views keep their existing snapshot/live HTTP behavior, including platform snapshot fallback where configured. Child project document views do not use platform snapshots, platform documentation endpoints or a single global child documentation URL as fallback.
+
+The local UI test environment now registers the demo child project, starts the Child Project Management API, and configures the frontend with `VITE_CHILD_PROJECT_MANAGEMENT_SOURCE=http` plus the Child Project Management API base URL. The dedicated demo child Project Documentation Explorer service remains available for compatibility with the previous governed local-review requirement, but the primary frontend path now exercises the project-scoped API used by real projects.
+
+This step remains read-only. It does not add write APIs, clone remote repositories, mutate child Project Models, remove platform Project Documentation Explorer endpoints, remove the platform snapshot fallback for platform views, or implement dynamic RBAC administration.
+
+The next safe step is to show explicit source status in the shell/header and then expand real-project registration workflows around the documentation source metadata.

@@ -12,6 +12,7 @@
  * @implementsRequirement MR-0002REQ-0049
  * @implementsRequirement MR-0002REQ-0069
  * @implementsRequirement MR-0002REQ-0070
+ * @implementsRequirement MR-0003REQ-0070
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0006
@@ -20,7 +21,9 @@
  * @derivedFromDecision MR-0002/ADR-0015
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0002/ADR-0029
+ * @derivedFromDecision MR-0003/ADR-0016
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0003
  *
  * This module defines the frontend client boundary used by React components. The
  * page-facing port can be backed by the generated static snapshot or by the
@@ -41,6 +44,7 @@
 export const PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES = Object.freeze({
   snapshot: "snapshot",
   http: "http",
+  projectScopedChildProject: "project-scoped-child-project",
 });
 
 const DEFAULT_BOOTSTRAP_HEADERS = Object.freeze({
@@ -135,7 +139,15 @@ async function fetchJson({ fetchImpl, url, headers = {} }) {
   });
 
   if (!response.ok) {
-    throw new Error(`Unable to load Project Documentation Explorer data from ${url}: HTTP ${response.status}.`);
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+    const code = payload?.error ? ` ${payload.error}` : "";
+    const message = payload?.message ? `: ${payload.message}` : ".";
+    throw new Error(`Unable to load Project Documentation Explorer data from ${url}: HTTP ${response.status}${code}${message}`);
   }
 
   return response.json();
@@ -303,6 +315,70 @@ export function createUnavailableProjectDocumentationExplorerClient({
 
     loadDocumentationEntity() {
       return Promise.reject(createUnavailableError());
+    },
+  });
+}
+
+/**
+ * Create a project-scoped child Project Documentation Explorer client.
+ *
+ * @param {{baseUrl?: string, childProjectId: string, childProjectLabel?: string, headers?: Record<string, string>, fetchImpl?: Function}} options - Project-scoped client options.
+ * @returns {{describeDataSource: Function, loadDocumentation: Function, loadDocumentationFilters: Function, loadDocumentationEntity: Function}} Frontend client port.
+ */
+export function createProjectScopedChildProjectDocumentationExplorerClient({
+  baseUrl = "",
+  childProjectId,
+  childProjectLabel = childProjectId,
+  headers = DEFAULT_BOOTSTRAP_HEADERS,
+  fetchImpl = globalThis.fetch,
+} = {}) {
+  if (typeof fetchImpl !== "function") throw new Error("Project-scoped child documentation HTTP client requires fetch.");
+  const normalizedChildProjectId = String(childProjectId ?? "").trim();
+  if (!normalizedChildProjectId) throw new Error("Child project id is required for project-scoped documentation reads.");
+
+  const childProjectSegment = encodeURIComponent(normalizedChildProjectId);
+  const dataSource = createDataSourceState({
+    selected_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.projectScopedChildProject,
+    effective_source: PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES.projectScopedChildProject,
+    fallback: false,
+    label: "Project-scoped child documentation",
+    message: `Using the platform Child Project Management API for ${childProjectLabel ?? normalizedChildProjectId}.`,
+  });
+
+  /**
+   * @param {Record<string, unknown>} query - Optional documentation query values.
+   * @returns {string} Project-scoped collection URL.
+   */
+  function collectionUrl(query = {}) {
+    return appendQuery(joinApiUrl(baseUrl, `/api/child-projects/${childProjectSegment}/documentation`), query);
+  }
+
+  return Object.freeze({
+    describeDataSource() {
+      return dataSource;
+    },
+
+    async loadDocumentation(query = {}) {
+      return withDataSourceState(await fetchJson({ fetchImpl, url: collectionUrl(query), headers }), dataSource);
+    },
+
+    async loadDocumentationFilters(query = {}) {
+      const payload = await fetchJson({ fetchImpl, url: collectionUrl(query), headers });
+      return withDataSourceState({
+        access: payload.access,
+        query: payload.query ?? {},
+        filters: payload.filters ?? [],
+      }, dataSource);
+    },
+
+    async loadDocumentationEntity(id) {
+      const normalizedEntityId = String(id ?? "").trim();
+      if (!normalizedEntityId) throw new Error("Project Documentation Explorer entity id is required.");
+      const url = joinApiUrl(
+        baseUrl,
+        `/api/child-projects/${childProjectSegment}/documentation/entities/${encodeURIComponent(normalizedEntityId)}`,
+      );
+      return withDataSourceState(await fetchJson({ fetchImpl, url, headers }), dataSource);
     },
   });
 }

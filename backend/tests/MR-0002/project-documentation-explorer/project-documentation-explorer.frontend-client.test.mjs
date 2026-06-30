@@ -5,6 +5,7 @@ import {
   createHttpProjectDocumentationExplorerClient,
   createLiveProjectDocumentationExplorerClient,
   createProjectDocumentationExplorerClient,
+  createProjectScopedChildProjectDocumentationExplorerClient,
   createUnavailableProjectDocumentationExplorerClient,
   createStaticProjectDocumentationExplorerClient,
 } from "../../../../frontend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.client.js";
@@ -16,10 +17,13 @@ import {
  * @verifiesRequirement MR-0002REQ-0049
  * @verifiesRequirement MR-0002REQ-0069
  * @verifiesRequirement MR-0002REQ-0070
+ * @verifiesRequirement MR-0003REQ-0070
  * @derivedFromDecision MR-0002/ADR-0015
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0002/ADR-0029
+ * @derivedFromDecision MR-0003/ADR-0016
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0003
  *
  * These tests verify that the page-facing frontend client boundary can use the
  * existing generated snapshot source or the governed HTTP read source without
@@ -203,6 +207,60 @@ test("keeps child project documentation unavailable instead of falling back to p
   await assert.rejects(
     () => client.loadDocumentationEntity("MR-0002"),
     /Configure the child documentation source/u,
+  );
+});
+
+
+test("loads child project documents through the project-scoped platform API", async () => {
+  const { calls, fetchImpl } = createFetchFake((url) => {
+    if (String(url).includes("/entities/")) return fixtureDetail;
+    return fixtureList;
+  });
+
+  const client = createProjectScopedChildProjectDocumentationExplorerClient({
+    baseUrl: "http://127.0.0.1:4175",
+    childProjectId: "demo-child-project",
+    childProjectLabel: "Demo Child Project",
+    fetchImpl,
+  });
+
+  const list = await client.loadDocumentation({ kind: ["requirement", "adr"] });
+  const filters = await client.loadDocumentationFilters({ mr: "MR-0000" });
+  const detail = await client.loadDocumentationEntity("MR-0000REQ-0001");
+
+  assert.equal(list.items[0].id, fixtureList.items[0].id);
+  assert.equal(list.data_source.selected_source, "project-scoped-child-project");
+  assert.equal(list.data_source.effective_source, "project-scoped-child-project");
+  assert.equal(list.data_source.fallback, false);
+  assert.deepEqual(filters.filters, fixtureList.filters);
+  assert.equal(detail.item.id, fixtureDetail.item.id);
+
+  assert.equal(calls[0].url, "http://127.0.0.1:4175/api/child-projects/demo-child-project/documentation?kind=requirement&kind=adr");
+  assert.equal(calls[1].url, "http://127.0.0.1:4175/api/child-projects/demo-child-project/documentation?mr=MR-0000");
+  assert.equal(calls[2].url, "http://127.0.0.1:4175/api/child-projects/demo-child-project/documentation/entities/MR-0000REQ-0001");
+  assert.ok(calls.every((call) => call.init.headers["x-threat-forge-authenticated"] === "true"));
+});
+
+test("surfaces project-scoped child documentation unavailable errors without snapshot fallback", async () => {
+  const { fetchImpl } = createFetchFake({
+    ok: false,
+    status: 409,
+    body: {
+      error: "documentation_source_unavailable",
+      message: "Project Model directory is not available for the selected child project.",
+    },
+  });
+
+  const client = createProjectScopedChildProjectDocumentationExplorerClient({
+    baseUrl: "http://127.0.0.1:4175",
+    childProjectId: "missing-child-project",
+    fetchImpl,
+  });
+
+  assert.equal(client.describeDataSource().fallback, false);
+  await assert.rejects(
+    () => client.loadDocumentation(),
+    /HTTP 409 documentation_source_unavailable: Project Model directory is not available/u,
   );
 });
 

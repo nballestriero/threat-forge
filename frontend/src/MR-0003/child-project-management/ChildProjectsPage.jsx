@@ -18,8 +18,10 @@ import {
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
  * @implementsRequirement MR-0003REQ-0028
+ * @implementsRequirement MR-0003REQ-0070
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
+ * @derivedFromDecision MR-0003/ADR-0016
  * @macroRequirement MR-0003
  *
  * The page renders the first platform-only Child Projects UI slice. It reads a
@@ -28,7 +30,7 @@ import {
  * configuration, latest check details and local demo Project Model Explorer
  * launch guidance. It does not create projects, run validation gates, clone
  * repositories, inspect local filesystem paths, read child Project Model
- * sources, write SQLite records, or perform commit/push.
+ * sources, write SQLite records, or perform commit/push. The Project Model launch action passes the selected child project id to the shared documentation route so the composed frontend can use the project-scoped backend API.
  *
  * Side effects: loads read-only data through the injected client port and keeps
  * local browser UI state in React component state.
@@ -250,11 +252,11 @@ function ProjectModelExplorerLaunchCard({ project = {}, onOpenProjectModel }) {
     <Card>
       <p className="tf-eyebrow">Demo Project Model Explorer</p>
       <h3>Open this child Project Model</h3>
-      <p>Serve the demo workspace Project Model on the Project Documentation Explorer API. This button opens the documentation page with the child-project HTTP source instead of the platform snapshot.</p>
+      <p>Open the selected child Project Model through the platform project-scoped Child Project Management API. The documentation page receives this child project id and does not reuse platform documents or a legacy global child documentation URL.</p>
       <div className="tf-command-list" aria-label="Demo Project Model Explorer launch commands">
-        <code>npm run child-project:demo:register</code>
-        <code>npm run backend:project-documentation-explorer:serve:demo</code>
-        <code>$env:VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL=&quot;http://127.0.0.1:4174&quot;</code>
+        <code>npm run dev:ui-test:start</code>
+        <code>VITE_CHILD_PROJECT_MANAGEMENT_SOURCE=http</code>
+        <code>VITE_CHILD_PROJECT_MANAGEMENT_HTTP_BASE_URL=http://127.0.0.1:4175</code>
       </div>
       {typeof onOpenProjectModel === "function" ? (
         <Button onClick={() => onOpenProjectModel(project)}><Icon token="navigation.documentation" /> Open Project Documentation Explorer</Button>
