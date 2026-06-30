@@ -18,10 +18,13 @@ import {
  * @verifiesRequirement MR-0002REQ-0069
  * @verifiesRequirement MR-0002REQ-0070
  * @verifiesRequirement MR-0003REQ-0070
+ * @verifiesRequirement MR-0003REQ-0072
+ * @verifiesRequirement MR-0003REQ-0073
  * @derivedFromDecision MR-0002/ADR-0015
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0002/ADR-0029
  * @derivedFromDecision MR-0003/ADR-0016
+ * @derivedFromDecision MR-0003/ADR-0017
  * @macroRequirement MR-0002
  * @macroRequirement MR-0003
  *
@@ -95,6 +98,10 @@ test("keeps the generated snapshot as the default Project Documentation Explorer
   assert.equal(list.data_source.selected_source, "snapshot");
   assert.equal(list.data_source.effective_source, "snapshot");
   assert.equal(list.data_source.fallback, false);
+  assert.equal(list.data_source.source_scope, "platform");
+  assert.equal(list.data_source.transport, "static-json");
+  assert.equal(list.data_source.endpoint, "/project-documentation-explorer.snapshot.json");
+  assert.equal(list.data_source.is_live, false);
   assert.deepEqual(filters.filters, fixtureList.filters);
   assert.equal(filters.data_source.effective_source, "snapshot");
   assert.equal(detail.item.id, fixtureDetail.item.id);
@@ -123,6 +130,11 @@ test("loads Project Documentation Explorer collection, filters and details from 
   assert.equal(list.data_source.selected_source, "http");
   assert.equal(list.data_source.effective_source, "http");
   assert.equal(list.data_source.fallback, false);
+  assert.equal(list.data_source.source_scope, "platform");
+  assert.equal(list.data_source.transport, "http");
+  assert.equal(list.data_source.endpoint, "http://127.0.0.1:4174/api/project-model/documentation");
+  assert.equal(list.data_source.endpoint_template, "/api/project-model/documentation");
+  assert.equal(list.data_source.is_live, true);
   assert.deepEqual(filters.filters, fixtureList.filters);
   assert.equal(filters.data_source.effective_source, "http");
   assert.equal(detail.item.id, fixtureDetail.item.id);
@@ -180,6 +192,10 @@ test("falls back to the generated snapshot when live HTTP activation fails expli
   assert.equal(list.data_source.selected_source, "http");
   assert.equal(list.data_source.effective_source, "snapshot");
   assert.equal(list.data_source.fallback, true);
+  assert.equal(list.data_source.source_scope, "platform");
+  assert.equal(list.data_source.transport, "static-json");
+  assert.equal(list.data_source.endpoint, "/project-documentation-explorer.snapshot.json");
+  assert.equal(list.data_source.is_live, false);
   assert.match(list.data_source.failure_message, /HTTP 503/u);
   assert.equal(detail.data_source.effective_source, "snapshot");
   assert.equal(calls[0].url, "http://127.0.0.1:4174/api/project-model/documentation");
@@ -193,12 +209,19 @@ test("keeps child project documentation unavailable instead of falling back to p
     label: "Child Project Documentation unavailable",
     message: "No child Project Documentation Explorer HTTP source is configured for the selected child project.",
     failureMessage: "Configure the child documentation source before opening child project documents.",
+    projectId: "demo-child-project",
+    projectLabel: "Demo Child Project",
   });
 
   const dataSource = client.describeDataSource();
   assert.equal(dataSource.selected_source, "child-http");
   assert.equal(dataSource.effective_source, "unavailable");
   assert.equal(dataSource.fallback, false);
+  assert.equal(dataSource.source_scope, "child-project");
+  assert.equal(dataSource.transport, "unavailable");
+  assert.equal(dataSource.project_id, "demo-child-project");
+  assert.equal(dataSource.project_label, "Demo Child Project");
+  assert.equal(dataSource.is_live, false);
 
   await assert.rejects(
     () => client.loadDocumentation(),
@@ -232,6 +255,13 @@ test("loads child project documents through the project-scoped platform API", as
   assert.equal(list.data_source.selected_source, "project-scoped-child-project");
   assert.equal(list.data_source.effective_source, "project-scoped-child-project");
   assert.equal(list.data_source.fallback, false);
+  assert.equal(list.data_source.source_scope, "child-project");
+  assert.equal(list.data_source.transport, "http");
+  assert.equal(list.data_source.project_id, "demo-child-project");
+  assert.equal(list.data_source.project_label, "Demo Child Project");
+  assert.equal(list.data_source.endpoint, "http://127.0.0.1:4175/api/child-projects/demo-child-project/documentation");
+  assert.equal(list.data_source.endpoint_template, "/api/child-projects/{childProjectId}/documentation");
+  assert.equal(list.data_source.is_live, true);
   assert.deepEqual(filters.filters, fixtureList.filters);
   assert.equal(detail.item.id, fixtureDetail.item.id);
 

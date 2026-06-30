@@ -33,6 +33,7 @@ import "./styles.css";
  * @implementsRequirement MR-0003REQ-0059
  * @implementsRequirement MR-0003REQ-0060
  * @implementsRequirement MR-0003REQ-0070
+ * @implementsRequirement MR-0003REQ-0073
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
@@ -44,6 +45,7 @@ import "./styles.css";
  * @derivedFromDecision MR-0003/ADR-0005
  * @derivedFromDecision MR-0003/ADR-0011
  * @derivedFromDecision MR-0003/ADR-0016
+ * @derivedFromDecision MR-0003/ADR-0017
  * @macroRequirement MR-0002
  * @macroRequirement MR-0003
  *
@@ -115,6 +117,9 @@ function GovernanceConsoleApp() {
         label: "Child Project Documentation API unavailable",
         message: "The selected child project documents must be loaded through the project-scoped Child Project Management API.",
         failureMessage: "Configure VITE_CHILD_PROJECT_MANAGEMENT_SOURCE=http and VITE_CHILD_PROJECT_MANAGEMENT_HTTP_BASE_URL before opening child project documents.",
+        sourceScope: "child-project",
+        projectId: documentationContext.id,
+        projectLabel: documentationContext.label,
       });
     }
 

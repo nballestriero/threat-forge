@@ -1723,3 +1723,23 @@ The local UI test environment now registers the demo child project, starts the C
 This step remains read-only. It does not add write APIs, clone remote repositories, mutate child Project Models, remove platform Project Documentation Explorer endpoints, remove the platform snapshot fallback for platform views, or implement dynamic RBAC administration.
 
 The next safe step is to show explicit source status in the shell/header and then expand real-project registration workflows around the documentation source metadata.
+
+## Live Documentation Data Source Status Micropasso
+
+This frontend visibility micropasso makes the Project Documentation Explorer explicitly show which documentation source is serving the current view.
+
+Commit target: `frontend: show live documentation data source status`.
+
+Governed records added:
+
+- `MR-0003/ADR-0017` — Live documentation data-source status boundary.
+- `MR-0003REQ-0072` — Documentation source status metadata contract.
+- `MR-0003REQ-0073` — Visible live documentation source status.
+
+The implementation enriches Project Documentation Explorer frontend client data-source state with selected source, effective source, fallback state, source scope, transport, endpoint metadata, child project metadata and live/non-live status. Snapshot-backed platform documentation is identified as generated static data, platform HTTP as live data, HTTP failure fallback as snapshot fallback, project-scoped child documentation as live child-project data and unavailable child documentation as an explicit unavailable state.
+
+The Project Documentation Explorer page renders a compact live documentation source card during loading, loaded and unavailable/error states. This keeps the source visible when a child project is selected, when platform documentation uses the snapshot, and when a configured live source falls back or fails.
+
+This step is UI visibility only. It does not change backend documentation endpoint semantics, add write APIs, remove the platform snapshot fallback for platform views, clone remote projects or implement dynamic RBAC administration.
+
+The next safe step is to close the project-scoped child documentation UI milestone with a governed tag once the visual behavior is manually verified.

@@ -13,6 +13,7 @@
  * @implementsRequirement MR-0002REQ-0069
  * @implementsRequirement MR-0002REQ-0070
  * @implementsRequirement MR-0003REQ-0070
+ * @implementsRequirement MR-0003REQ-0072
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0006
@@ -22,6 +23,7 @@
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0002/ADR-0029
  * @derivedFromDecision MR-0003/ADR-0016
+ * @derivedFromDecision MR-0003/ADR-0017
  * @macroRequirement MR-0002
  * @macroRequirement MR-0003
  *
@@ -38,7 +40,7 @@
 
 /** @typedef {{id: string, label: string, values: Array<{value: string, label?: string, count?: number}>}} DocumentationFilter */
 /** @typedef {{id: string, kind: string, title: string, macro_requirement_id?: string, status?: string, implementation_state?: string, acceptance_state?: string}} DocumentationItem */
-/** @typedef {{selected_source: string, effective_source: string, fallback: boolean, label: string, message: string, failure_message?: string}} DocumentationDataSourceState */
+/** @typedef {{selected_source: string, effective_source: string, fallback: boolean, label: string, message: string, failure_message?: string, source_scope?: string, transport?: string, endpoint?: string, endpoint_template?: string, project_id?: string, project_label?: string, is_live?: boolean}} DocumentationDataSourceState */
 /** @typedef {{list: {access?: {capabilities?: string[]}, summary: Record<string, unknown>, filters: DocumentationFilter[], items: DocumentationItem[]}, details_by_id: Record<string, Record<string, unknown>>}} DocumentationSnapshot */
 
 export const PROJECT_DOCUMENTATION_EXPLORER_DATA_SOURCES = Object.freeze({
@@ -191,6 +193,10 @@ export function createStaticProjectDocumentationExplorerClient({
     fallback: false,
     label: "Generated snapshot",
     message: "Using the generated Project Documentation Explorer snapshot.",
+    source_scope: "platform",
+    transport: "static-json",
+    endpoint: snapshotUrl,
+    is_live: false,
   });
   const readSnapshot = () => {
     snapshotPromise ??= loadSnapshot({ snapshotUrl, fetchImpl });
@@ -245,6 +251,11 @@ export function createHttpProjectDocumentationExplorerClient({
     fallback: false,
     label: "Live HTTP",
     message: "Using the governed Project Documentation Explorer HTTP API.",
+    source_scope: "platform",
+    transport: "http",
+    endpoint: joinApiUrl(baseUrl, "/api/project-model/documentation"),
+    endpoint_template: "/api/project-model/documentation",
+    is_live: true,
   });
 
   return Object.freeze({
@@ -274,13 +285,16 @@ export function createHttpProjectDocumentationExplorerClient({
 /**
  * Create a client that fails closed when a child-project documentation source is not configured.
  *
- * @param {{label?: string, message?: string, failureMessage?: string}} [options] - Unavailable source options.
+ * @param {{label?: string, message?: string, failureMessage?: string, sourceScope?: string, projectId?: string, projectLabel?: string}} [options] - Unavailable source options.
  * @returns {{describeDataSource: Function, loadDocumentation: Function, loadDocumentationFilters: Function, loadDocumentationEntity: Function}} Frontend client port.
  */
 export function createUnavailableProjectDocumentationExplorerClient({
   label = "Child Project Documentation unavailable",
   message = "No child Project Documentation Explorer HTTP source is configured for the selected child project.",
   failureMessage = "Configure VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL for a child Project Documentation Explorer API before opening child project documents.",
+  sourceScope = "child-project",
+  projectId = "",
+  projectLabel = "",
 } = {}) {
   const dataSource = createDataSourceState({
     selected_source: "child-http",
@@ -289,6 +303,11 @@ export function createUnavailableProjectDocumentationExplorerClient({
     label,
     message,
     failure_message: failureMessage,
+    source_scope: sourceScope,
+    transport: "unavailable",
+    project_id: projectId,
+    project_label: projectLabel,
+    is_live: false,
   });
 
   /**
@@ -343,6 +362,13 @@ export function createProjectScopedChildProjectDocumentationExplorerClient({
     fallback: false,
     label: "Project-scoped child documentation",
     message: `Using the platform Child Project Management API for ${childProjectLabel ?? normalizedChildProjectId}.`,
+    source_scope: "child-project",
+    transport: "http",
+    endpoint: joinApiUrl(baseUrl, `/api/child-projects/${childProjectSegment}/documentation`),
+    endpoint_template: "/api/child-projects/{childProjectId}/documentation",
+    project_id: normalizedChildProjectId,
+    project_label: String(childProjectLabel ?? normalizedChildProjectId),
+    is_live: true,
   });
 
   /**
@@ -424,6 +450,11 @@ export function createLiveProjectDocumentationExplorerClient({
           label: "Live HTTP unavailable · snapshot fallback",
           message: "Live HTTP failed, so the UI is showing the generated read-only snapshot.",
           failure_message: describeError(error),
+          source_scope: "platform",
+          transport: "static-json",
+          endpoint: snapshotUrl,
+          endpoint_template: "/project-documentation-explorer.snapshot.json",
+          is_live: false,
         });
         lastDataSource = fallbackDataSource;
         return withDataSourceState(snapshotPayload, fallbackDataSource);

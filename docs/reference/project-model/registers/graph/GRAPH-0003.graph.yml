@@ -609,6 +609,23 @@ nodes:
     label: Local UI test child management API wiring tests
     path: backend/tests/MR-0002/project-documentation-explorer/project-documentation-explorer.ui-test-environment.test.mjs
 
+  - id: ADR-0017
+    type: ADR
+    label: Live documentation data-source status boundary
+
+  - id: MR-0003REQ-0072
+    type: Requirement
+    label: Documentation source status metadata contract
+
+  - id: MR-0003REQ-0073
+    type: Requirement
+    label: Visible live documentation source status
+
+  - id: MR-0003UI-0012
+    type: SourceModule
+    label: Project Documentation Explorer live source status UI
+    path: frontend/src/MR-0002/project-documentation-explorer/ProjectDocumentationExplorerPage.jsx
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -2158,4 +2175,52 @@ spo_relations:
   - subject: MR-0003TEST-0008
     predicate: verifies
     object: MR-0003REQ-0071
+
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0017
+
+  - subject: ADR-0017
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0072
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0073
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0017
+    predicate: justifies
+    object: MR-0003REQ-0072
+
+  - subject: ADR-0017
+    predicate: justifies
+    object: MR-0003REQ-0073
+
+  - subject: MR-0003REQ-0072
+    predicate: implemented_by
+    object: MR-0003UI-0011
+
+  - subject: MR-0003REQ-0072
+    predicate: implemented_by
+    object: MR-0003UI-0012
+
+  - subject: MR-0003REQ-0073
+    predicate: implemented_by
+    object: MR-0003UI-0004
+
+  - subject: MR-0003REQ-0073
+    predicate: implemented_by
+    object: MR-0003UI-0012
+
+  - subject: MR-0003TEST-0007
+    predicate: verifies
+    object: MR-0003REQ-0072
+
+  - subject: MR-0003TEST-0007
+    predicate: verifies
+    object: MR-0003REQ-0073
 

@@ -19,6 +19,8 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @implementsRequirement MR-0002REQ-0056
  * @implementsRequirement MR-0002REQ-0058
  * @implementsRequirement MR-0002REQ-0070
+ * @implementsRequirement MR-0003REQ-0072
+ * @implementsRequirement MR-0003REQ-0073
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0006
@@ -27,7 +29,9 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0016
  * @derivedFromDecision MR-0002/ADR-0029
+ * @derivedFromDecision MR-0003/ADR-0017
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0003
  *
  * The page implements the manually validated list/detail interaction: filters
  * stay at the top, the list is hidden when a record is selected, and registry
@@ -36,10 +40,13 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * registries, graph files, generated pages, Git state or filesystem paths.
  *
  * Side effects: loads data through the injected client port and stores UI state
- * in React component state. If a child-project documentation source is
- * unavailable, the page renders the client error as an explicit empty state
- * rather than substituting platform documentation. It does not mutate
- * project-model records or perform write operations.
+ * in React component state. It also renders the client-provided data-source
+ * state before, during and after loading so reviewers can distinguish live
+ * platform HTTP, generated snapshot, project-scoped child API and unavailable
+ * source states. If a child-project documentation source is unavailable, the
+ * page renders the client error as an explicit empty state rather than
+ * substituting platform documentation. It does not mutate project-model records
+ * or perform write operations.
  */
 
 /**
@@ -54,14 +61,43 @@ function DataSourceStatus({ dataSource }) {
   const selected = dataSource.selected_source ?? "unknown";
   const effective = dataSource.effective_source ?? selected;
   const isFallback = Boolean(dataSource.fallback);
+  const isLive = Boolean(dataSource.is_live) && !isFallback && effective !== "unavailable";
+  const statusValue = effective === "unavailable" ? "unavailable" : isFallback ? "fallback" : isLive ? "live" : "snapshot";
+  const statusLabel = effective === "unavailable" ? "Unavailable" : isFallback ? "Snapshot fallback" : isLive ? "Live" : "Snapshot";
+  const metadataRows = [
+    ["Selected", selected],
+    ["Effective", effective],
+    ["Scope", dataSource.source_scope],
+    ["Transport", dataSource.transport],
+    ["Project", dataSource.project_label ?? dataSource.project_id],
+    ["Endpoint", dataSource.endpoint_template ?? dataSource.endpoint],
+  ].filter(([, value]) => value != null && value !== "");
 
   return (
-    <Card>
-      <p className="tf-eyebrow">Data source</p>
-      <strong>{dataSource.label ?? `Using ${effective}`}</strong>
+    <Card className="tf-data-source-card">
+      <div className="tf-data-source-card__header">
+        <div>
+          <p className="tf-eyebrow">Live documentation source</p>
+          <strong>{dataSource.label ?? `Using ${effective}`}</strong>
+        </div>
+        <StatusBadge value={statusValue} label={statusLabel} />
+      </div>
       <p>{dataSource.message ?? `Selected source: ${selected}. Effective source: ${effective}.`}</p>
+      {metadataRows.length > 0 ? (
+        <dl className="tf-data-source-card__grid">
+          {metadataRows.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{String(value)}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
       {isFallback && dataSource.failure_message ? (
-        <p>Live HTTP failure: {String(dataSource.failure_message)}</p>
+        <p className="tf-data-source-card__warning">Live HTTP failure: {String(dataSource.failure_message)}</p>
+      ) : null}
+      {effective === "unavailable" && dataSource.failure_message ? (
+        <p className="tf-data-source-card__warning">Unavailable reason: {String(dataSource.failure_message)}</p>
       ) : null}
     </Card>
   );
@@ -399,6 +435,9 @@ export function ProjectDocumentationExplorerPage({ client, context, onBack }) {
 
   useEffect(() => {
     let disposed = false;
+    setError(null);
+    setModel(null);
+    setDetail(null);
     client.loadDocumentation().then((nextModel) => {
       if (!disposed) setModel(nextModel);
     }).catch((nextError) => {
@@ -424,16 +463,28 @@ export function ProjectDocumentationExplorerPage({ client, context, onBack }) {
   const filteredItems = useMemo(() => filterDocumentationItems(model?.items ?? [], state), [model, state]);
   const countsByKind = useMemo(() => countItemsByKind(filteredItems), [filteredItems]);
 
+  const describedDataSource = model?.data_source ?? detail?.data_source ?? client.describeDataSource?.();
+
   if (error) {
     const title = context?.kind === "child-project"
       ? `Unable to load ${context.label ?? "child project"} documents`
       : "Unable to load explorer data";
 
-    return <EmptyState title={title}>{error.message}</EmptyState>;
+    return (
+      <div className="tf-documentation-explorer">
+        <DataSourceStatus dataSource={describedDataSource} />
+        <EmptyState title={title}>{error.message}</EmptyState>
+      </div>
+    );
   }
 
   if (!model) {
-    return <EmptyState title="Loading Project Documentation Explorer">Reading normalized view-model data through the frontend client port.</EmptyState>;
+    return (
+      <div className="tf-documentation-explorer">
+        <DataSourceStatus dataSource={describedDataSource} />
+        <EmptyState title="Loading Project Documentation Explorer">Reading normalized view-model data through the frontend client port.</EmptyState>
+      </div>
+    );
   }
 
   return (
@@ -458,7 +509,7 @@ export function ProjectDocumentationExplorerPage({ client, context, onBack }) {
         </Card>
       ) : null}
 
-      <DataSourceStatus dataSource={model.data_source ?? client.describeDataSource?.()} />
+      <DataSourceStatus dataSource={describedDataSource} />
 
       <FilterBar
         filters={model.filters ?? []}

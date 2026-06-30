@@ -1307,3 +1307,50 @@ button, input, select { font: inherit; }
 .tf-badge--not-applicable {
   color: var(--tf-color-text-subtle);
 }
+
+/* Live documentation data-source status. */
+.tf-data-source-card {
+  display: grid;
+  gap: 12px;
+}
+
+.tf-data-source-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tf-data-source-card__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.tf-data-source-card__grid div {
+  border: 1px solid var(--tf-color-border-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+  min-width: 0;
+}
+
+.tf-data-source-card__grid dt {
+  color: var(--tf-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tf-data-source-card__grid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.tf-data-source-card__warning {
+  border-top: 1px solid var(--tf-color-border-soft);
+  margin: 0;
+  padding-top: 10px;
+}

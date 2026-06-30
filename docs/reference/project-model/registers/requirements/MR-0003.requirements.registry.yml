@@ -593,3 +593,20 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0016
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0071_body.md
+
+
+  - id: MR-0003REQ-0072
+    title: Documentation source status metadata contract
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0017
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0072_body.md
+
+  - id: MR-0003REQ-0073
+    title: Visible live documentation source status
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0017
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0073_body.md
