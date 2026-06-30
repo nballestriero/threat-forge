@@ -18,6 +18,7 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @implementsRequirement MR-0002REQ-0049
  * @implementsRequirement MR-0002REQ-0056
  * @implementsRequirement MR-0002REQ-0058
+ * @implementsRequirement MR-0002REQ-0070
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0002
  * @derivedFromDecision MR-0002/ADR-0006
@@ -25,6 +26,7 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * @derivedFromDecision MR-0002/ADR-0009
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0016
+ * @derivedFromDecision MR-0002/ADR-0029
  * @macroRequirement MR-0002
  *
  * The page implements the manually validated list/detail interaction: filters
@@ -34,8 +36,10 @@ import { countItemsByKind, filterDocumentationItems } from "./project-documentat
  * registries, graph files, generated pages, Git state or filesystem paths.
  *
  * Side effects: loads data through the injected client port and stores UI state
- * in React component state. It does not mutate project-model records or perform
- * write operations.
+ * in React component state. If a child-project documentation source is
+ * unavailable, the page renders the client error as an explicit empty state
+ * rather than substituting platform documentation. It does not mutate
+ * project-model records or perform write operations.
  */
 
 /**
@@ -421,7 +425,11 @@ export function ProjectDocumentationExplorerPage({ client, context, onBack }) {
   const countsByKind = useMemo(() => countItemsByKind(filteredItems), [filteredItems]);
 
   if (error) {
-    return <EmptyState title="Unable to load explorer data">{error.message}</EmptyState>;
+    const title = context?.kind === "child-project"
+      ? `Unable to load ${context.label ?? "child project"} documents`
+      : "Unable to load explorer data";
+
+    return <EmptyState title={title}>{error.message}</EmptyState>;
   }
 
   if (!model) {

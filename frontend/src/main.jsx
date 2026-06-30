@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { GovernanceConsoleShell } from "./MR-0002/app-shell/GovernanceConsoleShell.jsx";
 import { ProtectedPageFrame } from "./MR-0002/app-shell/ProtectedPageFrame.jsx";
 import { ProjectDocumentationExplorerPage } from "./MR-0002/project-documentation-explorer/ProjectDocumentationExplorerPage.jsx";
-import { createProjectDocumentationExplorerClient } from "./MR-0002/project-documentation-explorer/project-documentation-explorer.client.js";
+import { createProjectDocumentationExplorerClient, createUnavailableProjectDocumentationExplorerClient } from "./MR-0002/project-documentation-explorer/project-documentation-explorer.client.js";
 import { ChildProjectsPage } from "./MR-0003/child-project-management/ChildProjectsPage.jsx";
 import { createChildProjectManagementClient } from "./MR-0003/child-project-management/child-project-management.client.js";
 import { ChildProjectGovernancePlanPage } from "./MR-0003/child-project-governance-plan/ChildProjectGovernancePlanPage.jsx";
@@ -23,6 +23,8 @@ import "./styles.css";
  * @implementsRequirement MR-0002REQ-0041
  * @implementsRequirement MR-0002REQ-0048
  * @implementsRequirement MR-0002REQ-0049
+ * @implementsRequirement MR-0002REQ-0069
+ * @implementsRequirement MR-0002REQ-0070
  * @implementsRequirement MR-0003REQ-0012
  * @implementsRequirement MR-0003REQ-0013
  * @implementsRequirement MR-0003REQ-0014
@@ -36,6 +38,7 @@ import "./styles.css";
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0015
  * @derivedFromDecision MR-0002/ADR-0016
+ * @derivedFromDecision MR-0002/ADR-0029
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @derivedFromDecision MR-0003/ADR-0011
@@ -47,12 +50,14 @@ import "./styles.css";
  * Governance Plan pages using client-port adapters. The Governance Plan page
  * receives the child-project client so it can select a project before showing
  * matching gate-plan details, and child-project Project Model launches switch
- * the documentation client to the child Project Documentation Explorer HTTP
- * source rather than reusing the platform snapshot. It does not read YAML, Markdown, graph files, Git state, SQLite,
- * filesystem paths or project-model registries from the browser. Local preview
- * data remains snapshot/static backed by default; explicit frontend
- * configuration may select governed HTTP data sources without changing page
- * rendering code.
+ * the documentation client to an explicitly configured child Project Documentation
+ * Explorer HTTP source. When that source is not configured, the child document
+ * route fails closed with an explicit unavailable state instead of reusing the
+ * platform snapshot or platform HTTP source. It does not read YAML, Markdown,
+ * graph files, Git state, SQLite, filesystem paths or project-model registries
+ * from the browser. Local preview data remains snapshot/static backed by default;
+ * explicit frontend configuration may select governed HTTP data sources without
+ * changing page rendering code.
  *
  * Side effects: mounts React into the `#root` DOM node and performs browser
  * network reads through configured client ports and can route from a demo child
@@ -93,14 +98,20 @@ function GovernanceConsoleApp() {
 
   const childProjectDocumentationHttpBaseUrl = import.meta.env.VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL
     || import.meta.env.VITE_PROJECT_DOCUMENTATION_EXPLORER_CHILD_HTTP_BASE_URL
-    || "http://127.0.0.1:4174";
+    || "";
 
-  const childProjectDocumentationClient = useMemo(() => createProjectDocumentationExplorerClient({
-    source: "http",
-    snapshotUrl: "/project-documentation-explorer.snapshot.json",
-    httpBaseUrl: childProjectDocumentationHttpBaseUrl,
-    snapshotFallback: false,
-  }), [childProjectDocumentationHttpBaseUrl]);
+  const childProjectDocumentationClient = useMemo(() => {
+    if (!childProjectDocumentationHttpBaseUrl) {
+      return createUnavailableProjectDocumentationExplorerClient();
+    }
+
+    return createProjectDocumentationExplorerClient({
+      source: "http",
+      snapshotUrl: "/project-documentation-explorer.snapshot.json",
+      httpBaseUrl: childProjectDocumentationHttpBaseUrl,
+      snapshotFallback: false,
+    });
+  }, [childProjectDocumentationHttpBaseUrl]);
 
   const activeDocumentationClient = documentationContext.kind === "child-project"
     ? childProjectDocumentationClient
@@ -129,7 +140,9 @@ function GovernanceConsoleApp() {
       id: String(project.id ?? "child-project"),
       kind: "child-project",
       label: String(project.name ?? project.id ?? "Child project"),
-      description: "Child Project Model",
+      description: childProjectDocumentationHttpBaseUrl
+        ? "Child Project Model"
+        : "Child Project Model · documentation source not configured",
       httpBaseUrl: childProjectDocumentationHttpBaseUrl,
     });
     setActiveNavigationId("project-documentation");

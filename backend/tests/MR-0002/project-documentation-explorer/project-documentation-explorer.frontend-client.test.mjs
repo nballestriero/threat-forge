@@ -5,6 +5,7 @@ import {
   createHttpProjectDocumentationExplorerClient,
   createLiveProjectDocumentationExplorerClient,
   createProjectDocumentationExplorerClient,
+  createUnavailableProjectDocumentationExplorerClient,
   createStaticProjectDocumentationExplorerClient,
 } from "../../../../frontend/src/MR-0002/project-documentation-explorer/project-documentation-explorer.client.js";
 
@@ -13,8 +14,11 @@ import {
  *
  * @verifiesRequirement MR-0002REQ-0048
  * @verifiesRequirement MR-0002REQ-0049
+ * @verifiesRequirement MR-0002REQ-0069
+ * @verifiesRequirement MR-0002REQ-0070
  * @derivedFromDecision MR-0002/ADR-0015
  * @derivedFromDecision MR-0002/ADR-0016
+ * @derivedFromDecision MR-0002/ADR-0029
  * @macroRequirement MR-0002
  *
  * These tests verify that the page-facing frontend client boundary can use the
@@ -176,6 +180,30 @@ test("falls back to the generated snapshot when live HTTP activation fails expli
   assert.equal(detail.data_source.effective_source, "snapshot");
   assert.equal(calls[0].url, "http://127.0.0.1:4174/api/project-model/documentation");
   assert.equal(calls[1].url, "/project-documentation-explorer.snapshot.json");
+});
+
+
+
+test("keeps child project documentation unavailable instead of falling back to platform snapshot", async () => {
+  const client = createUnavailableProjectDocumentationExplorerClient({
+    label: "Child Project Documentation unavailable",
+    message: "No child Project Documentation Explorer HTTP source is configured for the selected child project.",
+    failureMessage: "Configure the child documentation source before opening child project documents.",
+  });
+
+  const dataSource = client.describeDataSource();
+  assert.equal(dataSource.selected_source, "child-http");
+  assert.equal(dataSource.effective_source, "unavailable");
+  assert.equal(dataSource.fallback, false);
+
+  await assert.rejects(
+    () => client.loadDocumentation(),
+    /No child Project Documentation Explorer HTTP source is configured/u,
+  );
+  await assert.rejects(
+    () => client.loadDocumentationEntity("MR-0002"),
+    /Configure the child documentation source/u,
+  );
 });
 
 test("rejects unsupported Project Documentation Explorer frontend data sources", () => {

@@ -1623,3 +1623,21 @@ This step remains visual and structural. It does not add notification, help or p
 Known bug remains for a dedicated micropasso: when a child project is selected and the user opens Documents, the UI must not silently fall back to threat-forge platform documents.
 
 The next safe step is to address the child-project documentation no-fallback bug with a focused backend/frontend data-source micropasso, then show explicit live data-source status in the shell.
+
+## Completed UI Refinement Micropasso — Child Project Documentation No-Fallback Boundary
+
+The child-project documentation no-fallback bug has been addressed with a dedicated MR-0002 micropasso.
+
+Commit target: `frontend: prevent child project documentation fallback to platform documents`.
+
+Governed records added:
+
+- `MR-0002/ADR-0029` — Child Project Documentation Source Fail-Closed Boundary.
+- `MR-0002REQ-0069` — Child Project Documentation source isolation.
+- `MR-0002REQ-0070` — Child Project Documentation unavailable UI state.
+
+The implementation separates platform and child Project Documentation Explorer frontend client construction. The child-project documentation client no longer defaults to the platform Project Documentation Explorer endpoint. If the child documentation HTTP base URL is not explicitly configured, the UI uses a fail-closed unavailable client that reports `effective_source: unavailable` and `fallback: false` and rejects reads instead of loading the platform snapshot.
+
+Local demo use now requires explicitly configuring the child documentation source before opening child documents. If the source is missing or unreachable, the Project Documentation Explorer renders a child-project-specific unavailable/error state rather than valid-looking ThreatForge platform documents.
+
+The next safe step is to show live data-source status more prominently in the shell and page header so users can see whether they are reading platform snapshot, platform HTTP, child HTTP, or unavailable child source data.

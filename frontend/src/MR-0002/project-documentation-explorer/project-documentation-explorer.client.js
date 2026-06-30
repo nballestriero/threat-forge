@@ -10,6 +10,8 @@
  * @implementsRequirement MR-0002REQ-0037
  * @implementsRequirement MR-0002REQ-0048
  * @implementsRequirement MR-0002REQ-0049
+ * @implementsRequirement MR-0002REQ-0069
+ * @implementsRequirement MR-0002REQ-0070
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
  * @derivedFromDecision MR-0002/ADR-0006
@@ -17,6 +19,7 @@
  * @derivedFromDecision MR-0002/ADR-0009
  * @derivedFromDecision MR-0002/ADR-0015
  * @derivedFromDecision MR-0002/ADR-0016
+ * @derivedFromDecision MR-0002/ADR-0029
  * @macroRequirement MR-0002
  *
  * This module defines the frontend client boundary used by React components. The
@@ -251,6 +254,55 @@ export function createHttpProjectDocumentationExplorerClient({
       if (!id) throw new Error("Project Documentation Explorer entity id is required.");
       const url = joinApiUrl(baseUrl, `/api/project-model/documentation/entities/${encodeURIComponent(id)}`);
       return withDataSourceState(await fetchJson({ fetchImpl, url, headers }), httpDataSource);
+    },
+  });
+}
+
+
+/**
+ * Create a client that fails closed when a child-project documentation source is not configured.
+ *
+ * @param {{label?: string, message?: string, failureMessage?: string}} [options] - Unavailable source options.
+ * @returns {{describeDataSource: Function, loadDocumentation: Function, loadDocumentationFilters: Function, loadDocumentationEntity: Function}} Frontend client port.
+ */
+export function createUnavailableProjectDocumentationExplorerClient({
+  label = "Child Project Documentation unavailable",
+  message = "No child Project Documentation Explorer HTTP source is configured for the selected child project.",
+  failureMessage = "Configure VITE_CHILD_PROJECT_DOCUMENTATION_EXPLORER_HTTP_BASE_URL for a child Project Documentation Explorer API before opening child project documents.",
+} = {}) {
+  const dataSource = createDataSourceState({
+    selected_source: "child-http",
+    effective_source: "unavailable",
+    fallback: false,
+    label,
+    message,
+    failure_message: failureMessage,
+  });
+
+  /**
+   * Create a child-project documentation source error without falling back to platform documents.
+   *
+   * @returns {Error} Fail-closed source error.
+   */
+  function createUnavailableError() {
+    return new Error(`${message} ${failureMessage}`);
+  }
+
+  return Object.freeze({
+    describeDataSource() {
+      return dataSource;
+    },
+
+    loadDocumentation() {
+      return Promise.reject(createUnavailableError());
+    },
+
+    loadDocumentationFilters() {
+      return Promise.reject(createUnavailableError());
+    },
+
+    loadDocumentationEntity() {
+      return Promise.reject(createUnavailableError());
     },
   });
 }

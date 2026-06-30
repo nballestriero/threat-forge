@@ -550,3 +550,19 @@ requirements:
     derived_from_decision_id: ADR-0028
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0068_body.md
 
+
+  - id: MR-0002REQ-0069
+    title: Child Project Documentation source isolation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0029
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0069_body.md
+
+  - id: MR-0002REQ-0070
+    title: Child Project Documentation unavailable UI state
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0029
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0070_body.md
