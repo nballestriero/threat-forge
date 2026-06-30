@@ -1611,3 +1611,15 @@ This step does not change backend contracts, generated status ids, child-project
 Known bug remains for a dedicated micropasso: when a child project is selected and the user opens Documents, the UI must not silently fall back to threat-forge platform documents.
 
 The next safe step is to refine shell navigation and topbar hierarchy, or to switch to the child-project documentation no-fallback bug if functional correctness takes priority over visual polish.
+
+## Shell Navigation and Topbar Hierarchy Refinement Micropasso
+
+This frontend shell refinement applies the approved mockup direction to the shared Governance Console chrome after the navigation icon, semantic color and status badge foundations.
+
+The implementation tightens the sidebar brand and navigation rhythm, keeps the active navigation state lightweight, and renders a clearer topbar hierarchy with context text, read-only status and non-mutating utility affordances. Topbar utility affordances are declared in the shared design-system token registry and rendered through the shared semantic icon adapter, so feature pages still do not own shell icons, inline colors or local navigation markup.
+
+This step remains visual and structural. It does not add notification, help or profile behavior; it does not change routing, capabilities, authentication, backend contracts, snapshot generation, child-project mutation behavior, threat-analysis runtime behavior, or child-project document data-source selection.
+
+Known bug remains for a dedicated micropasso: when a child project is selected and the user opens Documents, the UI must not silently fall back to threat-forge platform documents.
+
+The next safe step is to address the child-project documentation no-fallback bug with a focused backend/frontend data-source micropasso, then show explicit live data-source status in the shell.

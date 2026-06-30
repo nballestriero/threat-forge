@@ -11,12 +11,15 @@
  * @implementsRequirement MR-0002REQ-0063
  * @implementsRequirement MR-0002REQ-0064
  * @implementsRequirement MR-0002REQ-0065
+ * @implementsRequirement MR-0002REQ-0067
+ * @implementsRequirement MR-0002REQ-0068
  * @implementsRequirement MR-0003REQ-0013
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0025
  * @derivedFromDecision MR-0002/ADR-0026
  * @derivedFromDecision MR-0002/ADR-0027
+ * @derivedFromDecision MR-0002/ADR-0028
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0011
  * @macroRequirement MR-0002
@@ -29,7 +32,9 @@
  * must remain hidden behind the shared Icon component. Shared color roles
  * are named semantically so stylesheet variables and later visual refinements
  * can stay aligned without page-local palettes. Status badge semantics also
- * map raw read-model values to compact tones, labels and icon tokens.
+ * map raw read-model values to compact tones, labels and icon tokens. The
+ * topbar utility token list keeps non-mutating shell affordances governed by
+ * the same design-system boundary as navigation icons.
  *
  * Side effects: none. This module exports immutable token maps only.
  */
@@ -86,6 +91,28 @@ export const shellNavigation = Object.freeze([
   },
 ]);
 
+
+export const shellTopbarActions = Object.freeze([
+  {
+    id: "notifications",
+    label: "Notifications",
+    icon: "action.notifications",
+    stateLabel: "Preview",
+  },
+  {
+    id: "help",
+    label: "Help",
+    icon: "action.help",
+    stateLabel: "Guide",
+  },
+  {
+    id: "profile",
+    label: "registered_user",
+    icon: "action.userProfile",
+    stateLabel: "Read-only",
+  },
+]);
+
 export const iconTokens = Object.freeze({
   navigation: Object.freeze({
     projectDocumentation: "document-search",
@@ -101,6 +128,9 @@ export const iconTokens = Object.freeze({
     reset: "x",
     search: "search",
     open: "external-link",
+    notifications: "bell",
+    help: "circle-help",
+    userProfile: "user-circle",
   }),
   entity: Object.freeze({
     macro_requirement: "layers",

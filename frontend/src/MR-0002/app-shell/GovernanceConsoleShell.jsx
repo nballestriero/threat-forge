@@ -1,5 +1,5 @@
 import { Icon, ThreatForgeMark } from "../design-system/Icon.jsx";
-import { shellNavigation } from "../design-system/design-system.tokens.js";
+import { shellNavigation, shellTopbarActions } from "../design-system/design-system.tokens.js";
 
 /**
  * @file Shared Governance Console shell for MR-0002 frontend pages.
@@ -15,12 +15,15 @@ import { shellNavigation } from "../design-system/design-system.tokens.js";
  * @implementsRequirement MR-0002REQ-0041
  * @implementsRequirement MR-0002REQ-0061
  * @implementsRequirement MR-0002REQ-0062
+ * @implementsRequirement MR-0002REQ-0067
+ * @implementsRequirement MR-0002REQ-0068
  * @implementsRequirement MR-0003REQ-0012
  * @implementsRequirement MR-0003REQ-0013
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0025
+ * @derivedFromDecision MR-0002/ADR-0028
  * @derivedFromDecision MR-0003/ADR-0002
  * @macroRequirement MR-0002
  *
@@ -29,8 +32,10 @@ import { shellNavigation } from "../design-system/design-system.tokens.js";
  * navigation entry when the application shell provides an enabled navigation
  * handler. Navigation entries are semantic and capability-aware;
  * disabled future areas are rendered as visible placeholders without enabling
- * unimplemented runtime behavior. Feature pages must render inside this shell
- * rather than defining local templates.
+ * unimplemented runtime behavior. The shell also renders a compact topbar
+ * hierarchy with non-mutating utility affordances declared by design-system
+ * tokens. Feature pages must render inside this shell rather than defining
+ * local templates.
  *
  * Side effects: none beyond React rendering. It does not fetch data, perform
  * authorization, mutate navigation state, read project-model files or implement
@@ -74,6 +79,25 @@ function Navigation({ workspaceKind, activeNavigationId, onNavigate }) {
 }
 
 /**
+ * Render non-mutating topbar utility affordances.
+ *
+ * @returns {import("react").JSX.Element} Topbar utility action list.
+ */
+function TopbarActions() {
+  return (
+    <div className="tf-topbar__actions" aria-label="Workspace utilities">
+      {shellTopbarActions.map((item) => (
+        <span key={item.id} className={`tf-topbar__utility tf-topbar__utility--${item.id}`} title={`${item.label} · ${item.stateLabel}`}>
+          <Icon token={item.icon} className="tf-topbar__utility-icon" />
+          <span className="tf-topbar__utility-label">{item.label}</span>
+          <span className="tf-topbar__utility-state">{item.stateLabel}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
  * Render the reusable Governance Console shell.
  *
  * @param {{children: import("react").ReactNode, workspaceKind?: "platform"|"child-project", activeNavigationId?: string, onNavigate?: Function}} props - Shell props.
@@ -86,7 +110,7 @@ export function GovernanceConsoleShell({ children, workspaceKind = "platform", a
         <div className="tf-brand">
           <ThreatForgeMark className="tf-brand__mark" />
           <div>
-            <strong>Threat Forge</strong>
+            <strong>ThreatForge</strong>
             <span>{workspaceKind === "platform" ? "Platform workspace" : "Child project workspace"}</span>
           </div>
         </div>
@@ -94,11 +118,15 @@ export function GovernanceConsoleShell({ children, workspaceKind = "platform", a
       </aside>
       <div className="tf-workspace">
         <header className="tf-topbar">
-          <div>
-            <strong>Governance Console</strong>
+          <div className="tf-topbar__context">
+            <span className="tf-topbar__eyebrow">Governance Console</span>
+            <strong>{workspaceKind === "platform" ? "Platform documentation workspace" : "Child project documentation workspace"}</strong>
             <span>Doc-as-Code / security-first workspace</span>
           </div>
-          <div className="tf-topbar__principal">registered_user · read-only</div>
+          <div className="tf-topbar__meta">
+            <span className="tf-topbar__principal">registered_user · read-only</span>
+            <TopbarActions />
+          </div>
         </header>
         <main className="tf-content">{children}</main>
       </div>

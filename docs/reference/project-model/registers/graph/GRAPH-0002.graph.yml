@@ -565,6 +565,19 @@ nodes:
     type: Requirement
     label: Governance Console status badge tone rendering
 
+  - id: ADR-0028
+    type: ADR
+    label: Governance Console shell navigation and topbar hierarchy boundary
+
+  - id: MR-0002REQ-0067
+    type: Requirement
+    label: Governance Console shell navigation hierarchy
+
+  - id: MR-0002REQ-0068
+    type: Requirement
+    label: Governance Console topbar utility hierarchy
+
+
 
 spo_relations:
   - subject: MR-0002
@@ -2071,3 +2084,56 @@ spo_relations:
   - subject: MR-0002REQ-0066
     predicate: implemented_by
     object: MR-0002SRC-0025
+
+  - subject: MR-0002
+    predicate: has_decision
+    object: ADR-0028
+
+  - subject: ADR-0028
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0067
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: MR-0002REQ-0068
+    predicate: belongs_to
+    object: MR-0002
+
+  - subject: ADR-0028
+    predicate: justifies
+    object: MR-0002REQ-0067
+
+  - subject: ADR-0028
+    predicate: justifies
+    object: MR-0002REQ-0068
+
+  - subject: MR-0002REQ-0067
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0067
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0067
+    predicate: implemented_by
+    object: MR-0002SRC-0025
+
+  - subject: MR-0002REQ-0068
+    predicate: implemented_by
+    object: MR-0002SRC-0011
+
+  - subject: MR-0002REQ-0068
+    predicate: implemented_by
+    object: MR-0002SRC-0013
+
+  - subject: MR-0002REQ-0068
+    predicate: implemented_by
+    object: MR-0002SRC-0014
+
+  - subject: MR-0002REQ-0068
+    predicate: implemented_by
+    object: MR-0002SRC-0025
+

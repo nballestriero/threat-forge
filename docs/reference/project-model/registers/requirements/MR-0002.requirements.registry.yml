@@ -533,3 +533,20 @@ requirements:
     priority: medium
     derived_from_decision_id: ADR-0027
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0066_body.md
+
+  - id: MR-0002REQ-0067
+    title: Governance Console shell navigation hierarchy
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0028
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0067_body.md
+
+  - id: MR-0002REQ-0068
+    title: Governance Console topbar utility hierarchy
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0028
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002REQ-0068_body.md
+

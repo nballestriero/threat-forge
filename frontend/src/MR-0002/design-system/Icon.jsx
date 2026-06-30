@@ -6,13 +6,15 @@ import { iconTokens } from "./design-system.tokens.js";
  * @implementsRequirement MR-0002REQ-0025
  * @implementsRequirement MR-0002REQ-0040
  * @implementsRequirement MR-0002REQ-0061
+ * @implementsRequirement MR-0002REQ-0068
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0002/ADR-0010
  * @derivedFromDecision MR-0002/ADR-0025
+ * @derivedFromDecision MR-0002/ADR-0028
  * @macroRequirement MR-0002
  *
- * Pages render icons through semantic tokens such as `navigation.threatAnalysis`
- * or `status.accepted`. This adapter maps tokens to a compact built-in outline
+ * Pages render icons through semantic tokens such as `navigation.threatAnalysis`,
+ * `action.notifications` or `status.accepted`. This adapter maps tokens to a compact built-in outline
  * icon set and to the reusable ThreatForge shield mark. Keeping all concrete SVG
  * drawings here prevents scattered feature-page icons while preserving a future
  * path to replace the implementation with a governed icon-library adapter.
@@ -101,6 +103,22 @@ const outlineIcons = Object.freeze({
   "external-link": {
     viewBox: "0 0 24 24",
     paths: [{ d: "M8 8h8v8" }, { d: "m16 8-9 9" }, { d: "M6.5 5.5h12v12" }],
+  },
+  bell: {
+    viewBox: "0 0 24 24",
+    paths: [
+      { d: "M7.25 10.25a4.75 4.75 0 0 1 9.5 0v3.75l1.5 2.5H5.75l1.5-2.5z" },
+      { d: "M10.25 18.25a1.75 1.75 0 0 0 3.5 0" },
+      { d: "M12 4.25v1.25" },
+    ],
+  },
+  "user-circle": {
+    viewBox: "0 0 24 24",
+    paths: [
+      { d: "M12 19.25a7.25 7.25 0 1 0 0-14.5 7.25 7.25 0 0 0 0 14.5z" },
+      { d: "M12 12.25a2.35 2.35 0 1 0 0-4.7 2.35 2.35 0 0 0 0 4.7z" },
+      { d: "M7.75 17.05a4.75 4.75 0 0 1 8.5 0" },
+    ],
   },
   layers: {
     viewBox: "0 0 24 24",
