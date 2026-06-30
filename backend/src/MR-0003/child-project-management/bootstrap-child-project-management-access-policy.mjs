@@ -6,6 +6,8 @@ import { childProjectManagementCapabilities } from "./child-project-management.c
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -25,6 +27,7 @@ const registeredUserCapabilities = Object.freeze([
   childProjectManagementCapabilities.list,
   childProjectManagementCapabilities.read,
   childProjectManagementCapabilities.viewOperationalState,
+  childProjectManagementCapabilities.viewDocumentation,
 ]);
 
 /**

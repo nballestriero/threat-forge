@@ -122,6 +122,76 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /api/child-projects/{id}/documentation:
+    get:
+      operationId: listChildProjectDocumentation
+      summary: List documentation for one managed child project.
+      description: Returns Project Documentation Explorer collection data for the selected registered child project without falling back to platform documentation.
+      tags:
+        - ChildProjectManagement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Managed child project identifier.
+          schema:
+            type: string
+            minLength: 1
+        - $ref: '#/components/parameters/MacroRequirementFilter'
+        - $ref: '#/components/parameters/KindFilter'
+        - $ref: '#/components/parameters/StatusFilter'
+        - $ref: '#/components/parameters/RequirementTypeFilter'
+        - $ref: '#/components/parameters/ImplementationStateFilter'
+        - $ref: '#/components/parameters/AcceptanceStateFilter'
+        - $ref: '#/components/parameters/SearchFilter'
+      responses:
+        '200':
+          description: Child project documentation collection view-model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentationExplorerViewModel'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/DocumentationSourceUnavailable'
+  /api/child-projects/{id}/documentation/entities/{entityId}:
+    get:
+      operationId: getChildProjectDocumentationEntity
+      summary: Get one documentation entity for one managed child project.
+      description: Returns Project Documentation Explorer detail data for the selected registered child project without falling back to platform documentation.
+      tags:
+        - ChildProjectManagement
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Managed child project identifier.
+          schema:
+            type: string
+            minLength: 1
+        - name: entityId
+          in: path
+          required: true
+          description: Governed child documentation entity identifier returned by the child collection endpoint.
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        '200':
+          description: Child project documentation entity detail view-model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentationDetailViewModel'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/DocumentationSourceUnavailable'
   /api/child-project-governance/gate-plans:
     get:
       operationId: listChildProjectGovernanceGatePlans
@@ -262,6 +332,12 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
     NotFound:
       description: The requested governed entity was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    DocumentationSourceUnavailable:
+      description: The selected child project documentation source is not available.
       content:
         application/json:
           schema:

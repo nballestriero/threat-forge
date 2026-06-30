@@ -66,6 +66,19 @@ const expectedOperations = [
     responseSchema: "ChildProjectOperationalState",
     requiredResponses: ["'200'", "'403'", "'404'"],
   },
+
+  {
+    path: "/api/child-projects/{id}/documentation",
+    operationId: "listChildProjectDocumentation",
+    responseSchema: "DocumentationExplorerViewModel",
+    requiredResponses: ["'200'", "'403'", "'404'", "'409'"],
+  },
+  {
+    path: "/api/child-projects/{id}/documentation/entities/{entityId}",
+    operationId: "getChildProjectDocumentationEntity",
+    responseSchema: "DocumentationDetailViewModel",
+    requiredResponses: ["'200'", "'403'", "'404'", "'409'"],
+  },
   {
     path: "/api/child-project-governance/gate-plans",
     operationId: "listChildProjectGovernanceGatePlans",
@@ -98,6 +111,7 @@ const requiredSchemas = [
   "DocumentationDetailViewModel",
   "ChildProjectRepositoryLocation",
   "ChildProjectModelProfile",
+  "ChildProjectDocumentationSource",
   "ChildProjectLifecyclePolicy",
   "ChildProjectRecord",
   "ChildProjectGateResult",
@@ -126,6 +140,8 @@ const requiredGraphFragments = [
   "id: MR-0003API-0001",
   `path: ${contractProjectPath}`,
   "subject: MR-0003REQ-0014\n    predicate: implemented_by\n    object: MR-0003API-0001",
+  "subject: MR-0003REQ-0068\n    predicate: implemented_by\n    object: MR-0003API-0001",
+  "subject: MR-0003REQ-0069\n    predicate: implemented_by\n    object: MR-0003API-0001",
   "id: MR-0003API-0002",
   `path: ${contractProjectPath}`,
   "subject: MR-0003REQ-0059\n    predicate: implemented_by\n    object: MR-0003API-0002",

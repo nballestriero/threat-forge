@@ -1681,3 +1681,23 @@ The child project management read model now carries this derived documentation s
 This step does not add a child documentation proxy endpoint, clone Git repositories, mutate child Project Models, replace the demo child local UI test source, add write APIs or change frontend routing.
 
 The next safe step is to add a read-only project-scoped child documentation API that uses the registered source resolver and returns either child Project Documentation Explorer data or the explicit resolver status.
+
+## Project-Scoped Child Documentation API Micropasso
+
+This backend micropasso exposes the registered child project documentation resolver through read-only project-scoped HTTP endpoints.
+
+Commit target: `backend: expose project-scoped child documentation API`.
+
+Governed records added:
+
+- `MR-0003/ADR-0015` — Project-scoped child documentation API boundary.
+- `MR-0003REQ-0068` — Project-scoped child documentation collection endpoint.
+- `MR-0003REQ-0069` — Project-scoped child documentation detail endpoint.
+
+The implementation adds child-project-scoped documentation routes under the existing Child Project Management API boundary. The endpoints use the registered child project source resolver, compose a filesystem-backed Project Documentation Explorer service for the selected local child workspace, and return collection or entity detail view-models for that child project only.
+
+Unavailable, unconfigured or unsupported child documentation sources return explicit typed HTTP errors. They do not substitute threat-forge platform Project Documentation Explorer snapshots, endpoints or generated frontend snapshots.
+
+This step remains read-only. It does not add child project write APIs, clone Git repositories, mutate child Project Models, replace the existing platform Project Documentation Explorer endpoints, or change frontend routing yet.
+
+The next safe step is to update the frontend child project document view to load selected child documents through these project-scoped platform endpoints instead of a global child documentation URL.

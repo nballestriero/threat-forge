@@ -10,6 +10,8 @@ import {
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -26,7 +28,7 @@ import {
 
 /**
  * @typedef {(input: {principal?: Record<string, unknown>, childProjectId?: string}) => Promise<Record<string, unknown>>} ChildProjectManagementRouteHandler
- * @typedef {{listChildProjects: ChildProjectManagementRouteHandler, getChildProject: ChildProjectManagementRouteHandler}} ChildProjectManagementController
+ * @typedef {{listChildProjects: ChildProjectManagementRouteHandler, getChildProject: ChildProjectManagementRouteHandler, listChildProjectDocumentation: ChildProjectManagementRouteHandler, getChildProjectDocumentationEntity: ChildProjectManagementRouteHandler}} ChildProjectManagementController
  * @typedef {Record<string, unknown> & {method: string, path: string, required_capability: string, description: string, handler: ChildProjectManagementRouteHandler}} ChildProjectManagementRouteDescriptor
  */
 
@@ -52,6 +54,20 @@ export function createChildProjectManagementRoutes(controller) {
       required_capability: childProjectManagementCapabilities.viewOperationalState,
       description: "Returns one managed child project's operational lifecycle status.",
       handler: controller.getChildProject,
+    },
+    {
+      method: "GET",
+      path: "/api/child-projects/:id/documentation",
+      required_capability: childProjectManagementCapabilities.viewDocumentation,
+      description: "Returns Project Documentation Explorer collection data for one registered child project without platform fallback.",
+      handler: controller.listChildProjectDocumentation,
+    },
+    {
+      method: "GET",
+      path: "/api/child-projects/:id/documentation/entities/:entityId",
+      required_capability: childProjectManagementCapabilities.viewDocumentation,
+      description: "Returns one Project Documentation Explorer entity detail for one registered child project without platform fallback.",
+      handler: controller.getChildProjectDocumentationEntity,
     },
   ];
 

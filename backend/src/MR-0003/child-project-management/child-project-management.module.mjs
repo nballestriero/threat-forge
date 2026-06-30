@@ -12,6 +12,8 @@ import { createChildProjectManagementService } from "./child-project-management.
  * @implementsRequirement MR-0003REQ-0024
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -31,7 +33,7 @@ import { createChildProjectManagementService } from "./child-project-management.
 /**
  * @typedef {import("./ports/child-project-store.port.mjs").ChildProjectStorePort} ChildProjectStorePort
  * @typedef {{evaluate(input: {principal?: Record<string, unknown>, requiredCapability: string}): Record<string, unknown>}} ChildProjectManagementAccessPolicy
- * @typedef {{storePort?: ChildProjectStorePort, accessPolicy?: ChildProjectManagementAccessPolicy, databasePath?: string}} ChildProjectManagementModuleOptions
+ * @typedef {{storePort?: ChildProjectStorePort, accessPolicy?: ChildProjectManagementAccessPolicy, databasePath?: string, repositoryRoot?: string}} ChildProjectManagementModuleOptions
  * @typedef {ReturnType<typeof createChildProjectManagementService>} ChildProjectManagementService
  * @typedef {ReturnType<typeof createChildProjectManagementController>} ChildProjectManagementController
  * @typedef {ReturnType<typeof createChildProjectManagementRoutes>} ChildProjectManagementRoutes
@@ -55,6 +57,7 @@ export function createChildProjectManagementModule(options = {}) {
       }
       return [];
     },
+    repositoryRoot: options.repositoryRoot,
   });
   const controller = createChildProjectManagementController({ service, accessPolicy });
   const routes = createChildProjectManagementRoutes(controller);

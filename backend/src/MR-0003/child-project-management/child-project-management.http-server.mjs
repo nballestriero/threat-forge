@@ -1,5 +1,7 @@
 import { createServer } from "node:http";
 
+import { isProjectDocumentationExplorerError } from "../../MR-0002/project-documentation-explorer/project-documentation-explorer.errors.mjs";
+
 import {
   ChildProjectManagementInvalidRequestError,
   ChildProjectManagementNotFoundError,
@@ -13,6 +15,8 @@ import {
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -29,10 +33,10 @@ import {
  */
 
 /**
- * @typedef {(input: {principal?: Record<string, unknown>, childProjectId?: string}) => Promise<Record<string, unknown>>} ChildProjectManagementRouteHandler
+ * @typedef {(input: {principal?: Record<string, unknown>, childProjectId?: string, entityId?: string, query?: Record<string, unknown>}) => Promise<Record<string, unknown>>} ChildProjectManagementRouteHandler
  * @typedef {Record<string, unknown> & {method: string, path: string, handler: ChildProjectManagementRouteHandler}} ChildProjectManagementRouteDescriptor
  * @typedef {{route: ChildProjectManagementRouteDescriptor, regex: RegExp, parameterNames: string[]}} CompiledChildProjectManagementRoute
- * @typedef {{listChildProjects: ChildProjectManagementRouteHandler, getChildProject: ChildProjectManagementRouteHandler}} ChildProjectManagementController
+ * @typedef {{listChildProjects: ChildProjectManagementRouteHandler, getChildProject: ChildProjectManagementRouteHandler, listChildProjectDocumentation: ChildProjectManagementRouteHandler, getChildProjectDocumentationEntity: ChildProjectManagementRouteHandler}} ChildProjectManagementController
  */
 
 const jsonContentType = "application/json; charset=utf-8";
@@ -42,6 +46,34 @@ const corsHeaders = Object.freeze({
   "access-control-allow-headers": "accept, content-type, x-threat-forge-authenticated, x-threat-forge-role",
   "access-control-max-age": "300",
 });
+
+const knownDocumentationQueryKeys = Object.freeze([
+  "mr",
+  "kind",
+  "type",
+  "status",
+  "requirement_type",
+  "implementation_state",
+  "acceptance_state",
+  "q",
+]);
+
+/**
+ * Converts URL search parameters to the child documentation query shape.
+ *
+ * @param {URLSearchParams} searchParams - Request search parameters.
+ * @returns {Record<string, string|string[]>} Controller query object.
+ */
+function extractDocumentationQuery(searchParams) {
+  /** @type {Record<string, string|string[]>} */
+  const query = {};
+  for (const key of knownDocumentationQueryKeys) {
+    const values = searchParams.getAll(key).filter((value) => String(value ?? "").trim());
+    if (values.length === 1) query[key] = values[0];
+    if (values.length > 1) query[key] = values;
+  }
+  return query;
+}
 
 /**
  * Builds a conservative principal from request headers for bootstrap use.
@@ -172,7 +204,7 @@ function writePreflight(response) {
  * @returns {{statusCode: number, payload: Record<string, string>}} HTTP error result.
  */
 function mapError(error) {
-  if (isChildProjectManagementError(error)) {
+  if (isChildProjectManagementError(error) || isProjectDocumentationExplorerError(error)) {
     return {
       statusCode: error.statusCode,
       payload: { error: error.code, message: error.publicMessage },
@@ -226,13 +258,22 @@ export function createChildProjectManagementHttpHandler({
       }
 
       const principal = principalResolver(request);
+      const query = extractDocumentationQuery(requestUrl.searchParams);
       let payload;
       if (match.route.handler === controller.listChildProjects) {
         payload = await controller.listChildProjects({ principal });
       } else if (match.route.handler === controller.getChildProject) {
         payload = await controller.getChildProject({ principal, childProjectId: match.params.id });
+      } else if (match.route.handler === controller.listChildProjectDocumentation) {
+        payload = await controller.listChildProjectDocumentation({ principal, childProjectId: match.params.id, query });
+      } else if (match.route.handler === controller.getChildProjectDocumentationEntity) {
+        payload = await controller.getChildProjectDocumentationEntity({
+          principal,
+          childProjectId: match.params.id,
+          entityId: match.params.entityId,
+        });
       } else {
-        payload = await match.route.handler({ principal, childProjectId: match.params.id });
+        payload = await match.route.handler({ principal, childProjectId: match.params.id, entityId: match.params.entityId, query });
       }
 
       writeJson(response, 200, payload);

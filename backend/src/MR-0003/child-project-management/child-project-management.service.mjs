@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import {
   childProjectManagementCapabilities,
   parseChildProjectCheckRun,
@@ -5,6 +7,9 @@ import {
   parseChildProjectOperationalStateList,
   parseChildProjectRecord,
 } from "./child-project-management.contract.mjs";
+import { createFilesystemProjectModelSourceAdapter } from "../../MR-0002/project-documentation-explorer/filesystem-project-model-source.adapter.mjs";
+import { createProjectDocumentationExplorerService } from "../../MR-0002/project-documentation-explorer/project-documentation-explorer.service.mjs";
+import { ChildProjectManagementDocumentationSourceUnavailableError } from "./child-project-management.errors.mjs";
 import { resolveChildProjectDocumentationSource } from "./child-project-documentation-source.resolver.mjs";
 import { assertChildProjectStorePort } from "./ports/child-project-store.port.mjs";
 
@@ -15,6 +20,8 @@ import { assertChildProjectStorePort } from "./ports/child-project-store.port.mj
  * @implementsRequirement MR-0003REQ-0026
  * @implementsRequirement MR-0003REQ-0066
  * @implementsRequirement MR-0003REQ-0067
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0005
  * @derivedFromDecision MR-0003/ADR-0014
  * @macroRequirement MR-0003
@@ -44,6 +51,7 @@ import { assertChildProjectStorePort } from "./ports/child-project-store.port.mj
  * @property {(principal?: unknown) => string[]} [resolveCapabilities] Optional capability resolver.
  * @property {string} [repositoryRoot] Repository root used for resolving registered local child paths.
  * @property {(input: {childProject: ChildProjectRecord}) => Record<string, unknown>} [resolveDocumentationSource] Optional documentation-source resolver.
+ * @property {(input: {childProject: ChildProjectRecord, documentationSource: Record<string, unknown>, rootDir: string}) => {getDocumentation(input?: {query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getDetail(input?: {id?: string, access?: Record<string, unknown>}): Promise<Record<string, unknown>>}} [projectDocumentationServiceFactory] Optional project-scoped documentation service factory.
  */
 
 const readModelCapabilities = Object.freeze([
@@ -115,15 +123,48 @@ function withOperationalStateDocumentationSource(state, resolver) {
 }
 
 /**
+ * Resolves a child workspace root for an available filesystem documentation source.
+ *
+ * @param {ChildProjectRecord} childProject - Registered child project record.
+ * @param {Record<string, unknown>} documentationSource - Derived documentation source metadata.
+ * @param {string|undefined} repositoryRoot - Platform repository root.
+ * @returns {string} Absolute child workspace root.
+ */
+function resolveChildWorkspaceRoot(childProject, documentationSource, repositoryRoot) {
+  const sourceType = String(documentationSource.source_type ?? "");
+  const sourceStatus = String(documentationSource.status ?? "");
+  const localPath = String(childProject.repository?.local_path ?? documentationSource.repository_local_path ?? "").trim();
+  if (sourceStatus !== "available" || sourceType !== "filesystem" || !localPath) {
+    throw new ChildProjectManagementDocumentationSourceUnavailableError(
+      String(documentationSource.message ?? "The child project documentation source is not available."),
+    );
+  }
+  return path.resolve(String(repositoryRoot || process.cwd()), localPath);
+}
+
+/**
+ * Builds a Project Documentation Explorer service scoped to one child workspace.
+ *
+ * @param {{rootDir: string}} input - Child workspace root.
+ * @returns {{getDocumentation(input?: {query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getDetail(input?: {id?: string, access?: Record<string, unknown>}): Promise<Record<string, unknown>>}} Project-scoped service.
+ */
+function createDefaultProjectDocumentationService({ rootDir }) {
+  return createProjectDocumentationExplorerService({
+    sourcePort: createFilesystemProjectModelSourceAdapter({ rootDir }),
+  });
+}
+
+/**
  * Creates the child project management service.
  *
  * @param {ChildProjectManagementServiceOptions} options - Service dependencies.
- * @returns {{listOperationalStates(input?: {principal?: unknown}): Promise<Record<string, unknown>>, getOperationalState(input: {childProjectId: string, principal?: unknown}): Promise<Record<string, unknown>|null>, registerChildProject(input: {childProject: Record<string, unknown>, principal?: unknown}): Promise<Record<string, unknown>>, recordCheckRun(input: {checkRun: Record<string, unknown>, principal?: unknown}): Promise<Record<string, unknown>>}} Service API.
+ * @returns {{listOperationalStates(input?: {principal?: unknown}): Promise<Record<string, unknown>>, getOperationalState(input: {childProjectId: string, principal?: unknown}): Promise<Record<string, unknown>|null>, getChildProjectDocumentation(input: {childProjectId: string, query?: Record<string, unknown>, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, getChildProjectDocumentationDetail(input: {childProjectId: string, entityId: string, access?: Record<string, unknown>}): Promise<Record<string, unknown>>, registerChildProject(input: {childProject: Record<string, unknown>, principal?: unknown}): Promise<Record<string, unknown>>, recordCheckRun(input: {checkRun: Record<string, unknown>, principal?: unknown}): Promise<Record<string, unknown>>}} Service API.
  */
-export function createChildProjectManagementService({ storePort, resolveCapabilities, repositoryRoot, resolveDocumentationSource } = {}) {
+export function createChildProjectManagementService({ storePort, resolveCapabilities, repositoryRoot, resolveDocumentationSource, projectDocumentationServiceFactory } = {}) {
   const store = assertChildProjectStorePort(storePort);
   const documentationSourceResolver = resolveDocumentationSource
     ?? (({ childProject }) => resolveChildProjectDocumentationSource({ childProject, repositoryRoot }));
+  const documentationServiceFactory = projectDocumentationServiceFactory ?? createDefaultProjectDocumentationService;
 
   return Object.freeze({
     async listOperationalStates({ principal } = {}) {
@@ -141,6 +182,28 @@ export function createChildProjectManagementService({ storePort, resolveCapabili
       const states = await store.listChildProjectOperationalStates(principal);
       const state = indexOperationalStates(states).get(normalizedId) ?? null;
       return state ? withOperationalStateDocumentationSource(state, documentationSourceResolver) : null;
+    },
+
+    async getChildProjectDocumentation({ childProjectId, query = {}, access } = {}) {
+      const state = await this.getOperationalState({ childProjectId, principal: access });
+      if (!state) return null;
+
+      const childProject = state.child_project;
+      const documentationSource = childProject.documentation_source;
+      const rootDir = resolveChildWorkspaceRoot(childProject, documentationSource, repositoryRoot);
+      const service = documentationServiceFactory({ childProject, documentationSource, rootDir });
+      return service.getDocumentation({ query, access });
+    },
+
+    async getChildProjectDocumentationDetail({ childProjectId, entityId, access } = {}) {
+      const state = await this.getOperationalState({ childProjectId, principal: access });
+      if (!state) return null;
+
+      const childProject = state.child_project;
+      const documentationSource = childProject.documentation_source;
+      const rootDir = resolveChildWorkspaceRoot(childProject, documentationSource, repositoryRoot);
+      const service = documentationServiceFactory({ childProject, documentationSource, rootDir });
+      return service.getDetail({ id: entityId, access });
     },
 
     async registerChildProject({ childProject, principal } = {}) {

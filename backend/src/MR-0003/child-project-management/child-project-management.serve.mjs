@@ -15,6 +15,8 @@ import { createChildProjectManagementModule } from "./child-project-management.m
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -37,7 +39,7 @@ import { createChildProjectManagementModule } from "./child-project-management.m
  * @typedef {import("./ports/child-project-store.port.mjs").ChildProjectStorePort} ChildProjectStorePort
  * @typedef {{evaluate(input: {principal?: Record<string, unknown>, requiredCapability: string}): Record<string, unknown>}} ChildProjectManagementAccessPolicy
  * @typedef {(request: import("node:http").IncomingMessage) => Record<string, unknown>} PrincipalResolver
- * @typedef {{databasePath?: string, storePort?: ChildProjectStorePort, accessPolicy?: ChildProjectManagementAccessPolicy, principalResolver?: PrincipalResolver}} ChildProjectManagementServeAppOptions
+ * @typedef {{databasePath?: string, storePort?: ChildProjectStorePort, accessPolicy?: ChildProjectManagementAccessPolicy, principalResolver?: PrincipalResolver, repositoryRoot?: string}} ChildProjectManagementServeAppOptions
  * @typedef {ChildProjectManagementServeAppOptions & {host?: string, port?: number, logger?: Pick<Console, "log"|"error">}} ChildProjectManagementServeCommandOptions
  */
 
@@ -161,6 +163,7 @@ export function createChildProjectManagementServeApp(options = {}) {
     databasePath: options.databasePath,
     storePort: options.storePort,
     accessPolicy: options.accessPolicy,
+    repositoryRoot: options.repositoryRoot ?? defaultRootDir,
   });
   const server = createChildProjectManagementHttpServer({
     controller: module.controller,
@@ -193,6 +196,7 @@ export async function startChildProjectManagementServeCommand(options = {}) {
     storePort: options.storePort,
     accessPolicy: options.accessPolicy,
     principalResolver: options.principalResolver,
+    repositoryRoot: defaultRootDir,
   });
 
   await new Promise((resolve, reject) => {

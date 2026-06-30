@@ -561,3 +561,19 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0014
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0067_body.md
+
+  - id: MR-0003REQ-0068
+    title: Project-scoped child documentation collection endpoint
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0015
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0068_body.md
+
+  - id: MR-0003REQ-0069
+    title: Project-scoped child documentation detail endpoint
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0015
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003REQ-0069_body.md

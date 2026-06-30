@@ -7,6 +7,8 @@ import { z } from "zod";
  * @implementsRequirement MR-0003REQ-0026
  * @implementsRequirement MR-0003REQ-0066
  * @implementsRequirement MR-0003REQ-0067
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0005
  * @derivedFromDecision MR-0003/ADR-0014
  * @macroRequirement MR-0003
@@ -31,6 +33,7 @@ export const childProjectManagementCapabilities = Object.freeze({
   register: "child_projects.register",
   recordCheckRun: "child_projects.record_check_run",
   viewOperationalState: "child_projects.view_operational_state",
+  viewDocumentation: "child_projects.documentation.read",
 });
 
 export const childProjectIdSchema = z.string().min(1).regex(/^[a-z0-9][a-z0-9._-]*$/u);

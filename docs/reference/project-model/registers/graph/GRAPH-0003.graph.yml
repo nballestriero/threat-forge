@@ -558,6 +558,24 @@ nodes:
     label: Child project documentation source resolver runtime tests
     path: backend/tests/MR-0003/child-project-management/child-project-documentation-source.resolver.test.mjs
 
+
+  - id: ADR-0015
+    type: ADR
+    label: Project-scoped child documentation API boundary
+
+  - id: MR-0003REQ-0068
+    type: Requirement
+    label: Project-scoped child documentation collection endpoint
+
+  - id: MR-0003REQ-0069
+    type: Requirement
+    label: Project-scoped child documentation detail endpoint
+
+  - id: MR-0003TEST-0006
+    type: VerificationArtifact
+    label: Project-scoped child documentation API runtime tests
+    path: backend/tests/MR-0003/child-project-management/child-project-documentation-api.test.mjs
+
 spo_relations:
   - subject: MR-0003
     predicate: has_decision
@@ -1948,3 +1966,114 @@ spo_relations:
     predicate: verifies
     object: MR-0003REQ-0067
 
+  - subject: MR-0003
+    predicate: has_decision
+    object: ADR-0015
+
+  - subject: ADR-0015
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0068
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: MR-0003REQ-0069
+    predicate: belongs_to
+    object: MR-0003
+
+  - subject: ADR-0015
+    predicate: justifies
+    object: MR-0003REQ-0068
+
+  - subject: ADR-0015
+    predicate: justifies
+    object: MR-0003REQ-0069
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0001
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0004
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0005
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0006
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0007
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0008
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0009
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0010
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003API-0001
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0001
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0004
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0005
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0006
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0007
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0008
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0009
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0010
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003API-0001
+
+  - subject: MR-0003TEST-0006
+    predicate: verifies
+    object: MR-0003REQ-0068
+
+  - subject: MR-0003TEST-0006
+    predicate: verifies
+    object: MR-0003REQ-0069
+
+  - subject: MR-0003REQ-0068
+    predicate: implemented_by
+    object: MR-0003SRC-0011
+
+  - subject: MR-0003REQ-0069
+    predicate: implemented_by
+    object: MR-0003SRC-0011

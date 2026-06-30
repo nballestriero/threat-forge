@@ -4,6 +4,8 @@
  * @implementsRequirement MR-0003REQ-0015
  * @implementsRequirement MR-0003REQ-0025
  * @implementsRequirement MR-0003REQ-0026
+ * @implementsRequirement MR-0003REQ-0068
+ * @implementsRequirement MR-0003REQ-0069
  * @derivedFromDecision MR-0003/ADR-0002
  * @derivedFromDecision MR-0003/ADR-0005
  * @macroRequirement MR-0003
@@ -66,6 +68,23 @@ export class ChildProjectManagementInvalidRequestError extends ChildProjectManag
     super({
       code: "invalid_request",
       statusCode: 400,
+      message,
+    });
+  }
+}
+
+
+/**
+ * Error raised when a child project documentation source cannot be served.
+ */
+export class ChildProjectManagementDocumentationSourceUnavailableError extends ChildProjectManagementError {
+  /**
+   * @param {string} message - Stable public message.
+   */
+  constructor(message) {
+    super({
+      code: "documentation_source_unavailable",
+      statusCode: 409,
       message,
     });
   }
