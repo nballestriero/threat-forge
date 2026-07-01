@@ -1,0 +1,13 @@
+schema_version: 1
+registry_id: MR-0010-decisions-registry
+macro_requirement_id: MR-0010
+
+decisions:
+  - id: ADR-0001
+    title: Project Knowledge Governance Manual as a dedicated macro-requirement
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-07-01
+    macro_requirement_id: MR-0010
+    body_path: docs/reference/project-model/body/decisions/MR-0010/ADR-0001_body.md

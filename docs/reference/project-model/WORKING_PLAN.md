@@ -28,6 +28,29 @@ The next strategic focus is semantic gate hardening before new feature work. A p
 
 `MR-0000/ADR-0011` refines the canonical-terminology hardening approach: open-ended terminology and semantic-drift review is LLM-assisted and advisory first; deterministic gates are introduced only after a finding is human-reviewed, narrowly scoped, governed by ADR/REQ, backed by fixture coverage and connected in the graph.
 
+`MR-0010/ADR-0001` declares the Project Knowledge Governance Manual as a dedicated macro-requirement. This shifts the immediate study workstream from scattered explanations to a governed manual that teaches students, developers and LLM assistants how documentation, graph records, code traceability, contracts, gates, child-project governance and future threat analysis fit together.
+
+### Immediate Project Knowledge Governance Manual Priorities
+
+1. `docs: declare Project Knowledge Governance Manual macro-requirement`
+   - Create `MR-0010` as the manual and study-guide macro-requirement.
+   - Define initial requirements for manual structure, learning paths, diagram strategy, code-coherence guidance, LLM reading routes and thesis-oriented source boundaries.
+
+2. `docs: add Project Knowledge Governance Manual index and chapter skeleton`
+   - Add the first manual index and chapter files.
+   - Keep chapters modular, study-oriented and linked to canonical records.
+
+3. `docs: write documentation, graph and code traceability foundations chapters`
+   - Explain canonical sources, ADR/REQ/body/graph relationships and how code cannot diverge from documentation.
+   - Include versionable diagrams for the ADR → REQ → graph → code → gate flow.
+
+4. `docs: write deterministic gates and LLM-assisted development chapters`
+   - Explain active gates, failure modes, contracts, evidence and advisory LLM review boundaries.
+   - Define how LLM reading routes support development without replacing deterministic governance.
+
+5. `tooling: validate Project Knowledge Governance Manual index and reading routes`
+   - Add deterministic validation only after the manual structure and route records stabilize.
+
 ### Immediate Semantic Gate Priorities
 
 1. `docs: define child gate plan, execution, freshness and Knowledge Graph ingestion status model`

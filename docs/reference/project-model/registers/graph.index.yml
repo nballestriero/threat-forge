@@ -42,3 +42,8 @@ graphs:
   - graph_id: GRAPH-0009
     name: Reporting, dashboards and product intelligence graph
     path: docs/reference/project-model/registers/graph/GRAPH-0009.graph.yml
+
+
+  - graph_id: GRAPH-0010
+    name: Project knowledge governance manual graph
+    path: docs/reference/project-model/registers/graph/GRAPH-0010.graph.yml

@@ -1,0 +1,51 @@
+schema_version: 1
+macro_requirement_id: MR-0010
+
+requirements:
+  - id: MR-0010REQ-0001
+    title: Governed manual structure and chapter index
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0010/MR-0010REQ-0001_body.md
+
+  - id: MR-0010REQ-0002
+    title: Study-oriented learning paths for students and developers
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0010/MR-0010REQ-0002_body.md
+
+  - id: MR-0010REQ-0003
+    title: Versionable diagram strategy for graph, gates, contracts and code
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0010/MR-0010REQ-0003_body.md
+
+  - id: MR-0010REQ-0004
+    title: Code coherence and anti-duplication development guidance
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0010/MR-0010REQ-0004_body.md
+
+  - id: MR-0010REQ-0005
+    title: LLM reading routes for assisted development and semantic review
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0010/MR-0010REQ-0005_body.md
+
+  - id: MR-0010REQ-0006
+    title: Canonical-source boundary for thesis-oriented explanations
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0010/MR-0010REQ-0006_body.md
