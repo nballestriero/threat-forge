@@ -30,6 +30,8 @@ The next strategic focus is semantic gate hardening before new feature work. A p
 
 `MR-0010/ADR-0001` declares the Project Knowledge Governance Manual as a dedicated macro-requirement. This shifts the immediate study workstream from scattered explanations to a governed manual that teaches students, developers and LLM assistants how documentation, graph records, code traceability, contracts, gates, child-project governance and future threat analysis fit together.
 
+A high-priority contract-governance gap was identified while writing the runtime contract chapter: the controlled-vocabulary consistency gate already checks selected owner registry values against selected runtime contract and OpenAPI projections, but taxonomy-controlled values are not yet generally generated from, imported from or explicitly associated with their owner taxonomy/registry across Zod contracts, OpenAPI schemas and UI projections. This must become a priority before broader LLM-assisted development, real child-project execution or threat-analysis ingestion depend on taxonomy-controlled runtime values.
+
 ### Immediate Project Knowledge Governance Manual Priorities
 
 1. `docs: declare Project Knowledge Governance Manual macro-requirement`
@@ -62,27 +64,33 @@ The next strategic focus is semantic gate hardening before new feature work. A p
    - Prevent registry values, Zod/runtime contracts, OpenAPI schemas, storage records and UI states from accepting different vocabularies for the same governed field.
    - Start with child-project governance status vocabularies.
 
-3. `tooling: enforce graph and registry ownership consistency`
+3. `tooling: define taxonomy-to-contract/API/UI association and derivation boundary`
+   - Make taxonomy or owner registry records the central source for controlled field values.
+   - Define how a taxonomy-controlled field is associated with its Zod/runtime contract schema, OpenAPI enum and UI/view-model projection.
+   - Prefer generated or imported runtime constants from taxonomy/owner registries where practical; otherwise require deterministic mapping records that the gate can validate.
+   - Extend deterministic checks so selected fields cannot drift between taxonomy owner, runtime contract, OpenAPI and UI-facing controlled values.
+
+4. `tooling: enforce graph and registry ownership consistency`
    - Require reciprocal `MR -> has_decision -> ADR` and `ADR -> belongs_to -> MR` ownership.
    - Require requirement `derived_from_decision_id` to match canonical `ADR -> justifies -> REQ` graph relations.
    - Preserve future ADR/REQ specialization through explicit secondary semantics, not duplicate ownership.
 
-4. `docs: define LLM-assisted semantic governance review and deterministic promotion boundary`
+5. `docs: define LLM-assisted semantic governance review and deterministic promotion boundary`
    - Use governed prompt records for open-ended terminology and semantic-drift review.
    - Keep LLM findings advisory, evidence-linked and non-blocking by default.
    - Promote only narrow, high-confidence, human-reviewed findings to deterministic gates with ADR/REQ/fixture/graph traceability.
 
-5. `tooling: add optional LLM semantic review report generator`
+6. `tooling: add optional LLM semantic review report generator`
    - Read the governed prompt registry and selected project-model inputs.
    - Emit an advisory report without changing repository files or blocking `repo:check`.
    - Record prompt id/version, input scope, evidence paths, confidence and limitations.
 
-6. `docs: define real child project onboarding and gate execution lifecycle`
+7. `docs: define real child project onboarding and gate execution lifecycle`
    - Decide how real projects are created or registered: local workspace, Git checkout/clone, template or other intake path.
    - Decide profile/type selection and execution timing.
    - Define check-run, gate-result, violation and stale-state persistence before implementing an executor.
 
-7. `docs: define Knowledge Graph ingestion boundary for LLM-assisted development and security analysis`
+8. `docs: define Knowledge Graph ingestion boundary for LLM-assisted development and security analysis`
    - Do not allow dirty, stale or incomplete child-project knowledge to feed GraphRAG, development assistance, Base Analysis, STRIDE or STRIDE-AI.
    - Keep platform knowledge, child-project knowledge and analysis snapshots project-scoped and evidence-linked.
 
@@ -2000,4 +2008,21 @@ The chapter teaches students and developers how to interpret `repo:check` as an 
 This step is explanatory and study-oriented. It does not introduce new repository gates, runtime behavior, child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
 
 The next safe MR-0010 step is to expand the manual with a contracts and code coherence chapter that studies runtime contracts, OpenAPI, source files, JSDoc traceability and frontend view-models through concrete examples.
+
+## Project Knowledge Governance Manual Runtime Contracts and API Coherence Micropasso
+
+This document-only MR-0010 micropasso expands the Project Knowledge Governance Manual with a detailed runtime contracts and API coherence chapter.
+
+Commit target: `docs: write Project Knowledge Governance Manual runtime contracts and API coherence model`.
+
+Governed documentation added:
+
+- `docs/explanation/project-knowledge-governance-manual/part-04-runtime-contracts-and-api-coherence-model.md` — Study chapter explaining runtime contracts, taxonomy-controlled field values, OpenAPI alignment, frontend view-models, UI labels, fail-closed behavior and contract-safe developer workflows.
+- `DOC-MR0010-project-knowledge-governance-manual-part-04` — Graph document node for the fourth study chapter.
+
+The chapter teaches students and developers how governed values move from registries and taxonomies into runtime contracts, service-built view-models, controllers, OpenAPI schemas, frontend filters and UI labels. It explains why runtime contracts are executable boundaries rather than parallel sources of truth, and how they help prevent shape drift, value drift, boundary drift and documentation drift.
+
+This step is explanatory and study-oriented. It does not introduce new repository gates, runtime behavior, child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
+
+The next safe MR-0010 step is to expand the manual with a programming patterns and code coherence chapter that explains Controller → Service → Port → Adapter, composition roots, adapters, tests, fixtures and JSDoc traceability through concrete examples.
 

@@ -57,6 +57,11 @@ nodes:
     label: Project Knowledge Governance Manual deterministic gates catalog
     path: docs/explanation/project-knowledge-governance-manual/part-03-deterministic-gates-catalog.md
 
+  - id: DOC-MR0010-project-knowledge-governance-manual-part-04
+    type: Document
+    label: Project Knowledge Governance Manual runtime contracts and API coherence model
+    path: docs/explanation/project-knowledge-governance-manual/part-04-runtime-contracts-and-api-coherence-model.md
+
 spo_relations:
   - subject: MR-0010
     predicate: has_decision
@@ -177,4 +182,24 @@ spo_relations:
   - subject: MR-0010REQ-0006
     predicate: described_by
     object: DOC-MR0010-project-knowledge-governance-manual-part-03
+
+  - subject: MR-0010REQ-0002
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-04
+
+  - subject: MR-0010REQ-0003
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-04
+
+  - subject: MR-0010REQ-0004
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-04
+
+  - subject: MR-0010REQ-0005
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-04
+
+  - subject: MR-0010REQ-0006
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-04
 
