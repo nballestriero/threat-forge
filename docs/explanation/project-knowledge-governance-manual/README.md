@@ -22,16 +22,17 @@ The manual is a guided explanation over those sources. If the manual identifies 
 
 1. [`Part 01 - Current-state foundations`](part-01-current-state-foundations.md)
 2. [`Part 02 - Graph and traceability model`](part-02-graph-and-traceability-model.md)
+3. [`Part 03 - Deterministic gates catalog`](part-03-deterministic-gates-catalog.md)
 
 ## Study routes
 
 ### Student route
 
-Start with Part 01. Focus on the system map, the canonical-source boundary, the ADR-to-code flow and the gate taxonomy. Use the diagrams to understand why threat-forge treats documentation as operational project knowledge rather than passive notes.
+Start with Part 01, then continue with Part 02 and Part 03. Focus on the system map, the canonical-source boundary, the ADR-to-code flow, the graph model and the deterministic gate catalog. Use the diagrams to understand why threat-forge treats documentation as operational project knowledge rather than passive notes.
 
 ### Developer route
 
-Start with the sections on code coherence, anti-duplication and gate failure meaning. Before writing code, identify the relevant macro-requirement, decision, requirement and graph relation. Code should follow the documentation, not invent a parallel design.
+Start with the sections on code coherence, anti-duplication, graph traceability and gate failure meaning. Before writing code, identify the relevant macro-requirement, decision, requirement and graph relation. Code should follow the documentation, not invent a parallel design.
 
 ### LLM-assisted reviewer route
 

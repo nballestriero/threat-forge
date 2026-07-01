@@ -52,6 +52,11 @@ nodes:
     label: Project Knowledge Governance Manual graph and traceability model
     path: docs/explanation/project-knowledge-governance-manual/part-02-graph-and-traceability-model.md
 
+  - id: DOC-MR0010-project-knowledge-governance-manual-part-03
+    type: Document
+    label: Project Knowledge Governance Manual deterministic gates catalog
+    path: docs/explanation/project-knowledge-governance-manual/part-03-deterministic-gates-catalog.md
+
 spo_relations:
   - subject: MR-0010
     predicate: has_decision
@@ -152,4 +157,24 @@ spo_relations:
   - subject: MR-0010REQ-0006
     predicate: described_by
     object: DOC-MR0010-project-knowledge-governance-manual-part-02
+
+  - subject: MR-0010REQ-0002
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-03
+
+  - subject: MR-0010REQ-0003
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-03
+
+  - subject: MR-0010REQ-0004
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-03
+
+  - subject: MR-0010REQ-0005
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-03
+
+  - subject: MR-0010REQ-0006
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-03
 

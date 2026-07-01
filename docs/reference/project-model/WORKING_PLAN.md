@@ -1983,3 +1983,21 @@ The chapter teaches students and developers how to move from a macro-requirement
 This step is explanatory and study-oriented. It does not introduce new runtime behavior, new repository gates, child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
 
 The next safe MR-0010 step is to expand the manual with a deterministic gates catalog that explains each active gate, its input, output, failure mode and correction strategy.
+
+## Project Knowledge Governance Manual Deterministic Gates Catalog Micropasso
+
+This document-only MR-0010 micropasso expands the Project Knowledge Governance Manual with a deterministic gates catalog chapter.
+
+Commit target: `docs: write Project Knowledge Governance Manual deterministic gates catalog`.
+
+Governed documentation added:
+
+- `docs/explanation/project-knowledge-governance-manual/part-03-deterministic-gates-catalog.md` — Study chapter explaining the active deterministic gate categories, gate anatomy, failure reading strategy, contract consistency, code traceability, child-project planning gates, build/runtime gates and LLM-safe gate debugging route.
+- `DOC-MR0010-project-knowledge-governance-manual-part-03` — Graph document node for the third study chapter.
+
+The chapter teaches students and developers how to interpret `repo:check` as an executable proof that selected documentation, graph, contract, code and child-project governance invariants still hold. It explains gate-by-gate responsibilities, typical failure meaning and correction strategy without introducing new runtime behavior or new blocking controls.
+
+This step is explanatory and study-oriented. It does not introduce new repository gates, runtime behavior, child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
+
+The next safe MR-0010 step is to expand the manual with a contracts and code coherence chapter that studies runtime contracts, OpenAPI, source files, JSDoc traceability and frontend view-models through concrete examples.
+
