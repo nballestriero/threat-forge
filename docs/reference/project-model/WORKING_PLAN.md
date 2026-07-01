@@ -26,6 +26,8 @@ The next strategic focus is semantic gate hardening before new feature work. A p
 
 `MR-0000/ADR-0009` fixes the current decision boundary: semantic gates must be strengthened before real child-project gate execution, child-project Knowledge Graph ingestion, Base Analysis runtime, STRIDE overlays or STRIDE-AI overlays proceed.
 
+`MR-0000/ADR-0011` refines the canonical-terminology hardening approach: open-ended terminology and semantic-drift review is LLM-assisted and advisory first; deterministic gates are introduced only after a finding is human-reviewed, narrowly scoped, governed by ADR/REQ, backed by fixture coverage and connected in the graph.
+
 ### Immediate Semantic Gate Priorities
 
 1. `docs: define child gate plan, execution, freshness and Knowledge Graph ingestion status model`
@@ -42,17 +44,22 @@ The next strategic focus is semantic gate hardening before new feature work. A p
    - Require requirement `derived_from_decision_id` to match canonical `ADR -> justifies -> REQ` graph relations.
    - Preserve future ADR/REQ specialization through explicit secondary semantics, not duplicate ownership.
 
-4. `tooling: enforce minimal canonical terminology in governed labels`
-   - Guard only high-impact governed titles and labels.
-   - Avoid a large prose taxonomy.
-   - Treat historical naming as legacy context rather than new canonical naming.
+4. `docs: define LLM-assisted semantic governance review and deterministic promotion boundary`
+   - Use governed prompt records for open-ended terminology and semantic-drift review.
+   - Keep LLM findings advisory, evidence-linked and non-blocking by default.
+   - Promote only narrow, high-confidence, human-reviewed findings to deterministic gates with ADR/REQ/fixture/graph traceability.
 
-5. `docs: define real child project onboarding and gate execution lifecycle`
+5. `tooling: add optional LLM semantic review report generator`
+   - Read the governed prompt registry and selected project-model inputs.
+   - Emit an advisory report without changing repository files or blocking `repo:check`.
+   - Record prompt id/version, input scope, evidence paths, confidence and limitations.
+
+6. `docs: define real child project onboarding and gate execution lifecycle`
    - Decide how real projects are created or registered: local workspace, Git checkout/clone, template or other intake path.
    - Decide profile/type selection and execution timing.
    - Define check-run, gate-result, violation and stale-state persistence before implementing an executor.
 
-6. `docs: define Knowledge Graph ingestion boundary for LLM-assisted development and security analysis`
+7. `docs: define Knowledge Graph ingestion boundary for LLM-assisted development and security analysis`
    - Do not allow dirty, stale or incomplete child-project knowledge to feed GraphRAG, development assistance, Base Analysis, STRIDE or STRIDE-AI.
    - Keep platform knowledge, child-project knowledge and analysis snapshots project-scoped and evidence-linked.
 

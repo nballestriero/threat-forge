@@ -293,6 +293,28 @@ nodes:
     label: Graph and registry ownership consistency checker
     path: backend/tools/MR-0000/check-graph-registry-ownership-consistency.mjs
 
+
+  - id: ADR-0011
+    type: ADR
+    label: LLM-assisted semantic governance review boundary
+
+  - id: MR-0000REQ-0032
+    type: Requirement
+    label: LLM-assisted semantic governance review role and prompt registry
+
+  - id: MR-0000REQ-0033
+    type: Requirement
+    label: Advisory semantic review report boundary
+
+  - id: MR-0000REQ-0034
+    type: Requirement
+    label: Deterministic promotion policy for LLM semantic findings
+
+  - id: REG-llm-semantic-governance-prompts
+    type: Registry
+    label: LLM semantic governance prompt registry
+    path: docs/reference/project-model/registers/llm-governance/semantic-review-prompts.registry.yml
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -895,3 +917,51 @@ spo_relations:
   - subject: TOOL-check-graph-registry-ownership-consistency
     predicate: verifies
     object: MR-0000REQ-0024
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0011
+
+  - subject: ADR-0011
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0032
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0033
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0034
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0000REQ-0032
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0000REQ-0033
+
+  - subject: ADR-0011
+    predicate: justifies
+    object: MR-0000REQ-0034
+
+  - subject: MR-0000REQ-0032
+    predicate: implemented_by
+    object: REG-llm-semantic-governance-prompts
+
+  - subject: MR-0000REQ-0033
+    predicate: implemented_by
+    object: REG-llm-semantic-governance-prompts
+
+  - subject: MR-0000REQ-0034
+    predicate: implemented_by
+    object: REG-llm-semantic-governance-prompts
+
+  - subject: REG-llm-semantic-governance-prompts
+    predicate: belongs_to
+    object: MR-0000

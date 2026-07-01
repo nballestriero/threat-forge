@@ -315,3 +315,27 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0010
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0031_body.md
+
+  - id: MR-0000REQ-0032
+    title: LLM-assisted semantic governance review role and prompt registry
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0032_body.md
+
+  - id: MR-0000REQ-0033
+    title: Advisory semantic review report boundary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0033_body.md
+
+  - id: MR-0000REQ-0034
+    title: Deterministic promotion policy for LLM semantic findings
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0034_body.md
