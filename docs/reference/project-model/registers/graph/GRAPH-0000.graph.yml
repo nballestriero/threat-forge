@@ -256,6 +256,33 @@ nodes:
     type: Requirement
     label: Child execution and knowledge graph ingestion hardening prerequisite
 
+
+
+  - id: ADR-0010
+    type: ADR
+    label: Child gate planning, execution, freshness and Knowledge Graph ingestion status model
+
+  - id: MR-0000REQ-0028
+    type: Requirement
+    label: Child gate planning status model
+
+  - id: MR-0000REQ-0029
+    type: Requirement
+    label: Child gate execution result status model
+
+  - id: MR-0000REQ-0030
+    type: Requirement
+    label: Child check-run freshness status model
+
+  - id: MR-0000REQ-0031
+    type: Requirement
+    label: Child Knowledge Graph ingestion eligibility status model
+
+  - id: REG-child-project-governance-status-model
+    type: Registry
+    label: Child project governance status model registry
+    path: docs/reference/project-model/registers/child-project-governance/status-model.registry.yml
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -766,4 +793,64 @@ spo_relations:
   - subject: ADR-0009
     predicate: justifies
     object: MR-0000REQ-0027
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0010
+
+  - subject: ADR-0010
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0028
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0029
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0030
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0031
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0000REQ-0028
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0000REQ-0029
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0000REQ-0030
+
+  - subject: ADR-0010
+    predicate: justifies
+    object: MR-0000REQ-0031
+
+  - subject: MR-0000REQ-0028
+    predicate: implemented_by
+    object: REG-child-project-governance-status-model
+
+  - subject: MR-0000REQ-0029
+    predicate: implemented_by
+    object: REG-child-project-governance-status-model
+
+  - subject: MR-0000REQ-0030
+    predicate: implemented_by
+    object: REG-child-project-governance-status-model
+
+  - subject: MR-0000REQ-0031
+    predicate: implemented_by
+    object: REG-child-project-governance-status-model
+
+  - subject: REG-child-project-governance-status-model
+    predicate: belongs_to
+    object: MR-0000
 

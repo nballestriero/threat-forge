@@ -1,0 +1,119 @@
+schema_version: 1
+registry_id: child-project-governance-status-model
+name: Child project governance status model
+purpose: Canonical status families for child gate planning, execution results, check-run freshness and Knowledge Graph ingestion eligibility before real child execution is trusted.
+owner_macro_requirement: MR-0000
+owner_decision_id: ADR-0010
+
+status_families:
+  - id: gate_planning_status
+    label: Gate planning status
+    description: Describes whether a gate is selected and executable for a child-project target before execution.
+    governed_field_names:
+      - gate_plan.status
+      - planned_gate.status
+    values:
+      - id: ready
+        label: Ready
+        description: Gate is selected and has enough prerequisites to execute.
+        trust_effect: may_execute
+      - id: planned
+        label: Planned
+        description: Gate is selected by governance model but execution is intentionally deferred.
+        trust_effect: not_execution_evidence
+      - id: blocked
+        label: Blocked
+        description: Gate is selected but a prerequisite, source, semantic condition or implementation is missing.
+        trust_effect: blocks_trust
+      - id: not_applicable
+        label: Not applicable
+        description: Gate is excluded for this target with recorded reason and evidence.
+        trust_effect: neutral_with_evidence
+      - id: unsupported
+        label: Unsupported
+        description: Required project capability is present but threat-forge has no validator or adapter yet.
+        trust_effect: blocks_trust
+
+  - id: gate_execution_result_status
+    label: Gate execution result status
+    description: Describes the outcome of a concrete gate execution or explicit non-execution decision.
+    governed_field_names:
+      - check_run.overall_status
+      - gate_result.status
+    transitional_runtime_values:
+      - skipped
+      - reserved
+      - unknown
+    values:
+      - id: pass
+        label: Pass
+        description: Gate executed and succeeded.
+        trust_effect: positive_evidence
+      - id: fail
+        label: Fail
+        description: Gate executed or mandatory evidence failed.
+        trust_effect: blocks_trust
+      - id: warning
+        label: Warning
+        description: Gate executed with non-blocking findings or unsupported capability notice.
+        trust_effect: degraded_evidence
+      - id: not_executed
+        label: Not executed
+        description: Gate did not run and must not be treated as pass evidence.
+        trust_effect: blocks_trust_unless_not_applicable
+
+  - id: check_run_freshness_status
+    label: Check-run freshness status
+    description: Describes whether the latest child-project check run can still be trusted for decisions.
+    governed_field_names:
+      - check_run.freshness_status
+      - child_project.freshness_status
+    values:
+      - id: fresh
+        label: Fresh
+        description: Recorded evidence still matches the governed source and accepted freshness boundary.
+        trust_effect: may_trust_if_results_pass
+      - id: stale
+        label: Stale
+        description: Source evidence changed or passed the warning boundary after the recorded check run.
+        trust_effect: blocks_ingestion
+      - id: expired
+        label: Expired
+        description: Check run is older than the maximum accepted trust window.
+        trust_effect: blocks_ingestion
+      - id: unknown
+        label: Unknown
+        description: Freshness cannot be determined from current evidence.
+        trust_effect: blocks_ingestion
+
+  - id: knowledge_graph_ingestion_status
+    label: Knowledge Graph ingestion status
+    description: Describes whether child-project knowledge may enter trusted LLM and security-analysis knowledge surfaces.
+    governed_field_names:
+      - child_project.knowledge_graph_ingestion_status
+      - ingestion_job.status
+    values:
+      - id: eligible
+        label: Eligible
+        description: Registration, source, semantic gates, freshness and ownership evidence are trusted enough to ingest.
+        trust_effect: may_ingest
+      - id: blocked
+        label: Blocked
+        description: A required prerequisite is missing or failed before ingestion starts.
+        trust_effect: do_not_ingest
+      - id: stale
+        label: Stale
+        description: Ingestion is blocked because check-run or source evidence is stale or expired.
+        trust_effect: do_not_ingest
+      - id: quarantined
+        label: Quarantined
+        description: Child-project knowledge is available but semantically inconsistent or untrusted.
+        trust_effect: do_not_use_as_trusted_context
+      - id: ingested
+        label: Ingested
+        description: The latest eligible source snapshot has been ingested into the trusted Knowledge Graph.
+        trust_effect: trusted_until_freshness_changes
+      - id: not_configured
+        label: Not configured
+        description: Knowledge Graph ingestion is not configured for this child project or environment.
+        trust_effect: do_not_ingest

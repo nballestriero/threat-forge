@@ -280,3 +280,38 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0009
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0027_body.md
+
+  - id: MR-0000REQ-0028
+    title: Child gate planning status model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0028_body.md
+
+
+  - id: MR-0000REQ-0029
+    title: Child gate execution result status model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0029_body.md
+
+
+  - id: MR-0000REQ-0030
+    title: Child check-run freshness status model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0030_body.md
+
+
+  - id: MR-0000REQ-0031
+    title: Child Knowledge Graph ingestion eligibility status model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0031_body.md

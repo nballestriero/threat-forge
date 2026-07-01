@@ -1852,3 +1852,24 @@ The closed behavior includes these guarantees:
 The milestone intentionally does not include child Project Model mutation, write APIs, Git repository cloning, remote project onboarding, dynamic RBAC administration, Base Analysis runtime/storage, STRIDE overlays or STRIDE-AI overlays.
 
 The next safe step after tagging the milestone is to expose registered child project documentation source details in the Child Projects UI so real projects can show which workspace/source is registered, whether the source is currently available, and why a source is unavailable before users open the Documents view.
+
+## Child Gate Status Model Micropasso
+
+This document-only semantic hardening micropasso defines the child-project gate planning, execution, freshness and Knowledge Graph ingestion status model before real child gate execution or Knowledge Graph ingestion is implemented.
+
+Commit target: `docs: define child gate and knowledge graph ingestion status model`.
+
+Governed records added:
+
+- `MR-0000/ADR-0010` — Child gate planning, execution, freshness and Knowledge Graph ingestion status model.
+- `MR-0000REQ-0028` — Child gate planning status model.
+- `MR-0000REQ-0029` — Child gate execution result status model.
+- `MR-0000REQ-0030` — Child check-run freshness status model.
+- `MR-0000REQ-0031` — Child Knowledge Graph ingestion eligibility status model.
+- `child-project-governance-status-model` — Canonical registry for the separated status families.
+
+The status model separates planned gate selection from execution results, check-run freshness and Knowledge Graph ingestion eligibility. Passing execution results are not enough for trusted ingestion when the check run is stale, source evidence is unknown, semantic gates fail, controlled vocabularies diverge or ownership consistency is unresolved. Such child-project knowledge must remain blocked or quarantined rather than exposed to LLM-assisted development or security analysis.
+
+This step does not implement the controlled vocabulary gate, graph ownership gate, child-project executor, SQLite migrations, OpenAPI/runtime enum updates, Knowledge Graph ingestion, Base Analysis, STRIDE or STRIDE-AI.
+
+The next safe step is `tooling: enforce controlled vocabulary consistency across registries and contracts`, using the new status model as one of the vocabulary owners to compare against runtime contracts and OpenAPI schemas.
