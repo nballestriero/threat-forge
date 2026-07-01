@@ -21,6 +21,7 @@ The manual is a guided explanation over those sources. If the manual identifies 
 ## Current manual parts
 
 1. [`Part 01 - Current-state foundations`](part-01-current-state-foundations.md)
+2. [`Part 02 - Graph and traceability model`](part-02-graph-and-traceability-model.md)
 
 ## Study routes
 

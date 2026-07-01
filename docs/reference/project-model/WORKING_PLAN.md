@@ -1966,3 +1966,20 @@ The first manual slice explains the current-state foundation for students, devel
 This step is explanatory and study-oriented. It does not introduce new runtime behavior, new repository gates, new child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
 
 The next safe MR-0010 step is to expand the manual with a detailed canonical-source and repository layout chapter, then a graph-reading chapter with local graph diagrams and concrete entity examples.
+
+## Project Knowledge Governance Manual Graph and Traceability Model Micropasso
+
+This document-only MR-0010 micropasso expands the Project Knowledge Governance Manual with a graph and traceability model chapter.
+
+Commit target: `docs: write Project Knowledge Governance Manual graph and traceability model`.
+
+Governed documentation added:
+
+- `docs/explanation/project-knowledge-governance-manual/part-02-graph-and-traceability-model.md` — Study chapter explaining graph files, graph index, node families, relation semantics, local graph reading, code traceability, anti-duplication and graph-guided LLM context.
+- `DOC-MR0010-project-knowledge-governance-manual-part-02` — Graph document node for the second study chapter.
+
+The chapter teaches students and developers how to move from a macro-requirement to ADR, requirement, explanatory document, implementation artifact and verification artifact. It also explains why local graph views are more useful than a global graph for study and LLM context retrieval, and how graph-guided reading helps avoid duplicate code or undocumented behavior.
+
+This step is explanatory and study-oriented. It does not introduce new runtime behavior, new repository gates, child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
+
+The next safe MR-0010 step is to expand the manual with a deterministic gates catalog that explains each active gate, its input, output, failure mode and correction strategy.
