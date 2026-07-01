@@ -1947,3 +1947,22 @@ This step adds a focused negative fixture proving that a requirement whose `deri
 This step does not implement graph cleanup manifests, duplicate-ownership consolidation, minimal terminology guard, child-project executor, Knowledge Graph ingestion, Base Analysis, STRIDE or STRIDE-AI runtime behavior.
 
 The next safe step is `tooling: enforce minimal canonical terminology guard for governed labels`, scoped only to governed titles and labels so it does not become a broad natural-language linter.
+
+## Project Knowledge Governance Manual First Study Slice Micropasso
+
+This document-only MR-0010 micropasso writes the first study-oriented manual slice for threat-forge project knowledge governance.
+
+Commit target: `docs: write Project Knowledge Governance Manual current-state foundations`.
+
+Governed documentation added:
+
+- `docs/explanation/project-knowledge-governance-manual/README.md` — Manual index, canonical-source boundary and study routes.
+- `docs/explanation/project-knowledge-governance-manual/part-01-current-state-foundations.md` — First study chapter explaining the current documentation, graph, code traceability and gate model.
+- `DOC-MR0010-project-knowledge-governance-manual-index` — Graph document node for the manual index.
+- `DOC-MR0010-project-knowledge-governance-manual-part-01` — Graph document node for the first study chapter.
+
+The first manual slice explains the current-state foundation for students, developers and LLM-assisted reviewers. It introduces the canonical-source boundary, the ADR-to-requirement-to-graph-to-code chain, the active gate taxonomy, the code coherence and anti-duplication workflow, and the advisory-only role of LLM semantic review.
+
+This step is explanatory and study-oriented. It does not introduce new runtime behavior, new repository gates, new child-project execution, Knowledge Graph ingestion, Base Analysis, STRIDE, PASTA or STRIDE-AI behavior.
+
+The next safe MR-0010 step is to expand the manual with a detailed canonical-source and repository layout chapter, then a graph-reading chapter with local graph diagrams and concrete entity examples.

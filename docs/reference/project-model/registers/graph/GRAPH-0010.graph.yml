@@ -36,6 +36,17 @@ nodes:
     type: Requirement
     label: Canonical-source boundary for thesis-oriented explanations
 
+
+  - id: DOC-MR0010-project-knowledge-governance-manual-index
+    type: Document
+    label: Project Knowledge Governance Manual index
+    path: docs/explanation/project-knowledge-governance-manual/README.md
+
+  - id: DOC-MR0010-project-knowledge-governance-manual-part-01
+    type: Document
+    label: Project Knowledge Governance Manual current-state foundations
+    path: docs/explanation/project-knowledge-governance-manual/part-01-current-state-foundations.md
+
 spo_relations:
   - subject: MR-0010
     predicate: has_decision
@@ -92,3 +103,32 @@ spo_relations:
   - subject: MR-0010REQ-0006
     predicate: belongs_to
     object: MR-0010
+
+  - subject: MR-0010REQ-0001
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-index
+
+  - subject: MR-0010REQ-0001
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-01
+
+  - subject: MR-0010REQ-0002
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-01
+
+  - subject: MR-0010REQ-0003
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-01
+
+  - subject: MR-0010REQ-0004
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-01
+
+  - subject: MR-0010REQ-0005
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-01
+
+  - subject: MR-0010REQ-0006
+    predicate: described_by
+    object: DOC-MR0010-project-knowledge-governance-manual-part-01
+
