@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0000REQ-0019
  * @implementsRequirement MR-0000REQ-0021
  * @implementsRequirement MR-0000REQ-0023
+ * @implementsRequirement MR-0000REQ-0024
  * @implementsRequirement MR-0000REQ-0025
  * @implementsRequirement MR-0003REQ-0022
  * @implementsRequirement MR-0003REQ-0029
@@ -23,6 +24,7 @@ import { fileURLToPath } from "node:url";
  * @derivedFromDecision MR-0000/ADR-0003
  * @derivedFromDecision MR-0000/ADR-0006
  * @derivedFromDecision MR-0000/ADR-0008
+ * @derivedFromDecision MR-0000/ADR-0009
  * @derivedFromDecision MR-0003/ADR-0004
  * @derivedFromDecision MR-0003/ADR-0010
  * @derivedFromDecision MR-0003/ADR-0011
@@ -55,6 +57,11 @@ const commitMessage = rawArgs.slice(1).join(" ").trim();
 
 const gateCommands = [
   { label: "Graph format", command: "npm", args: ["run", "docs:graph-format"] },
+  {
+    label: "Graph and registry ownership consistency",
+    command: "npm",
+    args: ["run", "docs:graph-registry-ownership-consistency"],
+  },
   { label: "Project-model pages", command: "npm", args: ["run", "docs:pages"] },
   {
     label: "Documentation structure",
@@ -305,9 +312,11 @@ if (mode === "--check") {
   console.log("Implemented requirement: MR-0000REQ-0019");
   console.log("Implemented requirement: MR-0000REQ-0021");
   console.log("Implemented requirement: MR-0000REQ-0023");
+  console.log("Implemented requirement: MR-0000REQ-0024");
+  console.log("Implemented requirement: MR-0000REQ-0025");
   console.log("Implemented requirement: MR-0003REQ-0022");
-console.log("Implemented requirement: MR-0003REQ-0050");
-console.log("Implemented requirement: MR-0003REQ-0054");
+  console.log("Implemented requirement: MR-0003REQ-0050");
+  console.log("Implemented requirement: MR-0003REQ-0054");
   process.exit(0);
 }
 
@@ -322,6 +331,8 @@ console.log("Implemented requirement: MR-0000REQ-0018");
 console.log("Implemented requirement: MR-0000REQ-0019");
 console.log("Implemented requirement: MR-0000REQ-0021");
 console.log("Implemented requirement: MR-0000REQ-0023");
+console.log("Implemented requirement: MR-0000REQ-0024");
+console.log("Implemented requirement: MR-0000REQ-0025");
 console.log("Implemented requirement: MR-0003REQ-0022");
 console.log("Implemented requirement: MR-0003REQ-0050");
 console.log("Implemented requirement: MR-0003REQ-0054");

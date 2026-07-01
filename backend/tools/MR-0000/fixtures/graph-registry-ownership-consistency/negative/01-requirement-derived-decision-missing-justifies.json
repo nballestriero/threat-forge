@@ -1,0 +1,10 @@
+{
+  "id": "01-requirement-derived-decision-missing-justifies",
+  "expectedDiagnostic": "GRAPH-0000 is missing ownership relation: ADR-0001 justifies MR-0000REQ-0001",
+  "files": {
+    "docs/reference/project-model/registers/graph.index.yml": "schema_version: 1\nregistry_id: graph-index\nproject: fixture\n\ngraphs:\n  - graph_id: GRAPH-0000\n    name: Fixture graph\n    path: docs/reference/project-model/registers/graph/GRAPH-0000.graph.yml\n",
+    "docs/reference/project-model/registers/graph/GRAPH-0000.graph.yml": "schema_version: 1\ngraph_id: GRAPH-0000\nname: Fixture graph\nmacro_requirement_id: MR-0000\n\nnodes:\n  - id: MR-0000\n    type: MacroRequirement\n    label: Common governance\n\nspo_relations:\n  - subject: MR-0000\n    predicate: has_decision\n    object: ADR-0001\n\n  - subject: MR-0000REQ-0001\n    predicate: belongs_to\n    object: MR-0000\n",
+    "docs/reference/project-model/registers/decisions/MR-0000.decisions.registry.yml": "schema_version: 1\nregistry_id: MR-0000-decisions-registry\nmacro_requirement_id: MR-0000\n\ndecisions:\n  - id: ADR-0001\n    title: Fixture decision\n    status: accepted\n    decision_type: operational\n    author: Fixture\n    date: 2026-07-01\n    macro_requirement_id: MR-0000\n    body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0001_body.md\n",
+    "docs/reference/project-model/registers/requirements/MR-0000.requirements.registry.yml": "schema_version: 1\nmacro_requirement_id: MR-0000\n\nrequirements:\n  - id: MR-0000REQ-0001\n    title: Fixture requirement\n    type: functional\n    status: approved\n    priority: high\n    derived_from_decision_id: ADR-0001\n    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0001_body.md\n"
+  }
+}

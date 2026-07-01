@@ -288,6 +288,11 @@ nodes:
     label: Controlled vocabulary consistency checker
     path: backend/tools/MR-0000/check-controlled-vocabulary-consistency.mjs
 
+  - id: TOOL-check-graph-registry-ownership-consistency
+    type: Tool
+    label: Graph and registry ownership consistency checker
+    path: backend/tools/MR-0000/check-graph-registry-ownership-consistency.mjs
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -874,3 +879,19 @@ spo_relations:
   - subject: TOOL-check-controlled-vocabulary-consistency
     predicate: verifies
     object: MR-0000REQ-0025
+
+  - subject: MR-0000REQ-0024
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0024
+
+  - subject: MR-0000REQ-0024
+    predicate: implemented_by
+    object: TOOL-check-graph-registry-ownership-consistency
+
+  - subject: TOOL-check-graph-registry-ownership-consistency
+    predicate: verifies
+    object: MR-0000REQ-0024

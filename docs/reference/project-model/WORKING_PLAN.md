@@ -1895,3 +1895,25 @@ This step updates the runtime and OpenAPI contracts to represent `not_executed`,
 This step does not implement the graph ownership consistency gate, minimal terminology guard, storage migrations, UI behavior changes, child-project executor, Knowledge Graph ingestion, Base Analysis, STRIDE or STRIDE-AI runtime behavior.
 
 The next safe step is `tooling: enforce graph and registry ownership consistency`, using ADR ownership, requirement `derived_from_decision_id` and graph `has_decision`/`belongs_to`/`justifies` relations as the semantic source of truth.
+
+## Graph and Registry Ownership Consistency Gate Micropasso
+
+This technical semantic-hardening micropasso implements the first graph and registry ownership consistency gate across indexed graph files, decision registries and requirement registries.
+
+Commit target: `tooling: enforce graph and registry ownership consistency`.
+
+Governed implementation links:
+
+- `MR-0000REQ-0024` — Graph and registry ownership consistency gate.
+- `TOOL-check-graph-registry-ownership-consistency` — Deterministic validator for macro-requirement ownership semantics across `has_decision`, `belongs_to`, `justifies` and `derived_from_decision_id`.
+- `TOOL-run-governed-repository-operation` — Governed runner now executes the graph and registry ownership validator under `npm run repo:check` and `npm run repo:commit-push`.
+
+The gate checks every graph listed in `graph.index.yml` against its owning decision and requirement registries. It verifies that registered ADRs are represented by macro-requirement `has_decision` relations, registered requirements belong to the owning macro-requirement, and each requirement's registry `derived_from_decision_id` has a matching graph `justifies` relation.
+
+The first implementation deliberately remains compatible with historical graph records: existing `belongs_to` relations must not contradict registry ownership, but the gate does not rewrite old ADR records that predate the explicit reverse-relation convention. A later governed consolidation can make reverse ADR ownership mandatory after historical graph cleanup is planned and manifest-governed.
+
+This step adds a focused negative fixture proving that a requirement whose `derived_from_decision_id` lacks the matching graph `justifies` relation fails closed, then wires the checker into the governed repository runner.
+
+This step does not implement graph cleanup manifests, duplicate-ownership consolidation, minimal terminology guard, child-project executor, Knowledge Graph ingestion, Base Analysis, STRIDE or STRIDE-AI runtime behavior.
+
+The next safe step is `tooling: enforce minimal canonical terminology guard for governed labels`, scoped only to governed titles and labels so it does not become a broad natural-language linter.
