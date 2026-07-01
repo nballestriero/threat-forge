@@ -1,5 +1,73 @@
 # Working Plan
 
+## Current State — Semantic Gate Hardening Priority
+
+Current governed baseline: `06482bd` (`docs: close project-scoped child documentation UI milestone`).
+
+Milestone tag: `project-model-child-documentation-project-scoped-ui-complete`.
+
+The project-scoped child documentation UI flow is complete for the demo end-to-end path:
+
+```text
+registered child project
+→ child documentation source resolver
+→ project-scoped child documentation API
+→ selected-child Documents UI route
+→ visible live documentation source status
+```
+
+The next strategic focus is semantic gate hardening before new feature work. A post-milestone ADR/graph review found issues that current gates do not yet prevent:
+
+- legacy graph records can omit reciprocal ADR ownership relations such as `ADR -> belongs_to -> MR`;
+- graph `justifies` relations can drift from `derived_from_decision_id` in requirement registries;
+- child-project governance status vocabularies can drift between registries, runtime/API contracts and storage;
+- high-impact product/component naming can drift across governed titles and labels;
+- real child-project gate execution and future Knowledge Graph ingestion need status, freshness and eligibility semantics before they can be trusted by LLM-assisted development or security analysis.
+
+`MR-0000/ADR-0009` fixes the current decision boundary: semantic gates must be strengthened before real child-project gate execution, child-project Knowledge Graph ingestion, Base Analysis runtime, STRIDE overlays or STRIDE-AI overlays proceed.
+
+### Immediate Semantic Gate Priorities
+
+1. `docs: define child gate plan, execution, freshness and Knowledge Graph ingestion status model`
+   - Separate planning status from execution result status.
+   - Separate check-run freshness from pass/fail execution outcomes.
+   - Define when a child project is eligible, stale, unavailable or quarantined for Knowledge Graph ingestion.
+
+2. `tooling: enforce controlled vocabulary consistency across registries and contracts`
+   - Prevent registry values, Zod/runtime contracts, OpenAPI schemas, storage records and UI states from accepting different vocabularies for the same governed field.
+   - Start with child-project governance status vocabularies.
+
+3. `tooling: enforce graph and registry ownership consistency`
+   - Require reciprocal `MR -> has_decision -> ADR` and `ADR -> belongs_to -> MR` ownership.
+   - Require requirement `derived_from_decision_id` to match canonical `ADR -> justifies -> REQ` graph relations.
+   - Preserve future ADR/REQ specialization through explicit secondary semantics, not duplicate ownership.
+
+4. `tooling: enforce minimal canonical terminology in governed labels`
+   - Guard only high-impact governed titles and labels.
+   - Avoid a large prose taxonomy.
+   - Treat historical naming as legacy context rather than new canonical naming.
+
+5. `docs: define real child project onboarding and gate execution lifecycle`
+   - Decide how real projects are created or registered: local workspace, Git checkout/clone, template or other intake path.
+   - Decide profile/type selection and execution timing.
+   - Define check-run, gate-result, violation and stale-state persistence before implementing an executor.
+
+6. `docs: define Knowledge Graph ingestion boundary for LLM-assisted development and security analysis`
+   - Do not allow dirty, stale or incomplete child-project knowledge to feed GraphRAG, development assistance, Base Analysis, STRIDE or STRIDE-AI.
+   - Keep platform knowledge, child-project knowledge and analysis snapshots project-scoped and evidence-linked.
+
+### Parked Until Semantic Gates Are Stronger
+
+The following work remains parked unless explicitly reprioritized by a new ADR:
+
+- real child-project gate executor;
+- remote Git onboarding/clone workflow;
+- child-project Knowledge Graph ingestion;
+- Base Analysis runtime/storage/API;
+- STRIDE and STRIDE-AI overlays;
+- dynamic RBAC administration.
+
+
 # Immediate UI Refinement Working Plan
 
 This section defines the next prioritized work after the governed local UI test environment runner.

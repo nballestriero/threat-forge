@@ -235,6 +235,27 @@ nodes:
     label: OpenAPI contract structure checker
     path: backend/tools/MR-0000/check-openapi-contract.mjs
 
+
+  - id: ADR-0009
+    type: ADR
+    label: Semantic gate hardening before child execution and KG ingestion
+
+  - id: MR-0000REQ-0024
+    type: Requirement
+    label: Graph and registry ownership consistency gate
+
+  - id: MR-0000REQ-0025
+    type: Requirement
+    label: Controlled vocabulary consistency across registries and contracts
+
+  - id: MR-0000REQ-0026
+    type: Requirement
+    label: Minimal canonical terminology guard for governed labels
+
+  - id: MR-0000REQ-0027
+    type: Requirement
+    label: Child execution and knowledge graph ingestion hardening prerequisite
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -705,3 +726,44 @@ spo_relations:
   - subject: TOOL-check-openapi-contract
     predicate: verifies
     object: MR-0000REQ-0023
+
+  - subject: MR-0000
+    predicate: has_decision
+    object: ADR-0009
+
+  - subject: ADR-0009
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0024
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0025
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0026
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: MR-0000REQ-0027
+    predicate: belongs_to
+    object: MR-0000
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0000REQ-0024
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0000REQ-0025
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0000REQ-0026
+
+  - subject: ADR-0009
+    predicate: justifies
+    object: MR-0000REQ-0027
+

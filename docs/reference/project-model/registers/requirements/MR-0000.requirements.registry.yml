@@ -248,3 +248,35 @@ requirements:
     priority: high
     derived_from_decision_id: ADR-0008
     body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0023_body.md
+
+  - id: MR-0000REQ-0024
+    title: Graph and registry ownership consistency gate
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0024_body.md
+
+  - id: MR-0000REQ-0025
+    title: Controlled vocabulary consistency across registries and contracts
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0025_body.md
+
+  - id: MR-0000REQ-0026
+    title: Minimal canonical terminology guard for governed labels
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0026_body.md
+
+  - id: MR-0000REQ-0027
+    title: Child execution and knowledge graph ingestion hardening prerequisite
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0000/MR-0000REQ-0027_body.md

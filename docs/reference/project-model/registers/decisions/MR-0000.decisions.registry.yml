@@ -84,3 +84,12 @@ decisions:
     date: 2026-06-23
     macro_requirement_id: MR-0000
     body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0008_body.md
+
+  - id: ADR-0009
+    title: Semantic gate hardening before child execution and knowledge graph ingestion
+    status: accepted
+    decision_type: operational
+    author: Nicolo Ballestriero
+    date: 2026-07-01
+    macro_requirement_id: MR-0000
+    body_path: docs/reference/project-model/body/decisions/MR-0000/ADR-0009_body.md
