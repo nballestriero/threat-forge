@@ -1873,3 +1873,25 @@ The status model separates planned gate selection from execution results, check-
 This step does not implement the controlled vocabulary gate, graph ownership gate, child-project executor, SQLite migrations, OpenAPI/runtime enum updates, Knowledge Graph ingestion, Base Analysis, STRIDE or STRIDE-AI.
 
 The next safe step is `tooling: enforce controlled vocabulary consistency across registries and contracts`, using the new status model as one of the vocabulary owners to compare against runtime contracts and OpenAPI schemas.
+
+## Controlled Vocabulary Consistency Gate Micropasso
+
+This technical semantic-hardening micropasso implements the first controlled vocabulary consistency gate across the child-project governance status model, runtime contract and OpenAPI contract.
+
+Commit target: `tooling: enforce controlled vocabulary consistency across registries and contracts`.
+
+Governed implementation links:
+
+- `MR-0000REQ-0025` — Controlled vocabulary consistency across registries and contracts.
+- `TOOL-check-controlled-vocabulary-consistency` — Deterministic validator for governed status values exposed across the status-model registry, Zod runtime contract and OpenAPI schemas.
+- `TOOL-run-governed-repository-operation` — Governed runner now executes the controlled vocabulary validator under `npm run repo:check` and `npm run repo:commit-push`.
+
+The gate currently enforces the first concrete governed mapping: `gate_execution_result_status` from `child-project-governance/status-model.registry.yml` controls `gate_result.status` and `check_run.overall_status` as exposed by `childProjectGateStatusSchema`, `ChildProjectGateResult.status` and `ChildProjectCheckRun.overall_status`.
+
+The implementation keeps the status model's distinction between canonical execution result values and explicitly declared transitional runtime values. `pass`, `fail`, `warning` and `not_executed` are the canonical owner values, while `skipped`, `reserved` and `unknown` remain transitional runtime values until later migration/governance work removes or remaps them.
+
+This step updates the runtime and OpenAPI contracts to represent `not_executed`, adds a focused negative fixture proving missing governed values fail closed, and wires the checker into the governed repository runner.
+
+This step does not implement the graph ownership consistency gate, minimal terminology guard, storage migrations, UI behavior changes, child-project executor, Knowledge Graph ingestion, Base Analysis, STRIDE or STRIDE-AI runtime behavior.
+
+The next safe step is `tooling: enforce graph and registry ownership consistency`, using ADR ownership, requirement `derived_from_decision_id` and graph `has_decision`/`belongs_to`/`justifies` relations as the semantic source of truth.

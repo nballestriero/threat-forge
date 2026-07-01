@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
  * @implementsRequirement MR-0000REQ-0019
  * @implementsRequirement MR-0000REQ-0021
  * @implementsRequirement MR-0000REQ-0023
+ * @implementsRequirement MR-0000REQ-0025
  * @implementsRequirement MR-0003REQ-0022
  * @implementsRequirement MR-0003REQ-0029
  * @implementsRequirement MR-0003REQ-0050
@@ -121,6 +122,11 @@ const gateCommands = [
     args: ["run", "docs:child-project-governance-plan-api-serve"],
   },
   { label: "OpenAPI contract structure", command: "npm", args: ["run", "docs:openapi-contract"] },
+  {
+    label: "Controlled vocabulary consistency",
+    command: "npm",
+    args: ["run", "docs:controlled-vocabulary-consistency"],
+  },
   { label: "Frontend build", command: "npm", args: ["run", "frontend:build"] },
   { label: "Runtime unit tests", command: "npm", args: ["run", "test:runtime"] },
 ];

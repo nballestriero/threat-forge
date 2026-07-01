@@ -21,6 +21,7 @@
     "docs:orphan-governed-bodies": "node backend/tools/MR-0000/check-orphan-governed-bodies.mjs",
     "docs:lockfile-integrity": "node backend/tools/MR-0000/check-lockfile-integrity.mjs",
     "docs:openapi-contract": "node backend/tools/MR-0000/check-openapi-contract.mjs",
+    "docs:controlled-vocabulary-consistency": "node backend/tools/MR-0000/check-controlled-vocabulary-consistency.mjs",
     "docs:project-documentation-explorer-jsdoc-typecheck": "node backend/tools/MR-0002/check-project-documentation-explorer-jsdoc-typecheck.mjs",
     "repo:check": "node backend/tools/MR-0000/run-governed-repository-operation.mjs --check",
     "repo:commit-push": "node backend/tools/MR-0000/run-governed-repository-operation.mjs --commit-push",

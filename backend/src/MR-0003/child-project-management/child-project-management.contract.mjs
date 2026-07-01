@@ -44,6 +44,7 @@ export const childProjectGateStatusSchema = z.enum([
   "pass",
   "fail",
   "warning",
+  "not_executed",
   "skipped",
   "reserved",
   "unknown",

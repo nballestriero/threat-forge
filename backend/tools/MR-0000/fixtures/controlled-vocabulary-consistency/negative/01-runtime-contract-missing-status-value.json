@@ -1,0 +1,10 @@
+{
+  "id": "01-runtime-contract-missing-status-value",
+  "description": "Runtime contract omits a governed status-model value that OpenAPI already exposes.",
+  "expectedDiagnostic": "runtime contract field childProjectGateStatusSchema is missing governed value: not_executed",
+  "files": {
+    "docs/reference/project-model/registers/child-project-governance/status-model.registry.yml": "schema_version: 1\nregistry_id: child-project-governance-status-model\nstatus_families:\n  - id: gate_execution_result_status\n    governed_field_names:\n      - check_run.overall_status\n      - gate_result.status\n    transitional_runtime_values:\n      - skipped\n      - reserved\n      - unknown\n    values:\n      - id: pass\n      - id: fail\n      - id: warning\n      - id: not_executed\n",
+    "backend/src/MR-0003/child-project-management/child-project-management.contract.mjs": "import { z } from \"zod\";\nexport const childProjectGateStatusSchema = z.enum([\n  \"pass\",\n  \"fail\",\n  \"warning\",\n  \"skipped\",\n  \"reserved\",\n  \"unknown\",\n]);\n",
+    "docs/reference/api/openapi/threat-forge.openapi.yml": "components:\n  schemas:\n    ChildProjectGateResult:\n      properties:\n        status:\n          enum:\n            - pass\n            - fail\n            - warning\n            - not_executed\n            - skipped\n            - reserved\n            - unknown\n    ChildProjectCheckRun:\n      properties:\n        overall_status:\n          enum:\n            - pass\n            - fail\n            - warning\n            - not_executed\n            - skipped\n            - reserved\n            - unknown\n"
+  }
+}

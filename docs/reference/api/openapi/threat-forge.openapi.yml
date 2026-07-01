@@ -968,6 +968,7 @@ components:
             - pass
             - fail
             - warning
+            - not_executed
             - skipped
             - reserved
             - unknown
@@ -1036,6 +1037,7 @@ components:
             - pass
             - fail
             - warning
+            - not_executed
             - skipped
             - reserved
             - unknown

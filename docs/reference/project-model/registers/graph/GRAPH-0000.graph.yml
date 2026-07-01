@@ -283,6 +283,11 @@ nodes:
     label: Child project governance status model registry
     path: docs/reference/project-model/registers/child-project-governance/status-model.registry.yml
 
+  - id: TOOL-check-controlled-vocabulary-consistency
+    type: Tool
+    label: Controlled vocabulary consistency checker
+    path: backend/tools/MR-0000/check-controlled-vocabulary-consistency.mjs
+
 spo_relations:
   - subject: MR-0000
     predicate: has_decision
@@ -854,3 +859,18 @@ spo_relations:
     predicate: belongs_to
     object: MR-0000
 
+  - subject: MR-0000REQ-0025
+    predicate: implemented_by
+    object: TOOL-run-governed-repository-operation
+
+  - subject: TOOL-run-governed-repository-operation
+    predicate: verifies
+    object: MR-0000REQ-0025
+
+  - subject: MR-0000REQ-0025
+    predicate: implemented_by
+    object: TOOL-check-controlled-vocabulary-consistency
+
+  - subject: TOOL-check-controlled-vocabulary-consistency
+    predicate: verifies
+    object: MR-0000REQ-0025
