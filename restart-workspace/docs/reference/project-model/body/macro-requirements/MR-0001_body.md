@@ -154,6 +154,16 @@ Il modello può ispirarsi a concetti SKOS-like, come termine canonico, label alt
 
 L’adozione completa di RDF, SKOS, SHACL o OWL non è parte del macrorequisito iniziale.
 
+## Qualità del corpus documentale
+
+La documentazione governata deve poter essere valutata tramite metriche deterministiche di qualità del corpus.
+
+Le metriche devono aiutare a identificare ambiguità terminologiche, uso incoerente di termini canonici, termini di dominio non registrati, alias vietati, riferimenti ad asset non controllati e deriva del vocabolario nel tempo.
+
+Le metriche possono produrre report e viste leggibili per persone, sviluppatori e LLM.
+
+Il macrorequisito non definisce formule, soglie o gate bloccanti. Tali aspetti devono essere definiti da decisioni e requisiti specifici.
+
 ## Ciclo di vita documentale
 
 Ogni documento governato deve avere uno stato di ciclo di vita controllato.
@@ -200,6 +210,7 @@ Include:
 - asset;
 - vocabolari controllati;
 - tassonomie;
+- metriche deterministiche di qualità del corpus documentale;
 - ciclo di vita documentale;
 - campi obbligatori;
 - campi controllati;

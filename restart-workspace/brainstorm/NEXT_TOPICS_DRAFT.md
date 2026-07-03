@@ -12,6 +12,8 @@ The current seed contains the first documentation-management model draft:
 - `MR-0001` — Gestione documentale governata.
 - `ADR-0001` — Uso di Diátaxis per classificare la documentazione.
 - One how-to draft for writing governed documentation.
+- `ADR-0002` — Vocabolario controllato della documentazione governata.
+- A first minimal controlled vocabulary registry for documentation terms.
 
 ## Topics to discuss next
 
@@ -31,6 +33,49 @@ Candidate follow-up:
 - ADR-0002 should decide whether the Diátaxis category is derived from the canonical documentation path.
 - ADR-0003 should decide mandatory and controlled document fields.
 - A first functional requirement can then state the obligation in a way that does not create two competing sources.
+
+
+### ADR-0002 — Vocabolario controllato della documentazione governata
+
+Current direction:
+
+- The documentation model needs a minimal controlled vocabulary before the first canonical requirement and before any corpus-quality tool.
+- The controlled vocabulary is a registry, not a free glossary.
+- It defines canonical names, allowed labels, forbidden aliases and usage notes for central documentation terms.
+- It does not yet define corpus quality metrics, asset registry, or term extraction algorithms.
+
+Next questions:
+
+- Which labels are allowed only for human-readable Italian prose and which labels are canonical for deterministic checks?
+- Should forbidden labels become blocking errors immediately or report-only findings first?
+- Should the vocabulary distinguish canonical machine names from rendered human labels?
+
+### Future ADR — Metriche deterministiche di qualità del corpus documentale
+
+Current direction:
+
+- Use known algorithms and established practices where possible; do not invent opaque personal scoring.
+- Start with a non-blocking report, not a gate.
+- Measure canonical term usage, forbidden aliases, candidate domain terms, unregistered asset-like terms and vocabulary drift.
+- Do not penalize common language words outside the vocabulary.
+- Produce readable reports and later charts for humans and LLM-assisted review.
+
+Candidate first report outputs:
+
+- canonical term counts;
+- forbidden alias counts;
+- frequent candidate domain terms not in vocabulary;
+- asset references and unresolved asset-like terms;
+- top recurring words or n-grams by document and by macro-requirement.
+
+### Future ADR — Asset registry della documentazione governata
+
+Current direction:
+
+- Documentation sources, registries, controlled vocabularies and generated documentation are assets.
+- Do not make every individual file a separate asset by default.
+- Start with asset classes such as governed documentation set, registry, Markdown body, controlled vocabulary registry and generated readable documentation.
+- Individual documents can be referenced through document registries or body paths unless they require asset-specific threat analysis.
 
 ### ADR-0002 — Organizzazione dei documenti per macrorequisito e tipo documentale
 

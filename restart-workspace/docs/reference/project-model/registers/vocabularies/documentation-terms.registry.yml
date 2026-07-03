@@ -1,0 +1,151 @@
+schema_version: 1
+registry_id: documentation-terms-vocabulary
+scope: governed_documentation
+status: draft
+
+terms:
+  - id: TERM-0001
+    canonical_name: macro-requirement
+    status: draft
+    definition: Tema principale del progetto rappresentato come capitolo governato.
+    allowed_labels:
+      - macro-requirement
+      - macrorequisito
+    forbidden_labels:
+      - macro area
+      - area
+      - macro requirement
+    usage_note: Usare macro-requirement come termine canonico; macrorequisito è ammesso nel testo italiano leggibile.
+
+  - id: TERM-0002
+    canonical_name: decision
+    status: draft
+    definition: Scelta governata fatta dentro il perimetro di un macro-requirement.
+    allowed_labels:
+      - decision
+      - decisione
+      - ADR
+    forbidden_labels:
+      - scelta libera
+      - nota decisionale
+    usage_note: ADR è il formato tecnico usato per registrare una decisione.
+
+  - id: TERM-0003
+    canonical_name: requirement
+    status: draft
+    definition: Obbligo verificabile derivato da una decision.
+    allowed_labels:
+      - requirement
+      - requisito
+    forbidden_labels:
+      - richiesta
+      - specifica libera
+
+  - id: TERM-0004
+    canonical_name: functional requirement
+    status: draft
+    definition: Requirement che descrive una capacità, un comportamento o un risultato atteso.
+    allowed_labels:
+      - functional requirement
+      - requisito funzionale
+    forbidden_labels:
+      - funzione libera
+      - requisito base
+
+  - id: TERM-0005
+    canonical_name: specialized requirement
+    status: draft
+    definition: Requirement che descrive un vincolo, controllo o qualità applicato a un functional requirement.
+    allowed_labels:
+      - specialized requirement
+      - requisito specializzato
+    forbidden_labels:
+      - requisito non funzionale libero
+      - requisito laterale
+
+  - id: TERM-0006
+    canonical_name: governed documentation
+    status: draft
+    definition: Documentazione gestita come sorgente controllata per intenti, decisioni, requisiti, asset, relazioni e verifiche.
+    allowed_labels:
+      - governed documentation
+      - documentazione governata
+    forbidden_labels:
+      - documentazione libera
+      - note sparse
+
+  - id: TERM-0007
+    canonical_name: registry
+    status: draft
+    definition: Sorgente governato che indicizza oggetti, valori o relazioni e supporta controlli deterministici.
+    allowed_labels:
+      - registry
+      - registro
+    forbidden_labels:
+      - elenco manuale
+      - indice libero
+
+  - id: TERM-0008
+    canonical_name: controlled vocabulary
+    status: draft
+    definition: Registry di termini canonici, label ammesse, alias vietati e note d'uso.
+    allowed_labels:
+      - controlled vocabulary
+      - vocabolario controllato
+    forbidden_labels:
+      - glossario libero
+      - dizionario libero
+
+  - id: TERM-0009
+    canonical_name: canonical source
+    status: draft
+    definition: Sorgente che determina il valore autorevole di un concetto controllato.
+    allowed_labels:
+      - canonical source
+      - fonte canonica
+    forbidden_labels:
+      - fonte principale libera
+      - fonte preferita
+
+  - id: TERM-0010
+    canonical_name: derived output
+    status: draft
+    definition: Output generato o calcolato da sorgenti governati, non fonte canonica autonoma.
+    allowed_labels:
+      - derived output
+      - output derivato
+    forbidden_labels:
+      - documento canonico generato
+      - copia manuale
+
+  - id: TERM-0011
+    canonical_name: asset
+    status: draft
+    definition: Oggetto rilevante per funzionamento, documentazione, sicurezza, privacy, audit o futura threat analysis.
+    allowed_labels:
+      - asset
+    forbidden_labels:
+      - cosa importante
+      - elemento generico
+
+  - id: TERM-0012
+    canonical_name: deterministic check
+    status: draft
+    definition: Controllo eseguibile che verifica regole esplicite senza interpretazione libera del contenuto.
+    allowed_labels:
+      - deterministic check
+      - controllo deterministico
+    forbidden_labels:
+      - controllo manuale implicito
+      - verifica libera
+
+  - id: TERM-0013
+    canonical_name: documentation corpus
+    status: draft
+    definition: Insieme dei documenti governati e degli output derivati usati per comprendere e controllare il progetto.
+    allowed_labels:
+      - documentation corpus
+      - corpus documentale
+    forbidden_labels:
+      - documenti vari
+      - insieme di note
