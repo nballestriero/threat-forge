@@ -3,17 +3,34 @@
 This file is a temporary brainstorming note.
 
 It is not a macro-requirement, not a decision, not a requirement, not a registry, and not a canonical source.
-It can be edited or deleted after the restart workspace direction is stabilized.
+It can be edited or deleted after the documentation model direction is stabilized.
 
 ## Current seed
 
-The restart workspace currently contains only the first documentation-management seed:
+The current seed contains the first documentation-management model draft:
 
 - `MR-0001` — Gestione documentale governata.
 - `ADR-0001` — Uso di Diátaxis per classificare la documentazione.
 - One how-to draft for writing governed documentation.
 
 ## Topics to discuss next
+
+### Notes after ADR-0001 revision
+
+Confirmed direction:
+
+- Do not use temporary workspace names inside governed document bodies.
+- ADR-0001 decides only the Diátaxis classification.
+- ADR-0001 does not decide the canonical source of a document Diátaxis category.
+- The canonical source for controlled values must be unique.
+- Body prose, generated indexes and readable views must not become competing sources of controlled values.
+- The first functional requirement for Diátaxis remains brainstorming until the canonical source of the Diátaxis category is decided.
+
+Candidate follow-up:
+
+- ADR-0002 should decide whether the Diátaxis category is derived from the canonical documentation path.
+- ADR-0003 should decide mandatory and controlled document fields.
+- A first functional requirement can then state the obligation in a way that does not create two competing sources.
 
 ### ADR-0002 — Organizzazione dei documenti per macrorequisito e tipo documentale
 
