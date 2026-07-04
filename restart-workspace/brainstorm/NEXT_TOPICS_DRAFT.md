@@ -227,3 +227,21 @@ Candidate direction:
 - Metadata tables interrupting human reading flow.
 - Adding registries, graphs and gates before the underlying concept is stable.
 - Designing backend/frontend/tool layout inside the Diátaxis ADR.
+
+### Implementation trace registry and planned artifacts
+
+Questions:
+
+- How do we avoid documenting future tools, reports or gates without making the missing work visible?
+- Which registry should link requirements, planned implementation artifacts, implemented paths and verification commands?
+- How should deterministic tools detect planned but incomplete work without blocking too early?
+- How should code declarations, implementation registry records and requirement registries stay synchronized?
+
+Candidate direction:
+
+- Use an implementation trace registry, not a prose-only TODO list.
+- The registry tracks planned and implemented artifacts.
+- Planned artifacts produce deterministic warnings until completed.
+- Implemented artifacts must point to existing paths and existing requirements.
+- Code must declare implemented requirements, and deterministic checks must compare code declarations with registry records.
+- The graph should be generated or validated from requirement registries, implementation trace records and code traceability declarations.
