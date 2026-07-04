@@ -245,3 +245,19 @@ Candidate direction:
 - Implemented artifacts must point to existing paths and existing requirements.
 - Code must declare implemented requirements, and deterministic checks must compare code declarations with registry records.
 - The graph should be generated or validated from requirement registries, implementation trace records and code traceability declarations.
+### ADR-0003 follow-up — Implementation trace registry
+
+Confirmed direction:
+
+- A future tool, report, gate, fixture or verification artifact cited by governed documentation must not remain only in prose.
+- Planned and implemented artifacts should be represented in an implementation trace registry.
+- Planned artifacts should produce deterministic warnings, not immediate blocking errors.
+- Implemented artifacts should be checked against existing paths, existing requirements and code traceability declarations.
+- The first implementation trace registry can contain the planned checker for the registry itself.
+
+Immediate next steps:
+
+- Add `MR-0001ADR-0003REQ-0001` for the implementation trace registry.
+- Add `MR-0001ADR-0003REQ-0001GOV-0001` for deterministic consistency between registry, requirements and code.
+- Add a minimal `implementation-trace.registry.yml` with the planned checker artifact.
+- After the backup commit, implement the warning-only checker.
