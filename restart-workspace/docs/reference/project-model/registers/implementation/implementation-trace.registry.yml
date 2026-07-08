@@ -12,3 +12,13 @@ artifacts:
     implemented_path: restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
     reason: Validate consistency between the implementation trace registry, requirement registries and implementation artifact traceability declarations.
     verification_command: node restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
+
+  - id: MR-0001ADR-0003REQ-0001GOV-0001IMPL-0002
+    title: Restart workspace local check orchestrator
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0003REQ-0001GOV-0001
+    implemented_path: restart-workspace/tools/repo-check.mjs
+    reason: Run restart-workspace deterministic checks without wiring them into the original repository gate runner.
+    verification_command: node restart-workspace/tools/repo-check.mjs
