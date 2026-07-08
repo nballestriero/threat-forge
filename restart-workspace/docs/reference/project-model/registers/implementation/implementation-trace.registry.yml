@@ -22,3 +22,13 @@ artifacts:
     implemented_path: restart-workspace/tools/repo-check.mjs
     reason: Run restart-workspace deterministic checks without wiring them into the original repository gate runner.
     verification_command: node restart-workspace/tools/repo-check.mjs
+
+  - id: MR-0001ADR-0003REQ-0001GOV-0001IMPL-0003
+    title: Restart workspace check registry
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0003REQ-0001GOV-0001
+    implemented_path: restart-workspace/docs/reference/project-model/registers/checks/restart-checks.registry.yml
+    reason: Declare the active restart-workspace checks consumed by the local check orchestrator.
+    verification_command: node restart-workspace/tools/repo-check.mjs
