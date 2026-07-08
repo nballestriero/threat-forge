@@ -6,10 +6,9 @@ artifacts:
   - id: MR-0001ADR-0003REQ-0001GOV-0001IMPL-0001
     title: Implementation trace registry consistency checker
     artifact_type: tool
-    status: planned
+    status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0003REQ-0001GOV-0001
-    planned_path: backend/tools/MR-0001/check-implementation-trace-registry.mjs
+    implemented_path: restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
     reason: Validate consistency between the implementation trace registry, requirement registries and implementation artifact traceability declarations.
-    completion_condition: The planned tool exists at the planned path and declares the linked requirement in its traceability header.
-    warning_policy: planned_missing_artifact_warning
+    verification_command: node restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
