@@ -12,3 +12,13 @@ checks:
     linked_requirement_ids:
       - MR-0001ADR-0003REQ-0001GOV-0001
     description: Run the local implementation trace registry checker.
+
+  - id: MR-0001ADR-0004REQ-0001GOV-0001CHECK-0001
+    title: Documentation field value taxonomy consistency
+    status: active
+    command: node
+    args:
+      - restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0001GOV-0001
+    description: Validate controlled documentation field values and vocabulary label roles.

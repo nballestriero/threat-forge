@@ -32,3 +32,13 @@ artifacts:
     implemented_path: restart-workspace/docs/reference/project-model/registers/checks/restart-checks.registry.yml
     reason: Declare the active local checks consumed by the local check orchestrator.
     verification_command: node restart-workspace/tools/repo-check.mjs
+
+  - id: MR-0001ADR-0004REQ-0001GOV-0001IMPL-0001
+    title: Documentation field value taxonomy checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0001GOV-0001
+    implemented_path: restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
+    reason: Validate controlled documentation field values and vocabulary label roles against the governed taxonomy registry.
+    verification_command: node restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
