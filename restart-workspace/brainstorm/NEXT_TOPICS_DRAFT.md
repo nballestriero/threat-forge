@@ -261,3 +261,11 @@ Immediate next steps:
 - Add `MR-0001ADR-0003REQ-0001GOV-0001` for deterministic consistency between registry, requirements and code.
 - Add a minimal `implementation-trace.registry.yml` with the planned checker artifact.
 - After the backup commit, implement the warning-only checker.
+
+## Controlled label and taxonomy notes
+
+- Do not use temporary working names as domain concepts in governed documentation.
+- Replace generic `allowed_labels` with labels carrying explicit role, language and reason.
+- A synonym is not automatically an accepted alias.
+- Translations can support readability but must not create a second canonical source.
+- Controlled field values should move into taxonomy registries with explicit meanings.

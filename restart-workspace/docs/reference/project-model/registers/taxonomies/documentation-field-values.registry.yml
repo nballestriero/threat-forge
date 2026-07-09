@@ -1,0 +1,43 @@
+schema_version: 1
+registry_id: documentation-field-values-taxonomy
+scope: governed_documentation_fields
+status: draft
+
+taxonomies:
+  - id: TAX-0001
+    field_name: vocabulary_label_role
+    status: draft
+    description: Controlled roles used by labels in the documentation terms vocabulary.
+    values:
+      - value: preferred
+        meaning: Preferred label for governed documentation.
+      - value: accepted_alias
+        meaning: Accepted alias with explicit reason, such as a technical acronym or historical compatibility.
+      - value: translation
+        meaning: Readable translation that does not create a second canonical source.
+      - value: forbidden
+        meaning: Label or phrase that should be flagged by future terminology checks.
+      - value: candidate
+        meaning: Proposed label not yet accepted for normative use.
+      - value: historical
+        meaning: Historical label recognized for migration or legacy reading, not preferred for new content.
+
+  - id: TAX-0002
+    field_name: lifecycle_status
+    status: draft
+    description: Initial lifecycle values observed in restart documentation registries.
+    values:
+      - value: draft
+        meaning: Governed record is under active review and may change before becoming stable.
+      - value: active
+        meaning: Governed record is currently used as an active source or check.
+      - value: planned
+        meaning: Governed artifact is expected but not yet implemented or active.
+      - value: implemented
+        meaning: Governed artifact exists and is linked to traceability evidence.
+      - value: disabled
+        meaning: Governed check or artifact is intentionally not active.
+      - value: deprecated
+        meaning: Governed record is retained for history but should not be used for new work.
+      - value: superseded
+        meaning: Governed record has been replaced by a newer governed record.

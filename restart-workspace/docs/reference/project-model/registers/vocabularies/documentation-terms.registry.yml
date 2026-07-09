@@ -2,150 +2,335 @@ schema_version: 1
 registry_id: documentation-terms-vocabulary
 scope: governed_documentation
 status: draft
+label_model_version: 1
+canonical_language: en
+
+label_roles:
+  - value: preferred
+    meaning: Forma preferita da usare nella documentazione governata.
+  - value: accepted_alias
+    meaning: Alias ammesso solo con ragione esplicita.
+  - value: translation
+    meaning: Traduzione leggibile; non fonte canonica.
+  - value: forbidden
+    meaning: Forma vietata da segnalare.
+  - value: candidate
+    meaning: Forma proposta ma non ancora accettata.
+  - value: historical
+    meaning: Forma storica riconoscibile ma non preferita per nuovo testo.
+
+forbidden_documentation_phrases:
+  - value: project restart
+    language: en
+    reason: Nome temporaneo operativo; non deve diventare concetto canonico della documentazione governata.
+  - value: restart project
+    language: en
+    reason: Nome temporaneo operativo; non deve diventare concetto canonico della documentazione governata.
 
 terms:
   - id: TERM-0001
     canonical_name: macro-requirement
+    canonical_language: en
     status: draft
     definition: Tema principale del progetto rappresentato come capitolo governato.
-    allowed_labels:
-      - macro-requirement
-      - macrorequisito
-    forbidden_labels:
-      - macro area
-      - area
-      - macro requirement
-    usage_note: Usare macro-requirement come termine canonico; macrorequisito è ammesso nel testo italiano leggibile.
+    labels:
+      - value: macro-requirement
+        language: en
+        role: preferred
+        reason: Termine canonico della documentazione governata.
+      - value: macrorequisito
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: macro area
+        language: en
+        role: forbidden
+        reason: Introduce il termine area, non usato come concetto canonico.
+      - value: area
+        language: en
+        role: forbidden
+        reason: Troppo generico.
+      - value: macro requirement
+        language: en
+        role: forbidden
+        reason: Variante senza trattino non canonica.
 
   - id: TERM-0002
     canonical_name: decision
+    canonical_language: en
     status: draft
     definition: Scelta governata fatta dentro il perimetro di un macro-requirement.
-    allowed_labels:
-      - decision
-      - decisione
-      - ADR
-    forbidden_labels:
-      - scelta libera
-      - nota decisionale
-    usage_note: ADR è il formato tecnico usato per registrare una decisione.
+    labels:
+      - value: decision
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: ADR
+        language: en
+        role: accepted_alias
+        reason: Formato tecnico usato per registrare una decision.
+      - value: decisione
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: scelta libera
+        language: it
+        role: forbidden
+        reason: Suggerisce decisione non governata.
+      - value: nota decisionale
+        language: it
+        role: forbidden
+        reason: Ambigua rispetto al record ADR.
 
   - id: TERM-0003
     canonical_name: requirement
+    canonical_language: en
     status: draft
     definition: Obbligo verificabile derivato da una decision.
-    allowed_labels:
-      - requirement
-      - requisito
-    forbidden_labels:
-      - richiesta
-      - specifica libera
+    labels:
+      - value: requirement
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: requisito
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: richiesta
+        language: it
+        role: forbidden
+        reason: Non implica verificabilita.
+      - value: specifica libera
+        language: it
+        role: forbidden
+        reason: Suggerisce contenuto non governato.
 
   - id: TERM-0004
     canonical_name: functional requirement
+    canonical_language: en
     status: draft
-    definition: Requirement che descrive una capacità, un comportamento o un risultato atteso.
-    allowed_labels:
-      - functional requirement
-      - requisito funzionale
-    forbidden_labels:
-      - funzione libera
-      - requisito base
+    definition: Requirement che descrive una capacita, un comportamento o un risultato atteso.
+    labels:
+      - value: functional requirement
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: requisito funzionale
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: funzione libera
+        language: it
+        role: forbidden
+        reason: Non rappresenta un requirement governato.
+      - value: requisito base
+        language: it
+        role: forbidden
+        reason: Ambiguo rispetto a functional requirement.
 
   - id: TERM-0005
     canonical_name: specialized requirement
+    canonical_language: en
     status: draft
-    definition: Requirement che descrive un vincolo, controllo o qualità applicato a un functional requirement.
-    allowed_labels:
-      - specialized requirement
-      - requisito specializzato
-    forbidden_labels:
-      - requisito non funzionale libero
-      - requisito laterale
+    definition: Requirement che descrive un vincolo, controllo o qualita applicato a un functional requirement.
+    labels:
+      - value: specialized requirement
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: requisito specializzato
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: requisito non funzionale libero
+        language: it
+        role: forbidden
+        reason: Troppo ampio e non governato.
+      - value: requisito laterale
+        language: it
+        role: forbidden
+        reason: Non indica vincolo collegato a requisito funzionale.
 
   - id: TERM-0006
     canonical_name: governed documentation
+    canonical_language: en
     status: draft
     definition: Documentazione gestita come sorgente controllata per intenti, decisioni, requisiti, asset, relazioni e verifiche.
-    allowed_labels:
-      - governed documentation
-      - documentazione governata
-    forbidden_labels:
-      - documentazione libera
-      - note sparse
+    labels:
+      - value: governed documentation
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: documentazione governata
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: documentazione libera
+        language: it
+        role: forbidden
+        reason: Opposto del concetto governato.
+      - value: note sparse
+        language: it
+        role: forbidden
+        reason: Indica contenuto non strutturato.
 
   - id: TERM-0007
     canonical_name: registry
+    canonical_language: en
     status: draft
     definition: Sorgente governato che indicizza oggetti, valori o relazioni e supporta controlli deterministici.
-    allowed_labels:
-      - registry
-      - registro
-    forbidden_labels:
-      - elenco manuale
-      - indice libero
+    labels:
+      - value: registry
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: registro
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: elenco manuale
+        language: it
+        role: forbidden
+        reason: Non implica governance o controllo deterministico.
+      - value: indice libero
+        language: it
+        role: forbidden
+        reason: Non implica fonte governata.
 
   - id: TERM-0008
     canonical_name: controlled vocabulary
+    canonical_language: en
     status: draft
-    definition: Registry di termini canonici, label ammesse, alias vietati e note d'uso.
-    allowed_labels:
-      - controlled vocabulary
-      - vocabolario controllato
-    forbidden_labels:
-      - glossario libero
-      - dizionario libero
+    definition: Registry di termini canonici, label controllate e note d uso.
+    labels:
+      - value: controlled vocabulary
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: vocabolario controllato
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: glossario libero
+        language: it
+        role: forbidden
+        reason: Non implica controllo dei termini.
+      - value: dizionario libero
+        language: it
+        role: forbidden
+        reason: Non implica governance.
 
   - id: TERM-0009
     canonical_name: canonical source
+    canonical_language: en
     status: draft
     definition: Sorgente che determina il valore autorevole di un concetto controllato.
-    allowed_labels:
-      - canonical source
-      - fonte canonica
-    forbidden_labels:
-      - fonte principale libera
-      - fonte preferita
+    labels:
+      - value: canonical source
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: fonte canonica
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: fonte principale libera
+        language: it
+        role: forbidden
+        reason: Ambigua e non governata.
+      - value: fonte preferita
+        language: it
+        role: forbidden
+        reason: Non implica autorita canonica.
 
   - id: TERM-0010
     canonical_name: derived output
+    canonical_language: en
     status: draft
     definition: Output generato o calcolato da sorgenti governati, non fonte canonica autonoma.
-    allowed_labels:
-      - derived output
-      - output derivato
-    forbidden_labels:
-      - documento canonico generato
-      - copia manuale
+    labels:
+      - value: derived output
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: output derivato
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: documento canonico generato
+        language: it
+        role: forbidden
+        reason: Confonderebbe output derivato e fonte canonica.
+      - value: copia manuale
+        language: it
+        role: forbidden
+        reason: Non rappresenta output governato.
 
   - id: TERM-0011
     canonical_name: asset
+    canonical_language: en
     status: draft
     definition: Oggetto rilevante per funzionamento, documentazione, sicurezza, privacy, audit o futura threat analysis.
-    allowed_labels:
-      - asset
-    forbidden_labels:
-      - cosa importante
-      - elemento generico
+    labels:
+      - value: asset
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: bene
+        language: it
+        role: candidate
+        reason: Possibile traduzione, da valutare prima dell uso normativo.
+      - value: cosa importante
+        language: it
+        role: forbidden
+        reason: Troppo generico.
+      - value: elemento generico
+        language: it
+        role: forbidden
+        reason: Non indica rilevanza governata.
 
   - id: TERM-0012
     canonical_name: deterministic check
+    canonical_language: en
     status: draft
     definition: Controllo eseguibile che verifica regole esplicite senza interpretazione libera del contenuto.
-    allowed_labels:
-      - deterministic check
-      - controllo deterministico
-    forbidden_labels:
-      - controllo manuale implicito
-      - verifica libera
+    labels:
+      - value: deterministic check
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: controllo deterministico
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: controllo manuale implicito
+        language: it
+        role: forbidden
+        reason: Non e deterministico.
+      - value: verifica libera
+        language: it
+        role: forbidden
+        reason: Non e vincolata a regole esplicite.
 
   - id: TERM-0013
     canonical_name: documentation corpus
+    canonical_language: en
     status: draft
     definition: Insieme dei documenti governati e degli output derivati usati per comprendere e controllare il progetto.
-    allowed_labels:
-      - documentation corpus
-      - corpus documentale
-    forbidden_labels:
-      - documenti vari
-      - insieme di note
+    labels:
+      - value: documentation corpus
+        language: en
+        role: preferred
+        reason: Termine canonico.
+      - value: corpus documentale
+        language: it
+        role: translation
+        reason: Traduzione italiana leggibile; non e fonte canonica.
+      - value: documenti vari
+        language: it
+        role: forbidden
+        reason: Non indica perimetro governato.
+      - value: insieme di note
+        language: it
+        role: forbidden
+        reason: Non indica governance.

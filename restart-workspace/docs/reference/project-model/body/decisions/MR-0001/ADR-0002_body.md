@@ -21,7 +21,7 @@ Il vocabolario controllato è la fonte canonica dei termini documentali centrali
 - stato;
 - definizione sintetica.
 
-Il vocabolario può dichiarare anche label ammesse, alias vietati e note d'uso.
+Il vocabolario può dichiarare anche label controllate con ruolo esplicito, lingua, ragione d'uso, alias ammessi, traduzioni, label candidate e label vietate.
 
 Il vocabolario è salvato come registro governato nel percorso logico:
 
@@ -38,7 +38,7 @@ In scope:
 - definire l'esistenza del vocabolario controllato dei termini documentali;
 - definire il vocabolario come fonte canonica dei termini documentali centrali;
 - definire il primo percorso del registro vocabolario;
-- permettere label ammesse, alias vietati e note d'uso;
+- permettere label controllate con ruolo esplicito, alias ammessi, traduzioni, label candidate, label storiche e label vietate;
 - preparare future metriche deterministiche di qualità terminologica del corpus.
 
 Out of scope:

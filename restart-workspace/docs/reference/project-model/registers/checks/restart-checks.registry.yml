@@ -1,6 +1,6 @@
 schema_version: 1
-registry_id: restart-checks-registry
-scope: restart_workspace_checks
+registry_id: local-governance-checks-registry
+scope: local_governance_checks
 
 checks:
   - id: MR-0001ADR-0003REQ-0001GOV-0001CHECK-0001
@@ -11,4 +11,4 @@ checks:
       - restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
     linked_requirement_ids:
       - MR-0001ADR-0003REQ-0001GOV-0001
-    description: Run the restart-workspace implementation trace registry checker.
+    description: Run the local implementation trace registry checker.
