@@ -10,15 +10,15 @@ import { fileURLToPath } from "node:url";
  * @derivedFromDecision MR-0001/ADR-0004
  * @macroRequirement MR-0001
  *
- * This checker validates the governed documentation field value taxonomy and
- * the controlled vocabulary records that consume taxonomy values. It keeps
- * synonyms, translations and temporary operational phrases explicit instead of
- * treating them as free interchangeable labels.
+ * This checker validates scoped field value sets for governed documentation
+ * registries. It deliberately avoids a single global `status` taxonomy: each
+ * recurring field value set must declare its field, registry context, record
+ * context, allowed values and meanings.
  *
  * Side effects: reads restart-workspace Project Model registries and governed
  * documentation files; writes JSON and Markdown reports under
  * restart-workspace/artifacts/documentation-field-values; exits non-zero on
- * taxonomy, controlled-label or forbidden-phrase errors.
+ * taxonomy, controlled-label, contextual-status or forbidden-phrase errors.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -34,6 +34,18 @@ const taxonomyRegistryProjectPath =
 const vocabularyRegistryProjectPath =
   process.env.TF_DOCUMENTATION_FIELD_VALUES_VOCABULARY_REGISTRY_PATH ??
   "restart-workspace/docs/reference/project-model/registers/vocabularies/documentation-terms.registry.yml";
+const checksRegistryProjectPath =
+  process.env.TF_DOCUMENTATION_FIELD_VALUES_CHECKS_REGISTRY_PATH ??
+  "restart-workspace/docs/reference/project-model/registers/checks/restart-checks.registry.yml";
+const implementationTraceRegistryProjectPath =
+  process.env.TF_DOCUMENTATION_FIELD_VALUES_IMPLEMENTATION_TRACE_REGISTRY_PATH ??
+  "restart-workspace/docs/reference/project-model/registers/implementation/implementation-trace.registry.yml";
+const decisionsRegistryProjectPath =
+  process.env.TF_DOCUMENTATION_FIELD_VALUES_DECISIONS_REGISTRY_PATH ??
+  "restart-workspace/docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml";
+const requirementsRegistryProjectPath =
+  process.env.TF_DOCUMENTATION_FIELD_VALUES_REQUIREMENTS_REGISTRY_PATH ??
+  "restart-workspace/docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml";
 const governedDocumentationRootProjectPath =
   process.env.TF_DOCUMENTATION_FIELD_VALUES_DOCS_ROOT ??
   "restart-workspace/docs/reference/project-model";
@@ -41,7 +53,18 @@ const reportDirProjectPath =
   process.env.TF_DOCUMENTATION_FIELD_VALUES_REPORT_DIR ??
   "restart-workspace/artifacts/documentation-field-values";
 
-const requiredTaxonomyFields = new Set(["vocabulary_label_role", "lifecycle_status"]);
+const requiredValueSetNames = new Set([
+  "field_value_set_status",
+  "vocabulary_registry_status",
+  "vocabulary_term_status",
+  "vocabulary_label_role",
+  "check_status",
+  "implementation_artifact_status",
+  "decision_status",
+  "requirement_lifecycle_status",
+  "execution_result_status",
+]);
+
 const errors = [];
 const warnings = [];
 
@@ -142,9 +165,7 @@ function parseYaml(text) {
   const lines = String(text ?? "").replace(/^\uFEFF/u, "").replace(/\r\n/gu, "\n").split("\n");
 
   function getParent(indent) {
-    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
-      stack.pop();
-    }
+    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
     return stack[stack.length - 1].value;
   }
 
@@ -264,87 +285,132 @@ function requireString(record, fieldName, context) {
 }
 
 /**
- * Builds a map from field name to allowed taxonomy values.
+ * Reads the scoped value-set registry and returns lookup maps.
  *
- * @returns {Map<string, Set<string>>} Taxonomy field name to allowed values.
+ * @returns {{byName: Map<string, Set<string>>, byApplicability: Map<string, Set<string>>, valueSetCount: number}} Value sets by semantic name and by registry/field context.
  */
 function validateTaxonomyRegistry() {
   const registry = readProjectYaml(taxonomyRegistryProjectPath);
-  const taxonomyValuesByField = new Map();
+  const byName = new Map();
+  const byApplicability = new Map();
 
-  if (!registry) return taxonomyValuesByField;
-  if (!Array.isArray(registry.taxonomies)) {
-    errors.push("Documentation field values registry must define a taxonomies array.");
-    return taxonomyValuesByField;
+  if (!registry) return { byName, byApplicability, valueSetCount: 0 };
+  if (!Array.isArray(registry.field_value_sets)) {
+    errors.push("Documentation field values registry must define a field_value_sets array.");
+    return { byName, byApplicability, valueSetCount: 0 };
+  }
+  if (Array.isArray(registry.taxonomies)) {
+    errors.push("Documentation field values registry still contains deprecated generic taxonomies array.");
   }
 
-  const taxonomyIds = new Set();
-  const fieldNames = new Set();
+  const valueSetIds = new Set();
+  const valueSetNames = new Set();
+  const applicabilityKeys = new Set();
 
-  for (const taxonomy of registry.taxonomies) {
-    const id = requireString(taxonomy, "id", "Taxonomy record");
-    const fieldName = requireString(taxonomy, "field_name", id || "Taxonomy record");
-    const status = requireString(taxonomy, "status", id || "Taxonomy record");
-    const description = requireString(taxonomy, "description", id || "Taxonomy record");
+  for (const valueSet of registry.field_value_sets) {
+    const id = requireString(valueSet, "id", "Field value set");
+    const name = requireString(valueSet, "name", id || "Field value set");
+    const fieldName = requireString(valueSet, "field_name", id || name || "Field value set");
+    const appliesToRegistry = normalizeProjectPath(requireString(valueSet, "applies_to_registry", id || name || "Field value set"));
+    const appliesToRecord = requireString(valueSet, "applies_to_record", id || name || "Field value set");
+    const status = requireString(valueSet, "status", id || name || "Field value set");
+    const description = requireString(valueSet, "description", id || name || "Field value set");
 
     if (id) {
-      if (taxonomyIds.has(id)) errors.push(`Duplicate taxonomy id: ${id}`);
-      taxonomyIds.add(id);
+      if (valueSetIds.has(id)) errors.push(`Duplicate field value set id: ${id}`);
+      valueSetIds.add(id);
     }
-
-    if (fieldName) {
-      if (fieldNames.has(fieldName)) errors.push(`Duplicate taxonomy field_name: ${fieldName}`);
-      fieldNames.add(fieldName);
+    if (name) {
+      if (valueSetNames.has(name)) errors.push(`Duplicate field value set name: ${name}`);
+      valueSetNames.add(name);
     }
+    const applicabilityKey = `${appliesToRegistry}::${appliesToRecord}::${fieldName}`;
+    if (appliesToRegistry && appliesToRecord && fieldName) {
+      if (applicabilityKeys.has(applicabilityKey)) errors.push(`Duplicate field value set applicability: ${applicabilityKey}`);
+      applicabilityKeys.add(applicabilityKey);
+    }
+    if (!description) errors.push(`${id || name} must describe the controlled value set.`);
+    if (!status) errors.push(`${id || name} must declare status.`);
 
-    if (!description) errors.push(`${id || fieldName} must describe the controlled field.`);
-    if (!status) errors.push(`${id || fieldName} must declare status.`);
-
-    if (!Array.isArray(taxonomy.values) || taxonomy.values.length === 0) {
-      errors.push(`${id || fieldName} must define non-empty values.`);
+    if (!Array.isArray(valueSet.values) || valueSet.values.length === 0) {
+      errors.push(`${id || name} must define non-empty values.`);
       continue;
     }
 
     const values = new Set();
-    for (const valueRecord of taxonomy.values) {
-      const value = requireString(valueRecord, "value", `${id || fieldName} value`);
-      const meaning = requireString(valueRecord, "meaning", `${id || fieldName}:${value || "<empty>"}`);
+    for (const valueRecord of valueSet.values) {
+      const value = requireString(valueRecord, "value", `${id || name} value`);
+      const meaning = requireString(valueRecord, "meaning", `${id || name}:${value || "<empty>"}`);
       if (value) {
-        if (values.has(value)) errors.push(`${id || fieldName} has duplicate value: ${value}`);
+        if (values.has(value)) errors.push(`${id || name} has duplicate value: ${value}`);
         values.add(value);
       }
-      if (!meaning) errors.push(`${id || fieldName}:${value || "<empty>"} must define meaning.`);
+      if (!meaning) errors.push(`${id || name}:${value || "<empty>"} must define meaning.`);
     }
-    if (fieldName) taxonomyValuesByField.set(fieldName, values);
+
+    if (name) byName.set(name, values);
+    if (applicabilityKey) byApplicability.set(applicabilityKey, values);
   }
 
-  for (const requiredField of requiredTaxonomyFields) {
-    if (!taxonomyValuesByField.has(requiredField)) {
-      errors.push(`Missing required controlled field taxonomy: ${requiredField}`);
+  for (const requiredValueSetName of requiredValueSetNames) {
+    if (!byName.has(requiredValueSetName)) {
+      errors.push(`Missing required controlled field value set: ${requiredValueSetName}`);
     }
   }
 
-  const lifecycleStatuses = taxonomyValuesByField.get("lifecycle_status");
-  if (lifecycleStatuses) {
-    for (const taxonomy of registry.taxonomies) {
-      const id = String(taxonomy?.id ?? "<unknown>");
-      const status = String(taxonomy?.status ?? "").trim();
-      if (status && !lifecycleStatuses.has(status)) {
-        errors.push(`${id} uses lifecycle status not registered in lifecycle_status taxonomy: ${status}`);
+  const valueSetStatuses = byName.get("field_value_set_status") ?? new Set();
+  if (valueSetStatuses.size > 0) {
+    const registryStatus = String(registry.status ?? "").trim();
+    if (registryStatus && !valueSetStatuses.has(registryStatus)) {
+      errors.push(`Documentation field values registry uses unregistered field value set status: ${registryStatus}`);
+    }
+    for (const valueSet of registry.field_value_sets) {
+      const name = String(valueSet?.name ?? valueSet?.id ?? "<unknown>");
+      const status = String(valueSet?.status ?? "").trim();
+      if (status && !valueSetStatuses.has(status)) {
+        errors.push(`${name} uses field value set status not registered in field_value_set_status: ${status}`);
       }
     }
   }
 
-  return taxonomyValuesByField;
+  return { byName, byApplicability, valueSetCount: registry.field_value_sets.length };
 }
 
 /**
- * Validates controlled vocabulary labels against registered label roles.
+ * Returns an allowed value set by semantic name, recording an error if absent.
  *
- * @param {Map<string, Set<string>>} taxonomyValuesByField - Taxonomy values by field.
+ * @param {Map<string, Set<string>>} byName - Value sets by semantic name.
+ * @param {string} valueSetName - Required semantic value set name.
+ * @returns {Set<string>} Allowed values.
+ */
+function getValueSet(byName, valueSetName) {
+  const valueSet = byName.get(valueSetName);
+  if (!valueSet) errors.push(`Missing value set required by checker: ${valueSetName}`);
+  return valueSet ?? new Set();
+}
+
+/**
+ * Validates one status-like field against its contextual value set.
+ *
+ * @param {string} context - Human-readable context.
+ * @param {Record<string, unknown>} record - Record containing the field.
+ * @param {string} fieldName - Field name to inspect.
+ * @param {Set<string>} allowedValues - Allowed values for this context.
+ */
+function validateControlledField(context, record, fieldName, allowedValues) {
+  const value = requireString(record, fieldName, context);
+  if (value && allowedValues.size > 0 && !allowedValues.has(value)) {
+    errors.push(`${context} uses ${fieldName} value not registered for this context: ${value}`);
+  }
+}
+
+/**
+ * Validates controlled vocabulary labels against registered value sets.
+ *
+ * @param {Map<string, Set<string>>} byName - Value sets by semantic name.
  * @returns {string[]} Forbidden phrases declared by the vocabulary.
  */
-function validateVocabularyRegistry(taxonomyValuesByField) {
+function validateVocabularyRegistry(byName) {
   const registryPath = resolveProjectPath(vocabularyRegistryProjectPath);
   const rawText = fs.existsSync(registryPath) ? readText(registryPath) : "";
   const vocabulary = readProjectYaml(vocabularyRegistryProjectPath);
@@ -355,11 +421,13 @@ function validateVocabularyRegistry(taxonomyValuesByField) {
     errors.push("documentation-terms registry still contains deprecated allowed_labels field.");
   }
 
-  const allowedLabelRoles = taxonomyValuesByField.get("vocabulary_label_role") ?? new Set();
-  const lifecycleStatuses = taxonomyValuesByField.get("lifecycle_status") ?? new Set();
+  const allowedLabelRoles = getValueSet(byName, "vocabulary_label_role");
+  const vocabularyRegistryStatuses = getValueSet(byName, "vocabulary_registry_status");
+  const vocabularyTermStatuses = getValueSet(byName, "vocabulary_term_status");
   const canonicalLanguage = String(vocabulary.canonical_language ?? "").trim();
 
   if (!canonicalLanguage) errors.push("documentation-terms registry must declare canonical_language.");
+  validateControlledField("documentation-terms registry root", vocabulary, "status", vocabularyRegistryStatuses);
 
   if (!Array.isArray(vocabulary.label_roles) || vocabulary.label_roles.length === 0) {
     errors.push("documentation-terms registry must declare label_roles.");
@@ -406,7 +474,6 @@ function validateVocabularyRegistry(taxonomyValuesByField) {
     const id = requireString(term, "id", "Vocabulary term");
     const canonicalName = requireString(term, "canonical_name", id || "Vocabulary term");
     const termCanonicalLanguage = requireString(term, "canonical_language", id || "Vocabulary term");
-    const status = requireString(term, "status", id || "Vocabulary term");
     const definition = requireString(term, "definition", id || "Vocabulary term");
 
     if (id) {
@@ -417,9 +484,7 @@ function validateVocabularyRegistry(taxonomyValuesByField) {
       if (canonicalNames.has(canonicalName)) errors.push(`Duplicate vocabulary canonical_name: ${canonicalName}`);
       canonicalNames.add(canonicalName);
     }
-    if (status && !lifecycleStatuses.has(status)) {
-      errors.push(`${id || canonicalName} uses lifecycle status not registered in lifecycle_status taxonomy: ${status}`);
-    }
+    validateControlledField(`${id || canonicalName} vocabulary term`, term, "status", vocabularyTermStatuses);
     if (canonicalLanguage && termCanonicalLanguage && termCanonicalLanguage !== canonicalLanguage) {
       warnings.push(`${id || canonicalName} uses canonical_language ${termCanonicalLanguage}, expected ${canonicalLanguage}.`);
     }
@@ -461,6 +526,82 @@ function validateVocabularyRegistry(taxonomyValuesByField) {
   }
 
   return forbiddenPhrases;
+}
+
+/**
+ * Validates check statuses against the check_status value set.
+ *
+ * @param {Map<string, Set<string>>} byName - Value sets by semantic name.
+ */
+function validateChecksRegistry(byName) {
+  const registry = readProjectYaml(checksRegistryProjectPath);
+  if (!registry) return;
+  const checkStatuses = getValueSet(byName, "check_status");
+  if (!Array.isArray(registry.checks)) {
+    errors.push("Local governance checks registry must define a checks array.");
+    return;
+  }
+  for (const check of registry.checks) {
+    const id = String(check?.id ?? "<unknown check>");
+    validateControlledField(`${id} check`, check, "status", checkStatuses);
+  }
+}
+
+/**
+ * Validates implementation artifact statuses against the implementation_artifact_status value set.
+ *
+ * @param {Map<string, Set<string>>} byName - Value sets by semantic name.
+ */
+function validateImplementationTraceRegistry(byName) {
+  const registry = readProjectYaml(implementationTraceRegistryProjectPath);
+  if (!registry) return;
+  const artifactStatuses = getValueSet(byName, "implementation_artifact_status");
+  if (!Array.isArray(registry.artifacts)) {
+    errors.push("Implementation trace registry must define an artifacts array.");
+    return;
+  }
+  for (const artifact of registry.artifacts) {
+    const id = String(artifact?.id ?? "<unknown artifact>");
+    validateControlledField(`${id} implementation artifact`, artifact, "status", artifactStatuses);
+  }
+}
+
+/**
+ * Validates decision statuses against the decision_status value set.
+ *
+ * @param {Map<string, Set<string>>} byName - Value sets by semantic name.
+ */
+function validateDecisionRegistry(byName) {
+  const registry = readProjectYaml(decisionsRegistryProjectPath);
+  if (!registry) return;
+  const decisionStatuses = getValueSet(byName, "decision_status");
+  if (!Array.isArray(registry.decisions)) {
+    errors.push("Decision registry must define a decisions array.");
+    return;
+  }
+  for (const decision of registry.decisions) {
+    const id = String(decision?.id ?? "<unknown decision>");
+    validateControlledField(`${id} decision`, decision, "status", decisionStatuses);
+  }
+}
+
+/**
+ * Validates requirement statuses against the requirement_lifecycle_status value set.
+ *
+ * @param {Map<string, Set<string>>} byName - Value sets by semantic name.
+ */
+function validateRequirementRegistry(byName) {
+  const registry = readProjectYaml(requirementsRegistryProjectPath);
+  if (!registry) return;
+  const requirementStatuses = getValueSet(byName, "requirement_lifecycle_status");
+  if (!Array.isArray(registry.requirements)) {
+    errors.push("Requirement registry must define a requirements array.");
+    return;
+  }
+  for (const requirement of registry.requirements) {
+    const id = String(requirement?.id ?? "<unknown requirement>");
+    validateControlledField(`${id} requirement`, requirement, "status", requirementStatuses);
+  }
 }
 
 /**
@@ -516,8 +657,10 @@ function validateForbiddenPhraseUsage(forbiddenPhrases) {
 
 /**
  * Writes machine-readable and Markdown reports for this checker.
+ *
+ * @param {number} valueSetCount - Number of scoped value sets checked.
  */
-function writeReports() {
+function writeReports(valueSetCount) {
   const reportDir = resolveProjectPath(reportDirProjectPath);
   fs.mkdirSync(reportDir, { recursive: true });
 
@@ -525,6 +668,11 @@ function writeReports() {
     implemented_requirement: "MR-0001ADR-0004REQ-0001GOV-0001",
     taxonomy_registry: taxonomyRegistryProjectPath,
     vocabulary_registry: vocabularyRegistryProjectPath,
+    checks_registry: checksRegistryProjectPath,
+    implementation_trace_registry: implementationTraceRegistryProjectPath,
+    decisions_registry: decisionsRegistryProjectPath,
+    requirements_registry: requirementsRegistryProjectPath,
+    value_sets_checked: valueSetCount,
     warnings,
     errors,
   };
@@ -540,7 +688,7 @@ function writeReports() {
     "",
     `Implemented requirement: ${report.implemented_requirement}`,
     `Taxonomy registry: ${taxonomyRegistryProjectPath}`,
-    `Vocabulary registry: ${vocabularyRegistryProjectPath}`,
+    `Value sets checked: ${valueSetCount}`,
     `Warnings: ${warnings.length}`,
     `Errors: ${errors.length}`,
     "",
@@ -557,14 +705,19 @@ function writeReports() {
   fs.writeFileSync(path.join(reportDir, "documentation-field-values.report.md"), markdown, "utf8");
 }
 
-const taxonomyValuesByField = validateTaxonomyRegistry();
-const forbiddenPhrases = validateVocabularyRegistry(taxonomyValuesByField);
+const { byName, valueSetCount } = validateTaxonomyRegistry();
+const forbiddenPhrases = validateVocabularyRegistry(byName);
+validateChecksRegistry(byName);
+validateImplementationTraceRegistry(byName);
+validateDecisionRegistry(byName);
+validateRequirementRegistry(byName);
 validateForbiddenPhraseUsage(forbiddenPhrases);
-writeReports();
+writeReports(valueSetCount);
 
 if (errors.length > 0) {
   console.error("Documentation field value taxonomy check failed.");
-  console.error(`Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0001`);
+  console.error("Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0001");
+  console.error(`Value sets checked: ${valueSetCount}`);
   console.error(`Warnings: ${warnings.length}`);
   console.error(`Errors: ${errors.length}`);
   for (const error of errors) console.error(`ERROR: ${error}`);
@@ -573,5 +726,6 @@ if (errors.length > 0) {
 
 console.log("Documentation field value taxonomy check passed.");
 console.log("Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0001");
+console.log(`Value sets checked: ${valueSetCount}`);
 console.log(`Warnings: ${warnings.length}`);
 console.log(`Errors: ${errors.length}`);
