@@ -1,0 +1,11 @@
+schema_version: 1
+registry_id: MR-9999-requirements-registry
+macro_requirement_id: MR-9999
+
+requirements:
+  - id: MR-9999ADR-0001REQ-0001GOV-0001
+    title: Fixture governed requirement
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-9999
+    body_path: restart-workspace/docs/reference/project-model/body/requirements/MR-9999/MR-9999ADR-0001REQ-0001GOV-0001_body.md

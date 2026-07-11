@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
  * @file Restart-workspace implementation trace registry checker.
  *
  * @implementsRequirement MR-0001ADR-0003REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0003REQ-0001GOV-0002
  * @derivedFromDecision MR-0001/ADR-0003
  * @macroRequirement MR-0001
  *
@@ -14,12 +15,13 @@ import { fileURLToPath } from "node:url";
  * against restart-workspace Requirement registries and declared source
  * traceability headers. Planned artifacts are reported as deterministic
  * warnings, while implemented artifacts must exist and must declare the linked
- * Requirement ids they implement or support.
+ * Requirement ids they implement or support. It also executes deterministic
+ * negative fixtures so the checker proves it rejects malformed trace records.
  *
- * Side effects: reads restart-workspace Project Model registries and registered
- * implementation artifact files; writes JSON and Markdown reports under
- * restart-workspace/artifacts/implementation-trace; exits non-zero on errors.
- * Planned missing artifacts produce warnings and do not fail the check.
+ * Side effects: reads restart-workspace Project Model registries, registered
+ * implementation artifact files and governed fixture workspaces; writes JSON
+ * and Markdown reports under restart-workspace/artifacts/implementation-trace;
+ * exits non-zero on traceability errors or negative fixture coverage failures.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -38,13 +40,47 @@ const requirementsDirProjectPath =
 const reportDirProjectPath =
   process.env.TF_IMPLEMENTATION_TRACE_REPORT_DIR ??
   "restart-workspace/artifacts/implementation-trace";
+const negativeFixturesRegistryProjectPath =
+  process.env.TF_IMPLEMENTATION_TRACE_NEGATIVE_FIXTURES_REGISTRY_PATH ??
+  "restart-workspace/tools/MR-0001/fixtures/implementation-trace/negative-fixtures.registry.yml";
+const skipNegativeFixtures = process.env.TF_IMPLEMENTATION_TRACE_SKIP_FIXTURES === "true";
+const disableReports = process.env.TF_IMPLEMENTATION_TRACE_DISABLE_REPORTS === "1";
 
 const allowedStatuses = new Set(["planned", "implemented", "deprecated", "superseded"]);
 const allowedArtifactTypes = new Set(["tool", "report", "gate", "fixture", "verification_artifact", "source_module"]);
 const sourceArtifactTypes = new Set(["tool", "gate", "source_module"]);
 const sourceExtensions = new Set([".js", ".jsx", ".mjs", ".ts", ".tsx"]);
-const errors = [];
-const warnings = [];
+
+/**
+ * Creates an isolated validation accumulator.
+ *
+ * @returns {{errors: string[], warnings: string[]}} Empty validation result.
+ */
+function createResult() {
+  return { errors: [], warnings: [] };
+}
+
+/**
+ * Adds a deterministic error to an accumulator.
+ *
+ * @param {{errors: string[]}} result - Validation accumulator.
+ * @param {string} message - Diagnostic message.
+ * @returns {void}
+ */
+function addError(result, message) {
+  result.errors.push(message);
+}
+
+/**
+ * Adds a deterministic warning to an accumulator.
+ *
+ * @param {{warnings: string[]}} result - Validation accumulator.
+ * @param {string} message - Diagnostic message.
+ * @returns {void}
+ */
+function addWarning(result, message) {
+  result.warnings.push(message);
+}
 
 /**
  * Reads UTF-8 text from a file, removing a possible byte-order mark.
@@ -67,14 +103,15 @@ function normalizeProjectPath(value) {
 }
 
 /**
- * Resolves a repository-relative path against the repository root.
+ * Resolves a repository-relative path against a supplied repository root.
  *
+ * @param {string} baseRootDir - Absolute root directory.
  * @param {string|null|undefined} projectPath - Repository-relative path.
  * @returns {string} Absolute path, or an empty string when input is blank.
  */
-function resolveProjectPath(projectPath) {
+function resolveProjectPath(baseRootDir, projectPath) {
   const normalized = normalizeProjectPath(projectPath);
-  return normalized ? path.join(rootDir, normalized) : "";
+  return normalized ? path.join(baseRootDir, normalized) : "";
 }
 
 /**
@@ -253,14 +290,16 @@ function parseImplementsRequirementDeclarations(text) {
 /**
  * Loads restart-workspace Requirement ids from MR-specific registries.
  *
+ * @param {string} baseRootDir - Absolute root directory to validate.
+ * @param {{errors: string[]}} result - Validation accumulator.
  * @returns {Set<string>} Known Requirement ids.
  */
-function loadRequirementIds() {
+function loadRequirementIds(baseRootDir, result) {
   const requirementIds = new Set();
-  const requirementsDir = resolveProjectPath(requirementsDirProjectPath);
+  const requirementsDir = resolveProjectPath(baseRootDir, requirementsDirProjectPath);
 
   if (!fs.existsSync(requirementsDir)) {
-    errors.push(`Requirement registry directory is missing: ${requirementsDirProjectPath}`);
+    addError(result, `Requirement registry directory is missing: ${requirementsDirProjectPath}`);
     return requirementIds;
   }
 
@@ -288,54 +327,24 @@ function requiresSourceTraceability(artifact, projectPath) {
 }
 
 /**
- * Returns the planned or implemented path for an artifact record.
- *
- * @param {Record<string, unknown>} artifact - Implementation trace artifact record.
- * @returns {string} Repository-relative path, or empty string.
- */
-function artifactProjectPath(artifact) {
-  if (artifact.status === "implemented") return normalizeProjectPath(artifact.implemented_path);
-  if (artifact.status === "planned") return normalizeProjectPath(artifact.planned_path);
-  return normalizeProjectPath(artifact.implemented_path || artifact.planned_path);
-}
-
-/**
- * Adds a deterministic validation error.
- *
- * @param {string} message - Diagnostic message.
- * @returns {void}
- */
-function addError(message) {
-  errors.push(message);
-}
-
-/**
- * Adds a deterministic warning.
- *
- * @param {string} message - Warning message.
- * @returns {void}
- */
-function addWarning(message) {
-  warnings.push(message);
-}
-
-/**
  * Validates one implementation trace artifact record.
  *
  * @param {Record<string, unknown>} artifact - Artifact record.
  * @param {Set<string>} requirementIds - Known Requirement ids.
  * @param {Set<string>} artifactIds - Previously seen artifact ids.
+ * @param {string} baseRootDir - Absolute root directory to validate.
+ * @param {{errors: string[], warnings: string[]}} result - Validation accumulator.
  * @returns {void}
  */
-function validateArtifact(artifact, requirementIds, artifactIds) {
+function validateArtifact(artifact, requirementIds, artifactIds, baseRootDir, result) {
   const artifactId = String(artifact?.id ?? "").trim();
   if (!artifactId) {
-    addError("Implementation trace artifact is missing id.");
+    addError(result, "Implementation trace artifact is missing id.");
     return;
   }
 
   if (artifactIds.has(artifactId)) {
-    addError(`Duplicate implementation trace artifact id: ${artifactId}`);
+    addError(result, `Duplicate implementation trace artifact id: ${artifactId}`);
   }
   artifactIds.add(artifactId);
 
@@ -346,49 +355,49 @@ function validateArtifact(artifact, requirementIds, artifactIds) {
     : [];
 
   if (!allowedStatuses.has(status)) {
-    addError(`${artifactId} has unsupported status: ${status || "<empty>"}`);
+    addError(result, `${artifactId} has unsupported status: ${status || "<empty>"}`);
   }
 
   if (!allowedArtifactTypes.has(artifactType)) {
-    addError(`${artifactId} has unsupported artifact_type: ${artifactType || "<empty>"}`);
+    addError(result, `${artifactId} has unsupported artifact_type: ${artifactType || "<empty>"}`);
   }
 
   if (linkedRequirementIds.length === 0) {
-    addError(`${artifactId} must declare at least one linked_requirement_ids entry.`);
+    addError(result, `${artifactId} must declare at least one linked_requirement_ids entry.`);
   }
 
   for (const requirementId of linkedRequirementIds) {
     if (!requirementIds.has(requirementId)) {
-      addError(`${artifactId} links unknown requirement id: ${requirementId}`);
+      addError(result, `${artifactId} links unknown requirement id: ${requirementId}`);
     }
   }
 
   if (status === "planned") {
     const plannedPath = normalizeProjectPath(artifact.planned_path);
     if (!plannedPath) {
-      addError(`${artifactId} status planned requires planned_path.`);
+      addError(result, `${artifactId} status planned requires planned_path.`);
       return;
     }
 
-    if (!fs.existsSync(resolveProjectPath(plannedPath))) {
-      addWarning(`${artifactId} is planned but not implemented yet: ${plannedPath}`);
+    if (!fs.existsSync(resolveProjectPath(baseRootDir, plannedPath))) {
+      addWarning(result, `${artifactId} is planned but not implemented yet: ${plannedPath}`);
       return;
     }
 
-    addWarning(`${artifactId} is still marked planned but the planned path exists: ${plannedPath}`);
+    addWarning(result, `${artifactId} is still marked planned but the planned path exists: ${plannedPath}`);
     return;
   }
 
   if (status === "implemented") {
     const implementedPath = normalizeProjectPath(artifact.implemented_path);
     if (!implementedPath) {
-      addError(`${artifactId} status implemented requires implemented_path.`);
+      addError(result, `${artifactId} status implemented requires implemented_path.`);
       return;
     }
 
-    const implementedAbsolutePath = resolveProjectPath(implementedPath);
+    const implementedAbsolutePath = resolveProjectPath(baseRootDir, implementedPath);
     if (!fs.existsSync(implementedAbsolutePath)) {
-      addError(`${artifactId} is implemented but path is missing: ${implementedPath}`);
+      addError(result, `${artifactId} is implemented but path is missing: ${implementedPath}`);
       return;
     }
 
@@ -398,6 +407,7 @@ function validateArtifact(artifact, requirementIds, artifactIds) {
     for (const requirementId of linkedRequirementIds) {
       if (!declaredRequirementIds.has(requirementId)) {
         addError(
+          result,
           `${artifactId} implemented artifact ${implementedPath} does not declare @implementsRequirement ${requirementId}.`,
         );
       }
@@ -405,33 +415,135 @@ function validateArtifact(artifact, requirementIds, artifactIds) {
 
     for (const requirementId of declaredRequirementIds) {
       if (!requirementIds.has(requirementId)) {
-        addError(`${implementedPath} declares unknown @implementsRequirement ${requirementId}.`);
+        addError(result, `${implementedPath} declares unknown @implementsRequirement ${requirementId}.`);
       }
       if (!linkedRequirementIds.includes(requirementId)) {
-        addError(`${implementedPath} declares @implementsRequirement ${requirementId} but registry artifact ${artifactId} does not link it.`);
+        addError(result, `${implementedPath} declares @implementsRequirement ${requirementId} but registry artifact ${artifactId} does not link it.`);
       }
     }
   }
 }
 
 /**
+ * Runs implementation trace validation against one root directory.
+ *
+ * @param {string} baseRootDir - Absolute root directory to validate.
+ * @returns {{artifactCount: number, errors: string[], warnings: string[]}} Validation result.
+ */
+function runImplementationTraceValidation(baseRootDir) {
+  const result = createResult();
+  const registryPath = resolveProjectPath(baseRootDir, registryProjectPath);
+
+  if (!fs.existsSync(registryPath)) {
+    addError(result, `Implementation trace registry is missing: ${registryProjectPath}`);
+    return { artifactCount: 0, ...result };
+  }
+
+  const requirementIds = loadRequirementIds(baseRootDir, result);
+  const registry = readYaml(registryPath);
+  const artifacts = Array.isArray(registry.artifacts) ? registry.artifacts : [];
+  const artifactIds = new Set();
+
+  if (!Array.isArray(registry.artifacts)) {
+    addError(result, "Implementation trace registry must define an artifacts array.");
+  }
+
+  for (const artifact of artifacts) {
+    validateArtifact(artifact, requirementIds, artifactIds, baseRootDir, result);
+  }
+
+  return { artifactCount: artifacts.length, ...result };
+}
+
+/**
+ * Executes governed negative fixtures for this checker.
+ *
+ * @returns {{checked: number, results: Array<Record<string, unknown>>, errors: string[]}} Fixture result.
+ */
+function runNegativeFixtures() {
+  const fixtureErrors = [];
+  const results = [];
+  if (skipNegativeFixtures) return { checked: 0, results, errors: fixtureErrors };
+
+  const registryPath = resolveProjectPath(rootDir, negativeFixturesRegistryProjectPath);
+  if (!fs.existsSync(registryPath)) {
+    fixtureErrors.push(`Negative fixture registry is missing: ${negativeFixturesRegistryProjectPath}`);
+    return { checked: 0, results, errors: fixtureErrors };
+  }
+
+  const registry = readYaml(registryPath);
+  const fixtures = Array.isArray(registry.fixtures) ? registry.fixtures : [];
+  if (!Array.isArray(registry.fixtures) || fixtures.length === 0) {
+    fixtureErrors.push(`${negativeFixturesRegistryProjectPath} must define a non-empty fixtures array.`);
+    return { checked: 0, results, errors: fixtureErrors };
+  }
+
+  for (const fixture of fixtures) {
+    const id = String(fixture?.id ?? "").trim();
+    const rootPath = normalizeProjectPath(fixture?.root_path);
+    const expectedError = String(fixture?.expected_error_contains ?? "").trim();
+
+    if (!id || !rootPath || !expectedError) {
+      fixtureErrors.push(`${negativeFixturesRegistryProjectPath} contains an invalid fixture record.`);
+      continue;
+    }
+
+    const fixtureRoot = resolveProjectPath(rootDir, rootPath);
+    const validation = runImplementationTraceValidation(fixtureRoot);
+    const diagnostics = validation.errors.join("\n");
+    const matched = validation.errors.length > 0 && diagnostics.includes(expectedError);
+
+    results.push({
+      id,
+      expected_error_contains: expectedError,
+      status: validation.errors.length > 0 ? "failed_as_expected" : "unexpected_pass",
+      matched,
+      error_count: validation.errors.length,
+      warning_count: validation.warnings.length,
+    });
+
+    if (validation.errors.length === 0) {
+      fixtureErrors.push(`${id} negative fixture unexpectedly passed.`);
+      continue;
+    }
+
+    if (!matched) {
+      fixtureErrors.push(`${id} negative fixture did not emit expected diagnostic: ${expectedError}`);
+    }
+  }
+
+  return { checked: results.length, results, errors: fixtureErrors };
+}
+
+/**
  * Writes JSON and Markdown reports for the validation result.
  *
- * @param {number} artifactCount - Number of artifact records checked.
+ * @param {{artifactCount: number, errors: string[], warnings: string[]}} validation - Registry validation result.
+ * @param {{checked: number, results: Array<Record<string, unknown>>, errors: string[]}} negativeFixtures - Fixture validation result.
  * @returns {void}
  */
-function writeReports(artifactCount) {
-  const reportDir = resolveProjectPath(reportDirProjectPath);
+function writeReports(validation, negativeFixtures) {
+  if (disableReports) return;
+
+  const reportDir = resolveProjectPath(rootDir, reportDirProjectPath);
   fs.mkdirSync(reportDir, { recursive: true });
 
+  const allErrors = [...validation.errors, ...negativeFixtures.errors];
   const report = {
     checker: "check-implementation-trace-registry",
-    status: errors.length > 0 ? "fail" : "pass",
-    artifact_count: artifactCount,
-    warning_count: warnings.length,
-    error_count: errors.length,
-    warnings,
-    errors,
+    implemented_requirements: [
+      "MR-0001ADR-0003REQ-0001GOV-0001",
+      "MR-0001ADR-0003REQ-0001GOV-0002",
+    ],
+    status: allErrors.length > 0 ? "fail" : "pass",
+    artifact_count: validation.artifactCount,
+    warning_count: validation.warnings.length,
+    error_count: allErrors.length,
+    warnings: validation.warnings,
+    errors: allErrors,
+    negative_fixtures_registry: negativeFixturesRegistryProjectPath,
+    negative_fixtures_checked: negativeFixtures.checked,
+    negative_fixture_results: negativeFixtures.results,
   };
 
   fs.writeFileSync(
@@ -444,63 +556,64 @@ function writeReports(artifactCount) {
     "# Implementation trace registry report",
     "",
     `Status: ${report.status}`,
-    `Artifacts checked: ${artifactCount}`,
-    `Warnings: ${warnings.length}`,
-    `Errors: ${errors.length}`,
+    "Implemented requirements:",
+    ...report.implemented_requirements.map((requirementId) => `- ${requirementId}`),
+    `Artifacts checked: ${validation.artifactCount}`,
+    `Negative fixtures checked: ${negativeFixtures.checked}`,
+    `Warnings: ${validation.warnings.length}`,
+    `Errors: ${allErrors.length}`,
+    "",
+    "## Negative fixtures",
+    "",
+    ...(negativeFixtures.results.length > 0
+      ? negativeFixtures.results.map(
+          (fixture) => `- ${fixture.id}: expected ${JSON.stringify(fixture.expected_error_contains)}; matched: ${fixture.matched}`,
+        )
+      : ["None."]),
     "",
     "## Warnings",
     "",
-    ...(warnings.length > 0 ? warnings.map((warning) => `- ${warning}`) : ["None."]),
+    ...(validation.warnings.length > 0 ? validation.warnings.map((warning) => `- ${warning}`) : ["None."]),
     "",
     "## Errors",
     "",
-    ...(errors.length > 0 ? errors.map((error) => `- ${error}`) : ["None."]),
+    ...(allErrors.length > 0 ? allErrors.map((error) => `- ${error}`) : ["None."]),
     "",
   ].join("\n");
 
   fs.writeFileSync(path.join(reportDir, "implementation-trace.report.md"), markdown, "utf8");
 }
 
-const registryPath = resolveProjectPath(registryProjectPath);
-if (!fs.existsSync(registryPath)) {
-  errors.push(`Implementation trace registry is missing: ${registryProjectPath}`);
-  writeReports(0);
+const validation = runImplementationTraceValidation(rootDir);
+const negativeFixtures = runNegativeFixtures();
+const allErrors = [...validation.errors, ...negativeFixtures.errors];
+
+writeReports(validation, negativeFixtures);
+
+if (allErrors.length > 0) {
   console.error("Implementation trace registry check failed.");
-  for (const error of errors) console.error(`- ${error}`);
-  process.exit(1);
-}
-
-const requirementIds = loadRequirementIds();
-const registry = readYaml(registryPath);
-const artifacts = Array.isArray(registry.artifacts) ? registry.artifacts : [];
-const artifactIds = new Set();
-
-if (!Array.isArray(registry.artifacts)) {
-  errors.push("Implementation trace registry must define an artifacts array.");
-}
-
-for (const artifact of artifacts) {
-  validateArtifact(artifact, requirementIds, artifactIds);
-}
-
-writeReports(artifacts.length);
-
-if (errors.length > 0) {
-  console.error("Implementation trace registry check failed.");
-  for (const error of errors) console.error(`- ${error}`);
-  if (warnings.length > 0) {
+  console.error("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0001");
+  console.error("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0002");
+  console.error(`Artifacts checked: ${validation.artifactCount}`);
+  console.error(`Negative fixtures checked: ${negativeFixtures.checked}`);
+  console.error(`Warnings: ${validation.warnings.length}`);
+  console.error(`Errors: ${allErrors.length}`);
+  for (const error of allErrors) console.error(`ERROR: ${error}`);
+  if (validation.warnings.length > 0) {
     console.error("Warnings:");
-    for (const warning of warnings) console.error(`- ${warning}`);
+    for (const warning of validation.warnings) console.error(`- ${warning}`);
   }
   process.exit(1);
 }
 
 console.log("Implementation trace registry check passed.");
 console.log("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0001");
-console.log(`Artifacts checked: ${artifacts.length}`);
-console.log(`Warnings: ${warnings.length}`);
-console.log(`Errors: ${errors.length}`);
-if (warnings.length > 0) {
+console.log("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0002");
+console.log(`Artifacts checked: ${validation.artifactCount}`);
+console.log(`Negative fixtures checked: ${negativeFixtures.checked}`);
+console.log(`Warnings: ${validation.warnings.length}`);
+console.log(`Errors: ${allErrors.length}`);
+if (validation.warnings.length > 0) {
   console.log("Deterministic warnings:");
-  for (const warning of warnings) console.log(`- ${warning}`);
+  for (const warning of validation.warnings) console.log(`- ${warning}`);
 }

@@ -9,8 +9,9 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0003REQ-0001GOV-0001
+      - MR-0001ADR-0003REQ-0001GOV-0002
     implemented_path: restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
-    reason: Validate consistency between the implementation trace registry, requirement registries and implementation artifact traceability declarations.
+    reason: Validate consistency between the implementation trace registry, requirement registries and implementation artifact traceability declarations, including deterministic negative fixture coverage.
     verification_command: node restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs
 
   - id: MR-0001ADR-0003REQ-0001GOV-0001IMPL-0002
@@ -85,3 +86,13 @@ artifacts:
     implemented_path: restart-workspace/tools/MR-0001/fixtures/documentation-field-values
     reason: Provide deterministic invalid examples proving that the documentation field value checker detects deprecated generic taxonomies, missing value sets, values without meanings, invalid label roles, status values used in the wrong context and forbidden documentation phrases.
     verification_command: node restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
+
+  - id: MR-0001ADR-0003REQ-0001GOV-0002IMPL-0001
+    title: Implementation trace negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0003REQ-0001GOV-0002
+    implemented_path: restart-workspace/tools/MR-0001/fixtures/implementation-trace
+    reason: Provide deterministic invalid examples proving that the implementation trace checker detects malformed registries, invalid artifact records and missing source traceability declarations.
+    verification_command: node restart-workspace/tools/MR-0001/check-implementation-trace-registry.mjs

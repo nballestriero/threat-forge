@@ -1,0 +1,3 @@
+schema_version: 1
+registry_id: implementation-trace-registry
+scope: governed_implementation_trace
