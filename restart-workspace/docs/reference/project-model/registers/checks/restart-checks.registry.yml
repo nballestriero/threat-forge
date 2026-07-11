@@ -22,3 +22,13 @@ checks:
     linked_requirement_ids:
       - MR-0001ADR-0004REQ-0001GOV-0001
     description: Validate controlled documentation field values and vocabulary label roles.
+
+  - id: MR-0001ADR-0005REQ-0002GOV-0001CHECK-0001
+    title: Governed body header consistency
+    status: active
+    command: node
+    args:
+      - restart-workspace/tools/MR-0001/check-governed-body-headers.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0005REQ-0002GOV-0001
+    description: Validate that registry title fields and Markdown body H1 headers remain coherent.
