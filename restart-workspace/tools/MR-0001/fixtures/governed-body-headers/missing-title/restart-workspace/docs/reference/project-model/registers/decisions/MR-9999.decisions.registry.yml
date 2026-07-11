@@ -1,0 +1,5 @@
+schema_version: 1
+registry_id: fixture-decisions
+macro_requirement_id: MR-9999
+
+decisions: []

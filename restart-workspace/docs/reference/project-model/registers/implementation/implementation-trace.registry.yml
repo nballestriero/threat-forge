@@ -59,6 +59,17 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0005REQ-0002GOV-0001
+      - MR-0001ADR-0005REQ-0002GOV-0002
     implemented_path: restart-workspace/tools/MR-0001/check-governed-body-headers.mjs
-    reason: Validate that governed registry records use canonical title fields and that linked Markdown body H1 headers are derived from record id and title.
+    reason: Validate that governed registry records use canonical title fields and that linked Markdown body H1 headers are derived from record id and title, including deterministic negative fixture coverage.
+    verification_command: node restart-workspace/tools/MR-0001/check-governed-body-headers.mjs
+
+  - id: MR-0001ADR-0005REQ-0002GOV-0002IMPL-0001
+    title: Governed body header negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0005REQ-0002GOV-0002
+    implemented_path: restart-workspace/tools/MR-0001/fixtures/governed-body-headers
+    reason: Provide deterministic invalid examples proving that the governed body header checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
     verification_command: node restart-workspace/tools/MR-0001/check-governed-body-headers.mjs

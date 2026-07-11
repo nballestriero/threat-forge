@@ -7,19 +7,21 @@ import { fileURLToPath } from "node:url";
  * @file Governed body header consistency checker.
  *
  * @implementsRequirement MR-0001ADR-0005REQ-0002GOV-0001
+ * @implementsRequirement MR-0001ADR-0005REQ-0002GOV-0002
  * @derivedFromDecision MR-0001/ADR-0005
  * @macroRequirement MR-0001
  *
  * This checker validates that governed registry records use `title` as the
  * canonical human-readable title field and that each linked Markdown body
  * repeats that canonical title in exactly one H1 header derived from the
- * registry record id and title.
+ * registry record id and title. It also runs deterministic negative fixtures so
+ * the checker proves it catches invalid authoring states.
  *
- * Side effects: reads restart-workspace Project Model registries and governed
- * Markdown body files; writes JSON and Markdown reports under
- * restart-workspace/artifacts/governed-body-headers; exits non-zero on missing
- * titles, legacy title fields, missing bodies, multiple H1 headers or H1
- * divergence.
+ * Side effects: reads restart-workspace Project Model registries, governed
+ * Markdown body files and fixture workspaces; writes JSON and Markdown reports
+ * under restart-workspace/artifacts/governed-body-headers; exits non-zero on
+ * missing titles, legacy title fields, missing bodies, multiple H1 headers, H1
+ * divergence or fixture coverage failures.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -41,10 +43,10 @@ const requirementsDirProjectPath =
 const reportDirProjectPath =
   process.env.TF_GOVERNED_BODY_HEADERS_REPORT_DIR ??
   "restart-workspace/artifacts/governed-body-headers";
-
-const errors = [];
-const warnings = [];
-const governedRecords = [];
+const negativeFixturesRegistryProjectPath =
+  process.env.TF_GOVERNED_BODY_HEADERS_NEGATIVE_FIXTURES_REGISTRY_PATH ??
+  "restart-workspace/tools/MR-0001/fixtures/governed-body-headers/negative-fixtures.registry.yml";
+const skipNegativeFixtures = process.env.TF_GOVERNED_BODY_HEADERS_SKIP_FIXTURES === "true";
 
 /**
  * Reads UTF-8 text from a file, removing a possible byte-order mark.
@@ -67,24 +69,15 @@ function normalizeProjectPath(value) {
 }
 
 /**
- * Resolves a repository-relative path against the repository root.
+ * Resolves a repository-relative path against a root directory.
  *
+ * @param {string} baseRootDir - Absolute root path.
  * @param {string|null|undefined} projectPath - Repository-relative path.
  * @returns {string} Absolute path, or an empty string when input is blank.
  */
-function resolveProjectPath(projectPath) {
+function resolveProjectPath(baseRootDir, projectPath) {
   const normalized = normalizeProjectPath(projectPath);
-  return normalized ? path.join(rootDir, normalized) : "";
-}
-
-/**
- * Converts an absolute path inside the repository to a stable project path.
- *
- * @param {string} filePath - Absolute file path.
- * @returns {string} Repository-relative path with forward slashes.
- */
-function toProjectPath(filePath) {
-  return normalizeProjectPath(path.relative(rootDir, filePath));
+  return normalized ? path.join(baseRootDir, normalized) : "";
 }
 
 /**
@@ -256,16 +249,27 @@ function escapeRegExp(value) {
 }
 
 /**
+ * Creates a validation state object.
+ *
+ * @returns {{errors: string[], warnings: string[], governedRecords: Array<object>}} Empty validation state.
+ */
+function createState() {
+  return { errors: [], warnings: [], governedRecords: [] };
+}
+
+/**
  * Reads all registry files in a directory matching a governed naming pattern.
  *
+ * @param {string} baseRootDir - Absolute root path.
  * @param {string} dirProjectPath - Repository-relative registry directory.
  * @param {RegExp} filePattern - Registry file name pattern.
+ * @param {{errors: string[]}} state - Validation state.
  * @returns {Array<{projectPath: string, registry: Record<string, unknown>}>>} Parsed registries.
  */
-function readRegistryDirectory(dirProjectPath, filePattern) {
-  const dirPath = resolveProjectPath(dirProjectPath);
+function readRegistryDirectory(baseRootDir, dirProjectPath, filePattern, state) {
+  const dirPath = resolveProjectPath(baseRootDir, dirProjectPath);
   if (!fs.existsSync(dirPath)) {
-    errors.push(`Registry directory is missing: ${dirProjectPath}`);
+    state.errors.push(`Registry directory is missing: ${dirProjectPath}`);
     return [];
   }
 
@@ -284,69 +288,83 @@ function readRegistryDirectory(dirProjectPath, filePattern) {
  * @param {string} sourceProjectPath - Registry path containing the record.
  * @param {string} recordType - Human-readable record type.
  * @param {Record<string, unknown>} record - Parsed registry record.
+ * @param {{errors: string[], governedRecords: Array<object>}} state - Validation state.
  */
-function collectRecord(sourceProjectPath, recordType, record) {
+function collectRecord(sourceProjectPath, recordType, record, state) {
   const id = String(record?.id ?? "").trim();
   const title = String(record?.title ?? "").trim();
   const legacyName = String(record?.name ?? "").trim();
   const bodyPath = normalizeProjectPath(record?.body_path);
 
   if (!id) {
-    errors.push(`${sourceProjectPath} contains ${recordType} record without id.`);
+    state.errors.push(`${sourceProjectPath} contains ${recordType} record without id.`);
     return;
   }
 
   if (legacyName) {
-    errors.push(`${id} uses legacy name field; governed title records must use title.`);
+    state.errors.push(`${id} uses legacy name field; governed title records must use title.`);
   }
 
   if (!title) {
-    errors.push(`${id} is missing title.`);
+    state.errors.push(`${id} is missing title.`);
   }
 
   if (!bodyPath) {
-    errors.push(`${id} is missing body_path.`);
+    state.errors.push(`${id} is missing body_path.`);
     return;
   }
 
-  governedRecords.push({ id, title, bodyPath, recordType, sourceProjectPath });
+  state.governedRecords.push({ id, title, bodyPath, recordType, sourceProjectPath });
 }
 
 /**
  * Loads governed records with body paths from macro, decision and requirement registries.
+ *
+ * @param {string} baseRootDir - Absolute root path.
+ * @param {{errors: string[], governedRecords: Array<object>}} state - Validation state.
  */
-function collectGovernedRecords() {
-  const macroRegistryPath = resolveProjectPath(macroRequirementsRegistryProjectPath);
+function collectGovernedRecords(baseRootDir, state) {
+  const macroRegistryPath = resolveProjectPath(baseRootDir, macroRequirementsRegistryProjectPath);
   if (!fs.existsSync(macroRegistryPath)) {
-    errors.push(`Macro-requirements registry is missing: ${macroRequirementsRegistryProjectPath}`);
+    state.errors.push(`Macro-requirements registry is missing: ${macroRequirementsRegistryProjectPath}`);
   } else {
     const registry = readYaml(macroRegistryPath);
     if (!Array.isArray(registry.macro_requirements)) {
-      errors.push("Macro-requirements registry must define a macro_requirements array.");
+      state.errors.push("Macro-requirements registry must define a macro_requirements array.");
     } else {
       for (const record of registry.macro_requirements) {
-        collectRecord(macroRequirementsRegistryProjectPath, "macro-requirement", record);
+        collectRecord(macroRequirementsRegistryProjectPath, "macro-requirement", record, state);
       }
     }
   }
 
-  for (const { projectPath, registry } of readRegistryDirectory(decisionsDirProjectPath, /^MR-\d{4}\.decisions\.registry\.yml$/u)) {
+  for (const { projectPath, registry } of readRegistryDirectory(
+    baseRootDir,
+    decisionsDirProjectPath,
+    /^MR-\d{4}\.decisions\.registry\.yml$/u,
+    state,
+  )) {
     if (!Array.isArray(registry.decisions)) {
-      errors.push(`${projectPath} must define a decisions array.`);
+      state.errors.push(`${projectPath} must define a decisions array.`);
       continue;
     }
     for (const record of registry.decisions) {
-      collectRecord(projectPath, "decision", record);
+      collectRecord(projectPath, "decision", record, state);
     }
   }
 
-  for (const { projectPath, registry } of readRegistryDirectory(requirementsDirProjectPath, /^MR-\d{4}\.requirements\.registry\.yml$/u)) {
+  for (const { projectPath, registry } of readRegistryDirectory(
+    baseRootDir,
+    requirementsDirProjectPath,
+    /^MR-\d{4}\.requirements\.registry\.yml$/u,
+    state,
+  )) {
     if (!Array.isArray(registry.requirements)) {
-      errors.push(`${projectPath} must define a requirements array.`);
+      state.errors.push(`${projectPath} must define a requirements array.`);
       continue;
     }
     for (const record of registry.requirements) {
-      collectRecord(projectPath, "requirement", record);
+      collectRecord(projectPath, "requirement", record, state);
     }
   }
 }
@@ -354,12 +372,14 @@ function collectGovernedRecords() {
 /**
  * Validates the Markdown H1 for a collected governed record.
  *
+ * @param {string} baseRootDir - Absolute root path.
  * @param {{id: string, title: string, bodyPath: string, recordType: string, sourceProjectPath: string}} record - Governed record data.
+ * @param {{errors: string[]}} state - Validation state.
  */
-function validateBodyHeader(record) {
-  const absoluteBodyPath = resolveProjectPath(record.bodyPath);
+function validateBodyHeader(baseRootDir, record, state) {
+  const absoluteBodyPath = resolveProjectPath(baseRootDir, record.bodyPath);
   if (!fs.existsSync(absoluteBodyPath)) {
-    errors.push(`${record.id} body file is missing: ${record.bodyPath}`);
+    state.errors.push(`${record.id} body file is missing: ${record.bodyPath}`);
     return;
   }
 
@@ -380,12 +400,12 @@ function validateBodyHeader(record) {
   }
 
   if (h1Lines.length === 0) {
-    errors.push(`${record.bodyPath} has no H1 header for ${record.id}.`);
+    state.errors.push(`${record.bodyPath} has no H1 header for ${record.id}.`);
     return;
   }
 
   if (h1Lines.length > 1) {
-    errors.push(`${record.bodyPath} has multiple H1 headers for ${record.id}.`);
+    state.errors.push(`${record.bodyPath} has multiple H1 headers for ${record.id}.`);
     return;
   }
 
@@ -393,7 +413,7 @@ function validateBodyHeader(record) {
   const actualHeader = h1Lines[0].line;
 
   if (actualHeader !== expectedHeader) {
-    errors.push(
+    state.errors.push(
       `${record.bodyPath}:${h1Lines[0].index} H1 mismatch for ${record.id}. Expected ${JSON.stringify(
         expectedHeader,
       )}, found ${JSON.stringify(actualHeader)}.`,
@@ -401,7 +421,7 @@ function validateBodyHeader(record) {
   }
 
   if (/^#\s+.+\s-\s.+$/u.test(actualHeader)) {
-    errors.push(`${record.bodyPath}:${h1Lines[0].index} uses legacy hyphen separator; use em dash.`);
+    state.errors.push(`${record.bodyPath}:${h1Lines[0].index} uses legacy hyphen separator; use em dash.`);
   }
 
   const titlePattern = new RegExp(`^#\\s+${escapeRegExp(record.id)}\\s+—\\s+${escapeRegExp(record.title)}$`, "u");
@@ -411,20 +431,104 @@ function validateBodyHeader(record) {
 }
 
 /**
+ * Runs the governed body header validation against one root directory.
+ *
+ * @param {string} baseRootDir - Root path to validate.
+ * @returns {{errors: string[], warnings: string[], governedRecords: Array<object>}} Validation result.
+ */
+function runHeaderValidation(baseRootDir) {
+  const state = createState();
+  collectGovernedRecords(baseRootDir, state);
+  for (const record of state.governedRecords) {
+    validateBodyHeader(baseRootDir, record, state);
+  }
+  return state;
+}
+
+/**
+ * Runs negative fixtures and checks that each one fails with the declared diagnostic.
+ *
+ * @returns {{checked: number, results: Array<object>, errors: string[]}} Fixture validation result.
+ */
+function runNegativeFixtures() {
+  const fixtureErrors = [];
+  const results = [];
+
+  if (skipNegativeFixtures) return { checked: 0, results, errors: fixtureErrors };
+
+  const registryPath = resolveProjectPath(rootDir, negativeFixturesRegistryProjectPath);
+  if (!fs.existsSync(registryPath)) {
+    fixtureErrors.push(`Negative fixture registry is missing: ${negativeFixturesRegistryProjectPath}`);
+    return { checked: 0, results, errors: fixtureErrors };
+  }
+
+  const registry = readYaml(registryPath);
+  const fixtures = Array.isArray(registry.fixtures) ? registry.fixtures : [];
+  if (!Array.isArray(registry.fixtures) || fixtures.length === 0) {
+    fixtureErrors.push(`${negativeFixturesRegistryProjectPath} must define a non-empty fixtures array.`);
+    return { checked: 0, results, errors: fixtureErrors };
+  }
+
+  for (const fixture of fixtures) {
+    const id = String(fixture?.id ?? "").trim();
+    const rootPath = normalizeProjectPath(fixture?.root_path);
+    const expectedError = String(fixture?.expected_error_contains ?? "").trim();
+
+    if (!id || !rootPath || !expectedError) {
+      fixtureErrors.push(`${negativeFixturesRegistryProjectPath} contains an invalid fixture record.`);
+      continue;
+    }
+
+    const fixtureRoot = resolveProjectPath(rootDir, rootPath);
+    const result = runHeaderValidation(fixtureRoot);
+    const matched = result.errors.some((error) => error.includes(expectedError));
+    const fixtureResult = {
+      id,
+      root_path: rootPath,
+      expected_error_contains: expectedError,
+      observed_error_count: result.errors.length,
+      matched,
+    };
+    results.push(fixtureResult);
+
+    if (result.errors.length === 0) {
+      fixtureErrors.push(`${id} negative fixture unexpectedly passed.`);
+      continue;
+    }
+
+    if (!matched) {
+      fixtureErrors.push(`${id} negative fixture did not emit expected diagnostic: ${expectedError}`);
+    }
+  }
+
+  return { checked: results.length, results, errors: fixtureErrors };
+}
+
+const validation = runHeaderValidation(rootDir);
+const negativeFixtures = runNegativeFixtures();
+for (const error of negativeFixtures.errors) validation.errors.push(error);
+
+/**
  * Writes machine-readable and Markdown reports for this checker.
  */
 function writeReports() {
-  const reportDir = resolveProjectPath(reportDirProjectPath);
+  const reportDir = resolveProjectPath(rootDir, reportDirProjectPath);
   fs.mkdirSync(reportDir, { recursive: true });
 
   const report = {
-    implemented_requirement: "MR-0001ADR-0005REQ-0002GOV-0001",
+    implemented_requirements: [
+      "MR-0001ADR-0005REQ-0002GOV-0001",
+      "MR-0001ADR-0005REQ-0002GOV-0002",
+    ],
     macro_requirements_registry: macroRequirementsRegistryProjectPath,
     decisions_dir: decisionsDirProjectPath,
     requirements_dir: requirementsDirProjectPath,
-    records_checked: governedRecords.length,
-    warnings,
-    errors,
+    negative_fixtures_registry: negativeFixturesRegistryProjectPath,
+    records_checked: validation.governedRecords.length,
+    negative_fixtures_checked: negativeFixtures.checked,
+    negative_fixture_results: negativeFixtures.results,
+    warnings: validation.warnings,
+    errors: validation.errors,
   };
 
   fs.writeFileSync(path.join(reportDir, "governed-body-headers.report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
@@ -432,42 +536,51 @@ function writeReports() {
   const markdown = [
     "# Governed body headers report",
     "",
-    `Implemented requirement: ${report.implemented_requirement}`,
+    `Implemented requirements: ${report.implemented_requirements.join(", ")}`,
     `Records checked: ${report.records_checked}`,
-    `Warnings: ${warnings.length}`,
-    `Errors: ${errors.length}`,
+    `Negative fixtures checked: ${report.negative_fixtures_checked}`,
+    `Warnings: ${validation.warnings.length}`,
+    `Errors: ${validation.errors.length}`,
+    "",
+    "## Negative fixtures",
+    "",
+    ...(negativeFixtures.results.length
+      ? negativeFixtures.results.map(
+          (fixture) => `- ${fixture.id}: expected ${JSON.stringify(fixture.expected_error_contains)}; matched: ${fixture.matched}`,
+        )
+      : ["None."]),
     "",
     "## Warnings",
     "",
-    ...(warnings.length ? warnings.map((warning) => `- ${warning}`) : ["None."]),
+    ...(validation.warnings.length ? validation.warnings.map((warning) => `- ${warning}`) : ["None."]),
     "",
     "## Errors",
     "",
-    ...(errors.length ? errors.map((error) => `- ${error}`) : ["None."]),
+    ...(validation.errors.length ? validation.errors.map((error) => `- ${error}`) : ["None."]),
     "",
   ].join("\n");
 
   fs.writeFileSync(path.join(reportDir, "governed-body-headers.report.md"), markdown, "utf8");
 }
 
-collectGovernedRecords();
-for (const record of governedRecords) {
-  validateBodyHeader(record);
-}
 writeReports();
 
-if (errors.length > 0) {
+if (validation.errors.length > 0) {
   console.error("Governed body header check failed.");
-  console.error(`Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0001`);
-  console.error(`Records checked: ${governedRecords.length}`);
-  console.error(`Warnings: ${warnings.length}`);
-  console.error(`Errors: ${errors.length}`);
-  for (const error of errors) console.error(`- ${error}`);
+  console.error("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0001");
+  console.error("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0002");
+  console.error(`Records checked: ${validation.governedRecords.length}`);
+  console.error(`Negative fixtures checked: ${negativeFixtures.checked}`);
+  console.error(`Warnings: ${validation.warnings.length}`);
+  console.error(`Errors: ${validation.errors.length}`);
+  for (const error of validation.errors) console.error(`- ${error}`);
   process.exit(1);
 }
 
 console.log("Governed body header check passed.");
-console.log(`Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0001`);
-console.log(`Records checked: ${governedRecords.length}`);
-console.log(`Warnings: ${warnings.length}`);
-console.log(`Errors: ${errors.length}`);
+console.log("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0001");
+console.log("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0002");
+console.log(`Records checked: ${validation.governedRecords.length}`);
+console.log(`Negative fixtures checked: ${negativeFixtures.checked}`);
+console.log(`Warnings: ${validation.warnings.length}`);
+console.log(`Errors: ${validation.errors.length}`);
