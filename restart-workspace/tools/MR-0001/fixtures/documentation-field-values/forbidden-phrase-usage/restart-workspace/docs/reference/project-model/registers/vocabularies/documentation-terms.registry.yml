@@ -1,0 +1,35 @@
+schema_version: 1
+registry_id: documentation-terms
+canonical_language: en
+status: active
+
+label_roles:
+  - value: preferred
+    meaning: Preferred label.
+  - value: accepted_alias
+    meaning: Accepted alias.
+  - value: translation
+    meaning: Translation label.
+  - value: forbidden
+    meaning: Forbidden label.
+  - value: candidate
+    meaning: Candidate label.
+  - value: historical
+    meaning: Historical label.
+
+forbidden_documentation_phrases:
+  - value: project restart
+    language: en
+    reason: Operational phrase that must not become canonical documentation terminology.
+
+terms:
+  - id: TERM-0001
+    canonical_name: macro-requirement
+    canonical_language: en
+    status: active
+    definition: Governed high-level requirement area.
+    labels:
+      - value: macro-requirement
+        language: en
+        role: preferred
+        reason: Canonical label.

@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 /**
  * @file Governed documentation field value taxonomy checker.
  *
  * @implementsRequirement MR-0001ADR-0004REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0004REQ-0001GOV-0002
  * @derivedFromDecision MR-0001/ADR-0004
  * @macroRequirement MR-0001
  *
@@ -17,8 +19,8 @@ import { fileURLToPath } from "node:url";
  *
  * Side effects: reads restart-workspace Project Model registries and governed
  * documentation files; writes JSON and Markdown reports under
- * restart-workspace/artifacts/documentation-field-values; exits non-zero on
- * taxonomy, controlled-label, contextual-status or forbidden-phrase errors.
+ * restart-workspace/artifacts/documentation-field-values; executes governed negative fixtures unless disabled; exits non-zero on
+ * taxonomy, controlled-label, contextual-status, forbidden-phrase or negative-fixture errors.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -52,6 +54,11 @@ const governedDocumentationRootProjectPath =
 const reportDirProjectPath =
   process.env.TF_DOCUMENTATION_FIELD_VALUES_REPORT_DIR ??
   "restart-workspace/artifacts/documentation-field-values";
+const negativeFixturesRegistryProjectPath =
+  process.env.TF_DOCUMENTATION_FIELD_VALUES_NEGATIVE_FIXTURES_REGISTRY_PATH ??
+  "restart-workspace/tools/MR-0001/fixtures/documentation-field-values/negative-fixtures.registry.yml";
+const skipNegativeFixtures = process.env.TF_DOCUMENTATION_FIELD_VALUES_SKIP_NEGATIVE_FIXTURES === "1";
+const disableReports = process.env.TF_DOCUMENTATION_FIELD_VALUES_DISABLE_REPORTS === "1";
 
 const requiredValueSetNames = new Set([
   "field_value_set_status",
@@ -655,17 +662,110 @@ function validateForbiddenPhraseUsage(forbiddenPhrases) {
   }
 }
 
+
+/**
+ * Executes governed negative fixtures for the documentation field values checker.
+ *
+ * Each fixture contains a minimal isolated restart-workspace tree that must fail
+ * this same checker with a specific expected error substring. The checker is
+ * re-invoked in a child process with fixture execution and report writes disabled
+ * to avoid recursive fixture runs and generated files inside fixture trees.
+ *
+ * @returns {number} Number of negative fixtures checked.
+ */
+function validateNegativeFixtures() {
+  const registryPath = resolveProjectPath(negativeFixturesRegistryProjectPath);
+  if (!fs.existsSync(registryPath)) {
+    errors.push(`Missing documentation field values negative fixture registry: ${negativeFixturesRegistryProjectPath}`);
+    return 0;
+  }
+
+  const registry = parseYaml(readText(registryPath));
+  if (!Array.isArray(registry.fixtures)) {
+    errors.push("Documentation field values negative fixture registry must define a fixtures array.");
+    return 0;
+  }
+
+  let checked = 0;
+  for (const fixture of registry.fixtures) {
+    const id = requireString(fixture, "id", "documentation field values negative fixture");
+    const fixtureRootProjectPath = normalizeProjectPath(
+      requireString(fixture, "fixture_root", `${id || "<unknown>"} negative fixture`),
+    );
+    const expectedErrorSubstrings = Array.isArray(fixture.expected_error_substrings)
+      ? fixture.expected_error_substrings.map((value) => String(value))
+      : [];
+
+    if (expectedErrorSubstrings.length === 0) {
+      errors.push(`${id || "<unknown>"} negative fixture must declare expected_error_substrings.`);
+      continue;
+    }
+
+    const fixtureRoot = path.resolve(rootDir, fixtureRootProjectPath);
+    if (!fs.existsSync(fixtureRoot)) {
+      errors.push(`${id || "<unknown>"} negative fixture root does not exist: ${fixtureRootProjectPath}`);
+      continue;
+    }
+
+    const result = spawnSync(process.execPath, [scriptPath], {
+      cwd: rootDir,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        TF_DOCUMENTATION_FIELD_VALUES_ROOT: fixtureRoot,
+        TF_DOCUMENTATION_FIELD_VALUES_SKIP_NEGATIVE_FIXTURES: "1",
+        TF_DOCUMENTATION_FIELD_VALUES_DISABLE_REPORTS: "1",
+        TF_DOCUMENTATION_FIELD_VALUES_TAXONOMY_REGISTRY_PATH:
+          "restart-workspace/docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml",
+        TF_DOCUMENTATION_FIELD_VALUES_VOCABULARY_REGISTRY_PATH:
+          "restart-workspace/docs/reference/project-model/registers/vocabularies/documentation-terms.registry.yml",
+        TF_DOCUMENTATION_FIELD_VALUES_CHECKS_REGISTRY_PATH:
+          "restart-workspace/docs/reference/project-model/registers/checks/restart-checks.registry.yml",
+        TF_DOCUMENTATION_FIELD_VALUES_IMPLEMENTATION_TRACE_REGISTRY_PATH:
+          "restart-workspace/docs/reference/project-model/registers/implementation/implementation-trace.registry.yml",
+        TF_DOCUMENTATION_FIELD_VALUES_DECISIONS_REGISTRY_PATH:
+          "restart-workspace/docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml",
+        TF_DOCUMENTATION_FIELD_VALUES_REQUIREMENTS_REGISTRY_PATH:
+          "restart-workspace/docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+        TF_DOCUMENTATION_FIELD_VALUES_DOCS_ROOT:
+          "restart-workspace/docs/reference/project-model",
+      },
+    });
+
+    checked += 1;
+    const combinedOutput = `${result.stdout ?? ""}\n${result.stderr ?? ""}`;
+    if (result.status === 0) {
+      errors.push(`${id || "<unknown>"} negative fixture unexpectedly passed.`);
+      continue;
+    }
+
+    for (const expected of expectedErrorSubstrings) {
+      if (!combinedOutput.includes(expected)) {
+        errors.push(`${id || "<unknown>"} negative fixture did not emit expected error substring: ${expected}`);
+      }
+    }
+  }
+
+  return checked;
+}
+
 /**
  * Writes machine-readable and Markdown reports for this checker.
  *
  * @param {number} valueSetCount - Number of scoped value sets checked.
+ * @param {number} negativeFixtureCount - Number of negative fixtures checked.
  */
-function writeReports(valueSetCount) {
+function writeReports(valueSetCount, negativeFixtureCount) {
+  if (disableReports) return;
+
   const reportDir = resolveProjectPath(reportDirProjectPath);
   fs.mkdirSync(reportDir, { recursive: true });
 
   const report = {
-    implemented_requirement: "MR-0001ADR-0004REQ-0001GOV-0001",
+    implemented_requirements: [
+      "MR-0001ADR-0004REQ-0001GOV-0001",
+      "MR-0001ADR-0004REQ-0001GOV-0002",
+    ],
     taxonomy_registry: taxonomyRegistryProjectPath,
     vocabulary_registry: vocabularyRegistryProjectPath,
     checks_registry: checksRegistryProjectPath,
@@ -673,6 +773,7 @@ function writeReports(valueSetCount) {
     decisions_registry: decisionsRegistryProjectPath,
     requirements_registry: requirementsRegistryProjectPath,
     value_sets_checked: valueSetCount,
+    negative_fixtures_checked: negativeFixtureCount,
     warnings,
     errors,
   };
@@ -686,9 +787,11 @@ function writeReports(valueSetCount) {
   const markdown = [
     "# Documentation field values report",
     "",
-    `Implemented requirement: ${report.implemented_requirement}`,
+    "Implemented requirements:",
+    ...report.implemented_requirements.map((requirementId) => `- ${requirementId}`),
     `Taxonomy registry: ${taxonomyRegistryProjectPath}`,
     `Value sets checked: ${valueSetCount}`,
+    `Negative fixtures checked: ${negativeFixtureCount}`,
     `Warnings: ${warnings.length}`,
     `Errors: ${errors.length}`,
     "",
@@ -712,12 +815,15 @@ validateImplementationTraceRegistry(byName);
 validateDecisionRegistry(byName);
 validateRequirementRegistry(byName);
 validateForbiddenPhraseUsage(forbiddenPhrases);
-writeReports(valueSetCount);
+const negativeFixtureCount = skipNegativeFixtures ? 0 : validateNegativeFixtures();
+writeReports(valueSetCount, negativeFixtureCount);
 
 if (errors.length > 0) {
   console.error("Documentation field value taxonomy check failed.");
   console.error("Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0001");
+  console.error("Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0002");
   console.error(`Value sets checked: ${valueSetCount}`);
+  if (!skipNegativeFixtures) console.error(`Negative fixtures checked: ${negativeFixtureCount}`);
   console.error(`Warnings: ${warnings.length}`);
   console.error(`Errors: ${errors.length}`);
   for (const error of errors) console.error(`ERROR: ${error}`);
@@ -726,6 +832,8 @@ if (errors.length > 0) {
 
 console.log("Documentation field value taxonomy check passed.");
 console.log("Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0001");
+console.log("Implemented requirement: MR-0001ADR-0004REQ-0001GOV-0002");
 console.log(`Value sets checked: ${valueSetCount}`);
+if (!skipNegativeFixtures) console.log(`Negative fixtures checked: ${negativeFixtureCount}`);
 console.log(`Warnings: ${warnings.length}`);
 console.log(`Errors: ${errors.length}`);

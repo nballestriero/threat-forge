@@ -39,8 +39,9 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0004REQ-0001GOV-0001
+      - MR-0001ADR-0004REQ-0001GOV-0002
     implemented_path: restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
-    reason: Validate controlled documentation field values and vocabulary label roles against the governed taxonomy registry.
+    reason: Validate controlled documentation field values and vocabulary label roles against the governed taxonomy registry, including deterministic negative fixture coverage.
     verification_command: node restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
 
   - id: MR-0001ADR-0005REQ-0001GOV-0001IMPL-0001
@@ -73,3 +74,14 @@ artifacts:
     implemented_path: restart-workspace/tools/MR-0001/fixtures/governed-body-headers
     reason: Provide deterministic invalid examples proving that the governed body header checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
     verification_command: node restart-workspace/tools/MR-0001/check-governed-body-headers.mjs
+
+
+  - id: MR-0001ADR-0004REQ-0001GOV-0002IMPL-0001
+    title: Documentation field value negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0001GOV-0002
+    implemented_path: restart-workspace/tools/MR-0001/fixtures/documentation-field-values
+    reason: Provide deterministic invalid examples proving that the documentation field value checker detects deprecated generic taxonomies, missing value sets, values without meanings, invalid label roles, status values used in the wrong context and forbidden documentation phrases.
+    verification_command: node restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
