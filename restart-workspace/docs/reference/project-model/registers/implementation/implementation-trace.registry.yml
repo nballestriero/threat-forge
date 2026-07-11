@@ -42,3 +42,13 @@ artifacts:
     implemented_path: restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
     reason: Validate controlled documentation field values and vocabulary label roles against the governed taxonomy registry.
     verification_command: node restart-workspace/tools/MR-0001/check-documentation-field-values.mjs
+
+  - id: MR-0001ADR-0005REQ-0001GOV-0001IMPL-0001
+    title: Governed documentation authoring generator
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0005REQ-0001GOV-0001
+    implemented_path: restart-workspace/tools/MR-0001/create-governed-document.mjs
+    reason: Generate governed requirement registry records and body files from minimal author input while preserving deterministic id, path and header conventions.
+    verification_command: node restart-workspace/tools/MR-0001/create-governed-document.mjs --kind functional-requirement --mr MR-0001 --adr ADR-0005 --title "Dry run example" --dry-run
