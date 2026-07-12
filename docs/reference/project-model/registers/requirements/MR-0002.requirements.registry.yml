@@ -1,0 +1,42 @@
+schema_version: 1
+registry_id: MR-0002-requirements-registry
+macro_requirement_id: MR-0002
+
+requirements:
+  - id: MR-0002ADR-0001REQ-0001
+    title: Pianificazione guidata di un artefatto implementativo da requisito governato
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0001_body.md
+
+  - id: MR-0002ADR-0001REQ-0001GOV-0001
+    title: Adapter IDE sottile e piano senza scrittura
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    parent_requirement_id: MR-0002ADR-0001REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0001GOV-0001_body.md
+
+  - id: MR-0002ADR-0002REQ-0001
+    title: Commit e push governati dalla root canonica
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0001_body.md
+
+  - id: MR-0002ADR-0002REQ-0001GOV-0001
+    title: Gate obbligatorio prima delle mutazioni Git
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    parent_requirement_id: MR-0002ADR-0002REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0001GOV-0001_body.md
+
+  - id: MR-0002ADR-0002REQ-0001GOV-0002
+    title: Controllo deterministico del runner di repository
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    parent_requirement_id: MR-0002ADR-0002REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0001GOV-0002_body.md

@@ -117,3 +117,34 @@ artifacts:
     implemented_path: .vscode/tasks.json
     reason: Expose the governed local checks, document generator dry-runs and handoff dry-run through canonical ThreatForge task labels without duplicating CLI logic.
     verification_command: node tools/repo-check.mjs
+
+  - id: MR-0002ADR-0002REQ-0001GOV-0001IMPL-0001
+    title: Governed repository operation runner
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0001
+      - MR-0002ADR-0002REQ-0001GOV-0001
+    implemented_path: tools/MR-0002/run-governed-repository-operation.mjs
+    reason: Execute the canonical ThreatForge check before staging, validating, committing and pushing repository changes to the configured upstream.
+    verification_command: node tools/MR-0002/run-governed-repository-operation.mjs --check
+
+  - id: MR-0002ADR-0002REQ-0001GOV-0002IMPL-0001
+    title: Governed repository operation consistency checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0001GOV-0002
+    implemented_path: tools/MR-0002/check-governed-repository-operation.mjs
+    reason: Detect loss of runner traceability, canonical gate invocation, mandatory Git operations and governed operation ordering.
+    verification_command: node tools/MR-0002/check-governed-repository-operation.mjs
+
+  - id: MR-0002ADR-0002REQ-0001GOV-0002IMPL-0002
+    title: Governed repository operation negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0001GOV-0002
+    implemented_path: tools/MR-0002/fixtures/repository-operation
+    reason: Prove deterministic detection of missing requirement trace, gate invocation, stage, staged diff validation and push operations.
+    verification_command: node tools/MR-0002/check-governed-repository-operation.mjs

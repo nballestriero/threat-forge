@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-repository-operation-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "missing-requirement-trace",
+      "description": "The runner must declare its functional requirement.",
+      "remove_fragment": " * @implementsRequirement MR-0002ADR-0002REQ-0001\n",
+      "expected_error": "missing traceability marker: @implementsRequirement MR-0002ADR-0002REQ-0001"
+    },
+    {
+      "id": "missing-repo-check-reference",
+      "description": "The runner must invoke the canonical repository check.",
+      "remove_fragment": "[\"tools/repo-check.mjs\"]",
+      "expected_error": "missing canonical repo-check invocation"
+    },
+    {
+      "id": "missing-stage-operation",
+      "description": "The runner must stage only after successful checks.",
+      "remove_fragment": "[\"add\", \"--all\"]",
+      "expected_error": "missing governed stage operation"
+    },
+    {
+      "id": "missing-staged-diff-check",
+      "description": "The staged diff must be checked before commit.",
+      "remove_fragment": "[\"diff\", \"--cached\", \"--check\"]",
+      "expected_error": "missing staged diff validation"
+    },
+    {
+      "id": "missing-push-operation",
+      "description": "The runner must push only after a successful commit.",
+      "remove_fragment": "[\"push\"]",
+      "expected_error": "missing governed push operation"
+    }
+  ]
+}
