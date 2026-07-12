@@ -1,18 +1,17 @@
 /**
  * @file ThreatForge local VS Code task catalog.
  *
- * @implementsRequirement MR-0001ADR-0007REQ-0001
- * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0005REQ-0001
+ * @implementsRequirement MR-0002ADR-0005REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0002
  * @implementsRequirement MR-0002ADR-0003REQ-0002GOV-0001
- * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
- * @macroRequirement MR-0001
  * @macroRequirement MR-0002
  */
 {
@@ -74,7 +73,7 @@
       "type": "process",
       "command": "node",
       "args": [
-        "tools/MR-0001/check-governed-body-headers.mjs"
+        "tools/MR-0002/check-governed-body-headers.mjs"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -91,7 +90,7 @@
       "type": "process",
       "command": "node",
       "args": [
-        "tools/MR-0001/create-governed-document.mjs",
+        "tools/MR-0002/create-governed-document.mjs",
         "--kind",
         "functional-requirement",
         "--mr",
@@ -117,7 +116,7 @@
       "type": "process",
       "command": "node",
       "args": [
-        "tools/MR-0001/create-governed-document.mjs",
+        "tools/MR-0002/create-governed-document.mjs",
         "--kind",
         "governance-requirement",
         "--mr",
@@ -236,13 +235,13 @@
       "id": "threatForgeMrId",
       "type": "promptString",
       "description": "Macro-requirement ID",
-      "default": "MR-0001"
+      "default": "MR-0002"
     },
     {
       "id": "threatForgeAdrId",
       "type": "promptString",
       "description": "ADR ID",
-      "default": "ADR-0007"
+      "default": "ADR-0005"
     },
     {
       "id": "threatForgeFunctionalRequirementTitle",
@@ -253,7 +252,7 @@
       "id": "threatForgeParentRequirementId",
       "type": "promptString",
       "description": "ID del requisito funzionale padre",
-      "default": "MR-0001ADR-0007REQ-0001"
+      "default": "MR-0002ADR-0005REQ-0001"
     },
     {
       "id": "threatForgeGovernanceRequirementTitle",

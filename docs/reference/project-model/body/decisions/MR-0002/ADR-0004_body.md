@@ -1,4 +1,4 @@
-# ADR-0005 — Authoring guidato della documentazione governata
+# ADR-0004 — Authoring guidato della documentazione governata
 
 ## Status
 

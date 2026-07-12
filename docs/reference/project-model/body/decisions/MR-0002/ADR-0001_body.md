@@ -6,7 +6,7 @@ Draft.
 
 ## Contesto
 
-Il catalogo di task VS Code governato da MR-0001/ADR-0007 ha dimostrato che i tool locali possono essere esposti dall'editor senza duplicare la loro logica.
+Il catalogo di task VS Code governato da MR-0002/ADR-0005 ha dimostrato che i tool locali possono essere esposti dall'editor senza duplicare la loro logica.
 
 I task attuali coprono check e simulazioni, ma non definiscono ancora l'architettura per guidare la produzione di artefatti implementativi.
 

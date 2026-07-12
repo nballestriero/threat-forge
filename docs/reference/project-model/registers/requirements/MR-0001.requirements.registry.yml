@@ -33,44 +33,6 @@ requirements:
     parent_requirement_id: MR-0001ADR-0004REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0001GOV-0001_body.md
 
-  - id: MR-0001ADR-0005REQ-0001
-    title: Generatore deterministico di documenti governati
-    status: draft
-    requirement_type: functional
-    macro_requirement_id: MR-0001
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0005REQ-0001_body.md
-
-  - id: MR-0001ADR-0005REQ-0001GOV-0001
-    title: Coerenza deterministica tra record di registro e body generati
-    status: draft
-    requirement_type: governance
-    macro_requirement_id: MR-0001
-    parent_requirement_id: MR-0001ADR-0005REQ-0001
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0005REQ-0001GOV-0001_body.md
-
-  - id: MR-0001ADR-0005REQ-0002
-    title: Controllo degli header dei body governati
-    status: draft
-    requirement_type: functional
-    macro_requirement_id: MR-0001
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0005REQ-0002_body.md
-
-  - id: MR-0001ADR-0005REQ-0002GOV-0001
-    title: Coerenza deterministica tra title del registro e H1 del body
-    status: draft
-    requirement_type: governance
-    macro_requirement_id: MR-0001
-    parent_requirement_id: MR-0001ADR-0005REQ-0002
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0005REQ-0002GOV-0001_body.md
-
-  - id: MR-0001ADR-0005REQ-0002GOV-0002
-    title: Copertura negativa del controllo degli header governati
-    status: draft
-    requirement_type: governance
-    macro_requirement_id: MR-0001
-    parent_requirement_id: MR-0001ADR-0005REQ-0002
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0005REQ-0002GOV-0002_body.md
-
   - id: MR-0001ADR-0004REQ-0001GOV-0002
     title: Copertura negativa dei valori controllati documentali
     status: draft
@@ -109,18 +71,3 @@ requirements:
     macro_requirement_id: MR-0001
     parent_requirement_id: MR-0001ADR-0006REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0006REQ-0001GOV-0002_body.md
-
-  - id: MR-0001ADR-0007REQ-0001
-    title: Catalogo locale di task VS Code ThreatForge
-    status: draft
-    requirement_type: functional
-    macro_requirement_id: MR-0001
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0001_body.md
-
-  - id: MR-0001ADR-0007REQ-0001GOV-0001
-    title: Wrapper sottili, naming canonico e dry-run sicuro
-    status: draft
-    requirement_type: governance
-    macro_requirement_id: MR-0001
-    parent_requirement_id: MR-0001ADR-0007REQ-0001
-    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0001GOV-0001_body.md

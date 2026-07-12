@@ -4,23 +4,23 @@ scope: governed_body_header_checker
 
 fixtures:
   - id: missing-title
-    root_path: tools/MR-0001/fixtures/governed-body-headers/missing-title
+    root_path: tools/MR-0002/fixtures/governed-body-headers/missing-title
     expected_error_contains: "MR-9999 is missing title."
   - id: legacy-name-field
-    root_path: tools/MR-0001/fixtures/governed-body-headers/legacy-name-field
+    root_path: tools/MR-0002/fixtures/governed-body-headers/legacy-name-field
     expected_error_contains: "uses legacy name field"
   - id: missing-body
-    root_path: tools/MR-0001/fixtures/governed-body-headers/missing-body
+    root_path: tools/MR-0002/fixtures/governed-body-headers/missing-body
     expected_error_contains: "MR-9999 body file is missing"
   - id: missing-h1
-    root_path: tools/MR-0001/fixtures/governed-body-headers/missing-h1
+    root_path: tools/MR-0002/fixtures/governed-body-headers/missing-h1
     expected_error_contains: "has no H1 header"
   - id: duplicate-h1
-    root_path: tools/MR-0001/fixtures/governed-body-headers/duplicate-h1
+    root_path: tools/MR-0002/fixtures/governed-body-headers/duplicate-h1
     expected_error_contains: "has multiple H1 headers"
   - id: legacy-hyphen-separator
-    root_path: tools/MR-0001/fixtures/governed-body-headers/legacy-hyphen-separator
+    root_path: tools/MR-0002/fixtures/governed-body-headers/legacy-hyphen-separator
     expected_error_contains: "uses legacy hyphen separator"
   - id: title-mismatch
-    root_path: tools/MR-0001/fixtures/governed-body-headers/title-mismatch
+    root_path: tools/MR-0002/fixtures/governed-body-headers/title-mismatch
     expected_error_contains: "H1 mismatch for MR-9999"

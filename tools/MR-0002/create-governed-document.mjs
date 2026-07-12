@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 /**
  * @file Governed documentation authoring generator.
  *
- * @implementsRequirement MR-0001ADR-0005REQ-0001GOV-0001
- * @derivedFromDecision MR-0001/ADR-0005
- * @macroRequirement MR-0001
+ * @implementsRequirement MR-0002ADR-0004REQ-0001GOV-0001
+ * @derivedFromDecision MR-0002/ADR-0004
+ * @macroRequirement MR-0002
  *
  * This CLI creates governed requirement body files and matching requirement
  * registry records from a small set of author-provided inputs. The registry
@@ -40,16 +40,16 @@ const requirementsBodyPattern =
  */
 function helpText() {
   return `Usage:
-  node tools/MR-0001/create-governed-document.mjs \\
+  node tools/MR-0002/create-governed-document.mjs \\
     --kind functional-requirement \\
-    --mr MR-0001 \\
-    --adr ADR-0005 \\
+    --mr MR-0002 \\
+    --adr ADR-0004 \\
     --title "Titolo del requisito" [--dry-run]
 
-  node tools/MR-0001/create-governed-document.mjs \\
+  node tools/MR-0002/create-governed-document.mjs \\
     --kind governance-requirement \\
-    --mr MR-0001 \\
-    --parent MR-0001ADR-0005REQ-0001 \\
+    --mr MR-0002 \\
+    --parent MR-0002ADR-0004REQ-0001 \\
     --title "Titolo del requisito GOV" [--dry-run]
 
 Supported kinds:
@@ -399,7 +399,7 @@ function planGeneratedDocument(args) {
 
   if (kind === "functional-requirement") {
     const adrId = String(args.adr ?? "").trim();
-    if (!/^ADR-\d{4}$/u.test(adrId)) throw new Error("--adr must look like ADR-0005.");
+    if (!/^ADR-\d{4}$/u.test(adrId)) throw new Error("--adr must look like ADR-0004.");
     const id = buildFunctionalRequirementId(records, mrId, adrId);
     const bodyPath = buildRequirementBodyPath(mrId, id);
     return {

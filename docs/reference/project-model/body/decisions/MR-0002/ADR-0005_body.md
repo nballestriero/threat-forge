@@ -1,4 +1,4 @@
-# ADR-0007 — Integrazione locale di VS Code tramite task governati
+# ADR-0005 — Integrazione locale di VS Code tramite task governati
 
 ## Stato
 
@@ -10,7 +10,7 @@ I tool locali governati sono già disponibili come comandi CLI, ma il loro uso q
 
 L'integrazione editor deve ridurre questo attrito senza duplicare logica, introdurre una custom extension prematura o trasformare VS Code in una nuova fonte canonica delle regole operative.
 
-I task richiesti coprono più ambiti: check locali, authoring guidato e produzione dell'handoff. Per questo motivo non sono una semplice estensione del solo generatore documentale governato da ADR-0005 e non appartengono alla decisione sull'handoff di ADR-0006.
+I task richiesti coprono più ambiti: check locali, authoring guidato e produzione dell'handoff. Per questo motivo non sono una semplice estensione del solo generatore documentale governato da MR-0002/ADR-0004 e non appartengono alla decisione sull'handoff di MR-0001/ADR-0006.
 
 ## Decisione
 

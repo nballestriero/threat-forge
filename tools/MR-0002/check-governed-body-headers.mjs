@@ -6,10 +6,10 @@ import { fileURLToPath } from "node:url";
 /**
  * @file Governed body header consistency checker.
  *
- * @implementsRequirement MR-0001ADR-0005REQ-0002GOV-0001
- * @implementsRequirement MR-0001ADR-0005REQ-0002GOV-0002
- * @derivedFromDecision MR-0001/ADR-0005
- * @macroRequirement MR-0001
+ * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0002
+ * @derivedFromDecision MR-0002/ADR-0004
+ * @macroRequirement MR-0002
  *
  * This checker validates that governed registry records use `title` as the
  * canonical human-readable title field and that each linked Markdown body
@@ -45,7 +45,7 @@ const reportDirProjectPath =
   "artifacts/governed-body-headers";
 const negativeFixturesRegistryProjectPath =
   process.env.TF_GOVERNED_BODY_HEADERS_NEGATIVE_FIXTURES_REGISTRY_PATH ??
-  "tools/MR-0001/fixtures/governed-body-headers/negative-fixtures.registry.yml";
+  "tools/MR-0002/fixtures/governed-body-headers/negative-fixtures.registry.yml";
 const skipNegativeFixtures = process.env.TF_GOVERNED_BODY_HEADERS_SKIP_FIXTURES === "true";
 
 /**
@@ -517,8 +517,8 @@ function writeReports() {
 
   const report = {
     implemented_requirements: [
-      "MR-0001ADR-0005REQ-0002GOV-0001",
-      "MR-0001ADR-0005REQ-0002GOV-0002",
+      "MR-0002ADR-0004REQ-0002GOV-0001",
+      "MR-0002ADR-0004REQ-0002GOV-0002",
     ],
     macro_requirements_registry: macroRequirementsRegistryProjectPath,
     decisions_dir: decisionsDirProjectPath,
@@ -567,8 +567,8 @@ writeReports();
 
 if (validation.errors.length > 0) {
   console.error("Governed body header check failed.");
-  console.error("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0001");
-  console.error("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0002");
+  console.error("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0001");
+  console.error("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0002");
   console.error(`Records checked: ${validation.governedRecords.length}`);
   console.error(`Negative fixtures checked: ${negativeFixtures.checked}`);
   console.error(`Warnings: ${validation.warnings.length}`);
@@ -578,8 +578,8 @@ if (validation.errors.length > 0) {
 }
 
 console.log("Governed body header check passed.");
-console.log("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0001");
-console.log("Implemented requirement: MR-0001ADR-0005REQ-0002GOV-0002");
+console.log("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0001");
+console.log("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0002");
 console.log(`Records checked: ${validation.governedRecords.length}`);
 console.log(`Negative fixtures checked: ${negativeFixtures.checked}`);
 console.log(`Warnings: ${validation.warnings.length}`);
