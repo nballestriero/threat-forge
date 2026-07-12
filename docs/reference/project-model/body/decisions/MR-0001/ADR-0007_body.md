@@ -1,76 +1,36 @@
-# ADR-0007 — Knowledge graph as GraphRAG and derived view substrate
+# ADR-0007 — Integrazione locale di VS Code tramite task governati
 
-## Status
+## Stato
 
-Accepted.
+Draft.
 
-## Context
+## Contesto
 
-The project model already uses graph records to connect macro requirements, ADRs, requirements, tools, and verification artifacts.
+I tool locali governati sono già disponibili come comandi CLI, ma il loro uso quotidiano richiede di ricordare path, argomenti e modalità sicure di esecuzione.
 
-The graph is also becoming the best navigation structure for humans and LLMs. A handoff or LLM session should be able to start from a macro requirement, discover the relevant decisions, understand the derived requirements, inspect implementation artifacts, and identify verification gates without inventing relationships.
+L'integrazione editor deve ridurre questo attrito senza duplicare logica, introdurre una custom extension prematura o trasformare VS Code in una nuova fonte canonica delle regole operative.
 
-The project may need different graph views for different tasks: handoff, decision maps, RTM, validator coverage, LLM navigation, and future methodology-specific analysis.
+I task richiesti coprono più ambiti: check locali, authoring guidato e produzione dell'handoff. Per questo motivo non sono una semplice estensione del solo generatore documentale governato da ADR-0005 e non appartengono alla decisione sull'handoff di ADR-0006.
 
-If each view becomes its own source of truth, then the project will drift. If the canonical graph remains separate from derived views, then views can support exploration without changing governed semantics.
+## Decisione
 
-## Decision
+ThreatForge adotta un catalogo locale di task VS Code come livello di lancio sottile sopra i comandi CLI governati esistenti.
 
-The project knowledge graph is the canonical source for logical traceability relations.
+Il catalogo deve:
 
-The graph must support GraphRAG-like exploration by humans and LLMs. It must act as an explicit navigation substrate over governed sources, not as a free-form inference space.
+- usare label visibili con prefisso canonico `ThreatForge:`;
+- invocare direttamente i tool esistenti senza replicarne la logica;
+- eseguire i comandi dalla root del repository;
+- mantenere in `--dry-run` i task di authoring e handoff;
+- risiedere sotto `.vscode/tasks.json` nella root canonica del repository;
+- non introdurre una custom extension VS Code.
 
-Governed registries and body documents provide the controlled content. The graph provides traversal paths and relationships. LLM guidance must instruct models to use graph traversal and registry/body records instead of inventing missing relations.
+I task vengono caricati aprendo la root del repository ThreatForge come cartella workspace in VS Code. Il `cwd` dei task coincide con `${workspaceFolder}`.
 
-The project may define multiple derived graph views. A derived view may filter, group, sort, label, or render canonical graph data for a specific purpose, but it must not introduce new facts that are absent from the canonical graph and governed registries.
+## Conseguenze
 
-Future graph view profiles should declare at least:
-
-- view id;
-- purpose;
-- source graph records;
-- included node types;
-- included predicates;
-- traversal direction;
-- generated output path when applicable;
-- whether the view is intended for humans, LLMs, validators, or RTM generation.
-
-The LLM guide must become a governed document that explains how to navigate the project through working plan, registries, bodies, graph records, and derived views.
-
-## Scope
-
-In scope:
-
-- declaring the knowledge graph as a GraphRAG-like exploration substrate;
-- declaring derived graph views as non-canonical projections;
-- declaring the need for a governed LLM guide;
-- preserving the rule that file discovery should use registry/path fields instead of noisy physical-file graph arcs.
-
-Out of scope:
-
-- implementing graph view profiles in this step;
-- implementing a GraphRAG engine in this step;
-- adding methodology-specific STRIDE, PASTA, or STRIDE-AI views in this step;
-- creating the LLM guide body in this step unless a later requirement authorizes it.
-
-## Consequences
-
-### Positive consequences
-
-* Humans and LLMs get a deterministic project exploration path.
-* Multiple task-specific views can be generated without duplicating canonical truth.
-* The graph can support handoff, RTM, validator coverage, and future analysis workflows.
-* LLMs can be instructed to follow explicit relationships rather than infer undocumented ones.
-
-### Negative consequences
-
-* Graph view profiles will need their own governance.
-* Renderers and reports must distinguish canonical graph facts from derived presentation.
-* Future validators must prevent derived views from becoming hidden sources of truth.
-
-## Follow-up
-
-1. Derive requirements for graph view profile governance.
-2. Derive requirements for a governed LLM project navigation guide.
-3. Define the minimum view profiles needed for handoff, RTM, and validator coverage.
-4. Later, generate view artifacts under `artifacts/` as derived outputs.
+- I check e i generatori locali diventano accessibili dalla palette `Tasks: Run Task`.
+- Le label utente espongono esclusivamente il nome canonico `ThreatForge`.
+- Le modifiche ai comandi continuano a essere governate nei tool CLI, non nel catalogo editor.
+- Un eventuale schema, snippet o setting dedicato può essere aggiunto in passi successivi.
+- Una custom extension resta fuori ambito finché i task locali non risultano insufficienti.

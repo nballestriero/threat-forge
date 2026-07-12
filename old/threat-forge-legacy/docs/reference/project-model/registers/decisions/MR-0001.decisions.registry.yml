@@ -1,0 +1,123 @@
+schema_version: 1
+registry_id: MR-0001-decisions-registry
+macro_requirement_id: MR-0001
+
+decisions:
+  - id: ADR-0001
+    title: Adozione del modello Diátaxis per l'organizzazione documentale
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0001_body.md
+
+  - id: ADR-0002
+    title: Organizzazione dei registri, dei body e del formato grafo del project model
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0002_body.md
+
+  - id: ADR-0003
+    title: Governance degli script e dei tool del repository
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0003_body.md
+
+  - id: ADR-0004
+    title: Standard governance for ADR records and ADR body format
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0004_body.md
+
+  - id: ADR-0005
+    title: Canonical project model identity and ID namespace rules
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0005_body.md
+
+  - id: ADR-0006
+    title: Canonical ADR and Requirement document format governance
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0006_body.md
+
+  - id: ADR-0007
+    title: Knowledge graph as GraphRAG and derived view substrate
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0007_body.md
+
+  - id: ADR-0008
+    title: Code RTM derived from knowledge graph
+    status: accepted
+    decision_type: functional
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0008_body.md
+
+  - id: ADR-0009
+    title: Atomic functional and linked specialized requirement model
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0009_body.md
+
+  - id: ADR-0010
+    title: Common body format registry and validator architecture
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-18
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0010_body.md
+
+  - id: ADR-0011
+    title: Diátaxis placement for governed development guides
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-19
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0011_body.md
+
+
+  - id: ADR-0012
+    title: Future graph vocabulary for data-flow, trust boundaries and AI/RAG runtime support
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-20
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0012_body.md
+
+
+  - id: ADR-0013
+    title: Controlled taxonomy value metadata and semantic UI tokens
+    status: accepted
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-06-20
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0013_body.md

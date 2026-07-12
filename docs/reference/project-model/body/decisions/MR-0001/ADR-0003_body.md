@@ -1,92 +1,96 @@
-# ADR-0003 — Governance degli script e dei tool del repository
+# ADR-0003 — Tracciabilità degli artefatti implementativi previsti e realizzati
 
 ## Status
 
-Accepted.
+Draft.
 
 ## Context
 
-The project model is being built incrementally and must preserve a strict governance order:
+La documentazione governata può citare tool, report, gate, fixture o altri artefatti implementativi necessari per soddisfare requisiti.
 
-1. decision;
-2. requirement;
-3. knowledge graph relation;
-4. implementation artifact or tool;
-5. graph relation from requirement to implementation;
-6. verification;
-7. graph relation from verification to requirement.
+Se questi artefatti vengono citati solo nella prosa di decisioni, requisiti o how-to, diventano difficili da controllare deterministicamente. Possono essere dimenticati, rimanere incompleti o divergere dal codice realmente scritto.
 
-The repository already contains executable scripts and tools that support documentation structure checks, graph format checks, page generation, and handoff packaging.
+Il progetto ha bisogno di una fonte controllata che colleghi requisiti, artefatti previsti, artefatti implementati, percorsi, comandi di verifica e stato di completamento.
 
-These tools are part of the governed project system because they can validate, generate, package, or otherwise affect governed documentation and project model artifacts.
-
-If executable tools are added or modified without requirement traceability, the repository can gain behavior that is not justified by a decision, not derived from a requirement, not visible in the graph, and not reviewable through deterministic governance.
+La tracciabilità deve coprire sia il lavoro già implementato sia il lavoro pianificato ma non ancora realizzato.
 
 ## Decision
 
-Every executable repository script or tool that validates, generates, packages, transforms, or enforces project artifacts must be governed before it is introduced or materially modified.
+Il progetto deve usare un registro di tracciabilità implementativa per rappresentare gli artefatti implementativi collegati ai requisiti.
 
-A governed tool change must follow this order:
+Il registro deve includere artefatti pianificati e artefatti implementati.
 
-1. an accepted ADR or equivalent decision justifies the tool behavior;
-2. a requirement is derived from that decision;
-3. the knowledge graph links the decision, requirement, and intended implementation semantics;
-4. the tool file is created or modified;
-5. the graph links the requirement to the tool implementation;
-6. a verification command, fixture, or manual verification evidence checks the requirement;
-7. the graph links the verification evidence back to the requirement.
+Ogni artefatto pianificato deve indicare almeno:
 
-Each governed tool source file must include readable JSDoc traceability near the top of the file.
+- identificativo governato;
+- tipo di artefatto;
+- stato;
+- requisiti collegati;
+- percorso previsto;
+- ragione;
+- condizione di completamento.
 
-The JSDoc traceability must identify at least:
+Ogni artefatto implementato deve indicare almeno:
 
-* the implemented requirement ID;
-* the originating decision ID when applicable;
-* the macro-requirement ID.
+- identificativo governato;
+- tipo di artefatto;
+- stato;
+- requisiti collegati;
+- percorso implementato;
+- eventuale comando di verifica.
 
-A tool that verifies a requirement must be represented as verification evidence as well as implementation.
+Gli artefatti pianificati ma non ancora implementati devono produrre un warning deterministico.
 
-A tool that only generates or packages artifacts must still be represented as an implementation artifact if it affects governed project model workflows.
+Gli artefatti dichiarati come implementati devono essere controllati deterministicamente contro:
+
+- esistenza del requisito collegato;
+- esistenza del percorso implementato;
+- coerenza tra registro e dichiarazioni di tracciabilità presenti nel codice;
+- assenza di riferimenti a requisiti inesistenti.
+
+Il registro non sostituisce i requisiti. Il registro indica quali artefatti sono previsti o implementati per soddisfare requisiti esistenti.
+
+Il body del requisito descrive l'obbligo. Il registro di tracciabilità implementativa descrive gli artefatti previsti o realizzati per soddisfarlo.
 
 ## Scope
 
-This decision applies to executable repository tooling, including scripts under paths such as:
-
-```text
-tools/**
-backend/tools/**
-```
-
 In scope:
 
-- executable project-model validators;
-- renderers and generators that affect governed artifacts;
-- handoff or packaging tools that affect governed workflows;
-- source-level traceability declarations for governed tools.
+- tool;
+- report;
+- gate;
+- fixture;
+- artefatti di verifica;
+- altri artefatti implementativi collegati a requisiti.
 
 Out of scope:
 
-- implementing all future tool traceability validators in this decision;
-- changing application runtime behavior unrelated to governed project-model workflows;
-- replacing human review with autonomous code changes.
+- definire il formato definitivo dello schema del registro;
+- definire tutti i valori controllati ammessi;
+- implementare il tool di validazione;
+- definire soglie di qualità del corpus documentale;
+- definire il modello completo di generazione del grafo.
 
 ## Consequences
 
-### Positive consequences
+### Conseguenze Positive (Benefici)
 
-* Tool behavior becomes explainable through ADRs and requirements.
-* Future LLM-assisted development has explicit boundaries for code changes.
-* The knowledge graph can show which tools implement and verify which requirements.
-* Reviewers can reject executable changes that lack governed traceability.
+- La documentazione governata non lascia promesse implementative solo nella prosa.
+- Gli artefatti pianificati diventano visibili tramite warning deterministici.
+- La tracciabilità tra requisiti, registro e codice può essere controllata senza leggere manualmente tutti i body dei requisiti.
+- Il registro permette di distinguere lavoro pianificato, lavoro implementato e lavoro da completare.
+- Le future relazioni di grafo possono essere generate o validate a partire da requisiti, registro implementativo e dichiarazioni nel codice.
 
-### Negative consequences
+### Conseguenze Negative (Costi/Rischi)
 
-* Even small tools require a decision and requirement trail before implementation.
-* Some quick automation changes will need to be split into small governed micropassi.
-* Existing tools may need incremental backfill of source-level traceability.
+- Il registro di tracciabilità implementativa deve rimanere sincronizzato con i requisiti e con il codice.
+- Un registro non aggiornato può introdurre falsi warning o falsa sicurezza.
+- La disciplina iniziale aumenta la verbosità prima che i tool automatici riducano il carico manuale.
+- I warning su artefatti pianificati devono essere calibrati per non diventare rumore ignorato.
 
 ## Follow-up
 
-1. Keep new tool implementations linked to requirements and graph relations before merge.
-2. Add deterministic checks for source-level JSDoc traceability after the source traceability model is stable.
-3. Ensure future runners orchestrate focused validators instead of hiding tool logic inside a mega-runner.
+1. Definire un requisito funzionale per il registro di tracciabilità implementativa.
+2. Definire un requisito specializzato per il controllo deterministico di coerenza tra registro, requisiti e codice.
+3. Creare un primo registro minimo di tracciabilità implementativa.
+4. Implementare il primo tool di controllo che produca warning per artefatti pianificati non completati.

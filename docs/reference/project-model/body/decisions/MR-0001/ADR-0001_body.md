@@ -1,57 +1,68 @@
-# ADR-0001 — Adozione del Modello Diátaxis
+# ADR-0001 — Adozione del Diátaxis framework per la classificazione documentale
 
 ## Status
 
-Accepted.
+Draft.
 
 ## Context
 
-La documentazione tecnica del progetto deve essere stabile, leggibile e facile da navigare per nuovi membri del team, revisori e strumenti automatici. Gli utenti del progetto devono poter distinguere rapidamente una guida passo-passo da un riferimento tecnico, da un tutorial e da una spiegazione architetturale.
+La documentazione threat-forge deve distinguere documenti scritti per apprendere, eseguire un compito, consultare un riferimento o comprendere il modello.
 
-Abbiamo bisogno di una struttura rigida e chiara per organizzare i contenuti all'interno della cartella `/docs`.
+Senza una classificazione documentale esplicita, tutorial, how-to guide, reference ed explanation possono essere confusi. Questa confusione rende incerta l'autorità del contenuto e può portare a usare spiegazioni come se fossero sorgenti normative.
 
 ## Decision
 
-Decidiamo di adottare formalmente il framework **Diátaxis** per tutta la documentazione di progetto.
+Adottiamo il Diátaxis framework come modello di classificazione documentale per threat-forge.
 
-Questo comporta che:
+Le categorie documentali Diátaxis sono:
 
-- La radice della documentazione sarà divisa nelle 4 cartelle canoniche: `tutorials`, `how-to`, `reference`, `explanation`.
-- Qualsiasi nuovo file di documentazione dovrà essere classificato in una di queste categorie prima del merge su Git.
-- I documenti `reference` conterranno registry, schemi, tassonomie e formati tecnici governati.
-- I documenti `explanation` conterranno contesto, principi, teoria, architettura e design rationale.
+- tutorial;
+- how-to guide;
+- reference;
+- explanation.
+
+Nel modello threat-forge:
+
+- i documenti `tutorial` guidano apprendimento progressivo;
+- i documenti `how-to` guidano azioni operative;
+- i documenti `reference` descrivono sorgenti consultabili e possono contenere materiale normativo quando sono collegati a macrorequisiti, decisioni, requisiti, registri, grafi o controlli;
+- i documenti `explanation` chiariscono il modello per persone e LLM, ma non sono fonte canonica di requisiti, registry, schema, procedure verificabili o controlli deterministici.
+
+Diátaxis classifica la funzione del documento. Non sostituisce registri, grafi, requisiti, asset registry, vocabolari controllati o controlli deterministici.
 
 ## Scope
 
 In scope:
 
-- organizzazione dei documenti stabili sotto `docs/` secondo le quattro categorie Diátaxis;
-- separazione tra contenuti operativi, reference tecnica e spiegazioni architetturali;
-- uso della struttura documentale come base per futuri controlli deterministici.
+- uso di Diátaxis come classificazione documentale;
+- distinzione tra tutorial, how-to guide, reference ed explanation;
+- separazione tra documentazione normativa e documentazione esplicativa.
 
 Out of scope:
 
-- implementare in questa decisione tutti i validator documentali futuri;
-- definire il formato interno di ogni registro governato;
-- modellare la tracciabilità completa dei requisiti e dei tool.
+- definire la fonte canonica della categoria Diátaxis;
+- definire la convenzione dei percorsi documentali;
+- definire i campi minimi del frontmatter documentale;
+- definire il ciclo di vita documentale;
+- definire la generazione del libro PDF o delle viste HTML;
+- definire tutti i controlli deterministici della documentazione;
+- introdurre RDF, SKOS, SHACL o OWL come formato obbligatorio.
 
 ## Consequences
 
 ### Conseguenze Positive (Benefici)
 
-- Chiara separazione degli scopi del testo.
-- Creazione di un percorso di apprendimento guidato (`tutorials`) separato dalle risposte operative (`how-to`).
-- Separazione tra reference tecnica governata e spiegazioni architetturali.
-- Semplificazione futura delle regole di automazione, lint e validazione documentale.
+- La documentazione ha una classificazione comprensibile e stabile.
+- I documenti esplicativi non vengono confusi con sorgenti normativi.
+- I documenti di riferimento possono rimanere precisi e controllabili.
+- Programmatori, persone non tecniche, LLM e controlli deterministici possono distinguere il ruolo previsto di ogni documento.
 
 ### Conseguenze Negative (Costi/Rischi)
 
-- Sarà necessario classificare ogni nuovo documento prima del merge.
-- Il team dovrà rispettare regole più rigide nella produzione documentale.
-- Eventuali documenti scritti fuori struttura dovranno essere spostati o riformulati.
+- La categoria Diátaxis richiederà una fonte canonica unica, da definire in una decisione separata.
+- Diátaxis può essere applicato male se viene trattato come semplice struttura di cartelle invece che come classificazione basata sul bisogno del lettore.
+- La distinzione tra `reference` ed `explanation` richiederà revisione editoriale, non solo controllo automatico.
 
 ## Follow-up
 
-1. Mantenere la struttura Diátaxis come vincolo documentale del project model.
-2. Collegare i futuri controlli di struttura documentale ai requisiti e al knowledge graph.
-3. Evitare che nuovi documenti canonici siano introdotti fuori dalla struttura governata.
+1. Definire i requisiti derivati per applicare la classificazione Diátaxis ai documenti governati.

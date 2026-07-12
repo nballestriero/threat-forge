@@ -1,0 +1,172 @@
+schema_version: 2
+registry_id: documentation-field-values-taxonomy
+scope: governed_documentation_fields
+status: draft
+
+taxonomies: []
+
+field_value_sets:
+  - id: FIELD-VALUE-SET-0001
+    name: field_value_set_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml
+    applies_to_record: registry_root_and_field_value_sets
+    status: active
+    description: Lifecycle values for the documentation field value registry itself and for value set definitions declared inside it.
+    values:
+      - value: draft
+        meaning: The registry or value set is under review.
+      - value: active
+        meaning: The registry or value set is active.
+      - value: deprecated
+        meaning: The registry or value set is retained for history.
+      - value: superseded
+        meaning: The registry or value set has been replaced.
+
+  - id: FIELD-VALUE-SET-0002
+    name: vocabulary_registry_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/vocabularies/documentation-terms.registry.yml
+    applies_to_record: registry_root
+    status: active
+    description: Lifecycle values for the controlled vocabulary registry.
+    values:
+      - value: draft
+        meaning: The vocabulary registry is under review.
+      - value: active
+        meaning: The vocabulary registry is current.
+      - value: deprecated
+        meaning: The vocabulary registry is retained for history.
+      - value: superseded
+        meaning: The vocabulary registry has been replaced.
+
+  - id: FIELD-VALUE-SET-0003
+    name: vocabulary_term_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/vocabularies/documentation-terms.registry.yml
+    applies_to_record: terms
+    status: active
+    description: Lifecycle values for individual vocabulary terms.
+    values:
+      - value: draft
+        meaning: The term is under review.
+      - value: active
+        meaning: The term is valid for current documentation.
+      - value: candidate
+        meaning: The term is proposed.
+      - value: deprecated
+        meaning: The term is retained for history.
+      - value: forbidden
+        meaning: The term is explicitly not allowed.
+
+  - id: FIELD-VALUE-SET-0004
+    name: vocabulary_label_role
+    field_name: role
+    applies_to_registry: docs/reference/project-model/registers/vocabularies/documentation-terms.registry.yml
+    applies_to_record: terms.labels
+    status: active
+    description: Controlled roles used by vocabulary labels.
+    values:
+      - value: preferred
+        meaning: Preferred label for governed documentation.
+      - value: accepted_alias
+        meaning: Accepted alias with explicit reason.
+      - value: translation
+        meaning: Readable translation, not a second canonical source.
+      - value: forbidden
+        meaning: Label or phrase that should be flagged.
+      - value: candidate
+        meaning: Proposed label not yet accepted.
+      - value: historical
+        meaning: Historical label recognized for legacy reading.
+
+  - id: FIELD-VALUE-SET-0005
+    name: check_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/checks/local-governance-checks.registry.yml
+    applies_to_record: checks
+    status: active
+    description: Execution lifecycle values for local checks.
+    values:
+      - value: active
+        meaning: The check is executed by the local orchestrator.
+      - value: disabled
+        meaning: The check is registered but intentionally not executed.
+      - value: experimental
+        meaning: The check can be run manually but is not gating.
+      - value: deprecated
+        meaning: The check remains registered for traceability.
+
+  - id: FIELD-VALUE-SET-0006
+    name: implementation_artifact_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/implementation/implementation-trace.registry.yml
+    applies_to_record: artifacts
+    status: active
+    description: Lifecycle values for implementation artifacts.
+    values:
+      - value: planned
+        meaning: The artifact is expected but may not exist yet.
+      - value: implemented
+        meaning: The artifact exists.
+      - value: deprecated
+        meaning: The artifact is retained for compatibility.
+      - value: removed
+        meaning: The artifact is no longer present.
+
+  - id: FIELD-VALUE-SET-0007
+    name: decision_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml
+    applies_to_record: decisions
+    status: active
+    description: Lifecycle values for decisions.
+    values:
+      - value: draft
+        meaning: The decision is under review.
+      - value: accepted
+        meaning: The decision applies to current documentation.
+      - value: superseded
+        meaning: The decision has been replaced.
+      - value: deprecated
+        meaning: The decision is retained for history.
+      - value: rejected
+        meaning: The decision documents an option not adopted.
+
+  - id: FIELD-VALUE-SET-0008
+    name: requirement_lifecycle_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml
+    applies_to_record: requirements
+    status: active
+    description: Lifecycle values for requirements, separate from implementation state.
+    values:
+      - value: draft
+        meaning: The requirement is under review.
+      - value: accepted
+        meaning: The requirement is valid and applies.
+      - value: superseded
+        meaning: The requirement has been replaced.
+      - value: deprecated
+        meaning: The requirement is retained for history.
+      - value: removed
+        meaning: The requirement is no longer active.
+
+  - id: FIELD-VALUE-SET-0009
+    name: execution_result_status
+    field_name: result_status
+    applies_to_registry: artifacts/**
+    applies_to_record: check_reports
+    status: active
+    description: Runtime result values for generated reports.
+    values:
+      - value: pass
+        meaning: The check completed successfully.
+      - value: warning
+        meaning: The check found a non-blocking condition.
+      - value: fail
+        meaning: The check found a governed rule violation.
+      - value: error
+        meaning: The check could not complete correctly.
+      - value: skipped
+        meaning: The check was intentionally not executed.

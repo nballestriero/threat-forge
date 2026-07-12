@@ -1,82 +1,108 @@
-# ADR-0004 — Standard governance for ADR records and ADR body format
+# ADR-0004 — Modello di label controllate e valori tassonomici documentali
 
 ## Status
 
-Accepted.
+Draft.
 
 ## Context
 
-The project model uses ADR records to capture functional and structural decisions that justify requirements, tools, and verification behavior.
+Il vocabolario controllato introdotto da ADR-0002 richiede una distinzione più precisa tra termine canonico, alias ammesso, traduzione, label storica, label candidata e label vietata.
 
-ADR metadata is stored in compact decision registry records, while the long decision narrative is stored in separate Markdown body files.
+Un campo generico come `allowed_labels` è troppo permissivo: può mescolare sinonimi, acronimi, traduzioni, nomi storici, varianti operative e label di visualizzazione. Questa ambiguità rende difficile stabilire quale forma sia canonica, quale sia solo leggibile, quale sia accettata per compatibilità e quale debba essere segnalata dai controlli.
 
-If ADR registry fields remain free text, then lifecycle status, decision type, identifiers, macro-requirement ownership, and body paths can diverge without a deterministic signal.
+La documentazione governata usa anche campi ricorrenti come `status`, `artifact_type`, `requirement_type`, `decision_type`, `check_status` e ruoli delle label. Se tali valori restano stringhe libere, registri diversi possono usare valori simili con significati diversi.
 
-If ADR body files remain unconstrained, then decisions may become difficult to compare, render, validate, and trace back to requirements.
+Il caso più rischioso è `status`: valori come `active`, `draft`, `implemented` o `deprecated` non hanno un significato universale. Il significato cambia in base al registro e al tipo di record. Un check `active` viene eseguito dall'orchestratore; un termine `active` è utilizzabile nel vocabolario; una decisione `accepted` è applicabile; un artefatto `implemented` esiste ed è verificabile. Una tassonomia globale di `status` sarebbe quindi ambigua.
 
-The project therefore needs one general ADR governance registry that defines the controlled field vocabulary and body section contract for all functional ADRs.
+I nomi temporanei usati per organizzare il lavoro non devono diventare concetti canonici del modello documentale. Possono restare nei path tecnici o nelle procedure operative, ma non devono essere usati come termini di dominio nella documentazione governata.
 
 ## Decision
 
-All functional ADRs in the project model must follow a standard governed format.
+Il vocabolario controllato deve rappresentare le label tramite un modello esplicito basato su ruolo, lingua e ragione d'uso.
 
-The standard is split into two controlled areas:
+Ogni termine governato deve mantenere un solo `canonical_name` e una `canonical_language`.
 
-1. ADR registry fields;
-2. ADR Markdown body format.
+Ogni label associata a un termine deve dichiarare almeno:
 
-ADR registry fields are not all free text. Fields representing identifiers, lifecycle states, decision types, ownership, references, and paths must be constrained by controlled values, deterministic patterns, or existing project model records.
+- `value`;
+- `language`;
+- `role`;
+- `reason`.
 
-The controlled ADR registry field rules and body section rules must be defined in one general ADR governance registry:
+I ruoli iniziali delle label sono:
 
-```text
-docs/reference/project-model/registers/decisions/adr-governance.registry.yml
-```
+- `preferred`: forma preferita da usare nella documentazione governata;
+- `accepted_alias`: alias ammesso per una ragione esplicita, per esempio acronimo tecnico o compatibilità storica;
+- `translation`: traduzione leggibile, non fonte canonica;
+- `forbidden`: forma vietata da segnalare;
+- `candidate`: forma proposta ma non ancora accettata;
+- `historical`: forma storica riconoscibile ma non preferita per nuovo testo.
 
-The ADR governance registry is a register, not a taxonomy file. It defines the required ADR metadata fields, controlled lifecycle values, controlled decision types, reference rules, path rules, and required Markdown body sections for ADR documents.
+Un sinonimo non è automaticamente una label ammessa. Ogni alias accettato deve avere una ragione esplicita.
 
-Two independent validators must be introduced after this decision and after their requirements exist:
+Le traduzioni possono aiutare la lettura, ma non creano una seconda fonte canonica.
 
-1. one validator for ADR registry field governance;
-2. one validator for ADR body format governance.
+Le label vietate e le frasi temporanee da evitare devono essere registrate in modo esplicito, così che futuri controlli terminologici possano segnalarle deterministicamente.
 
-The validators must not be introduced before their requirements and graph relations exist.
+I campi documentali e di registro con valori ripetuti devono essere progressivamente controllati tramite value set tassonomici.
+
+Ogni value set deve dichiarare almeno:
+
+- `name`;
+- `field_name`;
+- `applies_to_registry`;
+- `applies_to_record`;
+- `status` del value set;
+- `description`;
+- lista dei valori ammessi con `value` e `meaning`.
+
+Non deve esistere una tassonomia globale generica per `status` quando lo stesso valore può avere significati diversi in registri diversi. I valori controllati devono essere specifici del contesto: per esempio `check_status`, `implementation_artifact_status`, `decision_status`, `requirement_lifecycle_status`, `vocabulary_term_status` e `field_value_set_status`.
+
+Lo stato di un requirement deve essere distinto dallo stato di implementazione. Il lifecycle di un requirement può essere `draft`, `accepted`, `superseded`, `deprecated` o `removed`; l'implementazione deve essere derivata da tracciabilità e verifiche, non forzata nello stesso campo `status`.
 
 ## Scope
 
-This decision applies to functional ADRs registered in project model decision registries, including:
+In scope:
 
-```text
-docs/reference/project-model/registers/decisions/*.yml
-docs/reference/project-model/body/decisions/**/*.md
-```
+- sostituire `allowed_labels` con label dotate di ruolo esplicito;
+- distinguere termine canonico, alias, traduzione, label vietata, label candidata e label storica;
+- chiarire che le traduzioni non sono fonti canoniche alternative;
+- introdurre value set tassonomici contestuali per i campi ricorrenti;
+- scomporre `status` in value set specifici per registro e situazione;
+- impedire che nomi temporanei operativi diventino concetti canonici.
 
-This decision does not require the validator tools to be implemented in the same step.
+Out of scope:
 
-This decision does not make every future ADR body identical in content; it standardizes the required structure and the controlled metadata needed for deterministic governance.
+- definire tutte le tassonomie del progetto;
+- implementare il controllo terminologico completo sul corpus;
+- definire metriche di qualità del corpus;
+- definire il registro asset;
+- decidere il modello completo di implementation state derivato.
 
 ## Consequences
 
-### Positive consequences
+### Conseguenze Positive (Benefici)
 
-* ADR lifecycle states become controlled values instead of free text.
-* ADR decision types become controlled values instead of free text.
-* ADR identifiers can be checked for uniqueness and deterministic format.
-* ADR macro-requirement ownership can be checked against existing macro requirements.
-* ADR body files can be checked for required headings and stable ordering.
-* Rendering and graph traceability can rely on a predictable ADR structure.
+- Il vocabolario diventa meno ambiguo.
+- Sinonimi, traduzioni e acronimi vengono trattati come casi distinti.
+- Le label ammesse richiedono una ragione esplicita.
+- Le traduzioni possono essere usate per leggibilità senza diventare fonte canonica.
+- I futuri controlli possono distinguere errori, warning e candidati.
+- I valori dei campi ricorrenti diventano verificabili.
+- Il campo `status` non viene più trattato come una lista globale ambigua.
+- Ogni valore controllato ha un significato adatto alla situazione in cui viene usato.
 
-### Negative consequences
+### Conseguenze Negative (Costi/Rischi)
 
-* Adding an ADR requires more structured metadata.
-* Existing ADR records may need small alignment edits as the validators become stricter.
-* The project must maintain the ADR governance registry as a controlled source of truth.
+- Il registro vocabolario diventa più verboso.
+- Il registro dei valori tassonomici richiede più record.
+- Serve disciplina editoriale per non accettare sinonimi inutili.
+- I tool futuri devono validare più campi e più contesti.
+- Alcune label utili alla lettura devono essere classificate con attenzione per non sembrare canoniche.
 
 ## Follow-up
 
-Create two requirements derived from this ADR:
-
-1. one requirement for ADR registry field validation;
-2. one requirement for ADR body format validation.
-
-After the requirements and graph relations exist, introduce the ADR governance registry and then implement the dedicated validators in separate requirement-backed tool steps.
+1. Aggiornare il registro `documentation-terms.registry.yml` al modello label con ruoli espliciti.
+2. Definire un primo registro di value set contestuali per i campi ricorrenti.
+3. Definire un requisito specializzato per verificare schema e coerenza dei value set.
+4. Implementare un tool che segnali label vietate, alias sospetti, termini candidati e valori fuori dal proprio value set contestuale.

@@ -1,83 +1,29 @@
-# ADR-0006 — Canonical ADR and Requirement document format governance
+# ADR-0006 — Handoff locale come artefatto governato di continuità operativa
 
-## Status
+## Stato
 
-Accepted.
+Draft.
 
-## Context
+## Contesto
 
-ADR records already have a governance registry that defines controlled ADR metadata and required ADR body sections.
+Il lavoro governato può diventare più lungo della singola sessione operativa. In questi casi serve un handoff riproducibile che permetta di riprendere il lavoro senza dipendere dalla memoria della chat o da archivi prodotti esternamente.
 
-Requirements also need stable records and Markdown bodies so that humans, tools, generated pages, LLM handoffs, graph views, and future RTM reports can rely on deterministic structure.
+Lo ZIP di handoff deve essere generato dal repository locale, perché il repository è la fonte canonica per stato, registri, check, comandi e contenuto del progetto.
 
-Format governance and identity governance are related but separate concerns. Identity rules decide whether a record can be referenced unambiguously. Format rules decide whether the record and body can be parsed, rendered, validated, and traversed consistently.
+Un handoff solo riassuntivo non è sufficiente quando un LLM deve ripartire dallo sviluppo: il modello deve poter leggere anche i file governati, il codice, i contratti, i test e gli altri sorgenti tracciati.
 
-If ADRs and requirements remain structurally inconsistent, then deterministic graph traversal and generated reports will become fragile.
+## Decisione
 
-## Decision
+Il progetto introduce un handoff archive locale come artefatto governato di continuità operativa.
 
-ADR and Requirement documents must follow canonical governed formats.
+L'archive deve essere prodotto da un tool locale tracciato nel registro di implementation trace. Il contenuto deve usare la label canonica di prodotto `ThreatForge` e includere esclusivamente il progetto operativo corrente; gli artefatti legacy archiviati sotto `old/` restano fuori dallo snapshot di continuità.
 
-ADR governance remains split into:
+L'archive deve includere anche uno snapshot del progetto basato sui file tracciati da Git, così da permettere a un LLM o a un operatore di leggere l'intero stato sorgente necessario per riprendere lo sviluppo. Lo snapshot non deve includere `.git`, dipendenze installate, cache, build output o artifact generati non tracciati.
 
-1. ADR registry field governance;
-2. ADR Markdown body format governance.
+## Conseguenze
 
-Requirement governance must follow the same principle:
-
-1. Requirement registry field governance;
-2. Requirement Markdown body format governance.
-
-Each governed record must have a compact registry entry and a separate Markdown body file. The registry entry carries deterministic metadata and the body file carries the readable explanation.
-
-Canonical format validation must check at least:
-
-- required registry fields;
-- controlled field values;
-- valid identifiers;
-- valid `body_path` values;
-- body file existence;
-- H1 consistency with the governed id and title;
-- required Markdown sections;
-- governed section order;
-- absence of orphan body files;
-- absence of records without body files.
-
-ADR and Requirement validators must remain specialized. The future MR-0000 runner may orchestrate them, but must not duplicate their format logic.
-
-## Scope
-
-In scope:
-
-- declaring stable format governance for ADR and Requirement records and bodies;
-- declaring that ADR and Requirement format validation are separate from identity rules and graph traversal;
-- preparing future requirements for Requirement registry and body validators.
-
-Out of scope:
-
-- implementing ADR body validation in this step;
-- implementing Requirement registry or body validation in this step;
-- changing existing Requirement record fields in this step;
-- introducing a mega-runner in this step.
-
-## Consequences
-
-### Positive consequences
-
-* ADR and Requirement documents can be parsed and rendered consistently.
-* Future LLM guidance can rely on predictable sections.
-* Future RTM and graph views can consume stable records.
-* Format errors can be detected before they corrupt graph traversal or generated artifacts.
-
-### Negative consequences
-
-* New documents require stricter structure.
-* Existing documents may need alignment before stricter validators are enabled.
-* Several focused validators will be needed before the future runner can provide full state coverage.
-
-## Follow-up
-
-1. Derive requirements for Requirement registry field validation and Requirement body format validation.
-2. Implement ADR body format validation against the existing ADR body requirement.
-3. Define a Requirement governance registry before implementing Requirement format validators.
-4. Link validators to requirements and verification relations in the graph before introducing code.
+- L'handoff non viene più prodotto dalla sandbox della chat come fonte canonica.
+- Lo stato del repository e l'output dei check vengono raccolti dal tool locale.
+- Il contenuto dell'archive può essere usato per continuare in una nuova chat o consegnare il contesto a un operatore.
+- L'archive diventa più grande, perché contiene anche lo snapshot dei file tracciati del progetto.
+- Il tool resta sotto MR-0001 perché impacchetta documentazione governata, registri, sorgenti tracciati e verifiche di continuità.

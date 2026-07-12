@@ -1,0 +1,45 @@
+schema_version: 1
+registry_id: documentation-field-values-negative-fixtures
+
+fixtures:
+  - id: deprecated-taxonomies-array
+    title: Deprecated Taxonomies Array
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/deprecated-taxonomies-array
+    expected_error_substrings:
+      - deprecated generic taxonomies array
+
+  - id: missing-required-value-set
+    title: Missing Required Value Set
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/missing-required-value-set
+    expected_error_substrings:
+      - Missing required controlled field value set
+
+  - id: value-without-meaning
+    title: Value Without Meaning
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/value-without-meaning
+    expected_error_substrings:
+      - must define meaning
+
+  - id: invalid-label-role
+    title: Invalid Label Role
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/invalid-label-role
+    expected_error_substrings:
+      - unregistered label role
+
+  - id: invalid-check-status-context
+    title: Invalid Check Status Context
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/invalid-check-status-context
+    expected_error_substrings:
+      - status value not registered for this context
+
+  - id: invalid-requirement-status-context
+    title: Invalid Requirement Status Context
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/invalid-requirement-status-context
+    expected_error_substrings:
+      - status value not registered for this context
+
+  - id: forbidden-phrase-usage
+    title: Forbidden Phrase Usage
+    fixture_root: tools/MR-0001/fixtures/documentation-field-values/forbidden-phrase-usage
+    expected_error_substrings:
+      - forbidden documentation phrase

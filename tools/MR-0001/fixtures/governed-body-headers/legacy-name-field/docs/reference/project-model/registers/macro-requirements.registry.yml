@@ -1,0 +1,9 @@
+schema_version: 1
+registry_id: fixture-macro-requirements
+
+macro_requirements:
+  - id: MR-9999
+    name: Legacy Name Fixture
+    title: Legacy Name Fixture
+    status: draft
+    body_path: docs/reference/project-model/body/macro-requirements/MR-9999_body.md

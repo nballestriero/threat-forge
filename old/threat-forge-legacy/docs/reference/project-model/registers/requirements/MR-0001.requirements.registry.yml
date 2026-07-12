@@ -1,0 +1,321 @@
+schema_version: 1
+macro_requirement_id: MR-0001
+
+requirements:
+  - id: MR-0001REQ-0001
+    title: Validazione della struttura documentale canonica
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0001_body.md
+
+  - id: MR-0001REQ-0002
+    title: Registro controllato dei tipi nodo del grafo
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0002_body.md
+
+  - id: MR-0001REQ-0003
+    title: Registro controllato dei predicati SPO del grafo
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0003_body.md
+
+  - id: MR-0001REQ-0004
+    title: Validazione dei campi controllati dei registri ADR
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0004_body.md
+
+  - id: MR-0001REQ-0005
+    title: Validazione del formato body delle ADR funzionali
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0005_body.md
+
+  - id: MR-0001REQ-0006
+    title: Atomic requirement records
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0006_body.md
+
+  - id: MR-0001REQ-0007
+    title: Specialized child requirement model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0007_body.md
+
+  - id: MR-0001REQ-0008
+    title: Independent requirement bodies for functional and specialized requirements
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0008_body.md
+
+  - id: MR-0001REQ-0009
+    title: Governed body format registry
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0009_body.md
+
+  - id: MR-0001REQ-0010
+    title: Shared Markdown section parsing and body validation behavior
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0010_body.md
+
+  - id: MR-0001REQ-0011
+    title: Schema-backed structured registry and header validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0011_body.md
+
+  - id: MR-0001REQ-0012
+    title: Canonical ADR identity resolution
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0012_body.md
+
+  - id: MR-0001REQ-0013
+    title: Project model ID collision detection
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0013_body.md
+
+  - id: MR-0001REQ-0014
+    title: Canonical Requirement registry and body format validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0014_body.md
+
+  - id: MR-0001REQ-0015
+    title: Governed document body orphan detection
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0015_body.md
+
+  - id: MR-0001REQ-0016
+    title: Governed graph view profiles
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0016_body.md
+
+  - id: MR-0001REQ-0017
+    title: Governed LLM project navigation guide
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0017_body.md
+
+  - id: MR-0001REQ-0018
+    title: GraphRAG traversal rules for project exploration
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0007
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0018_body.md
+
+  - id: MR-0001REQ-0019
+    title: Code RTM generation from knowledge graph
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0019_body.md
+
+  - id: MR-0001REQ-0020
+    title: Code traceability declarations in source artifacts
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0020_body.md
+
+  - id: MR-0001REQ-0021
+    title: Bidirectional graph-to-code traceability validation
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0021_body.md
+
+  - id: MR-0001REQ-0022
+    title: Shared Markdown body parser utility
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0022_body.md
+
+  - id: MR-0001REQ-0023
+    title: ADR body format validator
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0023_body.md
+  - id: MR-0001REQ-0024
+    title: Requirement body format validator
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0024_body.md
+
+
+  - id: MR-0001REQ-0025
+    title: Requirement governance registry
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025_body.md
+
+  - id: MR-0001REQ-0025GOV-0001
+    title: Requirement controlled value validation
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    parent_requirement_id: MR-0001REQ-0025
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025GOV-0001_body.md
+
+  - id: MR-0001REQ-0021GOV-0001
+    title: Code traceability negative fixture coverage
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0008
+    parent_requirement_id: MR-0001REQ-0021
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0021GOV-0001_body.md
+
+  - id: MR-0001REQ-0025GOV-0002
+    title: Requirement registry field negative fixture coverage
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0009
+    parent_requirement_id: MR-0001REQ-0025
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0025GOV-0002_body.md
+
+  - id: MR-0001REQ-0026
+    title: Governed development guide Diátaxis placement
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026_body.md
+
+  - id: MR-0001REQ-0026GOV-0001
+    title: Programmer governed development guide
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    parent_requirement_id: MR-0001REQ-0026
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026GOV-0001_body.md
+
+  - id: MR-0001REQ-0026GOV-0002
+    title: LLM governed development guide
+    type: specialized
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0011
+    parent_requirement_id: MR-0001REQ-0026
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0026GOV-0002_body.md
+
+
+  - id: MR-0001REQ-0027
+    title: Future data-flow and trust-boundary graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0027_body.md
+
+
+  - id: MR-0001REQ-0028
+    title: Runtime service and AI/RAG infrastructure graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0028_body.md
+
+
+  - id: MR-0001REQ-0029
+    title: Data contract, payload, format and transformation graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0029_body.md
+
+
+  - id: MR-0001REQ-0030
+    title: Security-analysis readiness boundary for graph vocabulary
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0030_body.md
+
+
+  - id: MR-0001REQ-0031
+    title: Security-analysis-ready project knowledge graph
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0012
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0031_body.md
+
+
+  - id: MR-0001REQ-0032
+    title: Controlled taxonomy value metadata model
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0032_body.md
+
+  - id: MR-0001REQ-0033
+    title: Mandatory taxonomy value descriptions
+    type: functional
+    status: approved
+    priority: high
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0033_body.md
+
+  - id: MR-0001REQ-0034
+    title: Semantic UI metadata tokens for taxonomy values
+    type: functional
+    status: approved
+    priority: medium
+    derived_from_decision_id: ADR-0013
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001REQ-0034_body.md

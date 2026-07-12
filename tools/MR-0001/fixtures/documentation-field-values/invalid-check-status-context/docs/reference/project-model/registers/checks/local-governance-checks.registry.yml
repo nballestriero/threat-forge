@@ -1,0 +1,8 @@
+schema_version: 1
+registry_id: restart-checks
+
+checks:
+  - id: check-documentation-field-values
+    title: Documentation field value taxonomy consistency
+    status: pass
+    command: node tools/MR-0001/check-documentation-field-values.mjs
