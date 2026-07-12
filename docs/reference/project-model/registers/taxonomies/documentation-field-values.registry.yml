@@ -105,6 +105,8 @@ field_value_sets:
     values:
       - value: planned
         meaning: The artifact is expected but does not have to exist yet; missing files can produce warnings.
+      - value: scaffolded
+        meaning: The artifact file and trace record exist, but the governed implementation behavior is still incomplete and must not be treated as implemented.
       - value: implemented
         meaning: The artifact exists and is expected to declare traceability to governed requirements.
       - value: deprecated

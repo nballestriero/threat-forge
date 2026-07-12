@@ -214,3 +214,13 @@ artifacts:
     implemented_path: tools/MR-0002/fixtures/implementation-scaffolder
     reason: Prove rejection of missing confirmation, unknown requirements, non-materializable types, unsafe paths, existing files and already registered paths.
     verification_command: node tools/MR-0002/check-governed-implementation-scaffolder.mjs
+
+  - id: MR-0002ADR-0003REQ-0001GOV-0002IMPL-0003
+    title: "Governed implementation scaffolder integration test"
+    artifact_type: verification_artifact
+    status: scaffolded
+    linked_requirement_ids:
+      - MR-0002ADR-0003REQ-0001GOV-0002
+    scaffolded_path: tools/MR-0002/tests/create-governed-implementation-scaffold.test.mjs
+    reason: "Create a governed source scaffold for MR-0002ADR-0003REQ-0001GOV-0002; implementation remains incomplete until explicitly promoted."
+    verification_command: node --test tools/MR-0002/tests/create-governed-implementation-scaffold.test.mjs
