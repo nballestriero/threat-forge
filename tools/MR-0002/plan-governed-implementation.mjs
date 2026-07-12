@@ -28,7 +28,7 @@ const requirementsDirProjectPath =
   process.env.TF_IMPLEMENTATION_PLANNER_REQUIREMENTS_DIR ??
   "docs/reference/project-model/registers/requirements";
 
-const artifactTypes = new Map([
+export const artifactTypes = new Map([
   ["tool", { traceType: "tool", code: true }],
   ["source-module", { traceType: "source_module", code: true }],
   ["test", { traceType: "verification_artifact", code: true }],
@@ -89,8 +89,8 @@ function parseArguments(argv) {
  *
  * @returns {Set<string>} Known Requirement ids.
  */
-function loadRequirementIds() {
-  const requirementsDir = path.join(rootDir, requirementsDirProjectPath);
+function loadRequirementIds(baseRootDir = rootDir) {
+  const requirementsDir = path.join(baseRootDir, requirementsDirProjectPath);
   if (!fs.existsSync(requirementsDir)) {
     throw new Error(`Requirement registry directory is missing: ${requirementsDirProjectPath}`);
   }
@@ -113,7 +113,7 @@ function loadRequirementIds() {
  * @param {{code: boolean}} artifactType - Selected artifact type contract.
  * @returns {string} Forward-slash normalized project path.
  */
-function validateProjectPath(rawPath, artifactType) {
+function validateProjectPath(rawPath, artifactType, baseRootDir = rootDir) {
   const normalized = rawPath.replaceAll("\\", "/").trim();
   if (!normalized) throw new Error("Proposed path must not be empty.");
   if (path.isAbsolute(rawPath) || path.win32.isAbsolute(rawPath) || path.posix.isAbsolute(normalized)) {
@@ -126,9 +126,9 @@ function validateProjectPath(rawPath, artifactType) {
   }
   if (segments[0] === "old") throw new Error("Proposed path must not target the legacy old/ directory.");
 
-  const resolved = path.resolve(rootDir, ...segments);
-  const rootPrefix = `${rootDir}${path.sep}`;
-  if (resolved !== rootDir && !resolved.startsWith(rootPrefix)) {
+  const resolved = path.resolve(baseRootDir, ...segments);
+  const rootPrefix = `${baseRootDir}${path.sep}`;
+  if (resolved !== baseRootDir && !resolved.startsWith(rootPrefix)) {
     throw new Error("Proposed path resolves outside the repository root.");
   }
 
@@ -156,17 +156,19 @@ function deriveVerificationCommand(artifactType, projectPath) {
 }
 
 /**
- * Builds and prints the read-only governed implementation plan.
+ * Builds a validated governed implementation plan without writing files.
  *
  * @param {{requirement: string, artifactType: string, title: string, projectPath: string, dryRun: boolean}} options
- *   Validated CLI options.
- * @returns {void}
+ *   Validated planning options.
+ * @param {string} [baseRootDir] - Repository root used for validation.
+ * @returns {{requirement: string, artifactType: string, traceType: string, title: string, projectPath: string, macroRequirementId: string, decisionId: string, decisionReference: string, verificationCommand: string}}
+ *   Deterministic implementation plan.
  */
-function run(options) {
+export function createGovernedImplementationPlan(options, baseRootDir = rootDir) {
   const requirementMatch = options.requirement.match(requirementIdPattern);
   if (!requirementMatch) throw new Error(`Invalid governed Requirement id: ${options.requirement}`);
 
-  const knownRequirementIds = loadRequirementIds();
+  const knownRequirementIds = loadRequirementIds(baseRootDir);
   if (!knownRequirementIds.has(options.requirement)) {
     throw new Error(`Unknown governed Requirement id: ${options.requirement}`);
   }
@@ -177,31 +179,55 @@ function run(options) {
   }
   if (/\r|\n/u.test(options.title)) throw new Error("Artifact title must be a single line.");
 
-  const projectPath = validateProjectPath(options.projectPath, artifactContract);
+  const projectPath = validateProjectPath(options.projectPath, artifactContract, baseRootDir);
   const macroRequirementId = requirementMatch[1];
   const decisionId = requirementMatch[2];
   const decisionReference = `${macroRequirementId}/${decisionId}`;
   const verificationCommand = deriveVerificationCommand(options.artifactType, projectPath);
 
+  return {
+    requirement: options.requirement,
+    artifactType: options.artifactType,
+    traceType: artifactContract.traceType,
+    title: options.title,
+    projectPath,
+    macroRequirementId,
+    decisionId,
+    decisionReference,
+    verificationCommand,
+  };
+}
+
+/**
+ * Prints a validated read-only implementation plan.
+ *
+ * @param {ReturnType<typeof createGovernedImplementationPlan>} plan - Deterministic plan.
+ * @returns {void}
+ */
+export function printGovernedImplementationPlan(plan) {
   console.log("Governed implementation plan");
-  console.log(`Requirement: ${options.requirement}`);
-  console.log(`Macro-requirement: ${macroRequirementId}`);
-  console.log(`Decision: ${decisionReference}`);
-  console.log(`Artifact type: ${options.artifactType}`);
-  console.log(`Implementation trace artifact_type: ${artifactContract.traceType}`);
-  console.log(`Title: ${options.title}`);
-  console.log(`Proposed path: ${projectPath}`);
+  console.log(`Requirement: ${plan.requirement}`);
+  console.log(`Macro-requirement: ${plan.macroRequirementId}`);
+  console.log(`Decision: ${plan.decisionReference}`);
+  console.log(`Artifact type: ${plan.artifactType}`);
+  console.log(`Implementation trace artifact_type: ${plan.traceType}`);
+  console.log(`Title: ${plan.title}`);
+  console.log(`Proposed path: ${plan.projectPath}`);
   console.log("Planned source traceability:");
-  console.log(`  @implementsRequirement ${options.requirement}`);
-  console.log(`  @derivedFromDecision ${decisionReference}`);
-  console.log(`  @macroRequirement ${macroRequirementId}`);
-  console.log(`Verification command: ${verificationCommand}`);
+  console.log(`  @implementsRequirement ${plan.requirement}`);
+  console.log(`  @derivedFromDecision ${plan.decisionReference}`);
+  console.log(`  @macroRequirement ${plan.macroRequirementId}`);
+  console.log(`Verification command: ${plan.verificationCommand}`);
   console.log("Mode: dry-run");
 }
 
-try {
-  run(parseArguments(process.argv.slice(2)));
-} catch (error) {
-  console.error(`Governed implementation planning failed: ${error.message}`);
-  process.exitCode = 1;
+const isDirectExecution = process.argv[1] && path.resolve(process.argv[1]) === scriptPath;
+if (isDirectExecution) {
+  try {
+    const options = parseArguments(process.argv.slice(2));
+    printGovernedImplementationPlan(createGovernedImplementationPlan(options, rootDir));
+  } catch (error) {
+    console.error(`Governed implementation planning failed: ${error.message}`);
+    process.exitCode = 1;
+  }
 }

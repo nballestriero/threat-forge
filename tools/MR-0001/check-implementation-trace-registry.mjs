@@ -8,8 +8,11 @@ import { fileURLToPath } from "node:url";
  *
  * @implementsRequirement MR-0001ADR-0003REQ-0001GOV-0001
  * @implementsRequirement MR-0001ADR-0003REQ-0001GOV-0002
+ * @implementsRequirement MR-0002ADR-0003REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0003
+ * @derivedFromDecision MR-0002/ADR-0003
  * @macroRequirement MR-0001
+ * @macroRequirement MR-0002
  *
  * This checker validates the ThreatForge implementation trace registry
  * against the canonical Requirement registries and declared source
@@ -46,10 +49,10 @@ const negativeFixturesRegistryProjectPath =
 const skipNegativeFixtures = process.env.TF_IMPLEMENTATION_TRACE_SKIP_FIXTURES === "true";
 const disableReports = process.env.TF_IMPLEMENTATION_TRACE_DISABLE_REPORTS === "1";
 
-const allowedStatuses = new Set(["planned", "implemented", "deprecated", "superseded"]);
+const allowedStatuses = new Set(["planned", "scaffolded", "implemented", "deprecated", "superseded"]);
 const allowedArtifactTypes = new Set(["tool", "report", "gate", "fixture", "verification_artifact", "source_module"]);
-const sourceArtifactTypes = new Set(["tool", "gate", "source_module"]);
-const sourceExtensions = new Set([".js", ".jsx", ".mjs", ".ts", ".tsx"]);
+const sourceArtifactTypes = new Set(["tool", "gate", "verification_artifact", "source_module"]);
+const sourceExtensions = new Set([".cjs", ".js", ".jsx", ".mjs", ".ts", ".tsx"]);
 
 /**
  * Creates an isolated validation accumulator.
@@ -288,6 +291,17 @@ function parseImplementsRequirementDeclarations(text) {
 }
 
 /**
+ * Extracts the optional implementation lifecycle declaration from source text.
+ *
+ * @param {string} text - Source file text.
+ * @returns {string} Declared lifecycle status, or an empty string.
+ */
+function parseImplementationStatusDeclaration(text) {
+  const match = String(text ?? "").match(/^\s*\*?\s*@implementationStatus\s+([A-Za-z0-9_-]+)\s*$/mu);
+  return match?.[1] ?? "";
+}
+
+/**
  * Loads ThreatForge Requirement ids from MR-specific registries.
  *
  * @param {string} baseRootDir - Absolute root directory to validate.
@@ -388,6 +402,49 @@ function validateArtifact(artifact, requirementIds, artifactIds, baseRootDir, re
     return;
   }
 
+
+  if (status === "scaffolded") {
+    const scaffoldedPath = normalizeProjectPath(artifact.scaffolded_path);
+    if (!scaffoldedPath) {
+      addError(result, `${artifactId} status scaffolded requires scaffolded_path.`);
+      return;
+    }
+
+    const scaffoldedAbsolutePath = resolveProjectPath(baseRootDir, scaffoldedPath);
+    if (!fs.existsSync(scaffoldedAbsolutePath)) {
+      addError(result, `${artifactId} is scaffolded but path is missing: ${scaffoldedPath}`);
+      return;
+    }
+
+    if (!requiresSourceTraceability(artifact, scaffoldedPath)) return;
+
+    const sourceText = readText(scaffoldedAbsolutePath);
+    const declaredRequirementIds = parseImplementsRequirementDeclarations(sourceText);
+    for (const requirementId of linkedRequirementIds) {
+      if (!declaredRequirementIds.has(requirementId)) {
+        addError(
+          result,
+          `${artifactId} scaffolded artifact ${scaffoldedPath} does not declare @implementsRequirement ${requirementId}.`,
+        );
+      }
+    }
+
+    for (const requirementId of declaredRequirementIds) {
+      if (!requirementIds.has(requirementId)) {
+        addError(result, `${scaffoldedPath} declares unknown @implementsRequirement ${requirementId}.`);
+      }
+      if (!linkedRequirementIds.includes(requirementId)) {
+        addError(result, `${scaffoldedPath} declares @implementsRequirement ${requirementId} but registry artifact ${artifactId} does not link it.`);
+      }
+    }
+
+    const declaredStatus = parseImplementationStatusDeclaration(sourceText);
+    if (declaredStatus !== "scaffolded") {
+      addError(result, `${artifactId} scaffolded artifact ${scaffoldedPath} must declare @implementationStatus scaffolded.`);
+    }
+    return;
+  }
+
   if (status === "implemented") {
     const implementedPath = normalizeProjectPath(artifact.implemented_path);
     if (!implementedPath) {
@@ -403,7 +460,12 @@ function validateArtifact(artifact, requirementIds, artifactIds, baseRootDir, re
 
     if (!requiresSourceTraceability(artifact, implementedPath)) return;
 
-    const declaredRequirementIds = parseImplementsRequirementDeclarations(readText(implementedAbsolutePath));
+    const implementedSourceText = readText(implementedAbsolutePath);
+    const declaredStatus = parseImplementationStatusDeclaration(implementedSourceText);
+    if (declaredStatus === "scaffolded") {
+      addError(result, `${artifactId} implemented artifact ${implementedPath} still declares @implementationStatus scaffolded.`);
+    }
+    const declaredRequirementIds = parseImplementsRequirementDeclarations(implementedSourceText);
     for (const requirementId of linkedRequirementIds) {
       if (!declaredRequirementIds.has(requirementId)) {
         addError(
@@ -534,6 +596,7 @@ function writeReports(validation, negativeFixtures) {
     implemented_requirements: [
       "MR-0001ADR-0003REQ-0001GOV-0001",
       "MR-0001ADR-0003REQ-0001GOV-0002",
+      "MR-0002ADR-0003REQ-0001GOV-0001",
     ],
     status: allErrors.length > 0 ? "fail" : "pass",
     artifact_count: validation.artifactCount,
@@ -594,6 +657,7 @@ if (allErrors.length > 0) {
   console.error("Implementation trace registry check failed.");
   console.error("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0001");
   console.error("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0002");
+  console.error("Implemented requirement: MR-0002ADR-0003REQ-0001GOV-0001");
   console.error(`Artifacts checked: ${validation.artifactCount}`);
   console.error(`Negative fixtures checked: ${negativeFixtures.checked}`);
   console.error(`Warnings: ${validation.warnings.length}`);
@@ -609,6 +673,7 @@ if (allErrors.length > 0) {
 console.log("Implementation trace registry check passed.");
 console.log("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0001");
 console.log("Implemented requirement: MR-0001ADR-0003REQ-0001GOV-0002");
+console.log("Implemented requirement: MR-0002ADR-0003REQ-0001GOV-0001");
 console.log(`Artifacts checked: ${validation.artifactCount}`);
 console.log(`Negative fixtures checked: ${negativeFixtures.checked}`);
 console.log(`Warnings: ${validation.warnings.length}`);

@@ -5,8 +5,11 @@
  * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0003REQ-0001
+ * @implementsRequirement MR-0002ADR-0003REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0001
+ * @derivedFromDecision MR-0002/ADR-0003
  * @macroRequirement MR-0001
  * @macroRequirement MR-0002
  */
@@ -160,6 +163,33 @@
       }
     },
     {
+      "label": "ThreatForge: create implementation scaffold",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/create-governed-implementation-scaffold.mjs",
+        "--requirement",
+        "${input:threatForgeImplementationRequirementId}",
+        "--artifact-type",
+        "${input:threatForgeImplementationArtifactType}",
+        "--title",
+        "${input:threatForgeImplementationArtifactTitle}",
+        "--path",
+        "${input:threatForgeImplementationArtifactPath}",
+        "--confirm",
+        "${input:threatForgeImplementationCreateConfirmation}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
       "label": "ThreatForge: create handoff archive dry-run",
       "type": "process",
       "command": "node",
@@ -235,6 +265,16 @@
       "type": "promptString",
       "description": "Path relativo proposto per l'artefatto",
       "default": "tools/MR-0002/example.mjs"
+    },
+    {
+      "id": "threatForgeImplementationCreateConfirmation",
+      "type": "pickString",
+      "description": "Conferma la creazione dello scaffold",
+      "options": [
+        "cancel",
+        "create"
+      ],
+      "default": "cancel"
     }
   ]
 }

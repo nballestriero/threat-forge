@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-implementation-scaffolder-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "missing-confirmation",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0003REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Missing confirmation",
+        "--path",
+        "tools/MR-0002/missing-confirmation.mjs"
+      ],
+      "expected_error_contains": "Missing required argument: --confirm"
+    },
+    {
+      "id": "unknown-requirement",
+      "args": [
+        "--requirement",
+        "MR-9999ADR-0001REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Unknown requirement",
+        "--path",
+        "tools/MR-0002/unknown.mjs",
+        "--confirm",
+        "create"
+      ],
+      "expected_error_contains": "Unknown governed Requirement id"
+    },
+    {
+      "id": "non-materializable-fixture",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0003REQ-0001",
+        "--artifact-type",
+        "fixture",
+        "--title",
+        "Fixture not source",
+        "--path",
+        "tools/MR-0002/not-source.json",
+        "--confirm",
+        "create"
+      ],
+      "expected_error_contains": "Artifact type cannot be materialized as a source scaffold"
+    },
+    {
+      "id": "unsafe-parent-path",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0003REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Unsafe",
+        "--path",
+        "../outside.mjs",
+        "--confirm",
+        "create"
+      ],
+      "expected_error_contains": "Proposed path must not contain"
+    },
+    {
+      "id": "existing-target",
+      "setup_existing_path": "tools/MR-0002/existing.mjs",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0003REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Existing",
+        "--path",
+        "tools/MR-0002/existing.mjs",
+        "--confirm",
+        "create"
+      ],
+      "expected_error_contains": "Refusing to overwrite existing path"
+    },
+    {
+      "id": "registered-path",
+      "setup_registered_path": "tools/MR-0002/registered.mjs",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0003REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Registered",
+        "--path",
+        "tools/MR-0002/registered.mjs",
+        "--confirm",
+        "create"
+      ],
+      "expected_error_contains": "Implementation path is already registered"
+    }
+  ]
+}
