@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-implementation-planner-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "unknown-requirement",
+      "args": [
+        "--requirement",
+        "MR-9999ADR-9999REQ-9999",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Unknown requirement",
+        "--path",
+        "tools/MR-0002/unknown.mjs",
+        "--dry-run"
+      ],
+      "expected_error_contains": "Unknown governed Requirement id"
+    },
+    {
+      "id": "unsupported-artifact-type",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0001REQ-0001",
+        "--artifact-type",
+        "binary",
+        "--title",
+        "Unsupported type",
+        "--path",
+        "tools/MR-0002/type.mjs",
+        "--dry-run"
+      ],
+      "expected_error_contains": "Unsupported artifact type"
+    },
+    {
+      "id": "absolute-path",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0001REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Absolute path",
+        "--path",
+        "/tmp/outside.mjs",
+        "--dry-run"
+      ],
+      "expected_error_contains": "Proposed path must be relative to the repository root"
+    },
+    {
+      "id": "parent-directory-traversal",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0001REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Traversal",
+        "--path",
+        "../outside.mjs",
+        "--dry-run"
+      ],
+      "expected_error_contains": "parent-directory segments"
+    },
+    {
+      "id": "missing-title",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0001REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--path",
+        "tools/MR-0002/missing-title.mjs",
+        "--dry-run"
+      ],
+      "expected_error_contains": "Missing required argument: --title"
+    },
+    {
+      "id": "missing-explicit-dry-run",
+      "args": [
+        "--requirement",
+        "MR-0002ADR-0001REQ-0001",
+        "--artifact-type",
+        "tool",
+        "--title",
+        "Missing dry run",
+        "--path",
+        "tools/MR-0002/no-dry-run.mjs"
+      ],
+      "expected_error_contains": "Only explicit --dry-run mode is supported"
+    }
+  ]
+}

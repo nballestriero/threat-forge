@@ -3,8 +3,12 @@
  *
  * @implementsRequirement MR-0001ADR-0007REQ-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0001REQ-0001
+ * @implementsRequirement MR-0002ADR-0001REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0002/ADR-0001
  * @macroRequirement MR-0001
+ * @macroRequirement MR-0002
  */
 {
   "version": "2.0.0",
@@ -130,6 +134,32 @@
       }
     },
     {
+      "label": "ThreatForge: plan implementation artifact dry-run",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/plan-governed-implementation.mjs",
+        "--requirement",
+        "${input:threatForgeImplementationRequirementId}",
+        "--artifact-type",
+        "${input:threatForgeImplementationArtifactType}",
+        "--title",
+        "${input:threatForgeImplementationArtifactTitle}",
+        "--path",
+        "${input:threatForgeImplementationArtifactPath}",
+        "--dry-run"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
       "label": "ThreatForge: create handoff archive dry-run",
       "type": "process",
       "command": "node",
@@ -176,6 +206,35 @@
       "id": "threatForgeGovernanceRequirementTitle",
       "type": "promptString",
       "description": "Titolo del requisito di governance"
+    },
+    {
+      "id": "threatForgeImplementationRequirementId",
+      "type": "promptString",
+      "description": "ID del requisito governato da implementare",
+      "default": "MR-0002ADR-0001REQ-0001"
+    },
+    {
+      "id": "threatForgeImplementationArtifactType",
+      "type": "pickString",
+      "description": "Tipo di artefatto implementativo",
+      "options": [
+        "tool",
+        "source-module",
+        "test",
+        "fixture"
+      ],
+      "default": "tool"
+    },
+    {
+      "id": "threatForgeImplementationArtifactTitle",
+      "type": "promptString",
+      "description": "Titolo dell'artefatto implementativo"
+    },
+    {
+      "id": "threatForgeImplementationArtifactPath",
+      "type": "promptString",
+      "description": "Path relativo proposto per l'artefatto",
+      "default": "tools/MR-0002/example.mjs"
     }
   ]
 }

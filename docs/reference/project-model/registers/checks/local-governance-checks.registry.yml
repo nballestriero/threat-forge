@@ -42,3 +42,13 @@ checks:
     linked_requirement_ids:
       - MR-0002ADR-0002REQ-0001GOV-0002
     description: Validate the canonical repository runner and its negative regression fixtures.
+
+  - id: MR-0002ADR-0001REQ-0001GOV-0002CHECK-0001
+    title: Governed implementation planner consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0002/check-governed-implementation-planner.mjs
+    linked_requirement_ids:
+      - MR-0002ADR-0001REQ-0001GOV-0002
+    description: Validate the read-only implementation planner, VS Code adapter and negative fixtures.
