@@ -102,6 +102,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0006REQ-0001GOV-0001
+      - MR-0001ADR-0006REQ-0001GOV-0002
     implemented_path: restart-workspace/tools/MR-0001/create-handoff-archive.mjs
-    reason: Produce a local ThreatForge handoff archive containing repository state, restart-workspace check output, governed registry snapshots and continuation instructions.
+    reason: Produce a local ThreatForge handoff archive containing repository state, restart-workspace check output, governed registry snapshots, continuation instructions and a git-tracked project source snapshot for LLM continuity.
     verification_command: node restart-workspace/tools/MR-0001/create-handoff-archive.mjs --dry-run

@@ -9,13 +9,14 @@ import zlib from "node:zlib";
  * @file ThreatForge local handoff archive generator.
  *
  * @implementsRequirement MR-0001ADR-0006REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0006REQ-0001GOV-0002
  * @derivedFromDecision MR-0001/ADR-0006
  * @macroRequirement MR-0001
  *
  * Produces a local handoff archive from the repository working copy. The
  * archive captures Git state, recent history, restart-workspace check output,
- * governed registry snapshots and continuation instructions using the canonical
- * product label "ThreatForge".
+ * governed registry snapshots, continuation instructions and a git-tracked
+ * project source snapshot using the canonical product label "ThreatForge".
  *
  * Side effects: in normal mode, writes a handoff directory and `.zip` archive
  * under `artifacts/handoff`; in dry-run mode, prints the planned output without
@@ -37,7 +38,15 @@ if (showHelp) {
 
 Output:
   artifacts/handoff/threat-forge-handoff-<HEAD>/
-  artifacts/handoff/threat-forge-handoff-<HEAD>.zip`);
+  artifacts/handoff/threat-forge-handoff-<HEAD>.zip
+
+Main contents:
+  README_HANDOFF.md
+  continuation-prompt.md
+  command-reference.md
+  logs/
+  registries/
+  project-snapshot/`);
   process.exit(0);
 }
 
@@ -103,6 +112,54 @@ function writeText(filePath, text) {
 function readProjectFile(projectPath) {
   const absolutePath = path.join(rootDir, projectPath);
   return fs.existsSync(absolutePath) ? fs.readFileSync(absolutePath, "utf8") : "";
+}
+
+/**
+ * Returns tracked repository file paths from Git.
+ *
+ * @returns {string[]} Repository-relative tracked paths.
+ */
+function listGitTrackedFiles() {
+  return runRequired("git", ["ls-files"])
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .sort();
+}
+
+/**
+ * Copies git-tracked project files into the handoff snapshot directory.
+ *
+ * @param {string} snapshotDir - Destination snapshot directory.
+ * @param {string[]} trackedFiles - Repository-relative tracked paths.
+ * @returns {{includedFiles: number, includedBytes: number, skippedFiles: string[]}} Snapshot result.
+ */
+function copyProjectSnapshot(snapshotDir, trackedFiles) {
+  let includedFiles = 0;
+  let includedBytes = 0;
+  const skippedFiles = [];
+  const rootWithSeparator = `${rootDir}${path.sep}`;
+
+  for (const projectPath of trackedFiles) {
+    const sourcePath = path.resolve(rootDir, projectPath);
+    if (sourcePath !== rootDir && !sourcePath.startsWith(rootWithSeparator)) {
+      skippedFiles.push(projectPath);
+      continue;
+    }
+
+    if (!fs.existsSync(sourcePath) || !fs.statSync(sourcePath).isFile()) {
+      skippedFiles.push(projectPath);
+      continue;
+    }
+
+    const destinationPath = path.join(snapshotDir, projectPath);
+    fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
+    fs.copyFileSync(sourcePath, destinationPath);
+    includedFiles += 1;
+    includedBytes += fs.statSync(sourcePath).size;
+  }
+
+  return { includedFiles, includedBytes, skippedFiles };
 }
 
 /**
@@ -248,6 +305,7 @@ function hasWorkingTreeChanges(statusText) {
 const shortHead = runRequired("git", ["rev-parse", "--short", "HEAD"]).trim();
 const branch = runRequired("git", ["branch", "--show-current"]).trim();
 const statusText = runRequired("git", ["status", "--short", "--branch"]);
+const trackedFiles = listGitTrackedFiles();
 const outputRoot = path.join(rootDir, "artifacts", "handoff");
 const archiveName = `threat-forge-handoff-${shortHead}`;
 const archiveDir = path.join(outputRoot, archiveName);
@@ -258,8 +316,10 @@ if (dryRun) {
   console.log(`Repository root: ${rootDir}`);
   console.log(`Branch: ${branch}`);
   console.log(`HEAD: ${shortHead}`);
+  console.log(`Tracked project files planned for snapshot: ${trackedFiles.length}`);
   console.log(`Directory: ${path.relative(rootDir, archiveDir).replaceAll(path.sep, "/")}`);
   console.log(`Archive: ${path.relative(rootDir, zipPath).replaceAll(path.sep, "/")}`);
+  console.log("Project snapshot: project-snapshot/");
   console.log("Mode: dry-run");
   process.exit(0);
 }
@@ -293,6 +353,9 @@ const registryPaths = [
   "restart-workspace/docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml",
 ];
 
+const snapshotDir = path.join(archiveDir, "project-snapshot");
+const snapshot = copyProjectSnapshot(snapshotDir, trackedFiles);
+
 writeText(path.join(archiveDir, "README_HANDOFF.md"), `# ThreatForge handoff archive
 
 ## Repository state
@@ -305,11 +368,24 @@ writeText(path.join(archiveDir, "README_HANDOFF.md"), `# ThreatForge handoff arc
 
 This archive was produced locally by the governed ThreatForge handoff generator.
 
-It contains Git state, recent history, restart-workspace check output, registry snapshots and a continuation prompt for a new session.
+It contains Git state, recent history, restart-workspace check output, registry snapshots, a continuation prompt and a git-tracked project source snapshot for LLM continuity.
+
+## Full project snapshot
+
+The complete tracked project snapshot is under:
+
+\`\`\`text
+project-snapshot/
+\`\`\`
+
+It is based on \`git ls-files\`, so it includes tracked documentation, registries, source code, contracts, tests and configuration files. It excludes \`.git\`, ignored dependencies, generated artifacts, build output and untracked local files.
+
+Snapshot files: ${snapshot.includedFiles}
+Snapshot bytes: ${snapshot.includedBytes}
 
 ## Continue
 
-Use \`continuation-prompt.md\` as the initial context for the next ChatGPT conversation.
+Use \`continuation-prompt.md\` as the initial context for the next ChatGPT conversation. If the next LLM needs repository source, upload or unpack this archive and point it to \`project-snapshot/\`.
 `);
 
 writeText(path.join(archiveDir, "continuation-prompt.md"), `# Continue ThreatForge work
@@ -326,6 +402,20 @@ Important naming rule:
 - Use visible product label \`ThreatForge\`.
 - Do not expose \`Restart:\` as a user-facing label.
 - \`restart-workspace/\` is only a temporary path boundary.
+
+This handoff archive includes a git-tracked project source snapshot under:
+
+\`\`\`text
+project-snapshot/
+\`\`\`
+
+First checks to run after restoring/cloning the repository:
+
+\`\`\`powershell
+git status --short --branch
+node .\\restart-workspace\\tools\\repo-check.mjs
+npm run repo:check
+\`\`\`
 `);
 
 writeText(path.join(archiveDir, "command-reference.md"), `# ThreatForge command reference
@@ -338,7 +428,7 @@ npm run repo:commit-push -- "<commit message>"
 git status --short --branch
 \`\`\`
 
-Generate a new local handoff archive after commit/push:
+Generate a new local full handoff archive after commit/push:
 
 \`\`\`powershell
 node .\\restart-workspace\\tools\\MR-0001\\create-handoff-archive.mjs
@@ -348,6 +438,25 @@ node .\\restart-workspace\\tools\\MR-0001\\create-handoff-archive.mjs
 writeText(path.join(archiveDir, "logs", "git-status.txt"), statusText);
 writeText(path.join(archiveDir, "logs", "git-log.txt"), logText);
 writeText(path.join(archiveDir, "logs", "restart-workspace-check.txt"), repoCheckText);
+
+writeText(path.join(archiveDir, "project-snapshot-manifest.json"), JSON.stringify({
+  product: "ThreatForge",
+  head: shortHead,
+  branch,
+  snapshot_path: "project-snapshot/",
+  inclusion_rule: "git ls-files",
+  included_files: snapshot.includedFiles,
+  included_bytes: snapshot.includedBytes,
+  skipped_files: snapshot.skippedFiles,
+  excluded_by_design: [
+    ".git/",
+    "node_modules/",
+    "ignored files",
+    "untracked local files",
+    "generated artifacts not tracked by Git",
+    "build output not tracked by Git"
+  ],
+}, null, 2));
 
 for (const projectPath of registryPaths) {
   const content = readProjectFile(projectPath);
@@ -361,3 +470,4 @@ console.log(`Directory: ${path.relative(rootDir, archiveDir).replaceAll(path.sep
 console.log(`Archive: ${path.relative(rootDir, zipPath).replaceAll(path.sep, "/")}`);
 console.log(`HEAD: ${shortHead}`);
 console.log(`Branch: ${branch}`);
+console.log(`Project snapshot files: ${snapshot.includedFiles}`);
