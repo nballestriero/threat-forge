@@ -21,7 +21,10 @@ Il catalogo deve:
 - usare label visibili con prefisso canonico `ThreatForge:`;
 - invocare direttamente i tool esistenti senza replicarne la logica;
 - eseguire i comandi dalla root del repository;
-- mantenere in `--dry-run` i task di authoring e handoff;
+- mantenere separati i task di preview dai task che possono produrre side effect;
+- consentire la creazione di documenti governati soltanto delegando al core CLI una preview e una conferma esplicita con valore predefinito non distruttivo;
+- mantenere in `--dry-run` la produzione dell'handoff finche un requisito successivo non ne governi la creazione confermata;
+- impedire che task, input, setting, associazioni di schema o snippet contengano copie delle regole e dei valori canonici;
 - risiedere sotto `.vscode/tasks.json` nella root canonica del repository;
 - non introdurre una custom extension VS Code.
 

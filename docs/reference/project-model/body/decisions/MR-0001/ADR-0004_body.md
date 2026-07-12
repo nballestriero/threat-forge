@@ -60,6 +60,10 @@ Non deve esistere una tassonomia globale generica per `status` quando lo stesso 
 
 Lo stato di un requirement deve essere distinto dallo stato di implementazione. Il lifecycle di un requirement può essere `draft`, `accepted`, `superseded`, `deprecated` o `removed`; l'implementazione deve essere derivata da tracciabilità e verifiche, non forzata nello stesso campo `status`.
 
+Il campo `requirement_type` deve contenere esclusivamente tipi concreti registrati nel proprio value set contestuale. `specialized` rappresenta una categoria astratta e non deve essere registrato come valore del campo né trattato come alias di un tipo concreto.
+
+Ogni tipo concreto deve dichiarare, oltre a `value` e `meaning`, se appartiene alla categoria specializzata, se richiede un requisito padre e quali tipi concreti sono ammessi come padre. Il primo insieme supportato comprende `functional` e `governance`; nuovi tipi come `security`, `performance`, `privacy` o `compliance` devono essere aggiunti come valori concreti governati con proprie regole applicabili.
+
 ## Scope
 
 In scope:

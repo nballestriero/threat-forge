@@ -170,3 +170,23 @@ field_value_sets:
         meaning: The check could not complete correctly because of an operational or parsing problem.
       - value: skipped
         meaning: The check was intentionally not executed in the current run.
+
+  - id: FIELD-VALUE-SET-0010
+    name: requirement_type
+    field_name: requirement_type
+    applies_to_registry: docs/reference/project-model/registers/requirements/MR-*.requirements.registry.yml
+    applies_to_record: requirements
+    status: draft
+    description: Concrete requirement types allowed in governed requirement records; specialized is an abstract category and is not a storable requirement_type value.
+    values:
+      - value: functional
+        meaning: Concrete requirement type that defines an independently testable functional obligation and does not declare a parent requirement.
+        is_specialized: false
+        requires_parent_requirement: false
+        allowed_parent_requirement_types: []
+      - value: governance
+        meaning: Concrete specialized requirement type that defines a deterministic governance obligation for an existing functional requirement.
+        is_specialized: true
+        requires_parent_requirement: true
+        allowed_parent_requirement_types:
+          - functional

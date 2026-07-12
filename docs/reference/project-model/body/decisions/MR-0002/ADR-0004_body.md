@@ -24,6 +24,12 @@ Il registro rimane la fonte canonica strutturata per campi come `id`, `title`, `
 
 I generatori devono creare insieme il record di registro e il body associato, derivando automaticamente identificativi, path e header Markdown quando possibile.
 
+L'authoring guidato dei requisiti deve derivare dalle fonti canoniche un catalogo deterministico di macro-requirement, decisioni, requisiti padre, valori controllati, significati e regole applicabili. Dal medesimo catalogo devono poter essere prodotti lo schema editoriale e il wizard CLI, senza duplicare enum o descrizioni nel codice.
+
+Il flusso di scrittura deve separare preview e creazione confermata. La creazione deve applicare atomicamente record e body, quindi eseguire i controlli governati applicabili. `specialized` non deve essere accettato come tipo concreto né come alias di `governance`.
+
+Il core di authoring deve restare indipendente dall'IDE e riutilizzabile da CLI, editor, app e automazioni.
+
 I check restano obbligatori come rete di sicurezza, ma non devono essere l'unico modo per mantenere coerenza.
 
 ## Consequences
