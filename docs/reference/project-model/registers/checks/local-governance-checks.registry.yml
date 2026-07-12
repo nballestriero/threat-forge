@@ -62,3 +62,13 @@ checks:
     linked_requirement_ids:
       - MR-0002ADR-0003REQ-0001GOV-0002
     description: Validate governed scaffold creation, trace synchronization, VS Code mapping and negative fixtures.
+
+  - id: MR-0002ADR-0003REQ-0002GOV-0002CHECK-0001
+    title: Governed implementation promotion consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0002/check-governed-implementation-promotion.mjs
+    linked_requirement_ids:
+      - MR-0002ADR-0003REQ-0002GOV-0002
+    description: Validate verified atomic promotion from scaffolded to implemented, VS Code mapping and negative regression fixtures.

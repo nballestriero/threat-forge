@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-implementation-promotion-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "missing-confirmation",
+      "scenario": "valid",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "cancel"
+      ],
+      "expected_error_contains": "Explicit promotion confirmation is required"
+    },
+    {
+      "id": "unknown-artifact",
+      "scenario": "valid",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0998",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "Unknown implementation artifact id"
+    },
+    {
+      "id": "already-implemented",
+      "scenario": "already-implemented",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "is not promotable from status implemented"
+    },
+    {
+      "id": "missing-source",
+      "scenario": "missing-source",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "Scaffolded source file is missing"
+    },
+    {
+      "id": "placeholder-remains",
+      "scenario": "placeholder-remains",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "Scaffold placeholder must be removed"
+    },
+    {
+      "id": "missing-status-header",
+      "scenario": "missing-status-header",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "must declare exactly one @implementationStatus scaffolded"
+    },
+    {
+      "id": "missing-test-behavior",
+      "scenario": "missing-test-behavior",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "must declare at least one test"
+    },
+    {
+      "id": "verification-fails",
+      "scenario": "verification-fails",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "Governed verification failed"
+    },
+    {
+      "id": "unsupported-verification",
+      "scenario": "unsupported-verification",
+      "args": [
+        "--artifact-id",
+        "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0099",
+        "--confirm",
+        "promote"
+      ],
+      "expected_error_contains": "Unsupported governed verification command"
+    }
+  ]
+}

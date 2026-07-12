@@ -7,6 +7,8 @@
  * @implementsRequirement MR-0002ADR-0001REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0003REQ-0002
+ * @implementsRequirement MR-0002ADR-0003REQ-0002GOV-0001
  * @derivedFromDecision MR-0001/ADR-0007
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
@@ -190,6 +192,27 @@
       }
     },
     {
+      "label": "ThreatForge: promote implementation scaffold",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/promote-governed-implementation-scaffold.mjs",
+        "--artifact-id",
+        "${input:threatForgeImplementationArtifactId}",
+        "--confirm",
+        "${input:threatForgeImplementationPromotionConfirmation}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      }
+    },
+    {
       "label": "ThreatForge: create handoff archive dry-run",
       "type": "process",
       "command": "node",
@@ -273,6 +296,22 @@
       "options": [
         "cancel",
         "create"
+      ],
+      "default": "cancel"
+    },
+    {
+      "id": "threatForgeImplementationArtifactId",
+      "type": "promptString",
+      "description": "ID dell'artefatto scaffolded da promuovere",
+      "default": "MR-0002ADR-0003REQ-0001GOV-0002IMPL-0003"
+    },
+    {
+      "id": "threatForgeImplementationPromotionConfirmation",
+      "type": "pickString",
+      "description": "Conferma la promozione dello scaffold verificato",
+      "options": [
+        "cancel",
+        "promote"
       ],
       "default": "cancel"
     }
