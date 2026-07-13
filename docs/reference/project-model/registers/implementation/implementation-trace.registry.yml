@@ -257,3 +257,13 @@ artifacts:
     implemented_path: tools/MR-0002/fixtures/implementation-promotion
     reason: Prove deterministic rejection of invalid promotion state, incomplete source, failed verification and unsupported commands without persistent mutations.
     verification_command: node tools/MR-0002/check-governed-implementation-promotion.mjs
+
+  - id: MR-0002ADR-0004REQ-0003GOV-0001IMPL-0001
+    title: "Requirement authoring catalog builder"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0004REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/build-requirement-authoring-catalog.mjs
+    reason: "Promoted MR-0002ADR-0004REQ-0003GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0002/build-requirement-authoring-catalog.mjs
