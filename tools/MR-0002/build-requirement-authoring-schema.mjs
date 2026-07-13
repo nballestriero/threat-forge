@@ -119,7 +119,7 @@ function loadCatalog() {
  * Builds a deterministic JSON Schema from a validated requirement authoring catalog.
  *
  * @param {Record<string, unknown>} catalog - Catalog produced by the governed catalog builder.
- * @returns {Record<string, unknown>} JSON Schema draft 2020-12 document.
+ * @returns {Record<string, unknown>} JSON Schema Draft 7 document.
  */
 export function buildRequirementAuthoringSchema(catalog) {
   const catalogId = requireString(catalog.catalog_id, "catalog.catalog_id");
@@ -294,7 +294,7 @@ export function buildRequirementAuthoringSchema(catalog) {
   }
 
   return {
-    $schema: "https://json-schema.org/draft/2020-12/schema",
+    $schema: "http://json-schema.org/draft-07/schema#",
     $id: "urn:threatforge:schema:requirement-authoring-request:1",
     title: "ThreatForge governed Requirement authoring request",
     description:

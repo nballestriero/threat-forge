@@ -82,3 +82,14 @@ checks:
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0003GOV-0002
     description: Validate deterministic catalog and JSON Schema coherence, scoped choices, parent rules and negative fixtures.
+
+  - id: MR-0002ADR-0005REQ-0002GOV-0001CHECK-0001
+    title: VS Code Requirement authoring adapter consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
+      - --check
+    linked_requirement_ids:
+      - MR-0002ADR-0005REQ-0002GOV-0001
+    description: Verify the current generated schema, governed authoring-request association and YAML extension recommendation without modifying the workspace.

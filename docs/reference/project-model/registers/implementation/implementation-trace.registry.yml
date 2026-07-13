@@ -297,3 +297,13 @@ artifacts:
     implemented_path: tools/MR-0002/materialize-requirement-authoring-schema.mjs
     reason: "Promoted MR-0002ADR-0004REQ-0003IMPL-0002 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0002/materialize-requirement-authoring-schema.mjs
+
+  - id: MR-0002ADR-0005REQ-0002GOV-0001IMPL-0001
+    title: "VS Code requirement authoring adapter materializer"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0005REQ-0002GOV-0001
+    implemented_path: tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
+    reason: "Promoted MR-0002ADR-0005REQ-0002GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs

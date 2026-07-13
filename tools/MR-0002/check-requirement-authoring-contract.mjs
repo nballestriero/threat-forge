@@ -371,7 +371,10 @@ function validateEnumProjection(errors, nodeValue, expected, label) {
 function validateSchemaProjection(catalog, normalized, schema, errors) {
   try {
     const schemaDialect = requireString(schema.$schema, "schema.$schema");
-    if (!schemaDialect.startsWith("https://json-schema.org/")) {
+    if (
+      !schemaDialect.startsWith("https://json-schema.org/") &&
+      !schemaDialect.startsWith("http://json-schema.org/")
+    ) {
       errors.push("schema.$schema must identify an explicit JSON Schema dialect.");
     }
     if (requireString(schema.$id, "schema.$id") !== "urn:threatforge:schema:requirement-authoring-request:1") {
