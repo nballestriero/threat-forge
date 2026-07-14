@@ -307,3 +307,43 @@ artifacts:
     implemented_path: tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
     reason: "Promoted MR-0002ADR-0005REQ-0002GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
+
+  - id: MR-0001ADR-0004REQ-0002IMPL-0001
+    title: "Lettore e resolver condiviso della tassonomia dei campi controllati"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0002
+    implemented_path: tools/MR-0001/lib/documentation-field-values.mjs
+    reason: "Promoted MR-0001ADR-0004REQ-0002IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0001/lib/documentation-field-values.mjs
+
+  - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0001
+    title: "Parser YAML ristretto condiviso per i registri governati"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/lib/governed-yaml.mjs
+    reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0001/lib/governed-yaml.mjs
+
+  - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0002
+    title: "Verifica del parser YAML ristretto condiviso"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/governed-yaml.test.mjs
+    reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0001/test/governed-yaml.test.mjs
+
+  - id: MR-0001ADR-0004REQ-0002IMPL-0002
+    title: "Verifica del catalogo e resolver dei campi controllati"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0002
+    implemented_path: tools/MR-0001/test/documentation-field-values.test.mjs
+    reason: "Promoted MR-0001ADR-0004REQ-0002IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0001/test/documentation-field-values.test.mjs
