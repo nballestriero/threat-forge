@@ -28,7 +28,7 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
  * Side effects:
  * - planGeneratedDocument reads canonical registries and taxonomies only;
  * - applyGeneratedDocument replaces the registry and creates the body as one
- *   rollback-capable transaction;
+ *   rollback-capable transaction, including optional post-install verification;
  * - direct CLI execution writes only when --dry-run is absent.
  */
 
@@ -715,9 +715,10 @@ export function planGeneratedDocument(args, options = {}) {
  *
  * @param {Array<{projectPath: string, targetPath: string, text: string}>} changes - Prepared file replacements.
  * @param {typeof fs} fileSystem - File-system implementation.
+ * @param {(() => void)|undefined} afterInstall - Verification executed after installation and before commit.
  * @returns {void}
  */
-function writeTextTransaction(changes, fileSystem) {
+function writeTextTransaction(changes, fileSystem, afterInstall) {
   const nonce = `${process.pid}.${Date.now()}.${Math.random()
     .toString(16)
     .slice(2)}`;
@@ -785,6 +786,13 @@ function writeTextTransaction(changes, fileSystem) {
       entry.installed = true;
     }
 
+    if (afterInstall !== undefined) {
+      if (typeof afterInstall !== "function") {
+        throw new Error("afterInstall must be a function when provided.");
+      }
+      afterInstall();
+    }
+
     for (const entry of prepared) {
       if (
         entry.backedUp &&
@@ -837,7 +845,7 @@ function writeTextTransaction(changes, fileSystem) {
  * Atomically writes a generated governed document and its registry record.
  *
  * @param {{id: string, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string}} plan - Planned document.
- * @param {{rootDir?: string, fileSystem?: typeof fs}} [options] - Optional root and injectable file system.
+ * @param {{rootDir?: string, fileSystem?: typeof fs, afterInstall?: () => void}} [options] - Optional root, injectable file system and post-install verification.
  * @returns {{id: string, registryPath: string, bodyPath: string}} Applied document.
  */
 export function applyGeneratedDocument(plan, options = {}) {
@@ -918,6 +926,7 @@ export function applyGeneratedDocument(plan, options = {}) {
       },
     ],
     fileSystem,
+    options.afterInstall,
   );
 
   return {

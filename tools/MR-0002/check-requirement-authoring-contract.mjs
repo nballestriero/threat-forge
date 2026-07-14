@@ -13,10 +13,11 @@ import { buildRequirementAuthoringSchema } from "./build-requirement-authoring-s
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * Validates that the deterministic Requirement authoring catalog and its JSON
- * Schema projection describe the same governed choices, meanings and parent
- * Requirement rules. It also executes isolated negative regression fixtures
- * and proves that the check is read-only with respect to the repository.
+ * Validates that the deterministic Requirement authoring catalog, JSON Schema
+ * projection and governed request runner describe the same choices, meanings
+ * and parent Requirement rules. It also executes isolated negative regression
+ * fixtures and the runner integration suite while proving that verification is
+ * read-only with respect to the repository.
  *
  * Side effects: executes the catalog and schema builders, reads the governed
  * negative fixture registry and Git status, and writes diagnostics only to
@@ -35,6 +36,8 @@ const schemaBuilderProjectPath =
   "tools/MR-0002/build-requirement-authoring-schema.mjs";
 const fixturesProjectPath =
   "tools/MR-0002/fixtures/requirement-authoring-contract/negative-fixtures.registry.json";
+const runnerTestProjectPath =
+  "tools/MR-0002/tests/run-requirement-authoring.test.mjs";
 const implementedRequirementId = "MR-0002ADR-0004REQ-0003GOV-0002";
 
 /** @param {unknown} value @param {string} label @returns {Record<string, unknown>} */
@@ -98,6 +101,8 @@ function runProcess(command, args) {
     windowsHide: true,
     env: {
       ...process.env,
+      TF_AUTHORING_ROOT: rootDir,
+      TF_REQUIREMENT_AUTHORING_ROOT: rootDir,
       TF_REQUIREMENT_AUTHORING_CATALOG_ROOT: rootDir,
       TF_REQUIREMENT_AUTHORING_SCHEMA_ROOT: rootDir,
     },
@@ -108,6 +113,33 @@ function runProcess(command, args) {
     stderr: result.stderr ?? "",
     error: result.error,
   };
+}
+
+
+/**
+ * Executes one deterministic Node test suite.
+ *
+ * @param {string} projectPath - Repository-relative test path.
+ * @param {string} label - Diagnostic label.
+ * @returns {number} Executed suite count.
+ */
+function runNodeTestSuite(projectPath, label) {
+  const absolutePath = path.join(
+    rootDir,
+    ...projectPath.split("/"),
+  );
+  const result = runProcess(
+    process.execPath,
+    ["--test", absolutePath],
+  );
+  if (result.error || result.status !== 0) {
+    const diagnostics = `${result.stdout}\n${result.stderr}`.trim();
+    throw new Error(
+      `${label} failed with exit code ${result.status ?? "unknown"}` +
+        (diagnostics ? `: ${diagnostics}` : "."),
+    );
+  }
+  return 1;
 }
 
 /** @param {string} projectPath @returns {string} */
@@ -709,6 +741,7 @@ function validateNegativeFixtures(catalog, schema, errors) {
 
 const errors = [];
 let fixtureCount = 0;
+let runnerSuiteCount = 0;
 let counts = {
   sources: 0,
   requirement_types: 0,
@@ -736,6 +769,10 @@ try {
   counts = positiveResult.counts;
   errors.push(...positiveResult.errors);
   fixtureCount = validateNegativeFixtures(firstCatalog.value, firstSchema.value, errors);
+  runnerSuiteCount = runNodeTestSuite(
+    runnerTestProjectPath,
+    "Requirement authoring runner integration suite",
+  );
 
   const statusAfter = captureRepositoryStatus();
   if (statusAfter !== statusBefore) errors.push("Requirement authoring contract verification changed the repository working tree.");
@@ -752,6 +789,7 @@ if (errors.length > 0) {
   console.error(`Decisions checked: ${counts.decisions}`);
   console.error(`Requirements checked: ${counts.requirements}`);
   console.error(`Negative fixtures checked: ${fixtureCount}`);
+  console.error(`Runner verification suites checked: ${runnerSuiteCount}`);
   console.error("Warnings: 0");
   console.error(`Errors: ${errors.length}`);
   for (const error of errors) console.error(`ERROR: ${error}`);
@@ -765,6 +803,7 @@ if (errors.length > 0) {
   console.log(`Decisions checked: ${counts.decisions}`);
   console.log(`Requirements checked: ${counts.requirements}`);
   console.log(`Negative fixtures checked: ${fixtureCount}`);
+  console.log(`Runner verification suites checked: ${runnerSuiteCount}`);
   console.log("Warnings: 0");
   console.log("Errors: 0");
 }

@@ -16,8 +16,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
  * Verifies that importing the governed document generator does not execute its
  * CLI, planning remains deterministic for one canonical snapshot, successful
  * application creates registry record and body together, replay is rejected
- * without mutations, and an injected failure while installing the second
- * artifact restores the original registry without leaving partial files.
+ * without mutations, and failures during second-artifact installation or
+ * post-install verification restore the original registry without partial files.
  */
 
 const testPath = fileURLToPath(import.meta.url);
@@ -316,6 +316,49 @@ test("rolls back when installation of the second artifact fails", () => {
           fileSystem: failingFileSystem,
         }),
       /Cannot apply governed document transaction: Injected second artifact installation failure/u,
+    );
+    assert.equal(
+      fs.readFileSync(fixture.registryPath, "utf8"),
+      fixture.originalRegistryText,
+    );
+    assert.equal(
+      fs.existsSync(bodyPath),
+      false,
+    );
+    assert.deepEqual(
+      listTransactionResidue(fixture.workspace),
+      [],
+    );
+  } finally {
+    fs.rmSync(fixture.workspace, {
+      recursive: true,
+      force: true,
+    });
+  }
+});
+
+test("rolls back when post-install verification fails", () => {
+  const fixture = createWorkspace();
+  const plan = buildPlan(
+    fixture.registryProjectPath,
+  );
+  const bodyPath = path.join(
+    fixture.workspace,
+    ...plan.bodyPath.split("/"),
+  );
+
+  try {
+    assert.throws(
+      () =>
+        applyGeneratedDocument(plan, {
+          rootDir: fixture.workspace,
+          afterInstall: () => {
+            throw new Error(
+              "Injected post-install verification failure.",
+            );
+          },
+        }),
+      /Cannot apply governed document transaction: Injected post-install verification failure/u,
     );
     assert.equal(
       fs.readFileSync(fixture.registryPath, "utf8"),
