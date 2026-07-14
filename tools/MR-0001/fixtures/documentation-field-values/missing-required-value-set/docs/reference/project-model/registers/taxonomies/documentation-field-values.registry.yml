@@ -78,23 +78,6 @@ field_value_sets:
       - value: historical
         meaning: Historical label recognized for legacy reading.
 
-  - id: FIELD-VALUE-SET-0005
-    name: check_status
-    field_name: status
-    applies_to_registry: docs/reference/project-model/registers/checks/local-governance-checks.registry.yml
-    applies_to_record: checks
-    status: active
-    description: Execution lifecycle values for local checks.
-    values:
-      - value: active
-        meaning: The check is executed by the local orchestrator.
-      - value: disabled
-        meaning: The check is registered but intentionally not executed.
-      - value: experimental
-        meaning: The check can be run manually but is not gating.
-      - value: deprecated
-        meaning: The check remains registered for traceability.
-
   - id: FIELD-VALUE-SET-0006
     name: implementation_artifact_status
     field_name: status

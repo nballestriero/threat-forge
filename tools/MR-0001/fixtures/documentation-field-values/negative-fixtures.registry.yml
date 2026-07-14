@@ -12,31 +12,31 @@ fixtures:
     title: Missing Required Value Set
     fixture_root: tools/MR-0001/fixtures/documentation-field-values/missing-required-value-set
     expected_error_substrings:
-      - Missing required controlled field value set
+      - No controlled field value set matches context
 
   - id: value-without-meaning
     title: Value Without Meaning
     fixture_root: tools/MR-0001/fixtures/documentation-field-values/value-without-meaning
     expected_error_substrings:
-      - must define meaning
+      - must be a non-empty string
 
   - id: invalid-label-role
     title: Invalid Label Role
     fixture_root: tools/MR-0001/fixtures/documentation-field-values/invalid-label-role
     expected_error_substrings:
-      - unregistered label role
+      - does not define controlled value synonym
 
   - id: invalid-check-status-context
     title: Invalid Check Status Context
     fixture_root: tools/MR-0001/fixtures/documentation-field-values/invalid-check-status-context
     expected_error_substrings:
-      - status value not registered for this context
+      - does not define controlled value pass
 
   - id: invalid-requirement-status-context
     title: Invalid Requirement Status Context
     fixture_root: tools/MR-0001/fixtures/documentation-field-values/invalid-requirement-status-context
     expected_error_substrings:
-      - status value not registered for this context
+      - does not define controlled value implemented
 
   - id: forbidden-phrase-usage
     title: Forbidden Phrase Usage

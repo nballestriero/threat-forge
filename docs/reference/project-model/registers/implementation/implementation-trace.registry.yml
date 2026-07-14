@@ -42,8 +42,9 @@ artifacts:
     linked_requirement_ids:
       - MR-0001ADR-0004REQ-0001GOV-0001
       - MR-0001ADR-0004REQ-0001GOV-0002
+      - MR-0001ADR-0004REQ-0002GOV-0001
     implemented_path: tools/MR-0001/check-documentation-field-values.mjs
-    reason: Validate controlled documentation field values and vocabulary label roles against the governed taxonomy registry, including deterministic negative fixture coverage.
+    reason: Validate controlled documentation field values and vocabulary label roles using the shared governed YAML parser and canonical contextual resolver, including deterministic negative fixture coverage.
     verification_command: node tools/MR-0001/check-documentation-field-values.mjs
 
   - id: MR-0002ADR-0004REQ-0001GOV-0001IMPL-0001
@@ -347,3 +348,13 @@ artifacts:
     implemented_path: tools/MR-0001/test/documentation-field-values.test.mjs
     reason: "Promoted MR-0001ADR-0004REQ-0002IMPL-0002 after source completeness checks and governed verification succeeded."
     verification_command: node --test tools/MR-0001/test/documentation-field-values.test.mjs
+
+  - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0003
+    title: "Verifica della migrazione del checker al parser e resolver condivisi"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/check-documentation-field-values-shared-resolver.test.mjs
+    reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0003 after the checker migration test and complete negative fixture verification succeeded."
+    verification_command: node --test tools/MR-0001/test/check-documentation-field-values-shared-resolver.test.mjs
