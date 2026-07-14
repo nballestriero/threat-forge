@@ -3,11 +3,19 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  loadDocumentationFieldValueCatalog,
+  resolveDocumentationFieldValue,
+} from "../MR-0001/lib/documentation-field-values.mjs";
+import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
+
 /**
  * @file Governed documentation authoring generator.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
+ * @implementationStatus implemented
  * @macroRequirement MR-0002
  *
  * This CLI creates governed requirement body files and matching requirement
@@ -41,24 +49,23 @@ const requirementsBodyPattern =
 function helpText() {
   return `Usage:
   node tools/MR-0002/create-governed-document.mjs \\
-    --kind functional-requirement \\
+    --requirement-type functional \\
     --mr MR-0002 \\
     --adr ADR-0004 \\
     --title "Titolo del requisito" [--dry-run]
 
   node tools/MR-0002/create-governed-document.mjs \\
-    --kind governance-requirement \\
+    --requirement-type governance \\
     --mr MR-0002 \\
     --parent MR-0002ADR-0004REQ-0001 \\
     --title "Titolo del requisito GOV" [--dry-run]
 
-Supported kinds:
-  functional-requirement, requirement, req
-  governance-requirement, governance, gov
+Requirement types and lifecycle values are resolved from:
+  docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml
 
-The generator currently targets the governed requirements registry model.
-It creates deterministic IDs, appends the registry record and creates the
-matching Markdown body with an H1 derived from the generated ID and title.`;
+The generator creates deterministic IDs, appends the governed registry record
+and creates the matching Markdown body with an H1 derived from the generated
+identifier and title.`;
 }
 
 /**
@@ -152,43 +159,46 @@ function yamlString(value) {
 }
 
 /**
- * Normalizes generator kind aliases to canonical kind values.
+ * Requires a non-array object.
  *
- * @param {string} value - User-provided kind.
- * @returns {"functional-requirement"|"governance-requirement"} Canonical kind.
+ * @param {unknown} value - Candidate value.
+ * @param {string} label - Diagnostic label.
+ * @returns {Record<string, unknown>} Object value.
  */
-function normalizeKind(value) {
-  const normalized = String(value ?? "").trim().toLowerCase();
-  if (["functional-requirement", "requirement", "req", "functional"].includes(normalized)) {
-    return "functional-requirement";
+function requireObject(value, label) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label} must be an object.`);
   }
-  if (["governance-requirement", "governance", "gov", "specialized"].includes(normalized)) {
-    return "governance-requirement";
-  }
-  throw new Error(`Unsupported --kind value: ${value}`);
+  return value;
 }
 
 /**
- * Extracts requirement-like records from the current YAML registry text.
+ * Requires an array.
  *
- * @param {string} registryText - Requirements registry YAML text.
- * @returns {Array<Record<string, string>>} Parsed shallow records.
+ * @param {unknown} value - Candidate value.
+ * @param {string} label - Diagnostic label.
+ * @returns {Array<unknown>} Array value.
  */
-function parseRequirementRecords(registryText) {
-  const records = [];
-  const matches = registryText.matchAll(/^  - id: ([^\n]+)([\s\S]*?)(?=^  - id: |\s*$)/gmu);
-  for (const match of matches) {
-    const record = { id: match[1].trim().replace(/^['"]|['"]$/gu, "") };
-    const block = match[2] ?? "";
-    for (const line of block.split("\n")) {
-      const field = line.match(/^    ([a-zA-Z0-9_]+):\s*(.*)$/u);
-      if (field) {
-        record[field[1]] = field[2].trim().replace(/^['"]|['"]$/gu, "");
-      }
-    }
-    records.push(record);
+function requireArray(value, label) {
+  if (!Array.isArray(value)) {
+    throw new Error(`${label} must be an array.`);
   }
-  return records;
+  return value;
+}
+
+/**
+ * Requires a non-empty string.
+ *
+ * @param {unknown} value - Candidate value.
+ * @param {string} label - Diagnostic label.
+ * @returns {string} Normalized string.
+ */
+function requireString(value, label) {
+  const normalized = String(value ?? "").trim();
+  if (!normalized) {
+    throw new Error(`${label} must be a non-empty string.`);
+  }
+  return normalized;
 }
 
 /**
@@ -257,15 +267,15 @@ function buildGovernanceRequirementId(records, parentId) {
 /**
  * Builds a YAML record for a generated functional requirement.
  *
- * @param {{id: string, title: string, mrId: string, bodyPath: string}} input - Record data.
+ * @param {{id: string, title: string, mrId: string, bodyPath: string, status: string, requirementType: string}} input - Record data.
  * @returns {string} YAML block.
  */
 function buildFunctionalRequirementRecord(input) {
   return [
     `  - id: ${input.id}`,
     `    title: ${yamlString(input.title)}`,
-    "    status: draft",
-    "    requirement_type: functional",
+    `    status: ${input.status}`,
+    `    requirement_type: ${input.requirementType}`,
     `    macro_requirement_id: ${input.mrId}`,
     `    body_path: ${input.bodyPath}`,
     "",
@@ -275,15 +285,15 @@ function buildFunctionalRequirementRecord(input) {
 /**
  * Builds a YAML record for a generated governance requirement.
  *
- * @param {{id: string, title: string, mrId: string, parentId: string, bodyPath: string}} input - Record data.
+ * @param {{id: string, title: string, mrId: string, parentId: string, bodyPath: string, status: string, requirementType: string}} input - Record data.
  * @returns {string} YAML block.
  */
 function buildGovernanceRequirementRecord(input) {
   return [
     `  - id: ${input.id}`,
     `    title: ${yamlString(input.title)}`,
-    "    status: draft",
-    "    requirement_type: governance",
+    `    status: ${input.status}`,
+    `    requirement_type: ${input.requirementType}`,
     `    macro_requirement_id: ${input.mrId}`,
     `    parent_requirement_id: ${input.parentId}`,
     `    body_path: ${input.bodyPath}`,
@@ -367,16 +377,36 @@ function appendRequirementRecord(registryText, recordBlock) {
  * @returns {{kind: "functional-requirement"|"governance-requirement", mrId: string, title: string, dryRun: boolean}} Common authoring data.
  */
 function readCommonInput(args) {
-  const kind = normalizeKind(String(args.kind ?? ""));
+  if (args.kind !== undefined) {
+    throw new Error(
+      "--kind is not supported; use --requirement-type with a canonical value.",
+    );
+  }
+
+  const requirementTypeValue = String(
+    args["requirement-type"] ?? "",
+  ).trim();
   const mrId = String(args.mr ?? "").trim();
   const title = String(args.title ?? "").trim();
   const dryRun = Boolean(args["dry-run"]);
 
-  if (!/^MR-\d{4}$/u.test(mrId)) throw new Error("--mr must look like MR-0001.");
+  if (!requirementTypeValue) {
+    throw new Error("--requirement-type is required.");
+  }
+  if (!/^MR-\d{4}$/u.test(mrId)) {
+    throw new Error("--mr must look like MR-0001.");
+  }
   if (!title) throw new Error("--title is required.");
-  if (/\n/u.test(title)) throw new Error("--title must be a single line.");
+  if (/\n/u.test(title)) {
+    throw new Error("--title must be a single line.");
+  }
 
-  return { kind, mrId, title, dryRun };
+  return {
+    requirementTypeValue,
+    mrId,
+    title,
+    dryRun,
+  };
 }
 
 /**
@@ -386,45 +416,207 @@ function readCommonInput(args) {
  * @returns {{id: string, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string, kind: string}} Planned document.
  */
 function planGeneratedDocument(args) {
-  const { kind, mrId, title } = readCommonInput(args);
+  const {
+    requirementTypeValue,
+    mrId,
+    title,
+    dryRun,
+  } = readCommonInput(args);
+
   const registryPath = buildRequirementsRegistryPath(mrId);
   const registryAbsolutePath = resolveProjectPath(registryPath);
 
   if (!fs.existsSync(registryAbsolutePath)) {
-    throw new Error(`Requirements registry not found: ${registryPath}`);
+    throw new Error(
+      `Requirements registry not found: ${registryPath}`,
+    );
   }
 
-  const registryText = readText(registryAbsolutePath);
-  const records = parseRequirementRecords(registryText);
+  const registry = requireObject(
+    readGovernedYamlFile(registryAbsolutePath),
+    registryPath,
+  );
+  const records = requireArray(
+    registry.requirements,
+    `${registryPath}.requirements`,
+  ).map((record, index) =>
+    requireObject(
+      record,
+      `${registryPath}.requirements[${index}]`,
+    ),
+  );
 
-  if (kind === "functional-requirement") {
+  const controlledFieldCatalog =
+    loadDocumentationFieldValueCatalog({ rootDir });
+
+  const requirementType = requireObject(
+    resolveDocumentationFieldValue(
+      controlledFieldCatalog,
+      {
+        registryPath,
+        recordType: "requirements",
+        fieldName: "requirement_type",
+        value: requirementTypeValue,
+      },
+    ),
+    "Resolved requirement_type",
+  );
+
+  const lifecycleStatus = requireObject(
+    resolveDocumentationFieldValue(
+      controlledFieldCatalog,
+      {
+        registryPath,
+        recordType: "requirements",
+        fieldName: "status",
+        value: "draft",
+      },
+    ),
+    "Resolved Requirement lifecycle status",
+  );
+
+  const canonicalRequirementType = requireString(
+    requirementType.value,
+    "Resolved requirement_type value",
+  );
+  const canonicalLifecycleStatus = requireString(
+    lifecycleStatus.value,
+    "Resolved lifecycle status value",
+  );
+
+  if (
+    typeof requirementType.requires_parent_requirement !==
+    "boolean"
+  ) {
+    throw new Error(
+      `${canonicalRequirementType}.requires_parent_requirement must be boolean.`,
+    );
+  }
+
+  const allowedParentTypes = requireArray(
+    requirementType.allowed_parent_requirement_types,
+    `${canonicalRequirementType}.allowed_parent_requirement_types`,
+  ).map((value) =>
+    requireString(
+      value,
+      `${canonicalRequirementType}.allowed_parent_requirement_types entry`,
+    ),
+  );
+
+  if (!requirementType.requires_parent_requirement) {
+    if (args.parent !== undefined) {
+      throw new Error(
+        `${canonicalRequirementType} must not declare --parent.`,
+      );
+    }
+
     const adrId = String(args.adr ?? "").trim();
-    if (!/^ADR-\d{4}$/u.test(adrId)) throw new Error("--adr must look like ADR-0004.");
-    const id = buildFunctionalRequirementId(records, mrId, adrId);
+    if (!/^ADR-\d{4}$/u.test(adrId)) {
+      throw new Error("--adr must look like ADR-0004.");
+    }
+
+    const id = buildFunctionalRequirementId(
+      records,
+      mrId,
+      adrId,
+    );
     const bodyPath = buildRequirementBodyPath(mrId, id);
+
     return {
       id,
-      kind,
+      requirementType: canonicalRequirementType,
+      dryRun,
       bodyPath,
       registryPath,
-      recordBlock: buildFunctionalRequirementRecord({ id, title, mrId, bodyPath }),
-      bodyText: buildFunctionalRequirementBody({ id, title }),
+      recordBlock: buildFunctionalRequirementRecord({
+        id,
+        title,
+        mrId,
+        bodyPath,
+        status: canonicalLifecycleStatus,
+        requirementType: canonicalRequirementType,
+      }),
+      bodyText: buildFunctionalRequirementBody({
+        id,
+        title,
+      }),
     };
   }
 
+  if (args.adr !== undefined) {
+    throw new Error(
+      `${canonicalRequirementType} must not declare --adr.`,
+    );
+  }
+
   const parentId = String(args.parent ?? "").trim();
-  if (!parentId) throw new Error("--parent is required for governance requirements.");
-  const parent = records.find((record) => record.id === parentId);
-  if (!parent) throw new Error(`Parent requirement not found in ${registryPath}: ${parentId}`);
-  const id = buildGovernanceRequirementId(records, parentId);
+  if (!parentId) {
+    throw new Error(
+      `--parent is required for ${canonicalRequirementType} requirements.`,
+    );
+  }
+
+  const parent = records.find(
+    (record) => record.id === parentId,
+  );
+  if (!parent) {
+    throw new Error(
+      `Parent requirement not found in ${registryPath}: ${parentId}`,
+    );
+  }
+
+  const parentRequirementType = requireObject(
+    resolveDocumentationFieldValue(
+      controlledFieldCatalog,
+      {
+        registryPath,
+        recordType: "requirements",
+        fieldName: "requirement_type",
+        value: requireString(
+          parent.requirement_type,
+          `${parentId}.requirement_type`,
+        ),
+      },
+    ),
+    `${parentId} resolved requirement_type`,
+  );
+  const canonicalParentType = requireString(
+    parentRequirementType.value,
+    `${parentId} resolved requirement_type value`,
+  );
+
+  if (!allowedParentTypes.includes(canonicalParentType)) {
+    throw new Error(
+      `${canonicalRequirementType} cannot use parent type ${canonicalParentType}; allowed: ${allowedParentTypes.join(", ")}`,
+    );
+  }
+
+  const id = buildGovernanceRequirementId(
+    records,
+    parentId,
+  );
   const bodyPath = buildRequirementBodyPath(mrId, id);
+
   return {
     id,
-    kind,
+    requirementType: canonicalRequirementType,
+    dryRun,
     bodyPath,
     registryPath,
-    recordBlock: buildGovernanceRequirementRecord({ id, title, mrId, parentId, bodyPath }),
-    bodyText: buildGovernanceRequirementBody({ id, title, parentId }),
+    recordBlock: buildGovernanceRequirementRecord({
+      id,
+      title,
+      mrId,
+      parentId,
+      bodyPath,
+      status: canonicalLifecycleStatus,
+      requirementType: canonicalRequirementType,
+    }),
+    bodyText: buildGovernanceRequirementBody({
+      id,
+      title,
+      parentId,
+    }),
   };
 }
 
@@ -464,16 +656,17 @@ function main() {
       return 0;
     }
 
-    const { dryRun } = readCommonInput(args);
     const plan = planGeneratedDocument(args);
 
     console.log("Governed document generation planned.");
-    console.log(`Kind: ${plan.kind}`);
+    console.log(
+      `Requirement type: ${plan.requirementType}`,
+    );
     console.log(`ID: ${plan.id}`);
     console.log(`Registry: ${plan.registryPath}`);
     console.log(`Body: ${plan.bodyPath}`);
 
-    if (dryRun) {
+    if (plan.dryRun) {
       console.log("Mode: dry-run");
       console.log("\nRegistry record:\n");
       console.log(plan.recordBlock.trimEnd());

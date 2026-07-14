@@ -91,8 +91,8 @@
       "command": "node",
       "args": [
         "tools/MR-0002/create-governed-document.mjs",
-        "--kind",
-        "functional-requirement",
+        "--requirement-type",
+        "functional",
         "--mr",
         "${input:threatForgeMrId}",
         "--adr",
@@ -117,8 +117,8 @@
       "command": "node",
       "args": [
         "tools/MR-0002/create-governed-document.mjs",
-        "--kind",
-        "governance-requirement",
+        "--requirement-type",
+        "governance",
         "--mr",
         "${input:threatForgeMrId}",
         "--parent",
