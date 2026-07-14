@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
   loadDocumentationFieldValueCatalog,
@@ -13,26 +13,29 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
  * @file Governed documentation authoring generator.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0004REQ-0003
+ * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0002
  * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @implementationStatus implemented
  * @macroRequirement MR-0002
  *
- * This CLI creates governed requirement body files and matching requirement
- * registry records from a small set of author-provided inputs. The registry
- * remains the canonical structured source for the title; the generated body
- * repeats the identifier and title in its H1 so later checks can validate that
- * body and registry remain coherent.
+ * Plans and atomically applies one governed Requirement registry record and
+ * matching Markdown body. The planning and application functions are
+ * importable by IDE-independent authoring consumers, while direct execution
+ * preserves the existing CLI contract.
  *
- * Side effects: in normal mode, appends one record to the selected MR
- * requirements registry and creates one governed Markdown body file. In
- * --dry-run mode, prints the planned record and body path without writing.
+ * Side effects:
+ * - planGeneratedDocument reads canonical registries and taxonomies only;
+ * - applyGeneratedDocument replaces the registry and creates the body as one
+ *   rollback-capable transaction;
+ * - direct CLI execution writes only when --dry-run is absent.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
 const scriptDir = path.dirname(scriptPath);
 const defaultRootDir = path.resolve(scriptDir, "..", "..");
-const rootDir = process.env.TF_AUTHORING_ROOT
+const configuredRootDir = process.env.TF_AUTHORING_ROOT
   ? path.resolve(process.env.TF_AUTHORING_ROOT)
   : defaultRootDir;
 
@@ -76,66 +79,169 @@ identifier and title.`;
  */
 function parseArgs(args) {
   const parsed = {};
+
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
+
     if (!arg.startsWith("--")) {
       throw new Error(`Unexpected positional argument: ${arg}`);
     }
+
     const key = arg.slice(2);
+
     if (key === "dry-run" || key === "help") {
       parsed[key] = true;
       continue;
     }
+
     const value = args[index + 1];
+
     if (!value || value.startsWith("--")) {
       throw new Error(`Missing value for --${key}`);
     }
+
     parsed[key] = value;
     index += 1;
   }
+
   return parsed;
 }
 
 /**
- * Normalizes path separators to repository-stable forward slashes.
+ * Requires a non-array object.
  *
- * @param {string|null|undefined} value - Path-like text.
- * @returns {string} Normalized path text.
+ * @param {unknown} value - Candidate value.
+ * @param {string} label - Diagnostic label.
+ * @returns {Record<string, unknown>} Object value.
  */
-function normalizeProjectPath(value) {
-  return String(value ?? "").replaceAll("\\", "/");
+function requireObject(value, label) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label} must be an object.`);
+  }
+
+  return value;
 }
 
 /**
- * Resolves a repository-relative path against the repository root.
+ * Requires an array.
+ *
+ * @param {unknown} value - Candidate value.
+ * @param {string} label - Diagnostic label.
+ * @returns {Array<unknown>} Array value.
+ */
+function requireArray(value, label) {
+  if (!Array.isArray(value)) {
+    throw new Error(`${label} must be an array.`);
+  }
+
+  return value;
+}
+
+/**
+ * Requires a non-empty string.
+ *
+ * @param {unknown} value - Candidate value.
+ * @param {string} label - Diagnostic label.
+ * @returns {string} Normalized string.
+ */
+function requireString(value, label) {
+  const normalized = String(value ?? "").trim();
+
+  if (!normalized) {
+    throw new Error(`${label} must be a non-empty string.`);
+  }
+
+  return normalized;
+}
+
+/**
+ * Requires non-empty text while preserving its original whitespace.
+ *
+ * @param {unknown} value - Candidate text.
+ * @param {string} label - Diagnostic label.
+ * @returns {string} Original text.
+ */
+function requireText(value, label) {
+  const text = String(value ?? "");
+
+  if (!text.trim()) {
+    throw new Error(`${label} must be non-empty text.`);
+  }
+
+  return text;
+}
+
+/**
+ * Resolves the root used by one planning or application call.
+ *
+ * @param {{rootDir?: string}} options - Optional operation settings.
+ * @returns {string} Absolute root directory.
+ */
+function resolveRootDir(options = {}) {
+  return options.rootDir
+    ? path.resolve(String(options.rootDir))
+    : configuredRootDir;
+}
+
+/**
+ * Normalizes and validates one repository-relative path.
  *
  * @param {string} projectPath - Repository-relative path.
- * @returns {string} Absolute path.
+ * @param {string} operationRoot - Absolute operation root.
+ * @returns {string} Absolute path contained by operationRoot.
  */
-function resolveProjectPath(projectPath) {
-  return path.join(rootDir, normalizeProjectPath(projectPath));
+function resolveProjectPath(projectPath, operationRoot) {
+  const normalized = String(projectPath ?? "")
+    .replaceAll("\\", "/")
+    .trim();
+
+  if (!normalized) {
+    throw new Error("Repository-relative path must not be empty.");
+  }
+
+  if (
+    path.isAbsolute(normalized) ||
+    path.win32.isAbsolute(normalized) ||
+    path.posix.isAbsolute(normalized)
+  ) {
+    throw new Error(`Repository path must be relative: ${normalized}`);
+  }
+
+  const segments = normalized.split("/");
+
+  if (
+    segments.some(
+      (segment) => !segment || segment === "." || segment === "..",
+    )
+  ) {
+    throw new Error(`Repository path is unsafe: ${normalized}`);
+  }
+
+  const absolutePath = path.resolve(operationRoot, ...segments);
+  const relativePath = path.relative(operationRoot, absolutePath);
+
+  if (
+    relativePath === ".." ||
+    relativePath.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relativePath)
+  ) {
+    throw new Error(`Repository path resolves outside root: ${normalized}`);
+  }
+
+  return absolutePath;
 }
 
 /**
  * Reads UTF-8 text while removing a possible byte-order mark.
  *
+ * @param {typeof fs} fileSystem - File-system implementation.
  * @param {string} filePath - Absolute file path.
  * @returns {string} File text.
  */
-function readText(filePath) {
-  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "");
-}
-
-/**
- * Writes UTF-8 text after ensuring the parent directory exists.
- *
- * @param {string} filePath - Absolute file path.
- * @param {string} text - Text to write.
- * @returns {void}
- */
-function writeText(filePath, text) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, text, "utf8");
+function readText(fileSystem, filePath) {
+  return fileSystem
+    .readFileSync(filePath, "utf8")
+    .replace(/^\uFEFF/u, "");
 }
 
 /**
@@ -159,62 +265,30 @@ function yamlString(value) {
 }
 
 /**
- * Requires a non-array object.
- *
- * @param {unknown} value - Candidate value.
- * @param {string} label - Diagnostic label.
- * @returns {Record<string, unknown>} Object value.
- */
-function requireObject(value, label) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new Error(`${label} must be an object.`);
-  }
-  return value;
-}
-
-/**
- * Requires an array.
- *
- * @param {unknown} value - Candidate value.
- * @param {string} label - Diagnostic label.
- * @returns {Array<unknown>} Array value.
- */
-function requireArray(value, label) {
-  if (!Array.isArray(value)) {
-    throw new Error(`${label} must be an array.`);
-  }
-  return value;
-}
-
-/**
- * Requires a non-empty string.
- *
- * @param {unknown} value - Candidate value.
- * @param {string} label - Diagnostic label.
- * @returns {string} Normalized string.
- */
-function requireString(value, label) {
-  const normalized = String(value ?? "").trim();
-  if (!normalized) {
-    throw new Error(`${label} must be a non-empty string.`);
-  }
-  return normalized;
-}
-
-/**
  * Finds the next numeric suffix for records matching a deterministic prefix.
  *
- * @param {Array<Record<string, string>>} records - Existing requirement records.
+ * @param {Array<Record<string, unknown>>} records - Existing Requirement records.
  * @param {string} prefix - ID prefix before the four-digit counter.
  * @returns {string} Next four-digit suffix.
  */
 function nextFourDigitSuffix(records, prefix) {
-  const expression = new RegExp(`^${escapeRegExp(prefix)}(\\d{4})$`, "u");
+  const expression = new RegExp(
+    `^${escapeRegExp(prefix)}(\\d{4})$`,
+    "u",
+  );
   let maximum = 0;
+
   for (const record of records) {
     const match = String(record.id ?? "").match(expression);
-    if (match) maximum = Math.max(maximum, Number.parseInt(match[1], 10));
+
+    if (match) {
+      maximum = Math.max(
+        maximum,
+        Number.parseInt(match[1], 10),
+      );
+    }
   }
+
   return String(maximum + 1).padStart(4, "0");
 }
 
@@ -229,23 +303,25 @@ function buildRequirementsRegistryPath(mrId) {
 }
 
 /**
- * Builds a repository-relative requirement body path.
+ * Builds a repository-relative Requirement body path.
  *
  * @param {string} mrId - Macro-requirement identifier.
- * @param {string} id - Generated requirement identifier.
+ * @param {string} id - Generated Requirement identifier.
  * @returns {string} Repository-relative body path.
  */
 function buildRequirementBodyPath(mrId, id) {
-  return requirementsBodyPattern.replaceAll("{MR}", mrId).replaceAll("{ID}", id);
+  return requirementsBodyPattern
+    .replaceAll("{MR}", mrId)
+    .replaceAll("{ID}", id);
 }
 
 /**
- * Creates the next functional requirement ID for a MR/ADR pair.
+ * Creates the next functional Requirement ID for an MR/ADR pair.
  *
- * @param {Array<Record<string, string>>} records - Existing records.
+ * @param {Array<Record<string, unknown>>} records - Existing records.
  * @param {string} mrId - Macro-requirement identifier.
  * @param {string} adrId - Decision identifier.
- * @returns {string} Generated requirement ID.
+ * @returns {string} Generated Requirement ID.
  */
 function buildFunctionalRequirementId(records, mrId, adrId) {
   const prefix = `${mrId}${adrId}REQ-`;
@@ -253,11 +329,11 @@ function buildFunctionalRequirementId(records, mrId, adrId) {
 }
 
 /**
- * Creates the next governance requirement ID for a parent requirement.
+ * Creates the next governance Requirement ID for a parent Requirement.
  *
- * @param {Array<Record<string, string>>} records - Existing records.
- * @param {string} parentId - Parent requirement identifier.
- * @returns {string} Generated governance requirement ID.
+ * @param {Array<Record<string, unknown>>} records - Existing records.
+ * @param {string} parentId - Parent Requirement identifier.
+ * @returns {string} Generated governance Requirement ID.
  */
 function buildGovernanceRequirementId(records, parentId) {
   const prefix = `${parentId}GOV-`;
@@ -265,7 +341,7 @@ function buildGovernanceRequirementId(records, parentId) {
 }
 
 /**
- * Builds a YAML record for a generated functional requirement.
+ * Builds a YAML record for a generated functional Requirement.
  *
  * @param {{id: string, title: string, mrId: string, bodyPath: string, status: string, requirementType: string}} input - Record data.
  * @returns {string} YAML block.
@@ -283,7 +359,7 @@ function buildFunctionalRequirementRecord(input) {
 }
 
 /**
- * Builds a YAML record for a generated governance requirement.
+ * Builds a YAML record for a generated governance Requirement.
  *
  * @param {{id: string, title: string, mrId: string, parentId: string, bodyPath: string, status: string, requirementType: string}} input - Record data.
  * @returns {string} YAML block.
@@ -302,7 +378,7 @@ function buildGovernanceRequirementRecord(input) {
 }
 
 /**
- * Builds the Markdown body template for a generated functional requirement.
+ * Builds the Markdown body template for a generated functional Requirement.
  *
  * @param {{id: string, title: string}} input - Body data.
  * @returns {string} Markdown body text.
@@ -329,7 +405,7 @@ TODO: indicare le condizioni minime per considerare soddisfatto il requisito.
 }
 
 /**
- * Builds the Markdown body template for a generated governance requirement.
+ * Builds the Markdown body template for a generated governance Requirement.
  *
  * @param {{id: string, title: string, parentId: string}} input - Body data.
  * @returns {string} Markdown body text.
@@ -364,9 +440,13 @@ TODO: indicare quando il controllo deve fallire e quando puo produrre solo warni
  */
 function appendRequirementRecord(registryText, recordBlock) {
   const trimmed = registryText.replace(/\s*$/u, "\n");
+
   if (!/^requirements:\s*$/mu.test(trimmed)) {
-    throw new Error("Requirements registry does not contain a requirements: section.");
+    throw new Error(
+      "Requirements registry does not contain a requirements: section.",
+    );
   }
+
   return `${trimmed}${recordBlock}`;
 }
 
@@ -374,7 +454,7 @@ function appendRequirementRecord(registryText, recordBlock) {
  * Validates required common authoring arguments.
  *
  * @param {Record<string, string|boolean>} args - Parsed argument map.
- * @returns {{kind: "functional-requirement"|"governance-requirement", mrId: string, title: string, dryRun: boolean}} Common authoring data.
+ * @returns {{requirementTypeValue: string, mrId: string, title: string, dryRun: boolean}} Common authoring data.
  */
 function readCommonInput(args) {
   if (args.kind !== undefined) {
@@ -393,10 +473,15 @@ function readCommonInput(args) {
   if (!requirementTypeValue) {
     throw new Error("--requirement-type is required.");
   }
+
   if (!/^MR-\d{4}$/u.test(mrId)) {
     throw new Error("--mr must look like MR-0001.");
   }
-  if (!title) throw new Error("--title is required.");
+
+  if (!title) {
+    throw new Error("--title is required.");
+  }
+
   if (/\n/u.test(title)) {
     throw new Error("--title must be a single line.");
   }
@@ -410,21 +495,25 @@ function readCommonInput(args) {
 }
 
 /**
- * Creates a planned generated document without writing it yet.
+ * Creates a deterministic governed document plan without writing.
  *
- * @param {Record<string, string|boolean>} args - Parsed argument map.
- * @returns {{id: string, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string, kind: string}} Planned document.
+ * @param {Record<string, string|boolean>} args - Canonical generator arguments.
+ * @param {{rootDir?: string}} [options] - Optional repository root override.
+ * @returns {{id: string, requirementType: string, dryRun: boolean, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string}} Planned document.
  */
-function planGeneratedDocument(args) {
+export function planGeneratedDocument(args, options = {}) {
   const {
     requirementTypeValue,
     mrId,
     title,
     dryRun,
   } = readCommonInput(args);
-
+  const operationRoot = resolveRootDir(options);
   const registryPath = buildRequirementsRegistryPath(mrId);
-  const registryAbsolutePath = resolveProjectPath(registryPath);
+  const registryAbsolutePath = resolveProjectPath(
+    registryPath,
+    operationRoot,
+  );
 
   if (!fs.existsSync(registryAbsolutePath)) {
     throw new Error(
@@ -445,10 +534,10 @@ function planGeneratedDocument(args) {
       `${registryPath}.requirements[${index}]`,
     ),
   );
-
   const controlledFieldCatalog =
-    loadDocumentationFieldValueCatalog({ rootDir });
-
+    loadDocumentationFieldValueCatalog({
+      rootDir: operationRoot,
+    });
   const requirementType = requireObject(
     resolveDocumentationFieldValue(
       controlledFieldCatalog,
@@ -461,7 +550,6 @@ function planGeneratedDocument(args) {
     ),
     "Resolved requirement_type",
   );
-
   const lifecycleStatus = requireObject(
     resolveDocumentationFieldValue(
       controlledFieldCatalog,
@@ -474,7 +562,6 @@ function planGeneratedDocument(args) {
     ),
     "Resolved Requirement lifecycle status",
   );
-
   const canonicalRequirementType = requireString(
     requirementType.value,
     "Resolved requirement_type value",
@@ -511,6 +598,7 @@ function planGeneratedDocument(args) {
     }
 
     const adrId = String(args.adr ?? "").trim();
+
     if (!/^ADR-\d{4}$/u.test(adrId)) {
       throw new Error("--adr must look like ADR-0004.");
     }
@@ -550,6 +638,7 @@ function planGeneratedDocument(args) {
   }
 
   const parentId = String(args.parent ?? "").trim();
+
   if (!parentId) {
     throw new Error(
       `--parent is required for ${canonicalRequirementType} requirements.`,
@@ -559,6 +648,7 @@ function planGeneratedDocument(args) {
   const parent = records.find(
     (record) => record.id === parentId,
   );
+
   if (!parent) {
     throw new Error(
       `Parent requirement not found in ${registryPath}: ${parentId}`,
@@ -621,26 +711,220 @@ function planGeneratedDocument(args) {
 }
 
 /**
- * Writes a generated governed document and its registry record.
+ * Replaces several text files as one rollback-capable transaction.
  *
- * @param {{id: string, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string}} plan - Planned document.
+ * @param {Array<{projectPath: string, targetPath: string, text: string}>} changes - Prepared file replacements.
+ * @param {typeof fs} fileSystem - File-system implementation.
  * @returns {void}
  */
-function applyGeneratedDocument(plan) {
-  const registryAbsolutePath = resolveProjectPath(plan.registryPath);
-  const bodyAbsolutePath = resolveProjectPath(plan.bodyPath);
+function writeTextTransaction(changes, fileSystem) {
+  const nonce = `${process.pid}.${Date.now()}.${Math.random()
+    .toString(16)
+    .slice(2)}`;
+  const prepared = [];
 
-  if (fs.existsSync(bodyAbsolutePath)) {
-    throw new Error(`Body already exists and will not be overwritten: ${plan.bodyPath}`);
+  try {
+    for (
+      let index = 0;
+      index < changes.length;
+      index += 1
+    ) {
+      const change = changes[index];
+      const directory = path.dirname(change.targetPath);
+      fileSystem.mkdirSync(directory, {
+        recursive: true,
+      });
+
+      const temporaryPath = path.join(
+        directory,
+        `.${path.basename(change.targetPath)}.${nonce}.${index}.tmp`,
+      );
+      const backupPath = path.join(
+        directory,
+        `.${path.basename(change.targetPath)}.${nonce}.${index}.bak`,
+      );
+
+      fileSystem.writeFileSync(
+        temporaryPath,
+        change.text,
+        {
+          encoding: "utf8",
+          flag: "wx",
+        },
+      );
+
+      prepared.push({
+        ...change,
+        temporaryPath,
+        backupPath,
+        hadOriginal: fileSystem.existsSync(
+          change.targetPath,
+        ),
+        backedUp: false,
+        installed: false,
+      });
+    }
+
+    for (const entry of prepared) {
+      if (!entry.hadOriginal) {
+        continue;
+      }
+
+      fileSystem.renameSync(
+        entry.targetPath,
+        entry.backupPath,
+      );
+      entry.backedUp = true;
+    }
+
+    for (const entry of prepared) {
+      fileSystem.renameSync(
+        entry.temporaryPath,
+        entry.targetPath,
+      );
+      entry.installed = true;
+    }
+
+    for (const entry of prepared) {
+      if (
+        entry.backedUp &&
+        fileSystem.existsSync(entry.backupPath)
+      ) {
+        fileSystem.rmSync(entry.backupPath, {
+          force: true,
+        });
+      }
+    }
+  } catch (error) {
+    for (const entry of [...prepared].reverse()) {
+      try {
+        if (
+          entry.installed &&
+          fileSystem.existsSync(entry.targetPath)
+        ) {
+          fileSystem.rmSync(entry.targetPath, {
+            force: true,
+          });
+        }
+
+        if (
+          entry.backedUp &&
+          fileSystem.existsSync(entry.backupPath)
+        ) {
+          fileSystem.renameSync(
+            entry.backupPath,
+            entry.targetPath,
+          );
+        }
+
+        if (fileSystem.existsSync(entry.temporaryPath)) {
+          fileSystem.rmSync(entry.temporaryPath, {
+            force: true,
+          });
+        }
+      } catch {
+        // Preserve the original transactional failure.
+      }
+    }
+
+    throw new Error(
+      `Cannot apply governed document transaction: ${error.message}`,
+    );
+  }
+}
+
+/**
+ * Atomically writes a generated governed document and its registry record.
+ *
+ * @param {{id: string, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string}} plan - Planned document.
+ * @param {{rootDir?: string, fileSystem?: typeof fs}} [options] - Optional root and injectable file system.
+ * @returns {{id: string, registryPath: string, bodyPath: string}} Applied document.
+ */
+export function applyGeneratedDocument(plan, options = {}) {
+  const validatedPlan = requireObject(
+    plan,
+    "Governed document plan",
+  );
+  const id = requireString(
+    validatedPlan.id,
+    "Governed document plan id",
+  );
+  const registryPath = requireString(
+    validatedPlan.registryPath,
+    "Governed document plan registryPath",
+  );
+  const bodyPath = requireString(
+    validatedPlan.bodyPath,
+    "Governed document plan bodyPath",
+  );
+  const recordBlock = requireText(
+    validatedPlan.recordBlock,
+    "Governed document plan recordBlock",
+  );
+  const bodyText = requireText(
+    validatedPlan.bodyText,
+    "Governed document plan bodyText",
+  );
+  const operationRoot = resolveRootDir(options);
+  const fileSystem = options.fileSystem ?? fs;
+  const registryAbsolutePath = resolveProjectPath(
+    registryPath,
+    operationRoot,
+  );
+  const bodyAbsolutePath = resolveProjectPath(
+    bodyPath,
+    operationRoot,
+  );
+
+  if (!fileSystem.existsSync(registryAbsolutePath)) {
+    throw new Error(
+      `Requirements registry not found: ${registryPath}`,
+    );
   }
 
-  const registryText = readText(registryAbsolutePath);
-  if (registryText.includes(`id: ${plan.id}`)) {
-    throw new Error(`Generated id already exists in registry: ${plan.id}`);
+  if (fileSystem.existsSync(bodyAbsolutePath)) {
+    throw new Error(
+      `Body already exists and will not be overwritten: ${bodyPath}`,
+    );
   }
 
-  writeText(registryAbsolutePath, appendRequirementRecord(registryText, plan.recordBlock));
-  writeText(bodyAbsolutePath, plan.bodyText);
+  const registryText = readText(
+    fileSystem,
+    registryAbsolutePath,
+  );
+
+  if (registryText.includes(`id: ${id}`)) {
+    throw new Error(
+      `Generated id already exists in registry: ${id}`,
+    );
+  }
+
+  const updatedRegistryText = appendRequirementRecord(
+    registryText,
+    recordBlock,
+  );
+
+  writeTextTransaction(
+    [
+      {
+        projectPath: registryPath,
+        targetPath: registryAbsolutePath,
+        text: updatedRegistryText,
+      },
+      {
+        projectPath: bodyPath,
+        targetPath: bodyAbsolutePath,
+        text: bodyText,
+      },
+    ],
+    fileSystem,
+  );
+
+  return {
+    id,
+    registryPath,
+    bodyPath,
+  };
 }
 
 /**
@@ -651,6 +935,7 @@ function applyGeneratedDocument(plan) {
 function main() {
   try {
     const args = parseArgs(process.argv.slice(2));
+
     if (args.help) {
       console.log(helpText());
       return 0;
@@ -680,10 +965,20 @@ function main() {
     console.log("Governed document generated.");
     return 0;
   } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
+    console.error(
+      error instanceof Error
+        ? error.message
+        : String(error),
+    );
     console.error("\n" + helpText());
     return 1;
   }
 }
 
-process.exitCode = main();
+const directExecutionUrl = process.argv[1]
+  ? pathToFileURL(path.resolve(process.argv[1])).href
+  : "";
+
+if (import.meta.url === directExecutionUrl) {
+  process.exitCode = main();
+}
