@@ -3,6 +3,8 @@
  *
  * @implementsRequirement MR-0002ADR-0005REQ-0001
  * @implementsRequirement MR-0002ADR-0005REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0005REQ-0002
+ * @implementsRequirement MR-0002ADR-0005REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0001
@@ -13,6 +15,7 @@
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
  * @macroRequirement MR-0002
+ * @implementationStatus implemented
  */
 {
   "version": "2.0.0",
@@ -86,20 +89,12 @@
       }
     },
     {
-      "label": "ThreatForge: create functional requirement dry-run",
+      "label": "ThreatForge: preview requirement authoring",
       "type": "process",
       "command": "node",
       "args": [
-        "tools/MR-0002/create-governed-document.mjs",
-        "--requirement-type",
-        "functional",
-        "--mr",
-        "${input:threatForgeMrId}",
-        "--adr",
-        "${input:threatForgeAdrId}",
-        "--title",
-        "${input:threatForgeFunctionalRequirementTitle}",
-        "--dry-run"
+        "tools/MR-0002/run-requirement-authoring.mjs",
+        "--preview"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -108,24 +103,17 @@
       "presentation": {
         "reveal": "always",
         "panel": "shared",
-        "clear": true
+        "clear": true,
+        "focus": true
       }
     },
     {
-      "label": "ThreatForge: create governance requirement dry-run",
+      "label": "ThreatForge: create requirement authoring",
       "type": "process",
       "command": "node",
       "args": [
-        "tools/MR-0002/create-governed-document.mjs",
-        "--requirement-type",
-        "governance",
-        "--mr",
-        "${input:threatForgeMrId}",
-        "--parent",
-        "${input:threatForgeParentRequirementId}",
-        "--title",
-        "${input:threatForgeGovernanceRequirementTitle}",
-        "--dry-run"
+        "tools/MR-0002/run-requirement-authoring.mjs",
+        "--create"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -134,7 +122,8 @@
       "presentation": {
         "reveal": "always",
         "panel": "shared",
-        "clear": true
+        "clear": true,
+        "focus": true
       }
     },
     {
@@ -231,34 +220,6 @@
     }
   ],
   "inputs": [
-    {
-      "id": "threatForgeMrId",
-      "type": "promptString",
-      "description": "Macro-requirement ID",
-      "default": "MR-0002"
-    },
-    {
-      "id": "threatForgeAdrId",
-      "type": "promptString",
-      "description": "ADR ID",
-      "default": "ADR-0005"
-    },
-    {
-      "id": "threatForgeFunctionalRequirementTitle",
-      "type": "promptString",
-      "description": "Titolo del requisito funzionale"
-    },
-    {
-      "id": "threatForgeParentRequirementId",
-      "type": "promptString",
-      "description": "ID del requisito funzionale padre",
-      "default": "MR-0002ADR-0005REQ-0001"
-    },
-    {
-      "id": "threatForgeGovernanceRequirementTitle",
-      "type": "promptString",
-      "description": "Titolo del requisito di governance"
-    },
     {
       "id": "threatForgeImplementationRequirementId",
       "type": "promptString",

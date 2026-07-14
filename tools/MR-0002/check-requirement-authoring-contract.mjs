@@ -14,10 +14,10 @@ import { buildRequirementAuthoringSchema } from "./build-requirement-authoring-s
  * @implementationStatus implemented
  *
  * Validates that the deterministic Requirement authoring catalog, JSON Schema
- * projection and governed request runner describe the same choices, meanings
- * and parent Requirement rules. It also executes isolated negative regression
- * fixtures and the runner integration suite while proving that verification is
- * read-only with respect to the repository.
+ * projection, governed request runner and thin VS Code adapter describe the
+ * same choices, meanings and safe authoring flow. It also executes isolated
+ * negative regression fixtures plus runner and adapter integration suites while
+ * proving that verification is read-only with respect to the repository.
  *
  * Side effects: executes the catalog and schema builders, reads the governed
  * negative fixture registry and Git status, and writes diagnostics only to
@@ -38,6 +38,8 @@ const fixturesProjectPath =
   "tools/MR-0002/fixtures/requirement-authoring-contract/negative-fixtures.registry.json";
 const runnerTestProjectPath =
   "tools/MR-0002/tests/run-requirement-authoring.test.mjs";
+const vscodeAdapterTestProjectPath =
+  "tools/MR-0002/tests/materialize-vscode-requirement-authoring-adapter.test.mjs";
 const implementedRequirementId = "MR-0002ADR-0004REQ-0003GOV-0002";
 
 /** @param {unknown} value @param {string} label @returns {Record<string, unknown>} */
@@ -742,6 +744,7 @@ function validateNegativeFixtures(catalog, schema, errors) {
 const errors = [];
 let fixtureCount = 0;
 let runnerSuiteCount = 0;
+let vscodeAdapterSuiteCount = 0;
 let counts = {
   sources: 0,
   requirement_types: 0,
@@ -773,6 +776,10 @@ try {
     runnerTestProjectPath,
     "Requirement authoring runner integration suite",
   );
+  vscodeAdapterSuiteCount = runNodeTestSuite(
+    vscodeAdapterTestProjectPath,
+    "VS Code Requirement authoring adapter integration suite",
+  );
 
   const statusAfter = captureRepositoryStatus();
   if (statusAfter !== statusBefore) errors.push("Requirement authoring contract verification changed the repository working tree.");
@@ -790,6 +797,7 @@ if (errors.length > 0) {
   console.error(`Requirements checked: ${counts.requirements}`);
   console.error(`Negative fixtures checked: ${fixtureCount}`);
   console.error(`Runner verification suites checked: ${runnerSuiteCount}`);
+  console.error(`VS Code adapter verification suites checked: ${vscodeAdapterSuiteCount}`);
   console.error("Warnings: 0");
   console.error(`Errors: ${errors.length}`);
   for (const error of errors) console.error(`ERROR: ${error}`);
@@ -804,6 +812,7 @@ if (errors.length > 0) {
   console.log(`Requirements checked: ${counts.requirements}`);
   console.log(`Negative fixtures checked: ${fixtureCount}`);
   console.log(`Runner verification suites checked: ${runnerSuiteCount}`);
+  console.log(`VS Code adapter verification suites checked: ${vscodeAdapterSuiteCount}`);
   console.log("Warnings: 0");
   console.log("Errors: 0");
 }
