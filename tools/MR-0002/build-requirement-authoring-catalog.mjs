@@ -1,12 +1,18 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import {
+  getDocumentationFieldValueSetByName,
+  loadDocumentationFieldValueCatalog,
+} from "../MR-0001/lib/documentation-field-values.mjs";
+import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
 
 /**
  * @file Requirement authoring catalog builder.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0001
+ * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @macroRequirement MR-0002
  * @implementationStatus implemented
@@ -62,144 +68,14 @@ function resolveProjectPath(projectPath) {
   return absolutePath;
 }
 
-/** @param {string} filePath @returns {string} */
-function readText(filePath) {
-  if (!fs.existsSync(filePath)) throw new Error(`Canonical source is missing: ${filePath}`);
-  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "");
-}
-
-/** @param {string} value @returns {string} */
-function stripQuotes(value) {
-  const trimmed = String(value ?? "").trim();
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
-/** @param {string} value @returns {string|number|boolean|null|Array<unknown>|Record<string, unknown>} */
-function parseScalar(value) {
-  const trimmed = String(value ?? "").trim();
-  if (trimmed === "[]") return [];
-  if (trimmed === "{}") return {};
-  if (trimmed === "true") return true;
-  if (trimmed === "false") return false;
-  if (trimmed === "null") return null;
-  if (/^-?\d+$/u.test(trimmed)) return Number.parseInt(trimmed, 10);
-  return stripQuotes(trimmed);
-}
-
-/** @param {string} line @returns {number} */
-function countIndent(line) {
-  return line.match(/^ */u)?.[0].length ?? 0;
-}
-
-/**
- * Parses the restricted YAML subset used by current governed registries.
- *
- * @param {string} text - Governed YAML text.
- * @returns {Record<string, unknown>} Parsed object.
- */
-function parseYaml(text) {
-  const root = {};
-  const stack = [{ indent: -1, value: root }];
-  const lines = String(text ?? "").replace(/^\uFEFF/u, "").replace(/\r\n/gu, "\n").split("\n");
-
-  function getParent(indent) {
-    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
-    return stack[stack.length - 1].value;
-  }
-
-  function nextMeaningfulLine(startIndex) {
-    for (let index = startIndex + 1; index < lines.length; index += 1) {
-      if (lines[index].trim() && !lines[index].trimStart().startsWith("#")) return lines[index];
-    }
-    return "";
-  }
-
-  function readBlock(startIndex, baseIndent) {
-    const block = [];
-    let index = startIndex;
-    while (index + 1 < lines.length) {
-      const next = lines[index + 1];
-      const nextIndent = countIndent(next);
-      if (next.trim() && nextIndent <= baseIndent) break;
-      index += 1;
-      block.push(next.slice(Math.min(baseIndent + 2, next.length)));
-    }
-    return { text: block.join("\n").replace(/\n$/u, ""), nextIndex: index };
-  }
-
-  for (let index = 0; index < lines.length; index += 1) {
-    const raw = lines[index];
-    if (!raw.trim() || raw.trimStart().startsWith("#")) continue;
-
-    const indent = countIndent(raw);
-    const trimmed = raw.trim();
-
-    if (trimmed.startsWith("- ")) {
-      const parent = getParent(indent);
-      if (!Array.isArray(parent)) throw new Error(`Invalid YAML sequence indentation at line ${index + 1}.`);
-      const itemText = trimmed.slice(2).trim();
-      const colonIndex = itemText.indexOf(":");
-      if (colonIndex === -1) {
-        parent.push(parseScalar(itemText));
-        continue;
-      }
-      const key = itemText.slice(0, colonIndex).trim();
-      const rawValue = itemText.slice(colonIndex + 1).trim();
-      const item = {};
-      parent.push(item);
-      if (rawValue === "|") {
-        const block = readBlock(index, indent);
-        item[key] = block.text;
-        index = block.nextIndex;
-      } else if (rawValue === "") {
-        const nextLine = nextMeaningfulLine(index);
-        const value = nextLine.trim().startsWith("- ") ? [] : {};
-        item[key] = value;
-        stack.push({ indent, value: item });
-        stack.push({ indent: indent + 2, value });
-      } else {
-        item[key] = parseScalar(rawValue);
-        stack.push({ indent, value: item });
-      }
-      continue;
-    }
-
-    const colonIndex = trimmed.indexOf(":");
-    if (colonIndex === -1) throw new Error(`Invalid YAML mapping entry at line ${index + 1}.`);
-    const key = trimmed.slice(0, colonIndex).trim();
-    const rawValue = trimmed.slice(colonIndex + 1).trim();
-    const parent = getParent(indent);
-    if (Array.isArray(parent) || typeof parent !== "object" || parent === null) {
-      throw new Error(`Invalid YAML mapping parent at line ${index + 1}.`);
-    }
-    if (rawValue === "|") {
-      const block = readBlock(index, indent);
-      parent[key] = block.text;
-      index = block.nextIndex;
-    } else if (rawValue === "") {
-      const nextLine = nextMeaningfulLine(index);
-      const value = nextLine.trim().startsWith("- ") ? [] : {};
-      parent[key] = value;
-      stack.push({ indent, value });
-    } else {
-      parent[key] = parseScalar(rawValue);
-    }
-  }
-  return root;
-}
-
 /** @param {string} projectPath @returns {Record<string, unknown>} */
-function readYaml(projectPath) {
+function readGovernedRegistry(projectPath) {
   try {
-    return parseYaml(readText(resolveProjectPath(projectPath)));
+    return readGovernedYamlFile(resolveProjectPath(projectPath));
   } catch (error) {
-    throw new Error(`Cannot read canonical YAML source ${projectPath}: ${error.message}`);
+    throw new Error(
+      `Cannot read canonical YAML source ${projectPath}: ${error.message}`,
+    );
   }
 }
 
@@ -247,58 +123,105 @@ function registerSource(sources, kind, projectPath, registry) {
   });
 }
 
-/** @param {Record<string, unknown>} taxonomyRegistry @returns {Array<Record<string, unknown>>} */
-function loadRequirementTypes(taxonomyRegistry) {
-  const valueSets = requireArray(taxonomyRegistry.field_value_sets, "taxonomy.field_value_sets");
-  const matches = valueSets.filter((entry) => requireObject(entry, "field value set").name === "requirement_type");
-  if (matches.length !== 1) {
-    throw new Error(`Expected exactly one requirement_type value set, found ${matches.length}.`);
-  }
-  const valueSet = requireObject(matches[0], "requirement_type value set");
-  const values = requireArray(valueSet.values, "requirement_type.values");
-  const seen = new Set();
-  const types = values.map((entry) => {
-    const value = requireObject(entry, "requirement_type value");
-    const typeName = requireString(value.value, "requirement_type.value");
-    requireUnique(seen, typeName, "requirement_type value");
-    if (typeName === "specialized") throw new Error("specialized is an abstract category and cannot be a requirement_type value.");
-    if (typeof value.is_specialized !== "boolean") {
-      throw new Error(`${typeName}.is_specialized must be boolean.`);
-    }
-    if (typeof value.requires_parent_requirement !== "boolean") {
-      throw new Error(`${typeName}.requires_parent_requirement must be boolean.`);
-    }
-    const allowedParentTypes = requireArray(
-      value.allowed_parent_requirement_types,
-      `${typeName}.allowed_parent_requirement_types`,
-    ).map((item) => requireString(item, `${typeName}.allowed_parent_requirement_types entry`));
-    const seenParentTypes = new Set();
-    for (const parentType of allowedParentTypes) {
-      requireUnique(seenParentTypes, parentType, `${typeName} allowed parent requirement type`);
-    }
-    return {
-      value: typeName,
-      meaning: requireString(value.meaning, `${typeName}.meaning`),
-      is_specialized: value.is_specialized,
-      requires_parent_requirement: value.requires_parent_requirement,
-      allowed_parent_requirement_types: allowedParentTypes.sort(compareIds),
-    };
-  }).sort((left, right) => compareIds(left.value, right.value));
+/**
+ * Projects the canonical requirement_type value set into the public authoring
+ * catalog shape while preserving the canonical catalog as the sole value
+ * inventory and semantic authority.
+ *
+ * @param {Record<string, unknown>} controlledFieldCatalog - Shared catalog.
+ * @returns {Array<Record<string, unknown>>} Requirement type projection.
+ */
+function loadRequirementTypes(controlledFieldCatalog) {
+  const valueSet = requireObject(
+    getDocumentationFieldValueSetByName(
+      controlledFieldCatalog,
+      "requirement_type",
+    ),
+    "requirement_type value set",
+  );
+  const values = requireArray(
+    valueSet.values,
+    "requirement_type.values",
+  );
+
+  const types = values
+    .map((entry) => {
+      const value = requireObject(entry, "requirement_type value");
+      const typeName = requireString(
+        value.value,
+        "requirement_type.value",
+      );
+
+      if (typeof value.is_specialized !== "boolean") {
+        throw new Error(`${typeName}.is_specialized must be boolean.`);
+      }
+      if (typeof value.requires_parent_requirement !== "boolean") {
+        throw new Error(
+          `${typeName}.requires_parent_requirement must be boolean.`,
+        );
+      }
+
+      const allowedParentTypes = requireArray(
+        value.allowed_parent_requirement_types,
+        `${typeName}.allowed_parent_requirement_types`,
+      ).map((item) =>
+        requireString(
+          item,
+          `${typeName}.allowed_parent_requirement_types entry`,
+        ),
+      );
+
+      const seenParentTypes = new Set();
+      for (const parentType of allowedParentTypes) {
+        requireUnique(
+          seenParentTypes,
+          parentType,
+          `${typeName} allowed parent requirement type`,
+        );
+      }
+
+      return {
+        value: typeName,
+        meaning: requireString(value.meaning, `${typeName}.meaning`),
+        is_specialized: value.is_specialized,
+        requires_parent_requirement:
+          value.requires_parent_requirement,
+        allowed_parent_requirement_types:
+          allowedParentTypes.sort(compareIds),
+      };
+    })
+    .sort((left, right) => compareIds(left.value, right.value));
 
   const knownTypes = new Set(types.map((entry) => entry.value));
+
   for (const type of types) {
     for (const parentType of type.allowed_parent_requirement_types) {
       if (!knownTypes.has(parentType)) {
-        throw new Error(`${type.value} allows unknown parent requirement type: ${parentType}`);
+        throw new Error(
+          `${type.value} allows unknown parent requirement type: ${parentType}`,
+        );
       }
     }
-    if (!type.requires_parent_requirement && type.allowed_parent_requirement_types.length > 0) {
-      throw new Error(`${type.value} forbids a parent but declares allowed parent types.`);
+
+    if (
+      !type.requires_parent_requirement &&
+      type.allowed_parent_requirement_types.length > 0
+    ) {
+      throw new Error(
+        `${type.value} forbids a parent but declares allowed parent types.`,
+      );
     }
-    if (type.requires_parent_requirement && type.allowed_parent_requirement_types.length === 0) {
-      throw new Error(`${type.value} requires a parent but declares no allowed parent types.`);
+
+    if (
+      type.requires_parent_requirement &&
+      type.allowed_parent_requirement_types.length === 0
+    ) {
+      throw new Error(
+        `${type.value} requires a parent but declares no allowed parent types.`,
+      );
     }
   }
+
   return types;
 }
 
@@ -310,11 +233,40 @@ function loadRequirementTypes(taxonomyRegistry) {
  */
 export function buildRequirementAuthoringCatalog() {
   const sources = [];
-  const macroRegistry = readYaml(macroRequirementsRegistryProjectPath);
-  registerSource(sources, "macro_requirements", macroRequirementsRegistryProjectPath, macroRegistry);
-  const taxonomyRegistry = readYaml(taxonomyRegistryProjectPath);
-  registerSource(sources, "documentation_field_values", taxonomyRegistryProjectPath, taxonomyRegistry);
-  const requirementTypes = loadRequirementTypes(taxonomyRegistry);
+  const macroRegistry = readGovernedRegistry(
+    macroRequirementsRegistryProjectPath,
+  );
+  registerSource(
+    sources,
+    "macro_requirements",
+    macroRequirementsRegistryProjectPath,
+    macroRegistry,
+  );
+
+  const controlledFieldCatalog =
+    loadDocumentationFieldValueCatalog({
+      rootDir,
+      taxonomyProjectPath: taxonomyRegistryProjectPath,
+    });
+  const controlledFieldSource = requireObject(
+    controlledFieldCatalog.canonical_source,
+    "documentation field value catalog canonical_source",
+  );
+  registerSource(
+    sources,
+    "documentation_field_values",
+    requireString(
+      controlledFieldSource.registry_path,
+      "documentation field value registry path",
+    ),
+    {
+      schema_version: controlledFieldSource.schema_version,
+      registry_id: controlledFieldSource.registry_id,
+    },
+  );
+
+  const requirementTypes =
+    loadRequirementTypes(controlledFieldCatalog);
   const requirementTypesByName = new Map(requirementTypes.map((entry) => [entry.value, entry]));
 
   const macroRecords = requireArray(macroRegistry.macro_requirements, "macro_requirements");
@@ -331,8 +283,8 @@ export function buildRequirementAuthoringCatalog() {
       requireString(macro.decisions_registry_path, `${macroId}.decisions_registry_path`),
     );
     const requirementsPath = `${requirementsDirectoryProjectPath}/${macroId}.requirements.registry.yml`;
-    const decisionsRegistry = readYaml(decisionsPath);
-    const requirementsRegistry = readYaml(requirementsPath);
+    const decisionsRegistry = readGovernedRegistry(decisionsPath);
+    const requirementsRegistry = readGovernedRegistry(requirementsPath);
     registerSource(sources, "decisions", decisionsPath, decisionsRegistry);
     registerSource(sources, "requirements", requirementsPath, requirementsRegistry);
 

@@ -265,6 +265,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0003GOV-0001
+      - MR-0001ADR-0004REQ-0002GOV-0001
     implemented_path: tools/MR-0002/build-requirement-authoring-catalog.mjs
     reason: "Promoted MR-0002ADR-0004REQ-0003GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0002/build-requirement-authoring-catalog.mjs
@@ -358,3 +359,13 @@ artifacts:
     implemented_path: tools/MR-0001/test/check-documentation-field-values-shared-resolver.test.mjs
     reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0003 after the checker migration test and complete negative fixture verification succeeded."
     verification_command: node --test tools/MR-0001/test/check-documentation-field-values-shared-resolver.test.mjs
+
+  - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0004
+    title: "Verifica della migrazione del Requirement authoring catalog builder ai consumer condivisi"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0004REQ-0002GOV-0001
+    implemented_path: tools/MR-0002/tests/build-requirement-authoring-catalog-shared-consumers.test.mjs
+    reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0004 after the builder migration test and Requirement authoring contract verification succeeded."
+    verification_command: node --test tools/MR-0002/tests/build-requirement-authoring-catalog-shared-consumers.test.mjs
