@@ -185,3 +185,48 @@ requirements:
     macro_requirement_id: MR-0002
     parent_requirement_id: MR-0002ADR-0005REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0005REQ-0002GOV-0001_body.md
+
+  - id: MR-0002ADR-0004REQ-0004
+    title: Contratto condiviso di authoring documentale per MR, ADR e REQ
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0004_body.md
+
+  - id: MR-0002ADR-0004REQ-0004GOV-0001
+    title: Preview obbligatoria, conferma esplicita e scrittura atomica
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    parent_requirement_id: MR-0002ADR-0004REQ-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0004GOV-0001_body.md
+
+  - id: MR-0002ADR-0005REQ-0003
+    title: Editor VS Code guidato per MR, ADR e REQ
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0005REQ-0003_body.md
+
+  - id: MR-0002ADR-0005REQ-0003GOV-0001
+    title: Adapter VS Code sottile e generato dalle fonti canoniche
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    parent_requirement_id: MR-0002ADR-0005REQ-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0005REQ-0003GOV-0001_body.md
+
+  - id: MR-0002ADR-0001REQ-0002
+    title: Presentazione web dei campi documentali controllati
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0002_body.md
+
+  - id: MR-0002ADR-0001REQ-0002GOV-0001
+    title: View-model canonico e tooltip accessibili
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    parent_requirement_id: MR-0002ADR-0001REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0002GOV-0001_body.md

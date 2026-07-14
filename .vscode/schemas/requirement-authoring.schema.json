@@ -279,15 +279,21 @@
           "parent_requirement_id": {
             "type": "string",
             "enum": [
-              "MR-0001ADR-0004REQ-0001"
+              "MR-0001ADR-0004REQ-0001",
+              "MR-0001ADR-0004REQ-0002"
             ],
             "markdownEnumDescriptions": [
-              "Registro dei valori controllati dei campi documentali — type: functional — status: draft"
+              "Registro dei valori controllati dei campi documentali — type: functional — status: draft",
+              "Catalogo canonico dei campi controllati e dei metadati di presentazione — type: functional — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
                 "value": "MR-0001ADR-0004REQ-0001",
                 "description": "Registro dei valori controllati dei campi documentali — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0001ADR-0004REQ-0002",
+                "description": "Catalogo canonico dei campi controllati e dei metadati di presentazione — type: functional — status: draft"
               }
             ],
             "description": "Existing parent Requirement allowed for governance under MR-0001/ADR-0004."
@@ -415,15 +421,21 @@
           "parent_requirement_id": {
             "type": "string",
             "enum": [
-              "MR-0002ADR-0001REQ-0001"
+              "MR-0002ADR-0001REQ-0001",
+              "MR-0002ADR-0001REQ-0002"
             ],
             "markdownEnumDescriptions": [
-              "Pianificazione guidata di un artefatto implementativo da requisito governato — type: functional — status: draft"
+              "Pianificazione guidata di un artefatto implementativo da requisito governato — type: functional — status: draft",
+              "Presentazione web dei campi documentali controllati — type: functional — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
                 "value": "MR-0002ADR-0001REQ-0001",
                 "description": "Pianificazione guidata di un artefatto implementativo da requisito governato — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0002ADR-0001REQ-0002",
+                "description": "Presentazione web dei campi documentali controllati — type: functional — status: draft"
               }
             ],
             "description": "Existing parent Requirement allowed for governance under MR-0002/ADR-0001."
@@ -543,12 +555,14 @@
             "enum": [
               "MR-0002ADR-0004REQ-0001",
               "MR-0002ADR-0004REQ-0002",
-              "MR-0002ADR-0004REQ-0003"
+              "MR-0002ADR-0004REQ-0003",
+              "MR-0002ADR-0004REQ-0004"
             ],
             "markdownEnumDescriptions": [
               "Generatore deterministico di documenti governati — type: functional — status: draft",
               "Controllo degli header dei body governati — type: functional — status: draft",
-              "Contratto di authoring guidato dei requisiti governati — type: functional — status: draft"
+              "Contratto di authoring guidato dei requisiti governati — type: functional — status: draft",
+              "Contratto condiviso di authoring documentale per MR, ADR e REQ — type: functional — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
@@ -562,6 +576,10 @@
               {
                 "value": "MR-0002ADR-0004REQ-0003",
                 "description": "Contratto di authoring guidato dei requisiti governati — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0002ADR-0004REQ-0004",
+                "description": "Contratto condiviso di authoring documentale per MR, ADR e REQ — type: functional — status: draft"
               }
             ],
             "description": "Existing parent Requirement allowed for governance under MR-0002/ADR-0004."
@@ -594,11 +612,13 @@
             "type": "string",
             "enum": [
               "MR-0002ADR-0005REQ-0001",
-              "MR-0002ADR-0005REQ-0002"
+              "MR-0002ADR-0005REQ-0002",
+              "MR-0002ADR-0005REQ-0003"
             ],
             "markdownEnumDescriptions": [
               "Catalogo locale di task VS Code ThreatForge — type: functional — status: draft",
-              "Authoring guidato dei requisiti tramite VS Code — type: functional — status: draft"
+              "Authoring guidato dei requisiti tramite VS Code — type: functional — status: draft",
+              "Editor VS Code guidato per MR, ADR e REQ — type: functional — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
@@ -608,6 +628,10 @@
               {
                 "value": "MR-0002ADR-0005REQ-0002",
                 "description": "Authoring guidato dei requisiti tramite VS Code — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0002ADR-0005REQ-0003",
+                "description": "Editor VS Code guidato per MR, ADR e REQ — type: functional — status: draft"
               }
             ],
             "description": "Existing parent Requirement allowed for governance under MR-0002/ADR-0005."

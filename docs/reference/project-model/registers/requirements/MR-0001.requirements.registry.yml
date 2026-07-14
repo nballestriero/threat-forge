@@ -94,3 +94,26 @@ requirements:
     macro_requirement_id: MR-0001
     parent_requirement_id: MR-0001ADR-0003REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0003REQ-0002GOV-0001_body.md
+
+  - id: MR-0001ADR-0004REQ-0002
+    title: Catalogo canonico dei campi controllati e dei metadati di presentazione
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0002_body.md
+
+  - id: MR-0001ADR-0004REQ-0002GOV-0001
+    title: Provenienza canonica obbligatoria e divieto di duplicazione
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    parent_requirement_id: MR-0001ADR-0004REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0002GOV-0001_body.md
+
+  - id: MR-0001ADR-0004REQ-0002GOV-0002
+    title: Freshness deterministica delle proiezioni dei campi controllati
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    parent_requirement_id: MR-0001ADR-0004REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0002GOV-0002_body.md
