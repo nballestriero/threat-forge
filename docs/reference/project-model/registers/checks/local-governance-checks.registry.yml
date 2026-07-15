@@ -61,7 +61,7 @@ checks:
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0003
     title: Functional Requirement model consistency
-    status: planned
+    status: active
     command: node
     args:
       - tools/MR-0001/check-functional-requirement-model.mjs
@@ -69,7 +69,7 @@ checks:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
-    description: Planned complete-model checker activated only after the Functional Requirement corpus migration reaches zero errors.
+    description: Validate the complete Functional Requirement logical model after the governed corpus migration reached zero errors.
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0004
     title: Governance Requirement model consistency
@@ -96,7 +96,7 @@ checks:
     description: Planned cross-model checker activated only after every model-specific migration report reaches zero errors.
 
   - id: MR-0002ADR-0004REQ-0002GOV-0001CHECK-0001
-    title: Transitional Requirement body header consistency
+    title: Transitional Governance Requirement body header consistency
     status: active
     command: node
     args:
@@ -104,7 +104,7 @@ checks:
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
-    description: Temporarily validate Functional Requirement and Governance Requirement title-to-H1 coherence until their complete-model checkers are active; Macro-requirements and Decisions are owned exclusively by their active complete-model checkers.
+    description: Temporarily validate Governance Requirement title-to-H1 coherence until its complete-model checker is active; Macro-requirements, Decisions and Functional Requirements are owned exclusively by their active complete-model checkers.
 
   - id: MR-0002ADR-0002REQ-0001GOV-0002CHECK-0001
     title: Governed repository operation consistency

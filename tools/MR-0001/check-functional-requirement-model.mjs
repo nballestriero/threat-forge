@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 import { validateFunctionalRequirementModel } from "./lib/functional-requirement-model-validation.mjs";
 
 /**
- * @file Functional Requirement complete-model checker and migration reporter.
+ * @file Functional Requirement complete-model checker.
  *
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
@@ -15,21 +15,17 @@ import { validateFunctionalRequirementModel } from "./lib/functional-requirement
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Default mode is enforce for future check-registry activation. --report writes
- * deterministic migration reports and remains non-blocking for model violations.
+ * Validates the active Functional Requirement corpus in blocking enforcement
+ * mode and writes deterministic JSON and Markdown evidence reports.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
 const rootDir = process.env.TF_FUNCTIONAL_REQUIREMENT_MODEL_ROOT
   ? path.resolve(process.env.TF_FUNCTIONAL_REQUIREMENT_MODEL_ROOT)
   : path.resolve(path.dirname(scriptPath), "..", "..");
-const reportMode = process.argv.includes("--report");
-const unknown = process.argv
-  .slice(2)
-  .filter((argument) => argument !== "--report" && argument !== "--enforce");
 
-if (unknown.length) {
-  console.error(`Unsupported arguments: ${unknown.join(", ")}`);
+if (process.argv.length > 2) {
+  console.error(`Unsupported arguments: ${process.argv.slice(2).join(", ")}`);
   process.exit(2);
 }
 
@@ -48,7 +44,7 @@ fs.mkdirSync(reportDir, { recursive: true });
 
 const report = {
   checker: "check-functional-requirement-model",
-  mode: reportMode ? "report" : "enforce",
+  mode: "enforce",
   implemented_requirements: [
     "MR-0001ADR-0007REQ-0002",
     "MR-0001ADR-0007REQ-0002GOV-0001",
@@ -69,7 +65,7 @@ fs.writeFileSync(
 );
 
 const markdown = [
-  "# Functional Requirement model migration report",
+  "# Functional Requirement model report",
   "",
   `Mode: ${report.mode}`,
   `Registry files checked: ${report.registry_paths.length}`,
@@ -97,9 +93,7 @@ fs.writeFileSync(
 console.log(
   report.error_count === 0
     ? "Functional Requirement model check passed."
-    : reportMode
-      ? "Functional Requirement migration report completed."
-      : "Functional Requirement model check failed.",
+    : "Functional Requirement model check failed.",
 );
 for (const id of report.implemented_requirements) {
   console.log(`Implemented requirement: ${id}`);
@@ -118,6 +112,6 @@ for (const item of report.diagnostics) {
   );
 }
 
-if (!reportMode && report.error_count > 0) {
+if (report.error_count > 0) {
   process.exit(1);
 }

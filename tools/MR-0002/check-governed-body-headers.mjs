@@ -11,7 +11,7 @@ import {
 } from "../MR-0001/lib/governed-document-model-validation.mjs";
 
 /**
- * @file Transitional Requirement body header checker.
+ * @file Transitional Governance Requirement body header checker.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0002
@@ -19,14 +19,13 @@ import {
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * This implementation validates only Functional Requirement and Governance
- * Requirement records while their complete-model validators remain planned.
- * Macro-requirement and Decision headers are owned exclusively by their active
- * complete-model checkers.
+ * This implementation validates only Governance Requirement records while the
+ * Governance Requirement complete-model validator remains planned.
+ * Macro-requirement, Decision and Functional Requirement headers are owned
+ * exclusively by their active complete-model checkers.
  *
- * The transitional checker and its fixtures must be removed after the
- * Functional Requirement and Governance Requirement complete-model checkers
- * are active.
+ * The transitional checker and its fixtures must be removed when the
+ * Governance Requirement complete-model checker becomes active.
  *
  * Side effects: reads governed Requirement registries and bodies,
  * executes deterministic negative fixtures, writes reports under
@@ -75,7 +74,7 @@ function readUtf8(filePath) {
 function diagnostic(ruleId, representation, sourcePath, location, message) {
   return createDiagnostic(
     ruleId,
-    "requirement",
+    "governance-requirement",
     representation,
     sourcePath,
     location,
@@ -103,7 +102,7 @@ function extractH1Lines(text) {
 }
 
 /**
- * Validates one Requirement record and its linked body.
+ * Validates one Governance Requirement record and its linked body.
  *
  * @param {{
  *   sourcePath: string,
@@ -239,6 +238,12 @@ function collectCanonicalRecords(baseRootDir) {
     }
 
     requirements.forEach((record, index) => {
+      const id = String(record?.id ?? "");
+      const isGovernanceRequirement =
+        record?.requirement_type === "governance" ||
+        /^MR-\d{4}ADR-\d{4}REQ-\d{4}GOV-\d{4}$/u.test(id);
+      if (!isGovernanceRequirement) return;
+
       records.push({
         sourcePath,
         location: `/requirements/${index}`,
@@ -373,12 +378,12 @@ function writeReports(validation, fixtures) {
   ];
 
   const report = {
-    checker: "transitional-requirement-body-headers",
+    checker: "transitional-governance-requirement-body-headers",
     implemented_requirements: [
       "MR-0002ADR-0004REQ-0002GOV-0001",
       "MR-0002ADR-0004REQ-0002GOV-0002",
     ],
-    scope: ["functional-requirement", "governance-requirement"],
+    scope: ["governance-requirement"],
     records_checked: validation.recordsChecked,
     negative_fixtures_checked: fixtures.checked,
     negative_fixture_results: fixtures.results,
@@ -393,7 +398,7 @@ function writeReports(validation, fixtures) {
   );
 
   const markdown = [
-    "# Transitional Requirement body headers report",
+    "# Transitional Governance Requirement body headers report",
     "",
     `Records checked: ${report.records_checked}`,
     `Negative fixtures checked: ${report.negative_fixtures_checked}`,
@@ -427,7 +432,7 @@ if (isDirectExecution()) {
     const report = writeReports(validation, fixtures);
 
     if (report.errors.length > 0) {
-      console.error("Transitional Requirement body header check failed.");
+      console.error("Transitional Governance Requirement body header check failed.");
       console.error("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0001");
       console.error("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0002");
       console.error(`Records checked: ${report.records_checked}`);
@@ -438,7 +443,7 @@ if (isDirectExecution()) {
       process.exit(1);
     }
 
-    console.log("Transitional Requirement body header check passed.");
+    console.log("Transitional Governance Requirement body header check passed.");
     console.log("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0001");
     console.log("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0002");
     console.log(`Records checked: ${report.records_checked}`);
@@ -446,7 +451,7 @@ if (isDirectExecution()) {
     console.log(`Warnings: ${report.warnings.length}`);
     console.log(`Errors: ${report.errors.length}`);
   } catch (error) {
-    console.error("Transitional Requirement body header check failed.");
+    console.error("Transitional Governance Requirement body header check failed.");
     console.error(error.message);
     process.exit(1);
   }

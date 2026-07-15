@@ -61,24 +61,24 @@ artifacts:
     verification_command: node tools/MR-0002/create-governed-document.mjs --requirement-type functional --mr MR-0002 --adr ADR-0004 --title "Dry run example" --dry-run
 
   - id: MR-0002ADR-0004REQ-0002GOV-0001IMPL-0001
-    title: Transitional Requirement body header consistency checker
+    title: Transitional Governance Requirement body header consistency checker
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0002/check-governed-body-headers.mjs
-    reason: Temporarily validate canonical title fields and linked Markdown H1 headers for Functional Requirement and Governance Requirement records until their complete-model checkers are active, including deterministic negative fixture coverage.
+    reason: Temporarily validate canonical title fields and linked Markdown H1 headers for Governance Requirement records until their complete-model checker is active, including deterministic negative fixture coverage.
     verification_command: node tools/MR-0002/check-governed-body-headers.mjs
 
   - id: MR-0002ADR-0004REQ-0002GOV-0002IMPL-0001
-    title: Transitional Requirement body header negative fixtures
+    title: Transitional Governance Requirement body header negative fixtures
     artifact_type: fixture
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0002/fixtures/governed-body-headers
-    reason: Provide deterministic invalid Requirement examples proving that the transitional checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
+    reason: Provide deterministic invalid Governance Requirement examples proving that the transitional checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
     verification_command: node tools/MR-0002/check-governed-body-headers.mjs
 
   - id: MR-0001ADR-0004REQ-0001GOV-0002IMPL-0001
@@ -549,8 +549,8 @@ artifacts:
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
     implemented_path: tools/MR-0001/check-macro-requirement-model.mjs
-    reason: Validate complete Macro-requirement registry and body representations and produce deterministic migration or enforcement reports.
-    verification_command: node tools/MR-0001/check-macro-requirement-model.mjs --report
+    reason: Validate complete Macro-requirement registry and body representations in blocking enforcement mode and produce deterministic evidence reports.
+    verification_command: node tools/MR-0001/check-macro-requirement-model.mjs
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0002
     title: Macro-requirement complete-model verification
@@ -586,7 +586,7 @@ artifacts:
     verification_command: node --test tools/MR-0001/test/decision-model.test.mjs
 
   - id: MR-0001ADR-0007REQ-0002IMPL-0004
-    title: Decision complete-model migration checker
+    title: Decision complete-model checker
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
@@ -594,8 +594,8 @@ artifacts:
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
     implemented_path: tools/MR-0001/check-decision-model.mjs
-    reason: Produce deterministic Decision migration reports and provide the future blocking Decision model entrypoint after corpus migration reaches zero errors.
-    verification_command: node tools/MR-0001/check-decision-model.mjs --report
+    reason: Validate complete Decision registry and Markdown body representations in blocking enforcement mode and produce deterministic evidence reports.
+    verification_command: node tools/MR-0001/check-decision-model.mjs
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0004
     title: Decision complete-model verification
@@ -631,7 +631,7 @@ artifacts:
     verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
 
   - id: MR-0001ADR-0007REQ-0002IMPL-0006
-    title: Functional Requirement complete-model migration checker
+    title: Functional Requirement complete-model checker
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
@@ -639,8 +639,8 @@ artifacts:
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
     implemented_path: tools/MR-0001/check-functional-requirement-model.mjs
-    reason: Produce deterministic non-blocking Functional Requirement migration reports and provide the future enforcement entrypoint after the corpus reaches zero errors.
-    verification_command: node tools/MR-0001/check-functional-requirement-model.mjs --report
+    reason: Validate complete Functional Requirement registry and Markdown body representations in blocking enforcement mode and produce deterministic evidence reports.
+    verification_command: node tools/MR-0001/check-functional-requirement-model.mjs
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0006
     title: Functional Requirement complete-model verification

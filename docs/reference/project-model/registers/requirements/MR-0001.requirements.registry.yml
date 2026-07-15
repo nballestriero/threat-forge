@@ -8,6 +8,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0003REQ-0001_body.md
 
   - id: MR-0001ADR-0003REQ-0001GOV-0001
@@ -23,6 +24,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0001_body.md
 
   - id: MR-0001ADR-0004REQ-0001GOV-0001
@@ -54,6 +56,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0006
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0006REQ-0001_body.md
 
   - id: MR-0001ADR-0006REQ-0001GOV-0001
@@ -85,6 +88,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0003REQ-0002_body.md
 
   - id: MR-0001ADR-0003REQ-0002GOV-0001
@@ -100,6 +104,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0004
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0002_body.md
 
   - id: MR-0001ADR-0004REQ-0002GOV-0001
@@ -123,6 +128,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0007
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0001_body.md
 
   - id: MR-0001ADR-0007REQ-0001GOV-0001
@@ -138,6 +144,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0007
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0002_body.md
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001
@@ -161,6 +168,7 @@ requirements:
     status: draft
     requirement_type: functional
     macro_requirement_id: MR-0001
+    decision_id: ADR-0007
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0003_body.md
 
   - id: MR-0001ADR-0007REQ-0003GOV-0001
