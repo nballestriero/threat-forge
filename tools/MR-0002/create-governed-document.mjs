@@ -3,33 +3,29 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import {
-  loadDocumentationFieldValueCatalog,
-  resolveDocumentationFieldValue,
-} from "../MR-0001/lib/documentation-field-values.mjs";
 import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
 
 /**
- * @file Governed documentation authoring generator.
+ * @file Governed document authoring transaction core.
  *
+ * @implementsRequirement MR-0002ADR-0004REQ-0004
+ * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
  * @implementsRequirement MR-0002ADR-0004REQ-0001GOV-0001
- * @implementsRequirement MR-0002ADR-0004REQ-0003
- * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0002
- * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
- * @implementationStatus implemented
  * @macroRequirement MR-0002
+ * @implementationStatus implemented
  *
- * Plans and atomically applies one governed Requirement registry record and
- * matching Markdown body. The planning and application functions are
- * importable by IDE-independent authoring consumers, while direct execution
- * preserves the existing CLI contract.
+ * Plans and atomically creates one Macro-requirement, Decision, Functional
+ * Requirement or Governance Requirement from the canonical authoring catalog.
+ * The same plan and transaction are consumed by CLI, VS Code and future
+ * adapters. Generated identifiers, paths, relations and lifecycle values never
+ * come from an editor-owned rule set.
  *
  * Side effects:
- * - planGeneratedDocument reads canonical registries and taxonomies only;
- * - applyGeneratedDocument replaces the registry and creates the body as one
- *   rollback-capable transaction, including optional post-install verification;
- * - direct CLI execution writes only when --dry-run is absent.
+ * - planGeneratedDocument reads canonical registries only;
+ * - applyGeneratedDocument installs every planned file as one rollback-capable
+ *   transaction and can run mandatory verification before committing it;
+ * - direct execution provides help only; the governed runner owns user input.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -39,955 +35,507 @@ const configuredRootDir = process.env.TF_AUTHORING_ROOT
   ? path.resolve(process.env.TF_AUTHORING_ROOT)
   : defaultRootDir;
 
-const requirementsRegistryPattern =
-  "docs/reference/project-model/registers/requirements/{MR}.requirements.registry.yml";
-const requirementsBodyPattern =
-  "docs/reference/project-model/body/requirements/{MR}/{ID}_body.md";
+const macroRegistryProjectPath =
+  "docs/reference/project-model/registers/macro-requirements.registry.yml";
 
-/**
- * Displays command usage.
- *
- * @returns {string} Help text.
- */
-function helpText() {
-  return `Usage:
-  node tools/MR-0002/create-governed-document.mjs \\
-    --requirement-type functional \\
-    --mr MR-0002 \\
-    --adr ADR-0004 \\
-    --title "Titolo del requisito" [--dry-run]
-
-  node tools/MR-0002/create-governed-document.mjs \\
-    --requirement-type governance \\
-    --mr MR-0002 \\
-    --parent MR-0002ADR-0004REQ-0001 \\
-    --title "Titolo del requisito GOV" [--dry-run]
-
-Requirement types and lifecycle values are resolved from:
-  docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml
-
-The generator creates deterministic IDs, appends the governed registry record
-and creates the matching Markdown body with an H1 derived from the generated
-identifier and title.`;
-}
-
-/**
- * Parses command line arguments as --key value / --flag pairs.
- *
- * @param {string[]} args - Raw process arguments after node and script path.
- * @returns {Record<string, string|boolean>} Parsed argument map.
- */
-function parseArgs(args) {
-  const parsed = {};
-
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
-
-    if (!arg.startsWith("--")) {
-      throw new Error(`Unexpected positional argument: ${arg}`);
-    }
-
-    const key = arg.slice(2);
-
-    if (key === "dry-run" || key === "help") {
-      parsed[key] = true;
-      continue;
-    }
-
-    const value = args[index + 1];
-
-    if (!value || value.startsWith("--")) {
-      throw new Error(`Missing value for --${key}`);
-    }
-
-    parsed[key] = value;
-    index += 1;
-  }
-
-  return parsed;
-}
-
-/**
- * Requires a non-array object.
- *
- * @param {unknown} value - Candidate value.
- * @param {string} label - Diagnostic label.
- * @returns {Record<string, unknown>} Object value.
- */
+/** @param {unknown} value @param {string} label @returns {Record<string, unknown>} */
 function requireObject(value, label) {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`${label} must be an object.`);
   }
-
   return value;
 }
 
-/**
- * Requires an array.
- *
- * @param {unknown} value - Candidate value.
- * @param {string} label - Diagnostic label.
- * @returns {Array<unknown>} Array value.
- */
+/** @param {unknown} value @param {string} label @returns {unknown[]} */
 function requireArray(value, label) {
-  if (!Array.isArray(value)) {
-    throw new Error(`${label} must be an array.`);
-  }
-
+  if (!Array.isArray(value)) throw new Error(`${label} must be an array.`);
   return value;
 }
 
-/**
- * Requires a non-empty string.
- *
- * @param {unknown} value - Candidate value.
- * @param {string} label - Diagnostic label.
- * @returns {string} Normalized string.
- */
+/** @param {unknown} value @param {string} label @returns {string} */
 function requireString(value, label) {
   const normalized = String(value ?? "").trim();
-
-  if (!normalized) {
-    throw new Error(`${label} must be a non-empty string.`);
-  }
-
+  if (!normalized) throw new Error(`${label} must be a non-empty string.`);
   return normalized;
 }
 
-/**
- * Requires non-empty text while preserving its original whitespace.
- *
- * @param {unknown} value - Candidate text.
- * @param {string} label - Diagnostic label.
- * @returns {string} Original text.
- */
-function requireText(value, label) {
-  const text = String(value ?? "");
-
-  if (!text.trim()) {
-    throw new Error(`${label} must be non-empty text.`);
-  }
-
-  return text;
-}
-
-/**
- * Resolves the root used by one planning or application call.
- *
- * @param {{rootDir?: string}} options - Optional operation settings.
- * @returns {string} Absolute root directory.
- */
+/** @param {{rootDir?: string}} options @returns {string} */
 function resolveRootDir(options = {}) {
-  return options.rootDir
-    ? path.resolve(String(options.rootDir))
-    : configuredRootDir;
+  return options.rootDir ? path.resolve(String(options.rootDir)) : configuredRootDir;
 }
 
-/**
- * Normalizes and validates one repository-relative path.
- *
- * @param {string} projectPath - Repository-relative path.
- * @param {string} operationRoot - Absolute operation root.
- * @returns {string} Absolute path contained by operationRoot.
- */
-function resolveProjectPath(projectPath, operationRoot) {
-  const normalized = String(projectPath ?? "")
-    .replaceAll("\\", "/")
-    .trim();
-
-  if (!normalized) {
-    throw new Error("Repository-relative path must not be empty.");
-  }
-
-  if (
-    path.isAbsolute(normalized) ||
-    path.win32.isAbsolute(normalized) ||
-    path.posix.isAbsolute(normalized)
-  ) {
+/** @param {string} projectPath @param {string} rootDir @returns {string} */
+function resolveProjectPath(projectPath, rootDir) {
+  const normalized = String(projectPath ?? "").replaceAll("\\", "/").trim();
+  if (!normalized) throw new Error("Repository-relative path must not be empty.");
+  if (path.isAbsolute(normalized) || path.win32.isAbsolute(normalized) || path.posix.isAbsolute(normalized)) {
     throw new Error(`Repository path must be relative: ${normalized}`);
   }
-
   const segments = normalized.split("/");
-
-  if (
-    segments.some(
-      (segment) => !segment || segment === "." || segment === "..",
-    )
-  ) {
+  if (segments.some((segment) => !segment || segment === "." || segment === "..")) {
     throw new Error(`Repository path is unsafe: ${normalized}`);
   }
-
-  const absolutePath = path.resolve(operationRoot, ...segments);
-  const relativePath = path.relative(operationRoot, absolutePath);
-
-  if (
-    relativePath === ".." ||
-    relativePath.startsWith(`..${path.sep}`) ||
-    path.isAbsolute(relativePath)
-  ) {
+  const absolute = path.resolve(rootDir, ...segments);
+  const relative = path.relative(rootDir, absolute);
+  if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
     throw new Error(`Repository path resolves outside root: ${normalized}`);
   }
-
-  return absolutePath;
+  return absolute;
 }
 
-/**
- * Reads UTF-8 text while removing a possible byte-order mark.
- *
- * @param {typeof fs} fileSystem - File-system implementation.
- * @param {string} filePath - Absolute file path.
- * @returns {string} File text.
- */
+/** @param {typeof fs} fileSystem @param {string} filePath @returns {string} */
 function readText(fileSystem, filePath) {
-  return fileSystem
-    .readFileSync(filePath, "utf8")
-    .replace(/^\uFEFF/u, "");
+  return fileSystem.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "");
 }
 
-/**
- * Escapes a string for use inside a regular expression.
- *
- * @param {string} value - Raw text.
- * @returns {string} Escaped regular expression text.
- */
+/** @param {string} value @returns {string} */
 function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
-/**
- * Formats a string as a safe double-quoted YAML scalar.
- *
- * @param {string} value - Raw scalar text.
- * @returns {string} YAML scalar.
- */
-function yamlString(value) {
-  return JSON.stringify(String(value));
+/** @param {string} value @returns {string} */
+function yamlScalar(value) {
+  const text = String(value);
+  return /^[A-Za-z0-9_./-]+$/u.test(text) ? text : JSON.stringify(text);
 }
 
-/**
- * Finds the next numeric suffix for records matching a deterministic prefix.
- *
- * @param {Array<Record<string, unknown>>} records - Existing Requirement records.
- * @param {string} prefix - ID prefix before the four-digit counter.
- * @returns {string} Next four-digit suffix.
- */
+/** @param {Array<Record<string, unknown>>} records @param {string} prefix */
 function nextFourDigitSuffix(records, prefix) {
-  const expression = new RegExp(
-    `^${escapeRegExp(prefix)}(\\d{4})$`,
-    "u",
-  );
+  const expression = new RegExp(`^${escapeRegExp(prefix)}(\\d{4})$`, "u");
   let maximum = 0;
-
   for (const record of records) {
     const match = String(record.id ?? "").match(expression);
-
-    if (match) {
-      maximum = Math.max(
-        maximum,
-        Number.parseInt(match[1], 10),
-      );
-    }
+    if (match) maximum = Math.max(maximum, Number.parseInt(match[1], 10));
   }
-
   return String(maximum + 1).padStart(4, "0");
 }
 
-/**
- * Builds a repository-relative requirements registry path for the MR.
- *
- * @param {string} mrId - Macro-requirement identifier.
- * @returns {string} Repository-relative registry path.
- */
-function buildRequirementsRegistryPath(mrId) {
-  return requirementsRegistryPattern.replaceAll("{MR}", mrId);
+/** @param {Record<string, unknown>} catalog @param {string} documentType */
+function getDocumentType(catalog, documentType) {
+  const type = requireArray(catalog.document_types, "catalog.document_types")
+    .map((value) => requireObject(value, "catalog document type"))
+    .find((entry) => entry.id === documentType);
+  if (!type) throw new Error(`Unsupported governed document_type: ${documentType}`);
+  return type;
 }
 
-/**
- * Builds a repository-relative Requirement body path.
- *
- * @param {string} mrId - Macro-requirement identifier.
- * @param {string} id - Generated Requirement identifier.
- * @returns {string} Repository-relative body path.
- */
-function buildRequirementBodyPath(mrId, id) {
-  return requirementsBodyPattern
-    .replaceAll("{MR}", mrId)
-    .replaceAll("{ID}", id);
+/** @param {Record<string, unknown>} documentType @param {string} fieldName */
+function getField(documentType, fieldName) {
+  const field = requireArray(documentType.record_fields, `${documentType.id}.record_fields`)
+    .map((value) => requireObject(value, `${documentType.id} field`))
+    .find((entry) => entry.name === fieldName);
+  if (!field) throw new Error(`${documentType.id} has no canonical field ${fieldName}.`);
+  return field;
 }
 
-/**
- * Creates the next functional Requirement ID for an MR/ADR pair.
- *
- * @param {Array<Record<string, unknown>>} records - Existing records.
- * @param {string} mrId - Macro-requirement identifier.
- * @param {string} adrId - Decision identifier.
- * @returns {string} Generated Requirement ID.
- */
-function buildFunctionalRequirementId(records, mrId, adrId) {
-  const prefix = `${mrId}${adrId}REQ-`;
-  return `${prefix}${nextFourDigitSuffix(records, prefix)}`;
+/** @param {Record<string, unknown>} field @param {string} requestedValue */
+function resolveControlledValue(field, requestedValue) {
+  const requiredValue = field.required_value ? String(field.required_value) : null;
+  const candidate = requiredValue ?? requestedValue;
+  const values = requireArray(field.controlled_values, `${field.name}.controlled_values`)
+    .map((value) => requireObject(value, `${field.name} controlled value`));
+  const entry = values.find((value) => value.value === candidate);
+  if (!entry) {
+    throw new Error(`${field.name} must be one of: ${values.map((value) => value.value).join(", ")}.`);
+  }
+  return entry;
 }
 
-/**
- * Creates the next governance Requirement ID for a parent Requirement.
- *
- * @param {Array<Record<string, unknown>>} records - Existing records.
- * @param {string} parentId - Parent Requirement identifier.
- * @returns {string} Generated governance Requirement ID.
- */
-function buildGovernanceRequirementId(records, parentId) {
-  const prefix = `${parentId}GOV-`;
-  return `${prefix}${nextFourDigitSuffix(records, prefix)}`;
+/** @param {Record<string, unknown>} catalog @param {string} macroId */
+function getMacro(catalog, macroId) {
+  const macro = requireArray(catalog.macro_requirements, "catalog.macro_requirements")
+    .map((value) => requireObject(value, "catalog Macro-requirement"))
+    .find((entry) => entry.id === macroId);
+  if (!macro) throw new Error(`Unknown canonical Macro-requirement: ${macroId}`);
+  return macro;
 }
 
-/**
- * Builds a YAML record for a generated functional Requirement.
- *
- * @param {{id: string, title: string, mrId: string, bodyPath: string, status: string, requirementType: string}} input - Record data.
- * @returns {string} YAML block.
- */
-function buildFunctionalRequirementRecord(input) {
-  return [
-    `  - id: ${input.id}`,
-    `    title: ${yamlString(input.title)}`,
-    `    status: ${input.status}`,
-    `    requirement_type: ${input.requirementType}`,
-    `    macro_requirement_id: ${input.mrId}`,
-    `    body_path: ${input.bodyPath}`,
-    "",
-  ].join("\n");
+/** @param {string} value @param {string} label */
+function requireSingleLine(value, label) {
+  const text = requireString(value, label);
+  if (/\r|\n/u.test(text)) throw new Error(`${label} must be a single line.`);
+  return text;
 }
 
-/**
- * Builds a YAML record for a generated governance Requirement.
- *
- * @param {{id: string, title: string, mrId: string, parentId: string, bodyPath: string, status: string, requirementType: string}} input - Record data.
- * @returns {string} YAML block.
- */
-function buildGovernanceRequirementRecord(input) {
-  return [
-    `  - id: ${input.id}`,
-    `    title: ${yamlString(input.title)}`,
-    `    status: ${input.status}`,
-    `    requirement_type: ${input.requirementType}`,
-    `    macro_requirement_id: ${input.mrId}`,
-    `    parent_requirement_id: ${input.parentId}`,
-    `    body_path: ${input.bodyPath}`,
-    "",
-  ].join("\n");
+/** @param {unknown} value @param {string} label */
+function requireStringArray(value, label) {
+  const items = requireArray(value, label).map((item, index) =>
+    requireSingleLine(item, `${label}[${index}]`),
+  );
+  if (items.length === 0) throw new Error(`${label} must contain at least one item.`);
+  return items;
 }
 
-/**
- * Builds the Markdown body template for a generated functional Requirement.
- *
- * @param {{id: string, title: string}} input - Body data.
- * @returns {string} Markdown body text.
- */
-function buildFunctionalRequirementBody(input) {
-  return `# ${input.id} — ${input.title}
-
-## Intento
-
-TODO: descrivere perche questo requisito esiste e quale problema risolve.
-
-## Obbligo funzionale
-
-TODO: descrivere l'obbligo funzionale in modo piccolo, verificabile e non ambiguo.
-
-## Ambito
-
-TODO: indicare cosa e incluso e cosa e escluso.
-
-## Acceptance
-
-TODO: indicare le condizioni minime per considerare soddisfatto il requisito.
-`;
+/** @param {string} value */
+function ensurePeriod(value) {
+  return value.endsWith(".") ? value : `${value}.`;
 }
 
-/**
- * Builds the Markdown body template for a generated governance Requirement.
- *
- * @param {{id: string, title: string, parentId: string}} input - Body data.
- * @returns {string} Markdown body text.
- */
-function buildGovernanceRequirementBody(input) {
-  return `# ${input.id} — ${input.title}
-
-## Intento
-
-TODO: descrivere quale proprieta governata deve essere garantita per ${input.parentId}.
-
-## Obbligo di governance
-
-TODO: descrivere la regola verificabile che specializza il requisito padre.
-
-## Controlli minimi
-
-TODO: indicare i controlli deterministici minimi richiesti.
-
-## Failure mode
-
-TODO: indicare quando il controllo deve fallire e quando puo produrre solo warning.
-`;
+/** @param {string} value @param {string} label */
+function forbidTerminalPunctuation(value, label) {
+  if (/[.!?;:]$/u.test(value)) throw new Error(`${label} must not end with terminal punctuation.`);
+  return value;
 }
 
-/**
- * Appends a generated record to the requirements registry text.
- *
- * @param {string} registryText - Existing registry text.
- * @param {string} recordBlock - YAML record block to append.
- * @returns {string} Updated registry text.
- */
-function appendRequirementRecord(registryText, recordBlock) {
-  const trimmed = registryText.replace(/\s*$/u, "\n");
+/** @param {Record<string, unknown>} section @param {unknown} rawValue */
+function renderSectionContent(section, rawValue, generatedValues) {
+  const kind = requireString(section.content_kind, `${section.id}.content_kind`);
+  if (kind === "controlled_scalar_label") {
+    const status = requireObject(generatedValues.statusEntry, "generated status entry");
+    return requireString(status.label ?? status.value, "controlled status label");
+  }
+  if (kind === "prose" || kind === "decision_prose") {
+    return requireString(rawValue, section.input_name);
+  }
+  if (kind === "normative_list" || kind === "normative_verification_list") {
+    return requireStringArray(rawValue, section.input_name)
+      .map((item) => `- ${ensurePeriod(item)}`)
+      .join("\n");
+  }
+  if (kind === "acceptance_condition_list" || kind === "failure_condition_list") {
+    const prefix = requireString(section.required_item_prefix, `${section.id}.required_item_prefix`);
+    const canonicalPrefix = `${prefix} `;
+    return requireStringArray(rawValue, section.input_name)
+      .map((item) => {
+        const condition = item.startsWith(canonicalPrefix)
+          ? item.slice(canonicalPrefix.length)
+          : item.startsWith(prefix)
+            ? item.slice(prefix.length).trimStart()
+            : item;
+        return `- ${ensurePeriod(`${canonicalPrefix}${condition.replace(/\.$/u, "")}`)}`;
+      })
+      .join("\n");
+  }
+  if (kind === "label_list") {
+    return requireStringArray(rawValue, section.input_name)
+      .map((item, index) => `- ${forbidTerminalPunctuation(item, `${section.input_name}[${index}]`)}`)
+      .join("\n");
+  }
+  if (kind === "classified_label_list" || kind === "classified_sentence_list") {
+    const mapping = requireObject(rawValue, section.input_name);
+    const allowedPrefixes = requireArray(section.allowed_prefixes, `${section.id}.allowed_prefixes`)
+      .map((value) => requireString(value, `${section.id} allowed prefix`));
+    const allowedKeys = new Map(allowedPrefixes.map((prefix) => [
+      prefix.slice(0, -1).toLowerCase().replaceAll(" ", "_"),
+      prefix,
+    ]));
+    const unknown = Object.keys(mapping).filter((key) => !allowedKeys.has(key));
+    if (unknown.length > 0) throw new Error(`${section.input_name} contains unsupported keys: ${unknown.join(", ")}.`);
+    const lines = [];
+    for (const [key, prefix] of allowedKeys) {
+      const values = mapping[key] === undefined ? [] : requireStringArray(mapping[key], `${section.input_name}.${key}`);
+      values.forEach((item, index) => {
+        const content = kind === "classified_sentence_list"
+          ? ensurePeriod(item.replace(/\.$/u, ""))
+          : forbidTerminalPunctuation(item, `${section.input_name}.${key}[${index}]`);
+        lines.push(`- ${prefix} ${content}`);
+      });
+    }
+    if (lines.length === 0) throw new Error(`${section.input_name} must contain at least one classified item.`);
+    return lines.join("\n");
+  }
+  throw new Error(`Unsupported canonical body content_kind: ${kind}`);
+}
 
-  if (!/^requirements:\s*$/mu.test(trimmed)) {
-    throw new Error(
-      "Requirements registry does not contain a requirements: section.",
-    );
+/** @param {Record<string, unknown>} documentType @param {Record<string, unknown>} body @param {Record<string, unknown>} generatedValues */
+function buildBodyText(documentType, body, generatedValues) {
+  const sections = requireArray(documentType.body_sections, `${documentType.id}.body_sections`)
+    .map((value) => requireObject(value, `${documentType.id} section`))
+    .sort((left, right) => Number(left.order) - Number(right.order));
+  const expectedInputNames = new Set(
+    sections.filter((section) => section.content_kind !== "controlled_scalar_label")
+      .map((section) => section.input_name),
+  );
+  for (const key of Object.keys(body)) {
+    if (!expectedInputNames.has(key)) throw new Error(`${documentType.id} body contains unsupported section input ${key}.`);
   }
 
+  const output = [`# ${generatedValues.id} — ${generatedValues.title}`, ""];
+  for (const section of sections) {
+    const generated = section.content_kind === "controlled_scalar_label";
+    const hasValue = generated || Object.prototype.hasOwnProperty.call(body, section.input_name);
+    if (!hasValue) {
+      if (section.required) throw new Error(`${documentType.id} body is missing ${section.input_name}.`);
+      continue;
+    }
+    const rawValue = generated ? null : body[section.input_name];
+    if (!generated && !section.required && Array.isArray(rawValue) && rawValue.length === 0) continue;
+    output.push(`## ${section.heading}`, "", renderSectionContent(section, rawValue, generatedValues), "");
+  }
+  return `${output.join("\n").replace(/\s*$/u, "")}\n`;
+}
+
+/** @param {Array<Record<string, unknown>>} fields @param {Record<string, unknown>} values */
+function buildRecordBlock(fields, values) {
+  const lines = [];
+  for (const field of [...fields].sort((left, right) => Number(left.order) - Number(right.order))) {
+    const name = requireString(field.name, "record field name");
+    if (!Object.prototype.hasOwnProperty.call(values, name)) {
+      throw new Error(`Generated record is missing canonical field ${name}.`);
+    }
+    lines.push(`${lines.length === 0 ? "  -" : "   "} ${name}: ${yamlScalar(values[name])}`);
+  }
+  return `${lines.join("\n")}\n`;
+}
+
+/** @param {string} registryText @param {string} collectionName @param {string} recordBlock */
+function appendRecord(registryText, collectionName, recordBlock) {
+  const trimmed = registryText.replace(/\s*$/u, "\n");
+  const escapedName = escapeRegExp(collectionName);
+  const emptyExpression = new RegExp(`^${escapedName}:\\s*\\[\\]\\s*$`, "mu");
+  if (emptyExpression.test(trimmed)) {
+    return trimmed.replace(emptyExpression, `${collectionName}:\n${recordBlock.trimEnd()}`);
+  }
+  const expression = new RegExp(`^${escapedName}:\\s*$`, "mu");
+  if (!expression.test(trimmed)) throw new Error(`Registry does not contain a ${collectionName}: section.`);
   return `${trimmed}${recordBlock}`;
 }
 
-/**
- * Validates required common authoring arguments.
- *
- * @param {Record<string, string|boolean>} args - Parsed argument map.
- * @returns {{requirementTypeValue: string, mrId: string, title: string, dryRun: boolean}} Common authoring data.
- */
-function readCommonInput(args) {
-  if (args.kind !== undefined) {
-    throw new Error(
-      "--kind is not supported; use --requirement-type with a canonical value.",
-    );
-  }
+/** @param {string} macroId */
+function childDecisionRegistryText(macroId) {
+  return `schema_version: 1\nregistry_id: ${macroId}-decisions-registry\nmacro_requirement_id: ${macroId}\n\ndecisions: []\n`;
+}
 
-  const requirementTypeValue = String(
-    args["requirement-type"] ?? "",
-  ).trim();
-  const mrId = String(args.mr ?? "").trim();
-  const title = String(args.title ?? "").trim();
-  const dryRun = Boolean(args["dry-run"]);
-
-  if (!requirementTypeValue) {
-    throw new Error("--requirement-type is required.");
-  }
-
-  if (!/^MR-\d{4}$/u.test(mrId)) {
-    throw new Error("--mr must look like MR-0001.");
-  }
-
-  if (!title) {
-    throw new Error("--title is required.");
-  }
-
-  if (/\n/u.test(title)) {
-    throw new Error("--title must be a single line.");
-  }
-
-  return {
-    requirementTypeValue,
-    mrId,
-    title,
-    dryRun,
-  };
+/** @param {string} macroId */
+function childRequirementRegistryText(macroId) {
+  return `schema_version: 1\nregistry_id: ${macroId}-requirements-registry\nmacro_requirement_id: ${macroId}\n\nrequirements: []\n`;
 }
 
 /**
  * Creates a deterministic governed document plan without writing.
  *
- * @param {Record<string, string|boolean>} args - Canonical generator arguments.
- * @param {{rootDir?: string}} [options] - Optional repository root override.
- * @returns {{id: string, requirementType: string, dryRun: boolean, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string}} Planned document.
+ * @param {Record<string, unknown>} request - Validated authoring request.
+ * @param {Record<string, unknown>} catalog - Canonical authoring catalog.
+ * @param {{rootDir?: string, today?: string}} [options]
+ * @returns {Record<string, unknown>}
  */
-export function planGeneratedDocument(args, options = {}) {
-  const {
-    requirementTypeValue,
-    mrId,
-    title,
-    dryRun,
-  } = readCommonInput(args);
+export function planGeneratedDocument(request, catalog, options = {}) {
+  const input = requireObject(request, "Governed document authoring request");
+  const canonicalCatalog = requireObject(catalog, "Governed document authoring catalog");
+  if (canonicalCatalog.catalog_id !== "governed-document-authoring-catalog") {
+    throw new Error(`Unsupported authoring catalog: ${canonicalCatalog.catalog_id}`);
+  }
+  const documentTypeId = requireString(input.document_type, "document_type");
+  const documentType = getDocumentType(canonicalCatalog, documentTypeId);
+  const title = requireSingleLine(input.title, "title");
+  const body = requireObject(input.body, "body");
   const operationRoot = resolveRootDir(options);
-  const registryPath = buildRequirementsRegistryPath(mrId);
-  const registryAbsolutePath = resolveProjectPath(
-    registryPath,
-    operationRoot,
-  );
+  const today = options.today ?? new Date().toISOString().slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(today)) throw new Error("today must use YYYY-MM-DD.");
 
-  if (!fs.existsSync(registryAbsolutePath)) {
-    throw new Error(
-      `Requirements registry not found: ${registryPath}`,
-    );
-  }
+  const statusField = getField(documentType, "status");
+  const statusEntry = resolveControlledValue(statusField, "draft");
+  const recordValues = { title, status: statusEntry.value };
+  let id;
+  let registryPath;
+  let collectionName;
+  const extraChanges = [];
 
-  const registry = requireObject(
-    readGovernedYamlFile(registryAbsolutePath),
-    registryPath,
-  );
-  const records = requireArray(
-    registry.requirements,
-    `${registryPath}.requirements`,
-  ).map((record, index) =>
-    requireObject(
-      record,
-      `${registryPath}.requirements[${index}]`,
-    ),
-  );
-  const controlledFieldCatalog =
-    loadDocumentationFieldValueCatalog({
-      rootDir: operationRoot,
-    });
-  const requirementType = requireObject(
-    resolveDocumentationFieldValue(
-      controlledFieldCatalog,
-      {
-        registryPath,
-        recordType: "requirements",
-        fieldName: "requirement_type",
-        value: requirementTypeValue,
-      },
-    ),
-    "Resolved requirement_type",
-  );
-  const lifecycleStatus = requireObject(
-    resolveDocumentationFieldValue(
-      controlledFieldCatalog,
-      {
-        registryPath,
-        recordType: "requirements",
-        fieldName: "status",
-        value: "draft",
-      },
-    ),
-    "Resolved Requirement lifecycle status",
-  );
-  const canonicalRequirementType = requireString(
-    requirementType.value,
-    "Resolved requirement_type value",
-  );
-  const canonicalLifecycleStatus = requireString(
-    lifecycleStatus.value,
-    "Resolved lifecycle status value",
-  );
+  const macroRegistryAbsolute = resolveProjectPath(macroRegistryProjectPath, operationRoot);
+  const macroRegistry = requireObject(readGovernedYamlFile(macroRegistryAbsolute), macroRegistryProjectPath);
+  const macroRecords = requireArray(macroRegistry.macro_requirements, "macro_requirements")
+    .map((value) => requireObject(value, "Macro-requirement record"));
 
-  if (
-    typeof requirementType.requires_parent_requirement !==
-    "boolean"
-  ) {
-    throw new Error(
-      `${canonicalRequirementType}.requires_parent_requirement must be boolean.`,
-    );
-  }
-
-  const allowedParentTypes = requireArray(
-    requirementType.allowed_parent_requirement_types,
-    `${canonicalRequirementType}.allowed_parent_requirement_types`,
-  ).map((value) =>
-    requireString(
-      value,
-      `${canonicalRequirementType}.allowed_parent_requirement_types entry`,
-    ),
-  );
-
-  if (!requirementType.requires_parent_requirement) {
-    if (args.parent !== undefined) {
-      throw new Error(
-        `${canonicalRequirementType} must not declare --parent.`,
-      );
-    }
-
-    const adrId = String(args.adr ?? "").trim();
-
-    if (!/^ADR-\d{4}$/u.test(adrId)) {
-      throw new Error("--adr must look like ADR-0004.");
-    }
-
-    const id = buildFunctionalRequirementId(
-      records,
-      mrId,
-      adrId,
-    );
-    const bodyPath = buildRequirementBodyPath(mrId, id);
-
-    return {
+  if (documentTypeId === "macro-requirement") {
+    const prefix = "MR-";
+    id = `${prefix}${nextFourDigitSuffix(macroRecords, prefix)}`;
+    registryPath = macroRegistryProjectPath;
+    collectionName = "macro_requirements";
+    const typeField = getField(documentType, "macro_requirement_type");
+    const typeEntry = resolveControlledValue(typeField, requireString(input.macro_requirement_type, "macro_requirement_type"));
+    const bodyPath = `docs/reference/project-model/body/macro-requirements/${id}_body.md`;
+    const decisionsPath = `docs/reference/project-model/registers/decisions/${id}.decisions.registry.yml`;
+    const requirementsPath = `docs/reference/project-model/registers/requirements/${id}.requirements.registry.yml`;
+    Object.assign(recordValues, {
       id,
-      requirementType: canonicalRequirementType,
-      dryRun,
-      bodyPath,
-      registryPath,
-      recordBlock: buildFunctionalRequirementRecord({
+      macro_requirement_type: typeEntry.value,
+      body_path: bodyPath,
+      decisions_registry_path: decisionsPath,
+      requirements_registry_path: requirementsPath,
+    });
+    extraChanges.push(
+      { projectPath: decisionsPath, mode: "create", text: childDecisionRegistryText(id) },
+      { projectPath: requirementsPath, mode: "create", text: childRequirementRegistryText(id) },
+    );
+  } else {
+    const macroId = requireString(input.macro_requirement_id, "macro_requirement_id");
+    const macro = getMacro(canonicalCatalog, macroId);
+    recordValues.macro_requirement_id = macroId;
+    if (documentTypeId === "decision") {
+      const decisions = requireArray(macro.decisions, `${macroId}.decisions`)
+        .map((value) => requireObject(value, `${macroId} Decision`));
+      const prefix = "ADR-";
+      id = `${prefix}${nextFourDigitSuffix(decisions, prefix)}`;
+      registryPath = requireString(macro.decisions_registry_path, `${macroId}.decisions_registry_path`);
+      collectionName = "decisions";
+      const decisionTypeField = getField(documentType, "decision_type");
+      const decisionTypeEntry = resolveControlledValue(
+        decisionTypeField,
+        requireString(input.decision_type, "decision_type"),
+      );
+      Object.assign(recordValues, {
         id,
-        title,
-        mrId,
-        bodyPath,
-        status: canonicalLifecycleStatus,
-        requirementType: canonicalRequirementType,
-      }),
-      bodyText: buildFunctionalRequirementBody({
-        id,
-        title,
-      }),
-    };
+        decision_type: decisionTypeEntry.value,
+        author: requireSingleLine(input.author, "author"),
+        date: today,
+        body_path: `docs/reference/project-model/body/decisions/${macroId}/${id}_body.md`,
+      });
+    } else {
+      const decisionId = requireString(input.decision_id, "decision_id");
+      const decision = requireArray(macro.decisions, `${macroId}.decisions`)
+        .map((value) => requireObject(value, `${macroId} Decision`))
+        .find((entry) => entry.id === decisionId);
+      if (!decision) throw new Error(`Decision ${decisionId} does not belong to ${macroId}.`);
+      registryPath = requireString(macro.requirements_registry_path, `${macroId}.requirements_registry_path`);
+      collectionName = "requirements";
+      const allRequirements = requireArray(macro.requirements, `${macroId}.requirements`)
+        .map((value) => requireObject(value, `${macroId} Requirement`));
+      recordValues.decision_id = decisionId;
+      if (documentTypeId === "functional-requirement") {
+        const prefix = `${macroId}${decisionId}REQ-`;
+        id = `${prefix}${nextFourDigitSuffix(allRequirements, prefix)}`;
+        recordValues.requirement_type = resolveControlledValue(getField(documentType, "requirement_type"), "functional").value;
+      } else if (documentTypeId === "governance-requirement") {
+        const parentId = requireString(input.parent_requirement_id, "parent_requirement_id");
+        const parent = allRequirements.find((entry) => entry.id === parentId);
+        if (!parent || parent.requirement_type !== "functional") {
+          throw new Error(`Parent Functional Requirement not found in ${macroId}: ${parentId}`);
+        }
+        if (!parentId.startsWith(`${macroId}${decisionId}REQ-`)) {
+          throw new Error(`${parentId} does not belong to ${macroId}/${decisionId}.`);
+        }
+        const prefix = `${parentId}GOV-`;
+        id = `${prefix}${nextFourDigitSuffix(allRequirements, prefix)}`;
+        recordValues.requirement_type = resolveControlledValue(getField(documentType, "requirement_type"), "governance").value;
+        recordValues.parent_requirement_id = parentId;
+      } else {
+        throw new Error(`Unsupported Requirement document type: ${documentTypeId}`);
+      }
+      recordValues.body_path = `docs/reference/project-model/body/requirements/${macroId}/${id}_body.md`;
+    }
   }
 
-  if (args.adr !== undefined) {
-    throw new Error(
-      `${canonicalRequirementType} must not declare --adr.`,
-    );
+  recordValues.id = id;
+  const recordFields = requireArray(documentType.record_fields, `${documentTypeId}.record_fields`)
+    .map((value) => requireObject(value, `${documentTypeId} record field`));
+  const bodyPath = requireString(recordValues.body_path, "generated body_path");
+  const bodyText = buildBodyText(documentType, body, { id, title, statusEntry });
+  const recordBlock = buildRecordBlock(recordFields, recordValues);
+  const registryAbsolute = resolveProjectPath(registryPath, operationRoot);
+  if (!fs.existsSync(registryAbsolute)) throw new Error(`Registry not found: ${registryPath}`);
+  const registryText = readText(fs, registryAbsolute);
+  if (new RegExp(`^\\s*-?\\s*id:\\s*${escapeRegExp(id)}\\s*$`, "mu").test(registryText)) {
+    throw new Error(`Generated id already exists in registry: ${id}`);
   }
-
-  const parentId = String(args.parent ?? "").trim();
-
-  if (!parentId) {
-    throw new Error(
-      `--parent is required for ${canonicalRequirementType} requirements.`,
-    );
-  }
-
-  const parent = records.find(
-    (record) => record.id === parentId,
-  );
-
-  if (!parent) {
-    throw new Error(
-      `Parent requirement not found in ${registryPath}: ${parentId}`,
-    );
-  }
-
-  const parentRequirementType = requireObject(
-    resolveDocumentationFieldValue(
-      controlledFieldCatalog,
-      {
-        registryPath,
-        recordType: "requirements",
-        fieldName: "requirement_type",
-        value: requireString(
-          parent.requirement_type,
-          `${parentId}.requirement_type`,
-        ),
-      },
-    ),
-    `${parentId} resolved requirement_type`,
-  );
-  const canonicalParentType = requireString(
-    parentRequirementType.value,
-    `${parentId} resolved requirement_type value`,
-  );
-
-  if (!allowedParentTypes.includes(canonicalParentType)) {
-    throw new Error(
-      `${canonicalRequirementType} cannot use parent type ${canonicalParentType}; allowed: ${allowedParentTypes.join(", ")}`,
-    );
-  }
-
-  const id = buildGovernanceRequirementId(
-    records,
-    parentId,
-  );
-  const bodyPath = buildRequirementBodyPath(mrId, id);
 
   return {
+    documentType: documentTypeId,
     id,
-    requirementType: canonicalRequirementType,
-    dryRun,
-    bodyPath,
     registryPath,
-    recordBlock: buildGovernanceRequirementRecord({
-      id,
-      title,
-      mrId,
-      parentId,
-      bodyPath,
-      status: canonicalLifecycleStatus,
-      requirementType: canonicalRequirementType,
-    }),
-    bodyText: buildGovernanceRequirementBody({
-      id,
-      title,
-      parentId,
-    }),
+    bodyPath,
+    recordBlock,
+    bodyText,
+    changes: [
+      {
+        projectPath: registryPath,
+        mode: "replace",
+        text: appendRecord(registryText, collectionName, recordBlock),
+      },
+      { projectPath: bodyPath, mode: "create", text: bodyText },
+      ...extraChanges,
+    ],
   };
 }
 
-/**
- * Replaces several text files as one rollback-capable transaction.
- *
- * @param {Array<{projectPath: string, targetPath: string, text: string}>} changes - Prepared file replacements.
- * @param {typeof fs} fileSystem - File-system implementation.
- * @param {(() => void)|undefined} afterInstall - Verification executed after installation and before commit.
- * @returns {void}
- */
+/** @param {Array<Record<string, unknown>>} changes @param {typeof fs} fileSystem @param {(() => void)|undefined} afterInstall */
 function writeTextTransaction(changes, fileSystem, afterInstall) {
-  const nonce = `${process.pid}.${Date.now()}.${Math.random()
-    .toString(16)
-    .slice(2)}`;
+  const nonce = `${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2)}`;
   const prepared = [];
-
   try {
-    for (
-      let index = 0;
-      index < changes.length;
-      index += 1
-    ) {
-      const change = changes[index];
-      const directory = path.dirname(change.targetPath);
-      fileSystem.mkdirSync(directory, {
-        recursive: true,
-      });
-
-      const temporaryPath = path.join(
-        directory,
-        `.${path.basename(change.targetPath)}.${nonce}.${index}.tmp`,
-      );
-      const backupPath = path.join(
-        directory,
-        `.${path.basename(change.targetPath)}.${nonce}.${index}.bak`,
-      );
-
-      fileSystem.writeFileSync(
-        temporaryPath,
-        change.text,
-        {
-          encoding: "utf8",
-          flag: "wx",
-        },
-      );
-
-      prepared.push({
-        ...change,
-        temporaryPath,
-        backupPath,
-        hadOriginal: fileSystem.existsSync(
-          change.targetPath,
-        ),
-        backedUp: false,
-        installed: false,
-      });
+    for (let index = 0; index < changes.length; index += 1) {
+      const change = requireObject(changes[index], `change[${index}]`);
+      const targetPath = requireString(change.targetPath, `change[${index}].targetPath`);
+      const mode = requireString(change.mode, `change[${index}].mode`);
+      const text = String(change.text ?? "");
+      const exists = fileSystem.existsSync(targetPath);
+      if (mode === "create" && exists) throw new Error(`Create-only target already exists: ${change.projectPath}`);
+      if (mode === "replace" && !exists) throw new Error(`Replace target does not exist: ${change.projectPath}`);
+      const directory = path.dirname(targetPath);
+      fileSystem.mkdirSync(directory, { recursive: true });
+      const temporaryPath = path.join(directory, `.${path.basename(targetPath)}.${nonce}.${index}.tmp`);
+      const backupPath = path.join(directory, `.${path.basename(targetPath)}.${nonce}.${index}.bak`);
+      fileSystem.writeFileSync(temporaryPath, text, { encoding: "utf8", flag: "wx" });
+      prepared.push({ ...change, targetPath, temporaryPath, backupPath, hadOriginal: exists, backedUp: false, installed: false });
     }
-
     for (const entry of prepared) {
-      if (!entry.hadOriginal) {
-        continue;
+      if (entry.hadOriginal) {
+        fileSystem.renameSync(entry.targetPath, entry.backupPath);
+        entry.backedUp = true;
       }
-
-      fileSystem.renameSync(
-        entry.targetPath,
-        entry.backupPath,
-      );
-      entry.backedUp = true;
     }
-
     for (const entry of prepared) {
-      fileSystem.renameSync(
-        entry.temporaryPath,
-        entry.targetPath,
-      );
+      fileSystem.renameSync(entry.temporaryPath, entry.targetPath);
       entry.installed = true;
     }
-
     if (afterInstall !== undefined) {
-      if (typeof afterInstall !== "function") {
-        throw new Error("afterInstall must be a function when provided.");
-      }
+      if (typeof afterInstall !== "function") throw new Error("afterInstall must be a function.");
       afterInstall();
     }
-
     for (const entry of prepared) {
-      if (
-        entry.backedUp &&
-        fileSystem.existsSync(entry.backupPath)
-      ) {
-        fileSystem.rmSync(entry.backupPath, {
-          force: true,
-        });
-      }
+      if (entry.backedUp && fileSystem.existsSync(entry.backupPath)) fileSystem.rmSync(entry.backupPath, { force: true });
     }
   } catch (error) {
     for (const entry of [...prepared].reverse()) {
       try {
-        if (
-          entry.installed &&
-          fileSystem.existsSync(entry.targetPath)
-        ) {
-          fileSystem.rmSync(entry.targetPath, {
-            force: true,
-          });
-        }
-
-        if (
-          entry.backedUp &&
-          fileSystem.existsSync(entry.backupPath)
-        ) {
-          fileSystem.renameSync(
-            entry.backupPath,
-            entry.targetPath,
-          );
-        }
-
-        if (fileSystem.existsSync(entry.temporaryPath)) {
-          fileSystem.rmSync(entry.temporaryPath, {
-            force: true,
-          });
-        }
+        if (entry.installed && fileSystem.existsSync(entry.targetPath)) fileSystem.rmSync(entry.targetPath, { force: true });
+        if (entry.backedUp && fileSystem.existsSync(entry.backupPath)) fileSystem.renameSync(entry.backupPath, entry.targetPath);
+        if (fileSystem.existsSync(entry.temporaryPath)) fileSystem.rmSync(entry.temporaryPath, { force: true });
       } catch {
-        // Preserve the original transactional failure.
+        // Preserve the original transaction error.
       }
     }
-
-    throw new Error(
-      `Cannot apply governed document transaction: ${error.message}`,
-    );
+    throw new Error(`Cannot apply governed document transaction: ${error.message}`);
   }
 }
 
 /**
- * Atomically writes a generated governed document and its registry record.
+ * Atomically applies one generated governed-document plan.
  *
- * @param {{id: string, bodyPath: string, registryPath: string, recordBlock: string, bodyText: string}} plan - Planned document.
- * @param {{rootDir?: string, fileSystem?: typeof fs, afterInstall?: () => void}} [options] - Optional root, injectable file system and post-install verification.
- * @returns {{id: string, registryPath: string, bodyPath: string}} Applied document.
+ * @param {Record<string, unknown>} plan
+ * @param {{rootDir?: string, fileSystem?: typeof fs, afterInstall?: () => void}} [options]
  */
 export function applyGeneratedDocument(plan, options = {}) {
-  const validatedPlan = requireObject(
-    plan,
-    "Governed document plan",
-  );
-  const id = requireString(
-    validatedPlan.id,
-    "Governed document plan id",
-  );
-  const registryPath = requireString(
-    validatedPlan.registryPath,
-    "Governed document plan registryPath",
-  );
-  const bodyPath = requireString(
-    validatedPlan.bodyPath,
-    "Governed document plan bodyPath",
-  );
-  const recordBlock = requireText(
-    validatedPlan.recordBlock,
-    "Governed document plan recordBlock",
-  );
-  const bodyText = requireText(
-    validatedPlan.bodyText,
-    "Governed document plan bodyText",
-  );
+  const validatedPlan = requireObject(plan, "Governed document plan");
   const operationRoot = resolveRootDir(options);
   const fileSystem = options.fileSystem ?? fs;
-  const registryAbsolutePath = resolveProjectPath(
-    registryPath,
-    operationRoot,
-  );
-  const bodyAbsolutePath = resolveProjectPath(
-    bodyPath,
-    operationRoot,
-  );
-
-  if (!fileSystem.existsSync(registryAbsolutePath)) {
-    throw new Error(
-      `Requirements registry not found: ${registryPath}`,
-    );
-  }
-
-  if (fileSystem.existsSync(bodyAbsolutePath)) {
-    throw new Error(
-      `Body already exists and will not be overwritten: ${bodyPath}`,
-    );
-  }
-
-  const registryText = readText(
-    fileSystem,
-    registryAbsolutePath,
-  );
-
-  if (registryText.includes(`id: ${id}`)) {
-    throw new Error(
-      `Generated id already exists in registry: ${id}`,
-    );
-  }
-
-  const updatedRegistryText = appendRequirementRecord(
-    registryText,
-    recordBlock,
-  );
-
-  writeTextTransaction(
-    [
-      {
-        projectPath: registryPath,
-        targetPath: registryAbsolutePath,
-        text: updatedRegistryText,
-      },
-      {
-        projectPath: bodyPath,
-        targetPath: bodyAbsolutePath,
-        text: bodyText,
-      },
-    ],
-    fileSystem,
-    options.afterInstall,
-  );
-
+  const changes = requireArray(validatedPlan.changes, "Governed document plan changes")
+    .map((value, index) => {
+      const change = requireObject(value, `Governed document plan changes[${index}]`);
+      const projectPath = requireString(change.projectPath, `changes[${index}].projectPath`);
+      return {
+        projectPath,
+        targetPath: resolveProjectPath(projectPath, operationRoot),
+        mode: requireString(change.mode, `changes[${index}].mode`),
+        text: String(change.text ?? ""),
+      };
+    });
+  writeTextTransaction(changes, fileSystem, options.afterInstall);
   return {
-    id,
-    registryPath,
-    bodyPath,
+    documentType: requireString(validatedPlan.documentType, "plan.documentType"),
+    id: requireString(validatedPlan.id, "plan.id"),
+    registryPath: requireString(validatedPlan.registryPath, "plan.registryPath"),
+    bodyPath: requireString(validatedPlan.bodyPath, "plan.bodyPath"),
+    producedArtifacts: changes.map((change) => change.projectPath),
   };
 }
 
-/**
- * Runs the authoring generator command.
- *
- * @returns {number} Process exit code.
- */
-function main() {
-  try {
-    const args = parseArgs(process.argv.slice(2));
-
-    if (args.help) {
-      console.log(helpText());
-      return 0;
-    }
-
-    const plan = planGeneratedDocument(args);
-
-    console.log("Governed document generation planned.");
-    console.log(
-      `Requirement type: ${plan.requirementType}`,
-    );
-    console.log(`ID: ${plan.id}`);
-    console.log(`Registry: ${plan.registryPath}`);
-    console.log(`Body: ${plan.bodyPath}`);
-
-    if (plan.dryRun) {
-      console.log("Mode: dry-run");
-      console.log("\nRegistry record:\n");
-      console.log(plan.recordBlock.trimEnd());
-      console.log("\nBody preview:\n");
-      console.log(plan.bodyText.trimEnd());
-      return 0;
-    }
-
-    applyGeneratedDocument(plan);
-    console.log("Mode: write");
-    console.log("Governed document generated.");
-    return 0;
-  } catch (error) {
-    console.error(
-      error instanceof Error
-        ? error.message
-        : String(error),
-    );
-    console.error("\n" + helpText());
-    return 1;
-  }
+function helpText() {
+  return `This module is the importable governed-document authoring transaction core.\n\nUse:\n  node tools/MR-0002/run-governed-document-authoring.mjs --preview --request path/to/file.governed-document-authoring.yml\n  node tools/MR-0002/run-governed-document-authoring.mjs --create --request path/to/file.governed-document-authoring.yml`;
 }
 
 const directExecutionUrl = process.argv[1]
   ? pathToFileURL(path.resolve(process.argv[1])).href
   : "";
-
 if (import.meta.url === directExecutionUrl) {
-  process.exitCode = main();
+  console.log(helpText());
 }

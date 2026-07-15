@@ -1,0 +1,1348 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:threatforge:schema:governed-document-authoring-request:1",
+  "title": "ThreatForge governed document authoring request",
+  "description": "IDE-independent request for previewing and creating one Macro-requirement, Decision, Functional Requirement or Governance Requirement. Generated identifiers, lifecycle status, dates, paths and derived relations are omitted from the request.",
+  "oneOf": [
+    {
+      "title": "Macro-requirement",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_type"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "macro-requirement",
+          "description": "Governed project-level intent represented by one registry record, one Markdown body and two child registries."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1."
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "intent",
+            "context",
+            "macro_obligation",
+            "scope"
+          ],
+          "properties": {
+            "intent": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Intent uses canonical content kind prose."
+            },
+            "context": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Context uses canonical content kind prose."
+            },
+            "macro_obligation": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Macro obligation uses canonical content kind normative_list."
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "includes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Includes:"
+                },
+                "excludes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Excludes:"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "includes"
+                  ]
+                },
+                {
+                  "required": [
+                    "excludes"
+                  ]
+                }
+              ],
+              "description": "Scope uses canonical content kind classified_label_list."
+            },
+            "non_goals": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Non-goals uses canonical content kind label_list."
+            }
+          },
+          "description": "Canonical Markdown body inputs for Macro-requirement."
+        },
+        "macro_requirement_type": {
+          "type": "string",
+          "enum": [
+            "functional"
+          ],
+          "markdownEnumDescriptions": [
+            "Macro-requirement that defines a project-level functional intent and owns Decisions and Requirements."
+          ],
+          "x-threatforge-enum-metadata": [
+            {
+              "value": "functional",
+              "description": "Macro-requirement that defines a project-level functional intent and owns Decisions and Requirements."
+            }
+          ],
+          "description": "Concrete Macro-requirement types that can be stored in the governed Macro-requirement registry."
+        }
+      }
+    },
+    {
+      "title": "Decision",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_type",
+        "author"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "decision",
+          "description": "Governed architectural or operational choice represented by one Decision registry record and one ADR Markdown body."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1."
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "decision",
+            "consequences"
+          ],
+          "properties": {
+            "context": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Context uses canonical content kind prose."
+            },
+            "decision": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Decision uses canonical content kind decision_prose."
+            },
+            "consequences": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "benefit": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Benefit:"
+                },
+                "cost": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Cost:"
+                },
+                "risk": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Risk:"
+                },
+                "constraint": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Constraint:"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "benefit"
+                  ]
+                },
+                {
+                  "required": [
+                    "cost"
+                  ]
+                },
+                {
+                  "required": [
+                    "risk"
+                  ]
+                },
+                {
+                  "required": [
+                    "constraint"
+                  ]
+                }
+              ],
+              "description": "Consequences uses canonical content kind classified_sentence_list."
+            },
+            "non_goals": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Non-goals uses canonical content kind label_list."
+            }
+          },
+          "description": "Canonical Markdown body inputs for Decision."
+        },
+        "macro_requirement_id": {
+          "type": "string",
+          "enum": [
+            "MR-0001",
+            "MR-0002"
+          ],
+          "markdownEnumDescriptions": [
+            "Gestione documentale governata — status: draft",
+            "Authoring e implementazione governata — status: draft"
+          ],
+          "x-threatforge-enum-metadata": [
+            {
+              "value": "MR-0001",
+              "description": "Gestione documentale governata — status: draft"
+            },
+            {
+              "value": "MR-0002",
+              "description": "Authoring e implementazione governata — status: draft"
+            }
+          ],
+          "description": "Existing canonical Macro-requirement that owns the new document."
+        },
+        "decision_type": {
+          "type": "string",
+          "enum": [
+            "behavioral",
+            "governance",
+            "operational",
+            "structural"
+          ],
+          "markdownEnumDescriptions": [
+            "Decision that establishes observable runtime or authoring behavior.",
+            "Decision that establishes deterministic governance, validation or compliance behavior.",
+            "Decision that establishes execution, lifecycle or repository operation behavior.",
+            "Decision that establishes organization, boundaries, ownership or composition."
+          ],
+          "x-threatforge-enum-metadata": [
+            {
+              "value": "behavioral",
+              "description": "Decision that establishes observable runtime or authoring behavior."
+            },
+            {
+              "value": "governance",
+              "description": "Decision that establishes deterministic governance, validation or compliance behavior."
+            },
+            {
+              "value": "operational",
+              "description": "Decision that establishes execution, lifecycle or repository operation behavior."
+            },
+            {
+              "value": "structural",
+              "description": "Decision that establishes organization, boundaries, ownership or composition."
+            }
+          ],
+          "description": "Concrete classifications for the primary concern governed by a Decision."
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "author is a single_line_text field whose canonical source kind is authored_or_configured."
+        }
+      }
+    },
+    {
+      "title": "Functional Requirement",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_id"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "functional-requirement",
+          "description": "Independently testable governed obligation represented by one functional Requirement registry record and one Markdown body."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1."
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "intent",
+            "functional_obligation",
+            "scope",
+            "acceptance"
+          ],
+          "properties": {
+            "intent": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Intent uses canonical content kind prose."
+            },
+            "functional_obligation": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Functional obligation uses canonical content kind normative_list."
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "includes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Includes:"
+                },
+                "excludes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Excludes:"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "includes"
+                  ]
+                },
+                {
+                  "required": [
+                    "excludes"
+                  ]
+                }
+              ],
+              "description": "Scope uses canonical content kind classified_label_list."
+            },
+            "acceptance": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Acceptance uses canonical content kind acceptance_condition_list. The core adds the canonical prefix \"The requirement is accepted when \"."
+            }
+          },
+          "description": "Canonical Markdown body inputs for Functional Requirement."
+        },
+        "macro_requirement_id": {
+          "type": "string",
+          "enum": [
+            "MR-0001",
+            "MR-0002"
+          ],
+          "markdownEnumDescriptions": [
+            "Gestione documentale governata — status: draft",
+            "Authoring e implementazione governata — status: draft"
+          ],
+          "x-threatforge-enum-metadata": [
+            {
+              "value": "MR-0001",
+              "description": "Gestione documentale governata — status: draft"
+            },
+            {
+              "value": "MR-0002",
+              "description": "Authoring e implementazione governata — status: draft"
+            }
+          ],
+          "description": "Existing canonical Macro-requirement that owns the new document."
+        },
+        "decision_id": {
+          "type": "string",
+          "pattern": "^ADR-\\d{4}$",
+          "description": "Existing Decision belonging to macro_requirement_id."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002",
+                  "ADR-0003",
+                  "ADR-0004",
+                  "ADR-0006",
+                  "ADR-0007"
+                ],
+                "markdownEnumDescriptions": [
+                  "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
+                  "Vocabolario controllato della documentazione governata — MR-0001/ADR-0002 — status: draft",
+                  "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft",
+                  "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
+                  "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
+                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Vocabolario controllato della documentazione governata — MR-0001/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0006",
+                    "description": "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0007",
+                    "description": "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002",
+                  "ADR-0003",
+                  "ADR-0004",
+                  "ADR-0005",
+                  "ADR-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft",
+                  "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft",
+                  "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft",
+                  "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft",
+                  "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft",
+                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0005",
+                    "description": "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0006",
+                    "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Governance Requirement",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_id",
+        "parent_requirement_id"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "governance-requirement",
+          "description": "Deterministic governance obligation attached to one Functional Requirement and represented by one Requirement registry record and one Markdown body."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1."
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "intent",
+            "governance_obligation",
+            "verification_obligations",
+            "failure_conditions"
+          ],
+          "properties": {
+            "intent": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Intent uses canonical content kind prose."
+            },
+            "governance_obligation": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Governance obligation uses canonical content kind normative_list."
+            },
+            "verification_obligations": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Verification obligations uses canonical content kind normative_verification_list."
+            },
+            "failure_conditions": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Failure conditions uses canonical content kind failure_condition_list. The core adds the canonical prefix \"The verification must fail when \"."
+            }
+          },
+          "description": "Canonical Markdown body inputs for Governance Requirement."
+        },
+        "macro_requirement_id": {
+          "type": "string",
+          "enum": [
+            "MR-0001",
+            "MR-0002"
+          ],
+          "markdownEnumDescriptions": [
+            "Gestione documentale governata — status: draft",
+            "Authoring e implementazione governata — status: draft"
+          ],
+          "x-threatforge-enum-metadata": [
+            {
+              "value": "MR-0001",
+              "description": "Gestione documentale governata — status: draft"
+            },
+            {
+              "value": "MR-0002",
+              "description": "Authoring e implementazione governata — status: draft"
+            }
+          ],
+          "description": "Existing canonical Macro-requirement that owns the new document."
+        },
+        "decision_id": {
+          "type": "string",
+          "pattern": "^ADR-\\d{4}$",
+          "description": "Existing Decision belonging to macro_requirement_id."
+        },
+        "parent_requirement_id": {
+          "type": "string",
+          "pattern": "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
+          "description": "Existing Functional Requirement under the selected Macro-requirement and Decision."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002",
+                  "ADR-0003",
+                  "ADR-0004",
+                  "ADR-0006",
+                  "ADR-0007"
+                ],
+                "markdownEnumDescriptions": [
+                  "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
+                  "Vocabolario controllato della documentazione governata — MR-0001/ADR-0002 — status: draft",
+                  "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft",
+                  "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
+                  "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
+                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Vocabolario controllato della documentazione governata — MR-0001/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0006",
+                    "description": "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0007",
+                    "description": "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002",
+                  "ADR-0003",
+                  "ADR-0004",
+                  "ADR-0005",
+                  "ADR-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft",
+                  "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft",
+                  "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft",
+                  "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft",
+                  "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft",
+                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0005",
+                    "description": "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0006",
+                    "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0003REQ-0001",
+                  "MR-0001ADR-0003REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Registro di tracciabilita implementativa — status: draft",
+                  "Copertura implementativa dei requisiti governati — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0003REQ-0001",
+                    "description": "Registro di tracciabilita implementativa — status: draft"
+                  },
+                  {
+                    "value": "MR-0001ADR-0003REQ-0002",
+                    "description": "Copertura implementativa dei requisiti governati — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0004REQ-0001",
+                  "MR-0001ADR-0004REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Registro dei valori controllati dei campi documentali — status: draft",
+                  "Catalogo canonico dei campi controllati e dei metadati di presentazione — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0004REQ-0001",
+                    "description": "Registro dei valori controllati dei campi documentali — status: draft"
+                  },
+                  {
+                    "value": "MR-0001ADR-0004REQ-0002",
+                    "description": "Catalogo canonico dei campi controllati e dei metadati di presentazione — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0006REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore locale di handoff archive — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0006REQ-0001",
+                    "description": "Generatore locale di handoff archive — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0007"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0007REQ-0001",
+                  "MR-0001ADR-0007REQ-0002",
+                  "MR-0001ADR-0007REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical profiles for governed document models — status: draft",
+                  "Model-oriented validation of governed documents — status: draft",
+                  "Governed migration of the active document corpus — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0007REQ-0001",
+                    "description": "Canonical profiles for governed document models — status: draft"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0002",
+                    "description": "Model-oriented validation of governed documents — status: draft"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0003",
+                    "description": "Governed migration of the active document corpus — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0001REQ-0001",
+                  "MR-0002ADR-0001REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Pianificazione guidata di un artefatto implementativo da requisito governato — status: draft",
+                  "Presentazione web dei campi documentali controllati — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0001REQ-0001",
+                    "description": "Pianificazione guidata di un artefatto implementativo da requisito governato — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0001REQ-0002",
+                    "description": "Presentazione web dei campi documentali controllati — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0002REQ-0001",
+                  "MR-0002ADR-0002REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Commit e push governati dalla root canonica — status: draft",
+                  "Deterministic materialization before governed repository gates — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0002REQ-0001",
+                    "description": "Commit e push governati dalla root canonica — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0002REQ-0002",
+                    "description": "Deterministic materialization before governed repository gates — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0003REQ-0001",
+                  "MR-0002ADR-0003REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione guidata di uno scaffold implementativo governato — status: draft",
+                  "Promozione governata di uno scaffold implementativo — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0003REQ-0001",
+                    "description": "Creazione guidata di uno scaffold implementativo governato — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0002",
+                    "description": "Promozione governata di uno scaffold implementativo — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0004REQ-0001",
+                  "MR-0002ADR-0004REQ-0002",
+                  "MR-0002ADR-0004REQ-0003",
+                  "MR-0002ADR-0004REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore deterministico di documenti governati — status: draft",
+                  "Controllo degli header dei body governati — status: draft",
+                  "Contratto di authoring guidato dei requisiti governati — status: draft",
+                  "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0004REQ-0001",
+                    "description": "Generatore deterministico di documenti governati — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0002",
+                    "description": "Controllo degli header dei body governati — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0003",
+                    "description": "Contratto di authoring guidato dei requisiti governati — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0004",
+                    "description": "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0005"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0005REQ-0001",
+                  "MR-0002ADR-0005REQ-0002",
+                  "MR-0002ADR-0005REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Catalogo locale di task VS Code ThreatForge — status: draft",
+                  "Authoring guidato dei requisiti tramite VS Code — status: draft",
+                  "Editor VS Code guidato per MR, ADR e REQ — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0005REQ-0001",
+                    "description": "Catalogo locale di task VS Code ThreatForge — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0002",
+                    "description": "Authoring guidato dei requisiti tramite VS Code — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0003",
+                    "description": "Editor VS Code guidato per MR, ADR e REQ — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0006REQ-0001",
+                  "MR-0002ADR-0006REQ-0002",
+                  "MR-0002ADR-0006REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Contextual analysis of governed Markdown bodies — status: draft",
+                  "Live VS Code assistance for governed Markdown bodies — status: draft",
+                  "Web editor reuse of governed Markdown assistance — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0006REQ-0001",
+                    "description": "Contextual analysis of governed Markdown bodies — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0002",
+                    "description": "Live VS Code assistance for governed Markdown bodies — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0003",
+                    "description": "Web editor reuse of governed Markdown assistance — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "x-threatforge": {
+    "schema_id": "governed-document-authoring-request-schema",
+    "schema_version": 1,
+    "catalog_id": "governed-document-authoring-catalog",
+    "catalog_schema_version": 2,
+    "sources": [
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0001-decisions-registry"
+      },
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0002.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0002-decisions-registry"
+      },
+      {
+        "kind": "document_model_index",
+        "path": "docs/reference/project-model/registers/document-models/document-models.registry.yml",
+        "schema_version": 1,
+        "registry_id": "governed-document-models-registry"
+      },
+      {
+        "kind": "macro_requirements",
+        "path": "docs/reference/project-model/registers/macro-requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "governed-documentation-macro-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0001-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0002.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0002-requirements-registry"
+      },
+      {
+        "kind": "documentation_field_values",
+        "path": "docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml",
+        "schema_version": 2,
+        "registry_id": "documentation-field-values-taxonomy"
+      }
+    ],
+    "request_suffix": ".governed-document-authoring.yml",
+    "generated_fields": [
+      "id",
+      "status",
+      "date",
+      "body_path",
+      "decisions_registry_path",
+      "requirements_registry_path",
+      "requirement_type"
+    ],
+    "supported_document_types": [
+      "macro-requirement",
+      "decision",
+      "functional-requirement",
+      "governance-requirement"
+    ]
+  }
+}

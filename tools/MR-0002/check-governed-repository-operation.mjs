@@ -64,9 +64,9 @@ const requiredTraceabilityMarkers = [
   "@implementationStatus implemented",
 ];
 const forbiddenProjectionSpecificFragments = [
-  "materialize-requirement-authoring-schema.mjs",
-  "materialize-vscode-requirement-authoring-adapter.mjs",
-  ".vscode/schemas/requirement-authoring.schema.json",
+  "materialize-governed-document-authoring-schema.mjs",
+  "materialize-vscode-governed-document-authoring-adapter.mjs",
+  ".vscode/schemas/governed-document-authoring.schema.json",
 ];
 
 /** @param {string} filePath @returns {string} */

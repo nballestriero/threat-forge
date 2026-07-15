@@ -1,7 +1,7 @@
 {
   "yaml.schemas": {
-    "./.vscode/schemas/requirement-authoring.schema.json": [
-      "**/*.requirement-authoring.yml"
+    "./.vscode/schemas/governed-document-authoring.schema.json": [
+      "**/*.governed-document-authoring.yml"
     ]
   }
 }

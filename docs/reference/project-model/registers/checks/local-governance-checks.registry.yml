@@ -154,22 +154,26 @@ checks:
     description: Validate verified atomic promotion from scaffolded to implemented, VS Code mapping and negative regression fixtures.
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002CHECK-0001
-    title: Requirement authoring contract consistency
+    title: Governed document authoring contract consistency
     status: active
     command: node
     args:
-      - tools/MR-0002/check-requirement-authoring-contract.mjs
+      - tools/MR-0002/check-governed-document-authoring-contract.mjs
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003GOV-0002
-    description: Validate deterministic catalog and JSON Schema coherence, scoped choices, parent rules and negative fixtures.
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    description: Validate deterministic MR, Decision, Functional Requirement and Governance Requirement catalog, schema, relation, transaction, runner and negative-fixture coherence.
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001CHECK-0001
-    title: VS Code Requirement authoring adapter consistency
+    title: VS Code governed document authoring adapter consistency
     status: active
     command: node
     args:
-      - tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
+      - tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs
       - --check
     linked_requirement_ids:
-      - MR-0002ADR-0005REQ-0002GOV-0001
-    description: Verify the current generated schema, governed authoring-request association and YAML extension recommendation without modifying the workspace.
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    description: Verify the current generated governed-document schema, active-file preview/create tasks, YAML association and absence of editor-owned canonical rules without modifying the workspace.

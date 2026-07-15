@@ -2,380 +2,269 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import test from "node:test";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
+
+import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-document-authoring-catalog.mjs";
+import {
+  applyGeneratedDocument,
+  planGeneratedDocument,
+} from "../create-governed-document.mjs";
 
 /**
- * @file Verifica del core importabile e della scrittura atomica del generatore documentale.
+ * @file Verification of the importable governed-document transaction core.
  *
- * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0002
+ * @implementsRequirement MR-0002ADR-0004REQ-0004
+ * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @macroRequirement MR-0002
  * @implementationStatus implemented
- *
- * Verifies that importing the governed document generator does not execute its
- * CLI, planning remains deterministic for one canonical snapshot, successful
- * application creates registry record and body together, replay is rejected
- * without mutations, and failures during second-artifact installation or
- * post-install verification restore the original registry without partial files.
  */
 
-const testPath = fileURLToPath(import.meta.url);
-const projectRoot = path.resolve(
-  path.dirname(testPath),
-  "..",
-  "..",
-  "..",
-);
-const generatorPath = path.join(
-  projectRoot,
-  "tools",
-  "MR-0002",
-  "create-governed-document.mjs",
-);
-const generatorUrl = pathToFileURL(generatorPath).href;
-const exitCodeBeforeImport = process.exitCode;
-const {
-  applyGeneratedDocument,
-  planGeneratedDocument,
-} = await import(generatorUrl);
+const testDir = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(testDir, "..", "..", "..");
+const catalog = buildGovernedDocumentAuthoringCatalog();
 
-/**
- * Creates an isolated Requirement registry fixture.
- *
- * @returns {{workspace: string, registryProjectPath: string, registryPath: string, originalRegistryText: string}}
- * Fixture paths and original registry text.
- */
-function createWorkspace() {
-  const workspace = fs.mkdtempSync(
-    path.join(os.tmpdir(), "threatforge-document-core-"),
+function createFixtureRoot() {
+  const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "threatforge-governed-document-core-"));
+  fs.cpSync(
+    path.join(rootDir, "docs", "reference", "project-model"),
+    path.join(fixtureRoot, "docs", "reference", "project-model"),
+    { recursive: true },
   );
-  const registryProjectPath =
-    "docs/reference/project-model/registers/requirements/MR-9999.requirements.registry.yml";
-  const registryPath = path.join(
-    workspace,
-    ...registryProjectPath.split("/"),
-  );
-  const originalRegistryText = [
-    "schema_version: 1",
-    "registry_id: MR-9999-requirements-registry",
-    "macro_requirement_id: MR-9999",
-    "",
-    "requirements:",
-    "",
-  ].join("\n");
-
-  fs.mkdirSync(path.dirname(registryPath), {
-    recursive: true,
-  });
-  fs.writeFileSync(
-    registryPath,
-    originalRegistryText,
-    "utf8",
-  );
-
-  return {
-    workspace,
-    registryProjectPath,
-    registryPath,
-    originalRegistryText,
-  };
+  return fixtureRoot;
 }
 
-/**
- * Builds one deterministic fixture plan.
- *
- * @param {string} registryProjectPath - Fixture registry path.
- * @returns {{id: string, requirementType: string, dryRun: boolean, registryPath: string, bodyPath: string, recordBlock: string, bodyText: string}}
- * Fixture plan.
- */
-function buildPlan(registryProjectPath) {
-  const id = "MR-9999ADR-0001REQ-0001";
-  const bodyPath =
-    `docs/reference/project-model/body/requirements/MR-9999/${id}_body.md`;
-
-  return {
-    id,
-    requirementType: "functional",
-    dryRun: false,
-    registryPath: registryProjectPath,
-    bodyPath,
-    recordBlock: [
-      `  - id: ${id}`,
-      '    title: "Atomic fixture"',
-      "    status: draft",
-      "    requirement_type: functional",
-      "    macro_requirement_id: MR-9999",
-      `    body_path: ${bodyPath}`,
-      "",
-    ].join("\n"),
-    bodyText: `# ${id} — Atomic fixture\n`,
-  };
-}
-
-/**
- * Lists transaction residue files recursively.
- *
- * @param {string} root - Directory to inspect.
- * @returns {string[]} Relative temporary or backup paths.
- */
-function listTransactionResidue(root) {
-  const residue = [];
-
-  function visit(directory) {
-    if (!fs.existsSync(directory)) {
-      return;
-    }
-
-    for (const entry of fs.readdirSync(directory, {
-      withFileTypes: true,
-    })) {
-      const absolutePath = path.join(
-        directory,
-        entry.name,
-      );
-
-      if (entry.isDirectory()) {
-        visit(absolutePath);
-        continue;
-      }
-
-      if (
-        entry.name.endsWith(".tmp") ||
-        entry.name.endsWith(".bak")
-      ) {
-        residue.push(
-          path.relative(root, absolutePath),
-        );
-      }
-    }
-  }
-
-  visit(root);
-  return residue.sort();
-}
-
-/**
- * Returns an fs-compatible proxy that fails on the selected rename.
- *
- * @param {number} failingRename - One-based rename invocation to reject.
- * @returns {typeof fs} Injectable file system.
- */
-function createFailingFileSystem(failingRename) {
-  let renameCount = 0;
-
-  return new Proxy(fs, {
-    get(target, property) {
-      if (property === "renameSync") {
-        return (...args) => {
-          renameCount += 1;
-
-          if (renameCount === failingRename) {
-            throw new Error(
-              "Injected second artifact installation failure.",
-            );
-          }
-
-          return target.renameSync(...args);
-        };
-      }
-
-      const value = Reflect.get(target, property);
-
-      return typeof value === "function"
-        ? value.bind(target)
-        : value;
+function loadFixtureCatalog(fixtureRoot) {
+  const result = spawnSync(
+    process.execPath,
+    [path.join(rootDir, "tools", "MR-0002", "build-governed-document-authoring-catalog.mjs")],
+    {
+      cwd: rootDir,
+      encoding: "utf8",
+      env: { ...process.env, TF_GOVERNED_DOCUMENT_AUTHORING_CATALOG_ROOT: fixtureRoot },
     },
-  });
+  );
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+  return JSON.parse(result.stdout);
 }
 
-test("exports the authoring core without executing the CLI on import", () => {
-  assert.equal(
-    typeof planGeneratedDocument,
-    "function",
+function runModelCheck(scriptName, envName, fixtureRoot) {
+  const result = spawnSync(
+    process.execPath,
+    [path.join(rootDir, "tools", "MR-0001", scriptName)],
+    {
+      cwd: rootDir,
+      encoding: "utf8",
+      env: { ...process.env, [envName]: fixtureRoot },
+    },
   );
-  assert.equal(
-    typeof applyGeneratedDocument,
-    "function",
-  );
-  assert.equal(
-    process.exitCode,
-    exitCodeBeforeImport,
-  );
-});
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
+}
 
-test("produces the same plan for the same canonical snapshot", () => {
-  const args = {
-    "requirement-type": "functional",
-    mr: "MR-0002",
-    adr: "ADR-0004",
-    title: "Deterministic importable core test",
-    "dry-run": true,
+
+function nextSequenceId(values, prefix) {
+  const maximum = values.reduce((current, value) => {
+    const match = String(value).match(/(\d{4})$/u);
+    return match ? Math.max(current, Number.parseInt(match[1], 10)) : current;
+  }, 0);
+  return `${prefix}${String(maximum + 1).padStart(4, "0")}`;
+}
+
+function expectedIds() {
+  const macro = catalog.macro_requirements.find((entry) => entry.id === "MR-0002");
+  const decision = macro.decisions.find((entry) => entry.id === "ADR-0005");
+  const parent = decision.requirements.find((entry) => entry.id === "MR-0002ADR-0005REQ-0003");
+  return {
+    macro: nextSequenceId(catalog.macro_requirements.map((entry) => entry.id), "MR-"),
+    decision: nextSequenceId(macro.decisions.map((entry) => entry.id), "ADR-"),
+    functional: nextSequenceId(
+      decision.requirements.filter((entry) => entry.requirement_type === "functional").map((entry) => entry.id),
+      "MR-0002ADR-0005REQ-",
+    ),
+    governance: nextSequenceId(
+      decision.requirements.filter((entry) => entry.parent_requirement_id === parent.id).map((entry) => entry.id),
+      "MR-0002ADR-0005REQ-0003GOV-",
+    ),
   };
-  const first = planGeneratedDocument(args, {
-    rootDir: projectRoot,
-  });
-  const second = planGeneratedDocument(args, {
-    rootDir: projectRoot,
-  });
+}
 
-  assert.deepEqual(second, first);
-  assert.match(
-    first.id,
-    /^MR-0002ADR-0004REQ-\d{4}$/u,
+const requests = {
+  macro: {
+    document_type: "macro-requirement",
+    title: "Example macro requirement",
+    macro_requirement_type: "functional",
+    body: {
+      intent: "Define one project-level capability.",
+      context: "The project needs an additional governed capability.",
+      macro_obligation: ["The project must expose the additional governed capability"],
+      scope: {
+        includes: ["the additional governed capability"],
+        excludes: ["unrelated platform behavior"],
+      },
+      non_goals: ["Replace existing macro-requirements"],
+    },
+  },
+  decision: {
+    document_type: "decision",
+    macro_requirement_id: "MR-0002",
+    title: "Example decision",
+    decision_type: "structural",
+    author: "Nicolo Ballestriero",
+    body: {
+      context: "The authoring workflow needs one structural choice.",
+      decision: "ThreatForge adopts one shared authoring request contract.",
+      consequences: {
+        benefit: ["The editor and CLI consume the same contract"],
+        constraint: ["Every adapter remains thin"],
+      },
+      non_goals: ["Introduce a custom editor extension"],
+    },
+  },
+  functional: {
+    document_type: "functional-requirement",
+    macro_requirement_id: "MR-0002",
+    decision_id: "ADR-0005",
+    title: "Example functional requirement",
+    body: {
+      intent: "Provide one verifiable authoring behavior.",
+      functional_obligation: ["The authoring core must produce one deterministic preview"],
+      scope: {
+        includes: ["deterministic preview generation"],
+        excludes: ["repository mutation during preview"],
+      },
+      acceptance: ["the preview contains every generated artifact"],
+    },
+  },
+  governance: {
+    document_type: "governance-requirement",
+    macro_requirement_id: "MR-0002",
+    decision_id: "ADR-0005",
+    parent_requirement_id: "MR-0002ADR-0005REQ-0003",
+    title: "Example governance requirement",
+    body: {
+      intent: "Keep the editor adapter free from duplicated rules.",
+      governance_obligation: ["The editor adapter must consume generated canonical projections"],
+      verification_obligations: ["The verification must confirm that no editor-owned enum exists"],
+      failure_conditions: ["an editor-owned canonical enum is detected"],
+    },
+  },
+};
+
+test("plans all four governed document types deterministically", () => {
+  const macro = planGeneratedDocument(requests.macro, catalog, { today: "2026-07-15" });
+  const decision = planGeneratedDocument(requests.decision, catalog, { today: "2026-07-15" });
+  const functional = planGeneratedDocument(requests.functional, catalog, { today: "2026-07-15" });
+  const governance = planGeneratedDocument(requests.governance, catalog, { today: "2026-07-15" });
+  const expected = expectedIds();
+  assert.equal(macro.id, expected.macro);
+  assert.equal(macro.changes.length, 4);
+  assert.equal(decision.id, expected.decision);
+  assert.equal(functional.id, expected.functional);
+  assert.equal(governance.id, expected.governance);
+  assert.deepEqual(
+    planGeneratedDocument(requests.functional, catalog, { today: "2026-07-15" }),
+    functional,
   );
-  assert.equal(first.dryRun, true);
 });
 
-test("creates registry record and body together and rejects replay", () => {
-  const fixture = createWorkspace();
-  const plan = buildPlan(
-    fixture.registryProjectPath,
-  );
-  const bodyPath = path.join(
-    fixture.workspace,
-    ...plan.bodyPath.split("/"),
-  );
-
+test("creates a complete Macro-requirement transaction", () => {
+  const fixtureRoot = createFixtureRoot();
   try {
-    const result = applyGeneratedDocument(plan, {
-      rootDir: fixture.workspace,
-    });
-
-    assert.deepEqual(result, {
-      id: plan.id,
-      registryPath: plan.registryPath,
-      bodyPath: plan.bodyPath,
-    });
-    assert.equal(
-      fs.readFileSync(bodyPath, "utf8"),
-      plan.bodyText,
-    );
-    assert.equal(
-      fs.readFileSync(fixture.registryPath, "utf8"),
-      `${fixture.originalRegistryText}${plan.recordBlock}`,
-    );
-    assert.deepEqual(
-      listTransactionResidue(fixture.workspace),
-      [],
-    );
-
-    const registrySnapshot = fs.readFileSync(
-      fixture.registryPath,
+    const plan = planGeneratedDocument(requests.macro, catalog, { rootDir: fixtureRoot, today: "2026-07-15" });
+    const result = applyGeneratedDocument(plan, { rootDir: fixtureRoot, afterInstall: () => {} });
+    assert.equal(result.producedArtifacts.length, 4);
+    for (const projectPath of result.producedArtifacts) {
+      assert.ok(fs.existsSync(path.join(fixtureRoot, ...projectPath.split("/"))));
+    }
+    const childDecisionRegistry = fs.readFileSync(
+      path.join(fixtureRoot, "docs/reference/project-model/registers/decisions", `${plan.id}.decisions.registry.yml`),
       "utf8",
     );
-    const bodySnapshot = fs.readFileSync(
-      bodyPath,
+    const childRequirementRegistry = fs.readFileSync(
+      path.join(fixtureRoot, "docs/reference/project-model/registers/requirements", `${plan.id}.requirements.registry.yml`),
       "utf8",
     );
+    assert.match(childDecisionRegistry, /decisions: \[\]/u);
+    assert.match(childRequirementRegistry, /requirements: \[\]/u);
+    runModelCheck("check-macro-requirement-model.mjs", "TF_MACRO_REQUIREMENT_MODEL_ROOT", fixtureRoot);
 
-    assert.throws(
-      () =>
-        applyGeneratedDocument(plan, {
-          rootDir: fixture.workspace,
-        }),
-      /Body already exists and will not be overwritten/u,
-    );
-    assert.equal(
-      fs.readFileSync(fixture.registryPath, "utf8"),
-      registrySnapshot,
-    );
-    assert.equal(
-      fs.readFileSync(bodyPath, "utf8"),
-      bodySnapshot,
-    );
-    assert.deepEqual(
-      listTransactionResidue(fixture.workspace),
-      [],
-    );
+    let fixtureCatalog = loadFixtureCatalog(fixtureRoot);
+    const decisionRequest = { ...requests.decision, macro_requirement_id: plan.id };
+    const decisionPlan = planGeneratedDocument(decisionRequest, fixtureCatalog, { rootDir: fixtureRoot, today: "2026-07-15" });
+    applyGeneratedDocument(decisionPlan, { rootDir: fixtureRoot, afterInstall: () => {} });
+
+    fixtureCatalog = loadFixtureCatalog(fixtureRoot);
+    const functionalRequest = {
+      ...requests.functional,
+      macro_requirement_id: plan.id,
+      decision_id: decisionPlan.id,
+    };
+    const functionalPlan = planGeneratedDocument(functionalRequest, fixtureCatalog, { rootDir: fixtureRoot, today: "2026-07-15" });
+    applyGeneratedDocument(functionalPlan, { rootDir: fixtureRoot, afterInstall: () => {} });
+
+    fixtureCatalog = loadFixtureCatalog(fixtureRoot);
+    const governanceRequest = {
+      ...requests.governance,
+      macro_requirement_id: plan.id,
+      decision_id: decisionPlan.id,
+      parent_requirement_id: functionalPlan.id,
+    };
+    const governancePlan = planGeneratedDocument(governanceRequest, fixtureCatalog, { rootDir: fixtureRoot, today: "2026-07-15" });
+    applyGeneratedDocument(governancePlan, { rootDir: fixtureRoot, afterInstall: () => {} });
+
+    runModelCheck("check-decision-model.mjs", "TF_DECISION_MODEL_ROOT", fixtureRoot);
+    runModelCheck("check-functional-requirement-model.mjs", "TF_FUNCTIONAL_REQUIREMENT_MODEL_ROOT", fixtureRoot);
+    runModelCheck("check-governance-requirement-model.mjs", "TF_GOVERNANCE_REQUIREMENT_MODEL_ROOT", fixtureRoot);
+    fixtureCatalog = loadFixtureCatalog(fixtureRoot);
+    const createdMacro = fixtureCatalog.macro_requirements.find((entry) => entry.id === plan.id);
+    assert.equal(createdMacro.decisions.length, 1);
+    assert.equal(createdMacro.requirements.length, 2);
   } finally {
-    fs.rmSync(fixture.workspace, {
-      recursive: true,
-      force: true,
-    });
+    fs.rmSync(fixtureRoot, { recursive: true, force: true });
   }
 });
 
-test("rolls back when installation of the second artifact fails", () => {
-  const fixture = createWorkspace();
-  const plan = buildPlan(
-    fixture.registryProjectPath,
-  );
-  const bodyPath = path.join(
-    fixture.workspace,
-    ...plan.bodyPath.split("/"),
-  );
-  const failingFileSystem =
-    createFailingFileSystem(3);
-
-  try {
-    assert.throws(
-      () =>
-        applyGeneratedDocument(plan, {
-          rootDir: fixture.workspace,
-          fileSystem: failingFileSystem,
-        }),
-      /Cannot apply governed document transaction: Injected second artifact installation failure/u,
-    );
-    assert.equal(
-      fs.readFileSync(fixture.registryPath, "utf8"),
-      fixture.originalRegistryText,
-    );
-    assert.equal(
-      fs.existsSync(bodyPath),
-      false,
-    );
-    assert.deepEqual(
-      listTransactionResidue(fixture.workspace),
-      [],
-    );
-  } finally {
-    fs.rmSync(fixture.workspace, {
-      recursive: true,
-      force: true,
-    });
+test("creates canonical Decision, Functional and Governance documents", () => {
+  const cases = [
+    [requests.decision, "check-decision-model.mjs", "TF_DECISION_MODEL_ROOT"],
+    [requests.functional, "check-functional-requirement-model.mjs", "TF_FUNCTIONAL_REQUIREMENT_MODEL_ROOT"],
+    [requests.governance, "check-governance-requirement-model.mjs", "TF_GOVERNANCE_REQUIREMENT_MODEL_ROOT"],
+  ];
+  for (const [request, checker, envName] of cases) {
+    const fixtureRoot = createFixtureRoot();
+    try {
+      const plan = planGeneratedDocument(request, catalog, { rootDir: fixtureRoot, today: "2026-07-15" });
+      applyGeneratedDocument(plan, { rootDir: fixtureRoot, afterInstall: () => {} });
+      runModelCheck(checker, envName, fixtureRoot);
+    } finally {
+      fs.rmSync(fixtureRoot, { recursive: true, force: true });
+    }
   }
 });
 
-test("rolls back when post-install verification fails", () => {
-  const fixture = createWorkspace();
-  const plan = buildPlan(
-    fixture.registryProjectPath,
-  );
-  const bodyPath = path.join(
-    fixture.workspace,
-    ...plan.bodyPath.split("/"),
-  );
-
+test("rolls back every artifact when post-install verification fails", () => {
+  const fixtureRoot = createFixtureRoot();
   try {
+    const registryPath = path.join(
+      fixtureRoot,
+      "docs/reference/project-model/registers/macro-requirements.registry.yml",
+    );
+    const before = fs.readFileSync(registryPath, "utf8");
+    const plan = planGeneratedDocument(requests.macro, catalog, { rootDir: fixtureRoot, today: "2026-07-15" });
     assert.throws(
-      () =>
-        applyGeneratedDocument(plan, {
-          rootDir: fixture.workspace,
-          afterInstall: () => {
-            throw new Error(
-              "Injected post-install verification failure.",
-            );
-          },
-        }),
-      /Cannot apply governed document transaction: Injected post-install verification failure/u,
+      () => applyGeneratedDocument(plan, {
+        rootDir: fixtureRoot,
+        afterInstall: () => { throw new Error("verification fixture failure"); },
+      }),
+      /verification fixture failure/u,
     );
-    assert.equal(
-      fs.readFileSync(fixture.registryPath, "utf8"),
-      fixture.originalRegistryText,
-    );
-    assert.equal(
-      fs.existsSync(bodyPath),
-      false,
-    );
-    assert.deepEqual(
-      listTransactionResidue(fixture.workspace),
-      [],
-    );
+    assert.equal(fs.readFileSync(registryPath, "utf8"), before);
+    for (const change of plan.changes.filter((entry) => entry.mode === "create")) {
+      assert.equal(fs.existsSync(path.join(fixtureRoot, ...change.projectPath.split("/"))), false);
+    }
   } finally {
-    fs.rmSync(fixture.workspace, {
-      recursive: true,
-      force: true,
-    });
+    fs.rmSync(fixtureRoot, { recursive: true, force: true });
   }
 });

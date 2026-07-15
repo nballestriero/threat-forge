@@ -3,6 +3,7 @@ registry_id: implementation-trace-registry
 scope: governed_implementation_trace
 
 artifacts:
+
   - id: MR-0001ADR-0003REQ-0001GOV-0001IMPL-0001
     title: Implementation trace registry consistency checker
     artifact_type: tool
@@ -50,17 +51,16 @@ artifacts:
     verification_command: node tools/MR-0001/check-documentation-field-values.mjs
 
   - id: MR-0002ADR-0004REQ-0001GOV-0001IMPL-0001
-    title: Governed documentation authoring generator
+    title: Governed document authoring transaction core
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0004REQ-0001GOV-0001
-      - MR-0002ADR-0004REQ-0003
-      - MR-0002ADR-0004REQ-0003GOV-0002
-      - MR-0001ADR-0004REQ-0002GOV-0001
     implemented_path: tools/MR-0002/create-governed-document.mjs
-    reason: Generate deterministic governed Requirement plans through an importable core and atomically apply matching registry records and body files with rollback across installation and optional post-install verification, while consuming shared canonical YAML and controlled-field resolvers.
-    verification_command: node tools/MR-0002/create-governed-document.mjs --requirement-type functional --mr MR-0002 --adr ADR-0004 --title "Dry run example" --dry-run
+    reason: Plan and atomically apply canonical Macro-requirement, Decision, Functional Requirement and Governance Requirement transactions, including derived identifiers, paths, child registries and rollback.
+    verification_command: node --test tools/MR-0002/tests/create-governed-document-core.test.mjs
 
   - id: MR-0001ADR-0004REQ-0001GOV-0002IMPL-0001
     title: Documentation field value negative fixtures
@@ -100,16 +100,16 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0005REQ-0001
       - MR-0002ADR-0005REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0002ADR-0001REQ-0001
       - MR-0002ADR-0001REQ-0001GOV-0001
       - MR-0002ADR-0003REQ-0001
       - MR-0002ADR-0003REQ-0001GOV-0001
       - MR-0002ADR-0003REQ-0002
       - MR-0002ADR-0003REQ-0002GOV-0001
-      - MR-0002ADR-0005REQ-0002
-      - MR-0002ADR-0005REQ-0002GOV-0001
     implemented_path: .vscode/tasks.json
-    reason: Expose governed checks and implementation workflows while delegating Requirement authoring preview and confirmed creation to the canonical interactive runner without static MR, ADR, parent or Requirement type prompts.
+    reason: Expose governed checks and implementation workflows while delegating active-file MR, Decision and Requirement authoring preview and confirmed creation to the shared core without editor-owned domain rules.
     verification_command: node tools/repo-check.mjs
 
   - id: MR-0002ADR-0002REQ-0001GOV-0001IMPL-0001
@@ -180,6 +180,7 @@ artifacts:
     implemented_path: tools/MR-0002/fixtures/implementation-planner
     reason: Prove deterministic rejection of unknown requirements, unsupported artifact types, unsafe paths, missing mandatory input and missing explicit dry-run mode.
     verification_command: node tools/MR-0002/check-governed-implementation-planner.mjs
+
   - id: MR-0002ADR-0003REQ-0001GOV-0001IMPL-0001
     title: Governed implementation scaffold creator
     artifact_type: tool
@@ -253,57 +254,67 @@ artifacts:
     verification_command: node tools/MR-0002/check-governed-implementation-promotion.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0001IMPL-0001
-    title: "Requirement authoring catalog builder"
+    title: Governed document authoring catalog builder
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0004REQ-0003GOV-0001
       - MR-0001ADR-0004REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0001GOV-0001
-    implemented_path: tools/MR-0002/build-requirement-authoring-catalog.mjs
-    reason: "Build the Requirement authoring catalog from shared governed YAML, controlled field values and canonical document-model profiles, including the canonical Macro-requirement type and requirements registry path."
-    verification_command: node --check tools/MR-0002/build-requirement-authoring-catalog.mjs
+    implemented_path: tools/MR-0002/build-governed-document-authoring-catalog.mjs
+    reason: Project four persistable document types, controlled values, body sections, paths and current relations exclusively from canonical governed sources.
+    verification_command: node --check tools/MR-0002/build-governed-document-authoring-catalog.mjs
 
   - id: MR-0002ADR-0004REQ-0003IMPL-0001
-    title: "Requirement authoring JSON Schema builder"
+    title: Governed document authoring JSON Schema builder
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003
-    implemented_path: tools/MR-0002/build-requirement-authoring-schema.mjs
-    reason: "Promoted MR-0002ADR-0004REQ-0003IMPL-0001 after source completeness checks and governed verification succeeded."
-    verification_command: node --check tools/MR-0002/build-requirement-authoring-schema.mjs
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/build-governed-document-authoring-schema.mjs
+    reason: Derive one context-sensitive authoring-request schema for Macro-requirement, Decision, Functional Requirement and Governance Requirement from the canonical catalog.
+    verification_command: node --check tools/MR-0002/build-governed-document-authoring-schema.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0001
-    title: "Requirement authoring contract checker"
+    title: Governed document authoring contract checker
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003GOV-0002
-    implemented_path: tools/MR-0002/check-requirement-authoring-contract.mjs
-    reason: "Validate catalog, JSON Schema, governed Requirement authoring runner and thin VS Code adapter coherence, deterministic negative fixtures and both integration suites."
-    verification_command: node --check tools/MR-0002/check-requirement-authoring-contract.mjs
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/check-governed-document-authoring-contract.mjs
+    reason: Validate deterministic catalog, schema, transaction core, request runner, thin VS Code adapter, governed negative fixtures and all authoring verification suites.
+    verification_command: node tools/MR-0002/check-governed-document-authoring-contract.mjs
 
   - id: MR-0002ADR-0004REQ-0003IMPL-0002
-    title: "Requirement authoring schema materializer"
+    title: Governed document authoring schema materializer
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003
-    implemented_path: tools/MR-0002/materialize-requirement-authoring-schema.mjs
-    reason: "Promoted MR-0002ADR-0004REQ-0003IMPL-0002 after source completeness checks and governed verification succeeded."
-    verification_command: node --check tools/MR-0002/materialize-requirement-authoring-schema.mjs
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/materialize-governed-document-authoring-schema.mjs
+    reason: Materialize and verify the canonical generated governed-document authoring schema at its stable workspace path.
+    verification_command: node tools/MR-0002/materialize-governed-document-authoring-schema.mjs --check
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001IMPL-0001
-    title: "VS Code requirement authoring adapter materializer"
+    title: VS Code governed document authoring adapter materializer
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0005REQ-0002
-      - MR-0002ADR-0005REQ-0002GOV-0001
-    implemented_path: tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
-    reason: "Materialize and verify schema association, YAML extension recommendation and separate VS Code preview/create tasks that invoke only the governed Requirement authoring runner from the repository root."
-    verification_command: node tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs --check
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0002ADR-0005REQ-0001GOV-0001
+    implemented_path: tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs
+    reason: Materialize schema association, YAML extension recommendation and active-file preview/create tasks while preserving unrelated workspace configuration and removing the obsolete Requirement-only projection.
+    verification_command: node tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs --check
 
   - id: MR-0001ADR-0004REQ-0002IMPL-0001
     title: "Lettore e resolver condiviso della tassonomia dei campi controllati"
@@ -356,68 +367,64 @@ artifacts:
     verification_command: node --test tools/MR-0001/test/check-documentation-field-values-shared-resolver.test.mjs
 
   - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0004
-    title: "Verifica della migrazione del Requirement authoring catalog builder ai consumer condivisi"
+    title: Verification of the shared governed-document authoring catalog
     artifact_type: verification_artifact
     status: implemented
     linked_requirement_ids:
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0001ADR-0004REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0001GOV-0001
-    implemented_path: tools/MR-0002/tests/build-requirement-authoring-catalog-shared-consumers.test.mjs
-    reason: "Verify that the builder consumes shared governed YAML, controlled field values and document-model profiles without retaining legacy Macro-requirement field aliases or hard-coded profile ownership."
-    verification_command: node --test tools/MR-0002/tests/build-requirement-authoring-catalog-shared-consumers.test.mjs
-
-  - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0005
-    title: "Verifica della migrazione del governed document generator ai consumer condivisi"
-    artifact_type: verification_artifact
-    status: implemented
-    linked_requirement_ids:
-      - MR-0001ADR-0004REQ-0002GOV-0001
-    implemented_path: tools/MR-0002/tests/create-governed-document-shared-consumers.test.mjs
-    reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0005 after the generator migration test verified canonical controlled values, rejection of abstract aliases and parent type applicability."
-    verification_command: node --test tools/MR-0002/tests/create-governed-document-shared-consumers.test.mjs
+    implemented_path: tools/MR-0002/tests/build-governed-document-authoring-catalog-shared-consumers.test.mjs
+    reason: Verify four-type projection, canonical controlled fields and body sections, current relation scopes and deterministic output without hard-coded model ownership.
+    verification_command: node --test tools/MR-0002/tests/build-governed-document-authoring-catalog-shared-consumers.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0002
-    title: "Verifica del core importabile e della scrittura atomica del generatore documentale"
+    title: Verification of the governed-document transaction core
     artifact_type: verification_artifact
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003GOV-0002
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
     implemented_path: tools/MR-0002/tests/create-governed-document-core.test.mjs
-    reason: "Verify deterministic planning, direct import, transactional success, replay rejection, second-artifact rollback and rollback when post-install verification fails."
+    reason: Verify deterministic plans for all four document types, complete Macro-requirement child-registry creation, canonical body output and rollback of multi-file transactions.
     verification_command: node --test tools/MR-0002/tests/create-governed-document-core.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003IMPL-0003
-    title: "Governed Requirement authoring request runner and CLI wizard"
+    title: Governed document authoring request runner
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003
-      - MR-0002ADR-0004REQ-0003GOV-0001
-      - MR-0002ADR-0004REQ-0003GOV-0002
-    implemented_path: tools/MR-0002/run-requirement-authoring.mjs
-    reason: "Read or interactively collect one canonical Requirement authoring request, print the complete deterministic preview, require explicit creation confirmation, atomically create record and body, and roll back when the mandatory post-creation check fails."
-    verification_command: node --test tools/MR-0002/tests/run-requirement-authoring.test.mjs
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/run-governed-document-authoring.mjs
+    reason: Read one canonical governed-document request, print a deterministic preview, require exact confirmation, apply the atomic transaction and roll back when the complete repository gate fails.
+    verification_command: node --test tools/MR-0002/tests/run-governed-document-authoring.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0003
-    title: "Verifica del consumer e wizard governato di Requirement authoring"
+    title: Verification of the governed-document authoring request runner
     artifact_type: verification_artifact
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003GOV-0002
-      - MR-0001ADR-0007REQ-0001GOV-0001
-    implemented_path: tools/MR-0002/tests/run-requirement-authoring.test.mjs
-    reason: "Verify canonical scope and parent rules, catalog-derived wizard choices, complete document-model source dependencies in isolated workspaces, read-only preview, explicit confirmation, successful checked creation and rollback after post-creation verification failure."
-    verification_command: node --test tools/MR-0002/tests/run-requirement-authoring.test.mjs
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0002ADR-0005REQ-0003
+    implemented_path: tools/MR-0002/tests/run-governed-document-authoring.test.mjs
+    reason: Verify type-specific request validation, generated-field rejection, read-only preview, explicit confirmation, successful checked application and transactional rollback.
+    verification_command: node --test tools/MR-0002/tests/run-governed-document-authoring.test.mjs
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001IMPL-0002
-    title: "Verifica dell'adapter VS Code sottile per Requirement authoring"
+    title: Verification of the thin VS Code governed-document authoring adapter
     artifact_type: verification_artifact
     status: implemented
     linked_requirement_ids:
-      - MR-0002ADR-0005REQ-0002GOV-0001
-    implemented_path: tools/MR-0002/tests/materialize-vscode-requirement-authoring-adapter.test.mjs
-    reason: "Verify read-only current-state checking, deterministic migration from legacy static prompts, preservation of unrelated tasks, exact preview/create delegation, repository-root cwd and rejection of bypass or automatic confirmation."
-    verification_command: node --test tools/MR-0002/tests/materialize-vscode-requirement-authoring-adapter.test.mjs
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/tests/materialize-vscode-governed-document-authoring-adapter.test.mjs
+    reason: Verify active-file task delegation, preservation of unrelated configuration, removal of obsolete managed fragments, non-automatic confirmation and idempotent materialization.
+    verification_command: node --test tools/MR-0002/tests/materialize-vscode-governed-document-authoring-adapter.test.mjs
 
   - id: MR-0002ADR-0002REQ-0002IMPL-0001
     title: Registered repository projection materialization core
@@ -652,7 +659,6 @@ artifacts:
     implemented_path: tools/MR-0001/fixtures/functional-requirement-model
     reason: Provide deterministic invalid examples for registry fields, controlled values, identity and owner relations, forbidden parents, derived paths, body sections, body content and title coherence.
     verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
-
 
   - id: MR-0001ADR-0007REQ-0002IMPL-0007
     title: Governance Requirement complete-model validation core

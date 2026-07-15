@@ -5,14 +5,16 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 /**
- * @file Requirement authoring schema materializer.
+ * @file Governed document authoring schema materializer.
  *
- * @implementsRequirement MR-0002ADR-0004REQ-0003
+ * @implementsRequirement MR-0002ADR-0004REQ-0004
+ * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
+ * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * Materializes the deterministic Requirement authoring JSON Schema at a stable
+ * Materializes the deterministic governed document authoring JSON Schema at a stable
  * repository path for local editor adapters. The schema content is always
  * derived by executing the governed schema builder; no canonical values or
  * authoring constraints are duplicated in this tool.
@@ -27,14 +29,14 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 const scriptPath = fileURLToPath(import.meta.url);
 const scriptDir = path.dirname(scriptPath);
 const defaultRootDir = path.resolve(scriptDir, "..", "..");
-const rootDir = process.env.TF_REQUIREMENT_AUTHORING_MATERIALIZER_ROOT
-  ? path.resolve(process.env.TF_REQUIREMENT_AUTHORING_MATERIALIZER_ROOT)
+const rootDir = process.env.TF_GOVERNED_DOCUMENT_AUTHORING_MATERIALIZER_ROOT
+  ? path.resolve(process.env.TF_GOVERNED_DOCUMENT_AUTHORING_MATERIALIZER_ROOT)
   : defaultRootDir;
 
 const schemaBuilderProjectPath =
-  "tools/MR-0002/build-requirement-authoring-schema.mjs";
+  "tools/MR-0002/build-governed-document-authoring-schema.mjs";
 const materializedSchemaProjectPath =
-  ".vscode/schemas/requirement-authoring.schema.json";
+  ".vscode/schemas/governed-document-authoring.schema.json";
 
 /**
  * Converts a repository-relative project path to an absolute path under the
@@ -138,7 +140,7 @@ function buildCurrentSchema() {
   const builderPath = resolveProjectPath(schemaBuilderProjectPath);
   if (!fs.existsSync(builderPath)) {
     throw new Error(
-      `Requirement authoring JSON Schema builder is missing: ${schemaBuilderProjectPath}`,
+      `Governed document authoring JSON Schema builder is missing: ${schemaBuilderProjectPath}`,
     );
   }
 
@@ -148,32 +150,32 @@ function buildCurrentSchema() {
     windowsHide: true,
     env: {
       ...process.env,
-      TF_REQUIREMENT_AUTHORING_SCHEMA_ROOT: rootDir,
-      TF_REQUIREMENT_AUTHORING_CATALOG_ROOT: rootDir,
+      TF_GOVERNED_DOCUMENT_AUTHORING_SCHEMA_ROOT: rootDir,
+      TF_GOVERNED_DOCUMENT_AUTHORING_CATALOG_ROOT: rootDir,
     },
   });
 
   if (result.error) {
     throw new Error(
-      `Cannot execute Requirement authoring JSON Schema builder: ${result.error.message}`,
+      `Cannot execute Governed document authoring JSON Schema builder: ${result.error.message}`,
     );
   }
   if (result.status !== 0) {
     const diagnostics = `${result.stdout ?? ""}\n${result.stderr ?? ""}`.trim();
     throw new Error(
-      `Requirement authoring JSON Schema builder failed with exit code ${result.status ?? "unknown"}` +
+      `Governed document authoring JSON Schema builder failed with exit code ${result.status ?? "unknown"}` +
         (diagnostics ? `: ${diagnostics}` : "."),
     );
   }
   if (String(result.stderr ?? "").trim()) {
     throw new Error(
-      `Requirement authoring JSON Schema builder emitted unexpected stderr: ${String(result.stderr).trim()}`,
+      `Governed document authoring JSON Schema builder emitted unexpected stderr: ${String(result.stderr).trim()}`,
     );
   }
 
   const value = parseJsonObject(
     result.stdout,
-    "Requirement authoring JSON Schema builder output",
+    "Governed document authoring JSON Schema builder output",
   );
   const schemaId = requireString(value.$id, "Generated schema $id");
   const threatForgeMetadata = requireObject(
@@ -202,7 +204,7 @@ function buildCurrentSchema() {
 function readMaterializedSchema(absolutePath) {
   if (!fs.existsSync(absolutePath)) {
     throw new Error(
-      `Materialized Requirement authoring schema is missing: ${materializedSchemaProjectPath}. ` +
+      `Materialized Governed document authoring schema is missing: ${materializedSchemaProjectPath}. ` +
         `Run this tool with --write.`,
     );
   }
@@ -212,13 +214,13 @@ function readMaterializedSchema(absolutePath) {
     text = fs.readFileSync(absolutePath, "utf8");
   } catch (error) {
     throw new Error(
-      `Cannot read materialized Requirement authoring schema: ${error.message}`,
+      `Cannot read materialized Governed document authoring schema: ${error.message}`,
     );
   }
 
   const value = parseJsonObject(
     text,
-    `Materialized Requirement authoring schema ${materializedSchemaProjectPath}`,
+    `Materialized Governed document authoring schema ${materializedSchemaProjectPath}`,
   );
   return {
     value,
@@ -262,13 +264,13 @@ function writeAtomically(absolutePath, text) {
 }
 
 /**
- * Materializes or checks the stable Requirement authoring schema.
+ * Materializes or checks the stable Governed document authoring schema.
  *
  * @param {"write"|"check"} mode - Explicit operation mode.
  * @returns {{mode: string, status: string, path: string, schemaId: string, catalogId: string}}
  * Operation result.
  */
-export function materializeRequirementAuthoringSchema(mode) {
+export function materializeGovernedDocumentAuthoringSchema(mode) {
   if (mode !== "write" && mode !== "check") {
     throw new Error(`Unsupported materialization mode: ${mode}`);
   }
@@ -280,7 +282,7 @@ export function materializeRequirementAuthoringSchema(mode) {
     const existing = readMaterializedSchema(materializedPath);
     if (existing.text !== generated.text) {
       throw new Error(
-        `Materialized Requirement authoring schema is stale: ${materializedSchemaProjectPath}. ` +
+        `Materialized Governed document authoring schema is stale: ${materializedSchemaProjectPath}. ` +
           `Run this tool with --write.`,
       );
     }
@@ -339,9 +341,9 @@ function parseMode(args) {
  */
 function main() {
   const mode = parseMode(process.argv.slice(2));
-  const result = materializeRequirementAuthoringSchema(mode);
+  const result = materializeGovernedDocumentAuthoringSchema(mode);
 
-  console.log("Requirement authoring schema materialization succeeded.");
+  console.log("Governed document authoring schema materialization succeeded.");
   console.log(`Mode: ${result.mode}`);
   console.log(`Status: ${result.status}`);
   console.log(`Path: ${result.path}`);
@@ -358,7 +360,7 @@ if (import.meta.url === directExecutionUrl) {
     main();
   } catch (error) {
     console.error(
-      `Requirement authoring schema materialization failed: ${error.message}`,
+      `Governed document authoring schema materialization failed: ${error.message}`,
     );
     process.exitCode = 1;
   }

@@ -3,43 +3,45 @@ registry_id: repository-projection-materialization-registry
 scope: governed_repository_projections
 
 materializers:
-  - id: requirement-authoring-schema
-    title: Requirement authoring schema projection
+  - id: governed-document-authoring-schema
+    title: Governed document authoring schema projection
     status: active
     write_command: node
     write_args:
-      - tools/MR-0002/materialize-requirement-authoring-schema.mjs
+      - tools/MR-0002/materialize-governed-document-authoring-schema.mjs
       - --write
     check_command: node
     check_args:
-      - tools/MR-0002/materialize-requirement-authoring-schema.mjs
+      - tools/MR-0002/materialize-governed-document-authoring-schema.mjs
       - --check
     generated_paths:
-      - .vscode/schemas/requirement-authoring.schema.json
+      - .vscode/schemas/governed-document-authoring.schema.json
     linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0003
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0002ADR-0002REQ-0002
       - MR-0002ADR-0002REQ-0002GOV-0001
       - MR-0002ADR-0002REQ-0002GOV-0002
 
-  - id: vscode-requirement-authoring-adapter
-    title: VS Code Requirement authoring adapter projection
+  - id: vscode-governed-document-authoring-adapter
+    title: VS Code governed document authoring adapter projection
     status: active
     write_command: node
     write_args:
-      - tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
+      - tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs
       - --write
     check_command: node
     check_args:
-      - tools/MR-0002/materialize-vscode-requirement-authoring-adapter.mjs
+      - tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs
       - --check
     generated_paths:
       - .vscode/settings.json
       - .vscode/extensions.json
       - .vscode/tasks.json
     linked_requirement_ids:
-      - MR-0002ADR-0005REQ-0002
-      - MR-0002ADR-0005REQ-0002GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0002ADR-0002REQ-0002
       - MR-0002ADR-0002REQ-0002GOV-0001
       - MR-0002ADR-0002REQ-0002GOV-0002

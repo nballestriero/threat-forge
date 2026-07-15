@@ -3,8 +3,8 @@
  *
  * @implementsRequirement MR-0002ADR-0005REQ-0001
  * @implementsRequirement MR-0002ADR-0005REQ-0001GOV-0001
- * @implementsRequirement MR-0002ADR-0005REQ-0002
- * @implementsRequirement MR-0002ADR-0005REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0005REQ-0003
+ * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001
  * @implementsRequirement MR-0002ADR-0001REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0001
@@ -69,44 +69,6 @@
         "reveal": "always",
         "panel": "shared",
         "clear": true
-      }
-    },
-    {
-      "label": "ThreatForge: preview requirement authoring",
-      "type": "process",
-      "command": "node",
-      "args": [
-        "tools/MR-0002/run-requirement-authoring.mjs",
-        "--preview"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": true,
-        "focus": true
-      }
-    },
-    {
-      "label": "ThreatForge: create requirement authoring",
-      "type": "process",
-      "command": "node",
-      "args": [
-        "tools/MR-0002/run-requirement-authoring.mjs",
-        "--create"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": true,
-        "focus": true
       }
     },
     {
@@ -199,6 +161,48 @@
         "reveal": "always",
         "panel": "shared",
         "clear": true
+      }
+    },
+    {
+      "label": "ThreatForge: preview governed document authoring",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/run-governed-document-authoring.mjs",
+        "--preview",
+        "--request",
+        "${relativeFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "ThreatForge: create governed document authoring",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/run-governed-document-authoring.mjs",
+        "--create",
+        "--request",
+        "${relativeFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
       }
     }
   ],

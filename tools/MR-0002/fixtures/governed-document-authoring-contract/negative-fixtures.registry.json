@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-document-authoring-contract-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "missing-document-type",
+      "mutation": "remove-governance-document-type",
+      "expected_error_contains": "catalog document types diverge"
+    },
+    {
+      "id": "unsupported-document-type",
+      "mutation": "add-unsupported-document-type",
+      "expected_error_contains": "catalog document types diverge"
+    },
+    {
+      "id": "body-section-divergence",
+      "mutation": "remove-functional-acceptance-schema-field",
+      "expected_error_contains": "body properties diverge"
+    },
+    {
+      "id": "decision-scope-leakage",
+      "mutation": "leak-decision-across-macro",
+      "expected_error_contains": "Decision projection diverges"
+    },
+    {
+      "id": "invalid-parent-candidate",
+      "mutation": "add-governance-parent-from-other-decision",
+      "expected_error_contains": "parent projection diverges"
+    },
+    {
+      "id": "generated-field-divergence",
+      "mutation": "remove-generated-body-path",
+      "expected_error_contains": "generated_fields diverge"
+    },
+    {
+      "id": "request-suffix-divergence",
+      "mutation": "restore-requirement-only-suffix",
+      "expected_error_contains": "request_suffix diverges"
+    },
+    {
+      "id": "source-projection-divergence",
+      "mutation": "remove-schema-source",
+      "expected_error_contains": "source projection diverges"
+    }
+  ]
+}
