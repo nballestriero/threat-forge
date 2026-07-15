@@ -1,0 +1,1 @@
+{"operations":[{"file":"docs/reference/project-model/registers/macro-requirements.registry.yml","find":"    status: draft\n","replace":"    status: invalid\n"}]}

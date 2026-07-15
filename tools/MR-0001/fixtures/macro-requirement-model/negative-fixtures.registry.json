@@ -1,0 +1,10 @@
+{
+  "fixtures": [
+    {"id":"missing-record-field","fixture_path":"tools/MR-0001/fixtures/macro-requirement-model/registry-fields/missing-record-field.json","expected_rule_ids":["macro-requirement.registry.record.fields"]},
+    {"id":"invalid-controlled-value","fixture_path":"tools/MR-0001/fixtures/macro-requirement-model/controlled-values/invalid-controlled-value.json","expected_rule_ids":["macro-requirement.registry.record.controlled-value"]},
+    {"id":"missing-child-registry","fixture_path":"tools/MR-0001/fixtures/macro-requirement-model/model-coherence/missing-child-registry.json","expected_rule_ids":["macro-requirement.registry.record.child-registry"]},
+    {"id":"body-section-structure","fixture_path":"tools/MR-0001/fixtures/macro-requirement-model/body-sections/body-section-structure.json","expected_rule_ids":["macro-requirement.body.section.structure"]},
+    {"id":"normative-language","fixture_path":"tools/MR-0001/fixtures/macro-requirement-model/normative-language/normative-language.json","expected_rule_ids":["macro-requirement.body.section.content"]},
+    {"id":"title-mismatch","fixture_path":"tools/MR-0001/fixtures/macro-requirement-model/model-coherence/title-mismatch.json","expected_rule_ids":["macro-requirement.body.header.identity","macro-requirement.model.title.mirror"]}
+  ]
+}
