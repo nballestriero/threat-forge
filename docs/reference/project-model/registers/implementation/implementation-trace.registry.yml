@@ -61,24 +61,24 @@ artifacts:
     verification_command: node tools/MR-0002/create-governed-document.mjs --requirement-type functional --mr MR-0002 --adr ADR-0004 --title "Dry run example" --dry-run
 
   - id: MR-0002ADR-0004REQ-0002GOV-0001IMPL-0001
-    title: Governed body header consistency checker
+    title: Transitional Requirement body header consistency checker
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0002/check-governed-body-headers.mjs
-    reason: Validate that governed registry records use canonical title fields and that linked Markdown body H1 headers are derived from record id and title, including deterministic negative fixture coverage.
+    reason: Temporarily validate canonical title fields and linked Markdown H1 headers for Functional Requirement and Governance Requirement records until their complete-model checkers are active, including deterministic negative fixture coverage.
     verification_command: node tools/MR-0002/check-governed-body-headers.mjs
 
   - id: MR-0002ADR-0004REQ-0002GOV-0002IMPL-0001
-    title: Governed body header negative fixtures
+    title: Transitional Requirement body header negative fixtures
     artifact_type: fixture
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0002/fixtures/governed-body-headers
-    reason: Provide deterministic invalid examples proving that the governed body header checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
+    reason: Provide deterministic invalid Requirement examples proving that the transitional checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
     verification_command: node tools/MR-0002/check-governed-body-headers.mjs
 
   - id: MR-0001ADR-0004REQ-0001GOV-0002IMPL-0001

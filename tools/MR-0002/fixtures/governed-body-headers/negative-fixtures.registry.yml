@@ -1,6 +1,6 @@
 schema_version: 2
-registry_id: transitional-decision-requirement-body-header-negative-fixtures
-scope: transitional_decision_requirement_body_header_checker
+registry_id: transitional-requirement-body-header-negative-fixtures
+scope: transitional_requirement_body_header_checker
 
 fixtures:
   - id: missing-title

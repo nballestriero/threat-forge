@@ -11,7 +11,7 @@ import {
 } from "../MR-0001/lib/governed-document-model-validation.mjs";
 
 /**
- * @file Transitional Decision and Requirement body header checker.
+ * @file Transitional Requirement body header checker.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0002
@@ -19,16 +19,16 @@ import {
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * This implementation replaces the former broad body-header checker. It
- * validates only Decision and Requirement records while their complete-model
- * validators remain planned. Macro-requirement headers are owned exclusively
- * by the active Macro-requirement complete-model checker.
+ * This implementation validates only Functional Requirement and Governance
+ * Requirement records while their complete-model validators remain planned.
+ * Macro-requirement and Decision headers are owned exclusively by their active
+ * complete-model checkers.
  *
  * The transitional checker and its fixtures must be removed after the
- * Decision, Functional Requirement and Governance Requirement complete-model
- * checkers are active.
+ * Functional Requirement and Governance Requirement complete-model checkers
+ * are active.
  *
- * Side effects: reads governed Decision and Requirement registries and bodies,
+ * Side effects: reads governed Requirement registries and bodies,
  * executes deterministic negative fixtures, writes reports under
  * artifacts/governed-body-headers and exits non-zero on validation failure.
  */
@@ -40,9 +40,6 @@ const rootDir = process.env.TF_GOVERNED_BODY_HEADERS_ROOT
   ? path.resolve(process.env.TF_GOVERNED_BODY_HEADERS_ROOT)
   : defaultRootDir;
 
-const decisionsDirProjectPath =
-  process.env.TF_GOVERNED_BODY_HEADERS_DECISIONS_DIR ??
-  "docs/reference/project-model/registers/decisions";
 const requirementsDirProjectPath =
   process.env.TF_GOVERNED_BODY_HEADERS_REQUIREMENTS_DIR ??
   "docs/reference/project-model/registers/requirements";
@@ -75,10 +72,10 @@ function readUtf8(filePath) {
     .replace(/\r\n/gu, "\n");
 }
 
-function diagnostic(ruleId, recordType, representation, sourcePath, location, message) {
+function diagnostic(ruleId, representation, sourcePath, location, message) {
   return createDiagnostic(
     ruleId,
-    recordType === "decision" ? "decision" : "requirement",
+    "requirement",
     representation,
     sourcePath,
     location,
@@ -106,10 +103,9 @@ function extractH1Lines(text) {
 }
 
 /**
- * Validates one Decision or Requirement record and its linked body.
+ * Validates one Requirement record and its linked body.
  *
  * @param {{
- *   recordType: "decision"|"requirement",
  *   sourcePath: string,
  *   location: string,
  *   record: Record<string, unknown>,
@@ -130,7 +126,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (!id) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.registryIdentity,
-      input.recordType,
       "yaml_registry",
       input.sourcePath,
       `${location}/id`,
@@ -141,7 +136,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (!title || legacyName) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.registryTitle,
-      input.recordType,
       "yaml_registry",
       input.sourcePath,
       `${location}/title`,
@@ -154,7 +148,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (!bodyPath) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.registryBodyPath,
-      input.recordType,
       "yaml_registry",
       input.sourcePath,
       `${location}/body_path`,
@@ -166,7 +159,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (!input.bodyExists) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.bodyExists,
-      input.recordType,
       "markdown_body",
       bodyPath,
       "$",
@@ -179,7 +171,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (h1Lines.length !== 1) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.bodyH1Cardinality,
-      input.recordType,
       "markdown_body",
       bodyPath,
       "$",
@@ -196,7 +187,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (/^#\s+.+\s-\s.+$/u.test(actualHeader)) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.bodyH1Separator,
-      input.recordType,
       "markdown_body",
       bodyPath,
       `line:${h1Lines[0].lineNumber}`,
@@ -207,7 +197,6 @@ export function validateTransitionalBodyHeaderRecord(input) {
   if (id && title && actualHeader !== expectedHeader) {
     diagnostics.push(diagnostic(
       transitionalBodyHeaderRuleIds.bodyH1Mirror,
-      input.recordType,
       "markdown_body",
       bodyPath,
       `line:${h1Lines[0].lineNumber}`,
@@ -234,44 +223,28 @@ function listRegistryPaths(baseRootDir, directoryProjectPath, pattern) {
 
 function collectCanonicalRecords(baseRootDir) {
   const records = [];
-  const sources = [
-    {
-      recordType: "decision",
-      directory: decisionsDirProjectPath,
-      pattern: /^MR-\d{4}\.decisions\.registry\.yml$/u,
-      collection: "decisions",
-    },
-    {
-      recordType: "requirement",
-      directory: requirementsDirProjectPath,
-      pattern: /^MR-\d{4}\.requirements\.registry\.yml$/u,
-      collection: "requirements",
-    },
-  ];
+  const registryPaths = listRegistryPaths(
+    baseRootDir,
+    requirementsDirProjectPath,
+    /^MR-\d{4}\.requirements\.registry\.yml$/u,
+  );
 
-  for (const source of sources) {
-    for (const sourcePath of listRegistryPaths(
-      baseRootDir,
-      source.directory,
-      source.pattern,
-    )) {
-      const registryPath = resolveSafeProjectPath(baseRootDir, sourcePath);
-      const registry = readGovernedYamlFile(registryPath.absolute);
-      const collection = registry[source.collection];
+  for (const sourcePath of registryPaths) {
+    const registryPath = resolveSafeProjectPath(baseRootDir, sourcePath);
+    const registry = readGovernedYamlFile(registryPath.absolute);
+    const requirements = registry.requirements;
 
-      if (!Array.isArray(collection)) {
-        throw new Error(`${sourcePath} must define a ${source.collection} array.`);
-      }
-
-      collection.forEach((record, index) => {
-        records.push({
-          recordType: source.recordType,
-          sourcePath,
-          location: `/${source.collection}/${index}`,
-          record,
-        });
-      });
+    if (!Array.isArray(requirements)) {
+      throw new Error(`${sourcePath} must define a requirements array.`);
     }
+
+    requirements.forEach((record, index) => {
+      records.push({
+        sourcePath,
+        location: `/requirements/${index}`,
+        record,
+      });
+    });
   }
 
   return records;
@@ -294,7 +267,6 @@ export function validateTransitionalBodyHeaderCorpus(baseRootDir = rootDir) {
       } catch (error) {
         diagnostics.push(diagnostic(
           transitionalBodyHeaderRuleIds.registryBodyPath,
-          entry.recordType,
           "yaml_registry",
           entry.sourcePath,
           `${entry.location}/body_path`,
@@ -361,7 +333,6 @@ function runNegativeFixtures(baseRootDir = rootDir) {
     const resolvedFixture = resolveSafeProjectPath(baseRootDir, fixturePath);
     const payload = JSON.parse(readUtf8(resolvedFixture.absolute));
     const diagnostics = validateTransitionalBodyHeaderRecord({
-      recordType: payload.record_type,
       sourcePath: fixturePath,
       location: "$/record",
       record: payload.record,
@@ -402,12 +373,12 @@ function writeReports(validation, fixtures) {
   ];
 
   const report = {
-    checker: "transitional-decision-requirement-body-headers",
+    checker: "transitional-requirement-body-headers",
     implemented_requirements: [
       "MR-0002ADR-0004REQ-0002GOV-0001",
       "MR-0002ADR-0004REQ-0002GOV-0002",
     ],
-    scope: ["decision", "functional-requirement", "governance-requirement"],
+    scope: ["functional-requirement", "governance-requirement"],
     records_checked: validation.recordsChecked,
     negative_fixtures_checked: fixtures.checked,
     negative_fixture_results: fixtures.results,
@@ -422,7 +393,7 @@ function writeReports(validation, fixtures) {
   );
 
   const markdown = [
-    "# Transitional Decision and Requirement body headers report",
+    "# Transitional Requirement body headers report",
     "",
     `Records checked: ${report.records_checked}`,
     `Negative fixtures checked: ${report.negative_fixtures_checked}`,
@@ -456,7 +427,7 @@ if (isDirectExecution()) {
     const report = writeReports(validation, fixtures);
 
     if (report.errors.length > 0) {
-      console.error("Transitional Decision and Requirement body header check failed.");
+      console.error("Transitional Requirement body header check failed.");
       console.error("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0001");
       console.error("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0002");
       console.error(`Records checked: ${report.records_checked}`);
@@ -467,7 +438,7 @@ if (isDirectExecution()) {
       process.exit(1);
     }
 
-    console.log("Transitional Decision and Requirement body header check passed.");
+    console.log("Transitional Requirement body header check passed.");
     console.log("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0001");
     console.log("Implemented requirement: MR-0002ADR-0004REQ-0002GOV-0002");
     console.log(`Records checked: ${report.records_checked}`);
@@ -475,7 +446,7 @@ if (isDirectExecution()) {
     console.log(`Warnings: ${report.warnings.length}`);
     console.log(`Errors: ${report.errors.length}`);
   } catch (error) {
-    console.error("Transitional Decision and Requirement body header check failed.");
+    console.error("Transitional Requirement body header check failed.");
     console.error(error.message);
     process.exit(1);
   }
