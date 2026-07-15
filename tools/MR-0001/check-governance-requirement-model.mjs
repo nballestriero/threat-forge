@@ -3,10 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { validateFunctionalRequirementModel } from "./lib/functional-requirement-model-validation.mjs";
+import { validateGovernanceRequirementModel } from "./lib/governance-requirement-model-validation.mjs";
 
 /**
- * @file Functional Requirement complete-model checker.
+ * @file Governance Requirement complete-model checker.
  *
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
@@ -16,13 +16,13 @@ import { validateFunctionalRequirementModel } from "./lib/functional-requirement
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Validates the active Functional Requirement corpus in blocking enforcement
+ * Validates the active Governance Requirement corpus in blocking enforcement
  * mode and writes deterministic JSON and Markdown evidence reports.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
-const rootDir = process.env.TF_FUNCTIONAL_REQUIREMENT_MODEL_ROOT
-  ? path.resolve(process.env.TF_FUNCTIONAL_REQUIREMENT_MODEL_ROOT)
+const rootDir = process.env.TF_GOVERNANCE_REQUIREMENT_MODEL_ROOT
+  ? path.resolve(process.env.TF_GOVERNANCE_REQUIREMENT_MODEL_ROOT)
   : path.resolve(path.dirname(scriptPath), "..", "..");
 
 if (process.argv.length > 2) {
@@ -32,10 +32,10 @@ if (process.argv.length > 2) {
 
 let result;
 try {
-  result = validateFunctionalRequirementModel({ rootDir });
+  result = validateGovernanceRequirementModel({ rootDir });
 } catch (error) {
   console.error(
-    `Functional Requirement model validation could not run: ${error.message}`,
+    `Governance Requirement model validation could not run: ${error.message}`,
   );
   process.exit(2);
 }
@@ -44,7 +44,7 @@ const reportDir = path.join(rootDir, "artifacts", "governed-document-models");
 fs.mkdirSync(reportDir, { recursive: true });
 
 const report = {
-  checker: "check-functional-requirement-model",
+  checker: "check-governance-requirement-model",
   mode: "enforce",
   implemented_requirements: [
     "MR-0001ADR-0007REQ-0002",
@@ -61,13 +61,13 @@ const report = {
 };
 
 fs.writeFileSync(
-  path.join(reportDir, "functional-requirement.report.json"),
+  path.join(reportDir, "governance-requirement.report.json"),
   `${JSON.stringify(report, null, 2)}\n`,
   "utf8",
 );
 
 const markdown = [
-  "# Functional Requirement model report",
+  "# Governance Requirement model report",
   "",
   `Mode: ${report.mode}`,
   `Registry files checked: ${report.registry_paths.length}`,
@@ -87,15 +87,15 @@ const markdown = [
 ];
 
 fs.writeFileSync(
-  path.join(reportDir, "functional-requirement.report.md"),
+  path.join(reportDir, "governance-requirement.report.md"),
   markdown.join("\n"),
   "utf8",
 );
 
 console.log(
   report.error_count === 0
-    ? "Functional Requirement model check passed."
-    : "Functional Requirement model check failed.",
+    ? "Governance Requirement model check passed."
+    : "Governance Requirement model check failed.",
 );
 for (const id of report.implemented_requirements) {
   console.log(`Implemented requirement: ${id}`);
@@ -106,7 +106,7 @@ console.log(`Records checked: ${report.records_checked}`);
 console.log(`Warnings: ${report.warning_count}`);
 console.log(`Errors: ${report.error_count}`);
 console.log(
-  "Report: artifacts/governed-document-models/functional-requirement.report.json",
+  "Report: artifacts/governed-document-models/governance-requirement.report.json",
 );
 for (const item of report.diagnostics) {
   console.log(

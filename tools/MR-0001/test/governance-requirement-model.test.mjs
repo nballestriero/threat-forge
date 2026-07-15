@@ -6,12 +6,12 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
-  functionalRequirementModelRuleIds,
-  validateFunctionalRequirementModel,
-} from "../lib/functional-requirement-model-validation.mjs";
+  governanceRequirementModelRuleIds,
+  validateGovernanceRequirementModel,
+} from "../lib/governance-requirement-model-validation.mjs";
 
 /**
- * @file Deterministic verification of the Functional Requirement complete-model checker.
+ * @file Deterministic verification of the Governance Requirement complete-model checker.
  *
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
@@ -31,7 +31,7 @@ const fixtureRegistry = JSON.parse(
   fs.readFileSync(
     path.join(
       repositoryRoot,
-      "tools/MR-0001/fixtures/functional-requirement-model/negative-fixtures.registry.json",
+      "tools/MR-0001/fixtures/governance-requirement-model/negative-fixtures.registry.json",
     ),
     "utf8",
   ),
@@ -67,14 +67,14 @@ function makeSourceSet(rootDir) {
           ],
           record_variants: [
             {
-              model_id: "functional-requirement",
+              model_id: "governance-requirement",
               discriminator_field: "requirement_type",
-              discriminator_value: "functional",
+              discriminator_value: "governance",
               fields: [
                 {
                   name: "id",
                   order: 1,
-                  pattern: "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
+                  pattern: "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}GOV-\\d{4}$",
                 },
                 { name: "title", order: 2 },
                 {
@@ -86,26 +86,26 @@ function makeSourceSet(rootDir) {
                   name: "requirement_type",
                   order: 4,
                   value_set_id: "FIELD-VALUE-SET-0010",
-                  required_value: "functional",
+                  required_value: "governance",
                 },
                 { name: "macro_requirement_id", order: 5 },
                 { name: "decision_id", order: 6 },
+                { name: "parent_requirement_id", order: 7 },
                 {
                   name: "body_path",
-                  order: 7,
+                  order: 8,
                   template:
                     "docs/reference/project-model/body/requirements/{macro_requirement_id}/{id}_body.md",
                 },
               ],
-              forbidden_fields: ["parent_requirement_id"],
-            },
+                          },
           ],
         },
       },
       {
-        path: "functional-requirement-body.profile.yml",
+        path: "governance-requirement-body.profile.yml",
         value: {
-          profile_id: "functional-requirement-body",
+          profile_id: "governance-requirement-body",
           header: { template: "# {id} — {title}" },
           sections: [
             {
@@ -117,7 +117,7 @@ function makeSourceSet(rootDir) {
               normative_keywords: "forbidden",
             },
             {
-              heading: "Functional obligation",
+              heading: "Governance obligation",
               order: 2,
               cardinality: "exactly_one",
               content_kind: "normative_list",
@@ -128,32 +128,25 @@ function makeSourceSet(rootDir) {
               terminal_punctuation: "period",
             },
             {
-              heading: "Scope",
+              heading: "Verification obligations",
               order: 3,
               cardinality: "exactly_one",
-              content_kind: "classified_label_list",
+              content_kind: "normative_verification_list",
               minimum_items: 1,
-              allowed_prefixes: ["Includes:", "Excludes:"],
-              terminal_punctuation: "forbidden",
-              normative_keywords: "forbidden",
-              duplicate_items: "forbidden",
+              item_subject: "explicit_verification_subject",
+              normative_keywords: ["must", "must not"],
+              obligations_per_item: "exactly_one",
+              terminal_punctuation: "period",
             },
             {
-              heading: "Acceptance",
+              heading: "Failure conditions",
               order: 4,
               cardinality: "exactly_one",
-              content_kind: "acceptance_condition_list",
+              content_kind: "failure_condition_list",
               minimum_items: 1,
-              required_item_prefix: "The requirement is accepted when ",
+              required_item_prefix: "The verification must fail when ",
               conditions_per_item: "exactly_one",
               terminal_punctuation: "period",
-              forbidden_normative_keywords: [
-                "shall",
-                "shall not",
-                "should",
-                "should not",
-                "may",
-              ],
             },
           ],
         },
@@ -164,7 +157,7 @@ function makeSourceSet(rootDir) {
 
 function makeRoot() {
   const root = fs.mkdtempSync(
-    path.join(os.tmpdir(), "tf-functional-requirement-model-"),
+    path.join(os.tmpdir(), "tf-governance-requirement-model-"),
   );
 
   write(
@@ -222,29 +215,37 @@ requirements:
     macro_requirement_id: MR-0001
     decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
+
+  - id: MR-0001ADR-0001REQ-0001GOV-0001
+    title: Canonical governance requirement
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0001ADR-0001REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001GOV-0001_body.md
 `,
   );
   write(
     root,
-    "docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md",
-    `# MR-0001ADR-0001REQ-0001 — Canonical functional requirement
+    "docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001GOV-0001_body.md",
+    `# MR-0001ADR-0001REQ-0001GOV-0001 — Canonical governance requirement
 
 ## Intent
 
-Describe the canonical functional outcome.
+Describe the canonical governance constraint.
 
-## Functional obligation
+## Governance obligation
 
-- ThreatForge must produce one deterministic result.
+- ThreatForge must enforce one deterministic governance constraint.
 
-## Scope
+## Verification obligations
 
-- Includes: canonical functional behavior
-- Excludes: unrelated governance behavior
+- The verification must confirm the deterministic governance constraint.
 
-## Acceptance
+## Failure conditions
 
-- The requirement is accepted when the deterministic result is available.
+- The verification must fail when the governance constraint is absent.
 `,
   );
 
@@ -267,11 +268,11 @@ function applyFixture(root, fixture) {
   }
 }
 
-test("accepts a canonical Functional Requirement logical model", () => {
+test("accepts a canonical Governance Requirement logical model", () => {
   const root = makeRoot();
   try {
     assert.deepEqual(
-      validateFunctionalRequirementModel({
+      validateGovernanceRequirementModel({
         rootDir: root,
         sourceSet: makeSourceSet(root),
       }).diagnostics,
@@ -282,8 +283,8 @@ test("accepts a canonical Functional Requirement logical model", () => {
   }
 });
 
-test("publishes unique stable Functional Requirement rule identifiers", () => {
-  const ids = Object.values(functionalRequirementModelRuleIds);
+test("publishes unique stable Governance Requirement rule identifiers", () => {
+  const ids = Object.values(governanceRequirementModelRuleIds);
   assert.equal(new Set(ids).size, ids.length);
 });
 
@@ -298,7 +299,7 @@ for (const record of fixtureRegistry.fixtures) {
         ),
       );
       applyFixture(root, fixture);
-      const diagnostics = validateFunctionalRequirementModel({
+      const diagnostics = validateGovernanceRequirementModel({
         rootDir: root,
         sourceSet: makeSourceSet(root),
       }).diagnostics;

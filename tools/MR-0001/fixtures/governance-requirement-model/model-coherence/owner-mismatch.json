@@ -1,0 +1,1 @@
+{"operations":[{"file":"docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml","find":"    decision_id: ADR-0001\n    parent_requirement_id:","replace":"    decision_id: ADR-9999\n    parent_requirement_id:"}]}

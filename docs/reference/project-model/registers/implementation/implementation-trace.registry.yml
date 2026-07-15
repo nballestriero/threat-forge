@@ -31,8 +31,10 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0003REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: docs/reference/project-model/registers/checks/local-governance-checks.registry.yml
-    reason: Declare the active local checks consumed by the local check orchestrator.
+    reason: Declare the active local checks and complete-model verification suites consumed by the local check orchestrator.
     verification_command: node tools/repo-check.mjs
 
   - id: MR-0001ADR-0004REQ-0001GOV-0001IMPL-0001
@@ -59,27 +61,6 @@ artifacts:
     implemented_path: tools/MR-0002/create-governed-document.mjs
     reason: Generate deterministic governed Requirement plans through an importable core and atomically apply matching registry records and body files with rollback across installation and optional post-install verification, while consuming shared canonical YAML and controlled-field resolvers.
     verification_command: node tools/MR-0002/create-governed-document.mjs --requirement-type functional --mr MR-0002 --adr ADR-0004 --title "Dry run example" --dry-run
-
-  - id: MR-0002ADR-0004REQ-0002GOV-0001IMPL-0001
-    title: Transitional Governance Requirement body header consistency checker
-    artifact_type: tool
-    status: implemented
-    linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0002GOV-0001
-      - MR-0002ADR-0004REQ-0002GOV-0002
-    implemented_path: tools/MR-0002/check-governed-body-headers.mjs
-    reason: Temporarily validate canonical title fields and linked Markdown H1 headers for Governance Requirement records until their complete-model checker is active, including deterministic negative fixture coverage.
-    verification_command: node tools/MR-0002/check-governed-body-headers.mjs
-
-  - id: MR-0002ADR-0004REQ-0002GOV-0002IMPL-0001
-    title: Transitional Governance Requirement body header negative fixtures
-    artifact_type: fixture
-    status: implemented
-    linked_requirement_ids:
-      - MR-0002ADR-0004REQ-0002GOV-0002
-    implemented_path: tools/MR-0002/fixtures/governed-body-headers
-    reason: Provide deterministic invalid Governance Requirement examples proving that the transitional checker detects missing titles, legacy name fields, missing bodies, missing H1 headers, duplicate H1 headers, legacy separators and title divergence.
-    verification_command: node tools/MR-0002/check-governed-body-headers.mjs
 
   - id: MR-0001ADR-0004REQ-0001GOV-0002IMPL-0001
     title: Documentation field value negative fixtures
@@ -548,6 +529,7 @@ artifacts:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0002ADR-0004REQ-0002GOV-0001
     implemented_path: tools/MR-0001/check-macro-requirement-model.mjs
     reason: Validate complete Macro-requirement registry and body representations in blocking enforcement mode and produce deterministic evidence reports.
     verification_command: node tools/MR-0001/check-macro-requirement-model.mjs
@@ -559,6 +541,7 @@ artifacts:
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/test/macro-requirement-model.test.mjs
     reason: Verify canonical model acceptance, stable rule identifiers and rule-oriented negative fixture coverage.
     verification_command: node --test tools/MR-0001/test/macro-requirement-model.test.mjs
@@ -569,6 +552,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/fixtures/macro-requirement-model
     reason: Provide model-organized invalid examples for registry fields, controlled values, child registries, body sections, normative language and mirrored identity.
     verification_command: node --test tools/MR-0001/test/macro-requirement-model.test.mjs
@@ -593,6 +577,7 @@ artifacts:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0002ADR-0004REQ-0002GOV-0001
     implemented_path: tools/MR-0001/check-decision-model.mjs
     reason: Validate complete Decision registry and Markdown body representations in blocking enforcement mode and produce deterministic evidence reports.
     verification_command: node tools/MR-0001/check-decision-model.mjs
@@ -604,6 +589,7 @@ artifacts:
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/test/decision-model.test.mjs
     reason: Verify canonical Decision acceptance, unique stable rule identifiers and rule-oriented negative fixture coverage.
     verification_command: node --test tools/MR-0001/test/decision-model.test.mjs
@@ -614,6 +600,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/fixtures/decision-model
     reason: Provide deterministic invalid examples for registry fields, controlled values, owner relations, body sections, normative language and registry-to-body coherence.
     verification_command: node --test tools/MR-0001/test/decision-model.test.mjs
@@ -638,6 +625,7 @@ artifacts:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0002ADR-0004REQ-0002GOV-0001
     implemented_path: tools/MR-0001/check-functional-requirement-model.mjs
     reason: Validate complete Functional Requirement registry and Markdown body representations in blocking enforcement mode and produce deterministic evidence reports.
     verification_command: node tools/MR-0001/check-functional-requirement-model.mjs
@@ -649,6 +637,7 @@ artifacts:
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/test/functional-requirement-model.test.mjs
     reason: Verify canonical Functional Requirement acceptance, unique stable rule identifiers and model-organized negative fixture coverage.
     verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
@@ -659,6 +648,56 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/fixtures/functional-requirement-model
     reason: Provide deterministic invalid examples for registry fields, controlled values, identity and owner relations, forbidden parents, derived paths, body sections, body content and title coherence.
     verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
+
+
+  - id: MR-0001ADR-0007REQ-0002IMPL-0007
+    title: Governance Requirement complete-model validation core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    implemented_path: tools/MR-0001/lib/governance-requirement-model-validation.mjs
+    reason: Validate Governance Requirement registry variants, owner and Functional Requirement parent relations, derived body paths and canonical Markdown bodies with stable deterministic diagnostics.
+    verification_command: node --test tools/MR-0001/test/governance-requirement-model.test.mjs
+
+  - id: MR-0001ADR-0007REQ-0002IMPL-0008
+    title: Governance Requirement complete-model checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0002ADR-0004REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/check-governance-requirement-model.mjs
+    reason: Validate complete Governance Requirement registry and Markdown body representations in blocking enforcement mode and produce deterministic evidence reports.
+    verification_command: node tools/MR-0001/check-governance-requirement-model.mjs
+
+  - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0008
+    title: Governance Requirement complete-model verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
+    implemented_path: tools/MR-0001/test/governance-requirement-model.test.mjs
+    reason: Verify canonical Governance Requirement acceptance, unique stable rule identifiers and model-organized negative fixture coverage.
+    verification_command: node --test tools/MR-0001/test/governance-requirement-model.test.mjs
+
+  - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0009
+    title: Governance Requirement complete-model negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
+    implemented_path: tools/MR-0001/fixtures/governance-requirement-model
+    reason: Provide deterministic invalid examples for registry fields, controlled values, identity and owner relations, required Functional Requirement parents, derived paths, body sections, body content and title coherence.
+    verification_command: node --test tools/MR-0001/test/governance-requirement-model.test.mjs

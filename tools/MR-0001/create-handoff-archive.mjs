@@ -439,7 +439,10 @@ git status --short --branch
 node .\\tools\\repo-check.mjs
 node .\\tools\\MR-0001\\check-implementation-trace-registry.mjs
 node .\\tools\\MR-0001\\check-documentation-field-values.mjs
-node .\\tools\\MR-0001\\check-governed-body-headers.mjs
+node .\\tools\\MR-0001\\check-macro-requirement-model.mjs
+node .\\tools\\MR-0001\\check-decision-model.mjs
+node .\\tools\\MR-0001\\check-functional-requirement-model.mjs
+node .\\tools\\MR-0001\\check-governance-requirement-model.mjs
 git status --short --branch
 \`\`\`
 

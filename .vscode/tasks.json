@@ -72,23 +72,6 @@
       }
     },
     {
-      "label": "ThreatForge: check governed body headers",
-      "type": "process",
-      "command": "node",
-      "args": [
-        "tools/MR-0002/check-governed-body-headers.mjs"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "problemMatcher": [],
-      "presentation": {
-        "reveal": "always",
-        "panel": "shared",
-        "clear": true
-      }
-    },
-    {
       "label": "ThreatForge: preview requirement authoring",
       "type": "process",
       "command": "node",

@@ -1,8 +1,0 @@
-{
-  "record": {
-    "id": "MR-9999ADR-9999REQ-9999GOV-9999",
-    "title": "Example",
-    "body_path": "fixture/GOV_body.md"
-  },
-  "body_exists": false
-}

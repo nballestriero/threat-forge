@@ -16,6 +16,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0001
     parent_requirement_id: MR-0002ADR-0001REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0001GOV-0001_body.md
 
@@ -24,6 +25,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0001
     parent_requirement_id: MR-0002ADR-0001REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0001GOV-0002_body.md
 
@@ -40,6 +42,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0002
     parent_requirement_id: MR-0002ADR-0002REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0001GOV-0001_body.md
 
@@ -48,6 +51,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0002
     parent_requirement_id: MR-0002ADR-0002REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0001GOV-0002_body.md
 
@@ -64,6 +68,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0003
     parent_requirement_id: MR-0002ADR-0003REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0003REQ-0001GOV-0001_body.md
 
@@ -72,6 +77,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0003
     parent_requirement_id: MR-0002ADR-0003REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0003REQ-0001GOV-0002_body.md
 
@@ -88,6 +94,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0003
     parent_requirement_id: MR-0002ADR-0003REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0003REQ-0002GOV-0001_body.md
 
@@ -96,6 +103,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0003
     parent_requirement_id: MR-0002ADR-0003REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0003REQ-0002GOV-0002_body.md
 
@@ -112,6 +120,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0004
     parent_requirement_id: MR-0002ADR-0004REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0001GOV-0001_body.md
 
@@ -128,6 +137,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0004
     parent_requirement_id: MR-0002ADR-0004REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0002GOV-0001_body.md
 
@@ -136,6 +146,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0004
     parent_requirement_id: MR-0002ADR-0004REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0002GOV-0002_body.md
 
@@ -152,6 +163,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0005
     parent_requirement_id: MR-0002ADR-0005REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0005REQ-0001GOV-0001_body.md
 
@@ -168,6 +180,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0004
     parent_requirement_id: MR-0002ADR-0004REQ-0003
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0003GOV-0001_body.md
 
@@ -176,6 +189,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0004
     parent_requirement_id: MR-0002ADR-0004REQ-0003
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0003GOV-0002_body.md
 
@@ -192,6 +206,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0005
     parent_requirement_id: MR-0002ADR-0005REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0005REQ-0002GOV-0001_body.md
 
@@ -208,6 +223,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0004
     parent_requirement_id: MR-0002ADR-0004REQ-0004
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0004REQ-0004GOV-0001_body.md
 
@@ -224,6 +240,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0005
     parent_requirement_id: MR-0002ADR-0005REQ-0003
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0005REQ-0003GOV-0001_body.md
 
@@ -240,6 +257,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0001
     parent_requirement_id: MR-0002ADR-0001REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0001REQ-0002GOV-0001_body.md
 
@@ -256,6 +274,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0006
     parent_requirement_id: MR-0002ADR-0006REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001GOV-0001_body.md
 
@@ -272,6 +291,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0006
     parent_requirement_id: MR-0002ADR-0006REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0002GOV-0001_body.md
 
@@ -288,6 +308,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0006
     parent_requirement_id: MR-0002ADR-0006REQ-0003
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0003GOV-0001_body.md
 
@@ -304,6 +325,7 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0002
     parent_requirement_id: MR-0002ADR-0002REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0002GOV-0001_body.md
 
@@ -312,5 +334,6 @@ requirements:
     status: draft
     requirement_type: governance
     macro_requirement_id: MR-0002
+    decision_id: ADR-0002
     parent_requirement_id: MR-0002ADR-0002REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0002REQ-0002GOV-0002_body.md

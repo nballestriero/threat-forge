@@ -10,6 +10,7 @@ import { macroRequirementModelRuleIds, validateMacroRequirementModel } from "../
  * @file Deterministic verification of the Macro-requirement complete-model checker.
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0002
  * @derivedFromDecision MR-0001/ADR-0007
  * @macroRequirement MR-0001
  * @implementationStatus implemented
