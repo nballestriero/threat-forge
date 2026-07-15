@@ -1,0 +1,9 @@
+{
+  "operations": [
+    {
+      "kind": "write",
+      "file": "docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-9999_body.md",
+      "content": "# MR-0001ADR-0001REQ-9999 — Orphan body\n"
+    }
+  ]
+}

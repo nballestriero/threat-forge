@@ -1,0 +1,9 @@
+{
+  "operations": [
+    {
+      "kind": "write",
+      "file": "docs/reference/project-model/registers/decisions/MR-0002.decisions.registry.yml",
+      "content": "schema_version: 1\nregistry_id: MR-0002-decisions-registry\nmacro_requirement_id: MR-0002\n\ndecisions: []\n"
+    }
+  ]
+}

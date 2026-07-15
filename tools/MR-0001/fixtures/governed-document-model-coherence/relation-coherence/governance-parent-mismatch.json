@@ -1,0 +1,10 @@
+{
+  "operations": [
+    {
+      "kind": "replace",
+      "file": "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+      "find": "    parent_requirement_id: MR-0001ADR-0001REQ-0001\n",
+      "replace": "    parent_requirement_id: MR-0001ADR-0001REQ-9999\n"
+    }
+  ]
+}

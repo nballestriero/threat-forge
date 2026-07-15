@@ -85,7 +85,7 @@ checks:
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0005
     title: Governed document cross-model coherence
-    status: planned
+    status: active
     command: node
     args:
       - tools/MR-0001/check-governed-document-model-coherence.mjs
@@ -93,7 +93,7 @@ checks:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
-    description: Planned cross-model checker activated only after every model-specific migration report reaches zero errors.
+    description: Validate exclusive child-registry and body ownership plus the complete Macro-requirement, Decision, Functional Requirement and Governance Requirement relation chain.
 
   - id: MR-0002ADR-0004REQ-0002GOV-0001CHECK-0001
     title: Governed document complete-model verification suites
@@ -105,10 +105,11 @@ checks:
       - tools/MR-0001/test/decision-model.test.mjs
       - tools/MR-0001/test/functional-requirement-model.test.mjs
       - tools/MR-0001/test/governance-requirement-model.test.mjs
+      - tools/MR-0001/test/governed-document-model-coherence.test.mjs
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
-    description: Execute the complete-model verification suites and deterministic negative fixtures for Macro-requirements, Decisions, Functional Requirements and Governance Requirements.
+    description: Execute the complete-model and cross-model verification suites with deterministic negative fixtures for Macro-requirements, Decisions, Functional Requirements, Governance Requirements and their relations.
 
   - id: MR-0002ADR-0002REQ-0001GOV-0002CHECK-0001
     title: Governed repository operation consistency

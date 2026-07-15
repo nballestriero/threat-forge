@@ -1,0 +1,10 @@
+{
+  "operations": [
+    {
+      "kind": "replace",
+      "file": "docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml",
+      "find": "    macro_requirement_id: MR-0001\n",
+      "replace": "    macro_requirement_id: MR-0002\n"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "operations": [
+    {
+      "kind": "replace",
+      "file": "docs/reference/project-model/registers/macro-requirements.registry.yml",
+      "find": "    requirements_registry_path: docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml\n",
+      "replace": "    requirements_registry_path: docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml\n\n  - id: MR-0002\n    title: Duplicate registry owner\n    status: draft\n    macro_requirement_type: product\n    body_path: docs/reference/project-model/body/macro-requirements/MR-0002_body.md\n    decisions_registry_path: docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml\n    requirements_registry_path: docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml\n"
+    },
+    {
+      "kind": "write",
+      "file": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md",
+      "content": "# MR-0002 — Duplicate registry owner\n"
+    }
+  ]
+}

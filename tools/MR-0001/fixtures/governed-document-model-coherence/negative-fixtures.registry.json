@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-document-model-coherence-negative-fixtures",
+  "scope": "governed_document_cross_model_coherence",
+  "fixtures": [
+    {
+      "id": "duplicate-child-registry-owner",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/registry-topology/duplicate-child-registry-owner.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.registry.child-ownership",
+        "governed-document.cross-model.registry.orphan"
+      ]
+    },
+    {
+      "id": "orphan-child-registry",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/registry-topology/orphan-child-registry.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.registry.orphan"
+      ]
+    },
+    {
+      "id": "decision-owner-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/relation-coherence/decision-owner-mismatch.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.decision.owner"
+      ]
+    },
+    {
+      "id": "functional-decision-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/relation-coherence/functional-decision-mismatch.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.functional.decision"
+      ]
+    },
+    {
+      "id": "governance-parent-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/relation-coherence/governance-parent-mismatch.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.governance.parent"
+      ]
+    },
+    {
+      "id": "duplicate-body-path",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/body-ownership/duplicate-body-path.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.body.path-uniqueness",
+        "governed-document.cross-model.body.orphan"
+      ]
+    },
+    {
+      "id": "orphan-body",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-coherence/body-ownership/orphan-body.json",
+      "expected_rule_ids": [
+        "governed-document.cross-model.body.orphan"
+      ]
+    }
+  ]
+}
