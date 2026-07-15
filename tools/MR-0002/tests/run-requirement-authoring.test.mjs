@@ -6,11 +6,19 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import {
+  documentModelIndexProjectPath,
+  documentModelSchemaProjectPath,
+  loadGovernedDocumentModelSourceSet,
+} from "../../MR-0001/lib/governed-document-model-sources.mjs";
+
 /**
  * @file Verifica del consumer e wizard governato di Requirement authoring.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0002
+ * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
+ * @derivedFromDecision MR-0001/ADR-0007
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
@@ -40,6 +48,9 @@ const {
   validateRequirementAuthoringRequest,
 } = await import(runnerUrl);
 const catalog = loadRequirementAuthoringCatalog({ rootDir: projectRoot });
+const documentModelSourceSet = loadGovernedDocumentModelSourceSet({
+  rootDir: projectRoot,
+});
 
 /** @param {string} root @param {string} projectPath @returns {string} */
 function resolveProjectPath(root, projectPath) {
@@ -53,9 +64,17 @@ function resolveProjectPath(root, projectPath) {
  * @returns {void}
  */
 function copyCanonicalSources(workspace) {
-  for (const source of catalog.sources) {
-    const sourcePath = resolveProjectPath(projectRoot, source.path);
-    const targetPath = resolveProjectPath(workspace, source.path);
+  const sourcePaths = new Set([
+    ...catalog.sources.map((source) => source.path),
+    documentModelSchemaProjectPath,
+    documentModelIndexProjectPath,
+    ...documentModelSourceSet.models.map((source) => source.path),
+    ...documentModelSourceSet.profiles.map((source) => source.path),
+  ]);
+
+  for (const projectPath of sourcePaths) {
+    const sourcePath = resolveProjectPath(projectRoot, projectPath);
+    const targetPath = resolveProjectPath(workspace, projectPath);
     fs.mkdirSync(path.dirname(targetPath), { recursive: true });
     fs.copyFileSync(sourcePath, targetPath);
   }

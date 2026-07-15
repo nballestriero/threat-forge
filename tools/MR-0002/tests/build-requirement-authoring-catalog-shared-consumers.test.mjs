@@ -9,19 +9,23 @@ import {
   getDocumentationFieldValueSetByName,
   loadDocumentationFieldValueCatalog,
 } from "../../MR-0001/lib/documentation-field-values.mjs";
+import { loadGovernedDocumentModelSourceSet } from "../../MR-0001/lib/governed-document-model-sources.mjs";
 
 /**
  * @file Verifica della migrazione del Requirement authoring catalog builder ai consumer condivisi.
  *
  * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
+ * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0004
+ * @derivedFromDecision MR-0001/ADR-0007
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
  * Verifies that the Requirement authoring catalog builder reads governed YAML
  * through the shared parser and obtains requirement_type authority from the
- * canonical documentation field value catalog. The builder must not retain a
- * local YAML parser, a local value-set lookup or nominal knowledge of abstract
+ * canonical documentation field value catalog and document-model profiles.
+ * The builder must not retain a local YAML parser, legacy Macro-requirement
+ * field aliases, a local value-set lookup or nominal knowledge of abstract
  * categories that are not stored controlled values.
  */
 
@@ -95,10 +99,13 @@ test("declares the shared governed YAML and controlled-field consumers", () => {
   for (const requiredSourceText of [
     "../MR-0001/lib/governed-yaml.mjs",
     "../MR-0001/lib/documentation-field-values.mjs",
+    "../MR-0001/lib/governed-document-model-sources.mjs",
     "readGovernedYamlFile",
     "loadDocumentationFieldValueCatalog",
     "getDocumentationFieldValueSetByName",
+    "loadGovernedDocumentModelSourceSet",
     "@implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001",
+    "@implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001",
   ]) {
     assert.ok(
       builderSource.includes(requiredSourceText),
@@ -121,6 +128,11 @@ test("does not retain local YAML parsing or controlled-value authority", () => {
     [
       "nominal specialized category rule",
       /===\s*["']specialized["']/u,
+    ],
+    ["legacy Macro-requirement type field", /macro\.type/u],
+    [
+      "hard-coded Macro-requirement registry path",
+      /const\s+macroRequirementsRegistryProjectPath/u,
     ],
   ];
 
@@ -164,4 +176,40 @@ test("reports the canonical taxonomy source in catalog provenance", () => {
     schema_version: controlledFieldCatalog.canonical_source.schema_version,
     registry_id: controlledFieldCatalog.canonical_source.registry_id,
   });
+});
+
+test("projects canonical Macro-requirement types and profile-owned source paths", () => {
+  const controlledFieldCatalog = loadDocumentationFieldValueCatalog({
+    rootDir: projectRoot,
+  });
+  const macroTypeValueSet = getDocumentationFieldValueSetByName(
+    controlledFieldCatalog,
+    "macro_requirement_type",
+  );
+  const allowedTypes = new Set(
+    macroTypeValueSet.values.map((entry) => entry.value),
+  );
+  const sourceSet = loadGovernedDocumentModelSourceSet({
+    rootDir: projectRoot,
+  });
+  const profile = sourceSet.profiles.find(
+    (entry) =>
+      entry.value.profile_id === "macro-requirement-registry",
+  )?.value;
+  const authoringCatalog = runBuilder();
+
+  assert.ok(profile);
+  for (const macro of authoringCatalog.macro_requirements) {
+    assert.ok(allowedTypes.has(macro.macro_requirement_type));
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(macro, "type"),
+      false,
+    );
+  }
+  assert.equal(
+    authoringCatalog.sources.find(
+      (source) => source.kind === "macro_requirements",
+    )?.path,
+    profile.source_path,
+  );
 });

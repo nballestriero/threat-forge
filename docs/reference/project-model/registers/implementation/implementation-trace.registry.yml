@@ -278,8 +278,9 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0003GOV-0001
       - MR-0001ADR-0004REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0001GOV-0001
     implemented_path: tools/MR-0002/build-requirement-authoring-catalog.mjs
-    reason: "Promoted MR-0002ADR-0004REQ-0003GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    reason: "Build the Requirement authoring catalog from shared governed YAML, controlled field values and canonical document-model profiles, including the canonical Macro-requirement type and requirements registry path."
     verification_command: node --check tools/MR-0002/build-requirement-authoring-catalog.mjs
 
   - id: MR-0002ADR-0004REQ-0003IMPL-0001
@@ -379,8 +380,9 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0001ADR-0004REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0001GOV-0001
     implemented_path: tools/MR-0002/tests/build-requirement-authoring-catalog-shared-consumers.test.mjs
-    reason: "Promoted MR-0001ADR-0004REQ-0002GOV-0001IMPL-0004 after the builder migration test and Requirement authoring contract verification succeeded."
+    reason: "Verify that the builder consumes shared governed YAML, controlled field values and document-model profiles without retaining legacy Macro-requirement field aliases or hard-coded profile ownership."
     verification_command: node --test tools/MR-0002/tests/build-requirement-authoring-catalog-shared-consumers.test.mjs
 
   - id: MR-0001ADR-0004REQ-0002GOV-0001IMPL-0005
@@ -421,8 +423,9 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0003GOV-0002
+      - MR-0001ADR-0007REQ-0001GOV-0001
     implemented_path: tools/MR-0002/tests/run-requirement-authoring.test.mjs
-    reason: "Verify canonical scope and parent rules, catalog-derived wizard choices, read-only preview, explicit confirmation, successful checked creation and rollback after post-creation verification failure."
+    reason: "Verify canonical scope and parent rules, catalog-derived wizard choices, complete document-model source dependencies in isolated workspaces, read-only preview, explicit confirmation, successful checked creation and rollback after post-creation verification failure."
     verification_command: node --test tools/MR-0002/tests/run-requirement-authoring.test.mjs
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001IMPL-0002

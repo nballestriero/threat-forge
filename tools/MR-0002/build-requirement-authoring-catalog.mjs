@@ -3,9 +3,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  documentationFieldValuesRegistryProjectPath,
   getDocumentationFieldValueSetByName,
   loadDocumentationFieldValueCatalog,
 } from "../MR-0001/lib/documentation-field-values.mjs";
+import { loadGovernedDocumentModelSourceSet } from "../MR-0001/lib/governed-document-model-sources.mjs";
 import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
 
 /**
@@ -13,18 +15,21 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0001
  * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
+ * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
+ * @derivedFromDecision MR-0001/ADR-0007
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Builds a deterministic, read-only requirement authoring catalog exclusively
- * from the canonical Macro-requirement, Decision, Requirement and controlled
- * documentation field value registries. The catalog is written as JSON to
- * stdout and no repository file is created or modified.
+ * Builds a deterministic, read-only Requirement authoring catalog from the
+ * canonical document-model profiles, Macro-requirement, Decision, Requirement
+ * and controlled documentation field value registries. It does not retain a
+ * second inventory of Macro-requirement fields or controlled values.
  *
- * Side effects: reads governed registry files; writes JSON or diagnostics only
- * to stdout/stderr; exits non-zero on missing, malformed, duplicate or
- * relationally ambiguous canonical data.
+ * Side effects: reads governed registry and profile files; writes JSON or
+ * diagnostics only to stdout/stderr; exits non-zero on missing, malformed,
+ * duplicate or relationally ambiguous canonical data.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -34,20 +39,13 @@ const rootDir = process.env.TF_REQUIREMENT_AUTHORING_CATALOG_ROOT
   ? path.resolve(process.env.TF_REQUIREMENT_AUTHORING_CATALOG_ROOT)
   : defaultRootDir;
 
-const macroRequirementsRegistryProjectPath =
-  "docs/reference/project-model/registers/macro-requirements.registry.yml";
-const requirementsDirectoryProjectPath =
-  "docs/reference/project-model/registers/requirements";
-const taxonomyRegistryProjectPath =
-  "docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml";
-
 const macroRequirementIdPattern = /^MR-\d{4}$/u;
 const decisionIdPattern = /^ADR-\d{4}$/u;
 const requirementIdPattern = /^(MR-\d{4})(ADR-\d{4})REQ-\d{4}(?:GOV-\d{4})?$/u;
 
-/** @param {string} value @returns {string} */
+/** @param {unknown} value @returns {string} */
 function normalizeProjectPath(value) {
-  return String(value ?? "").replaceAll("\\", "/").trim();
+  return String(value ?? "").replaceAll("\\", "/").replace(/^\.\//u, "").trim();
 }
 
 /** @param {string} projectPath @returns {string} */
@@ -73,15 +71,15 @@ function readGovernedRegistry(projectPath) {
   try {
     return readGovernedYamlFile(resolveProjectPath(projectPath));
   } catch (error) {
-    throw new Error(
-      `Cannot read canonical YAML source ${projectPath}: ${error.message}`,
-    );
+    throw new Error(`Cannot read canonical YAML source ${projectPath}: ${error.message}`);
   }
 }
 
 /** @param {unknown} value @param {string} label @returns {Record<string, unknown>} */
 function requireObject(value, label) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(`${label} must be an object.`);
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label} must be an object.`);
+  }
   return value;
 }
 
@@ -104,12 +102,18 @@ function requireUnique(seen, id, label) {
   seen.add(id);
 }
 
-/** @param {string} a @param {string} b @returns {number} */
-function compareIds(a, b) {
-  return a.localeCompare(b, "en", { numeric: true, sensitivity: "base" });
+/** @param {string} left @param {string} right @returns {number} */
+function compareIds(left, right) {
+  return left.localeCompare(right, "en", { numeric: true, sensitivity: "base" });
 }
 
-/** @param {Array<Record<string, unknown>>} sources @param {string} kind @param {string} projectPath @param {Record<string, unknown>} registry */
+/**
+ * @param {Array<Record<string, unknown>>} sources
+ * @param {string} kind
+ * @param {string} projectPath
+ * @param {Record<string, unknown>} registry
+ * @returns {void}
+ */
 function registerSource(sources, kind, projectPath, registry) {
   const schemaVersion = registry.schema_version;
   if (!Number.isInteger(schemaVersion) || schemaVersion < 1) {
@@ -124,130 +128,102 @@ function registerSource(sources, kind, projectPath, registry) {
 }
 
 /**
- * Projects the canonical requirement_type value set into the public authoring
- * catalog shape while preserving the canonical catalog as the sole value
- * inventory and semantic authority.
+ * Projects canonical Requirement type records into the public authoring catalog.
  *
- * @param {Record<string, unknown>} controlledFieldCatalog - Shared catalog.
- * @returns {Array<Record<string, unknown>>} Requirement type projection.
+ * @param {Record<string, unknown>} controlledFieldCatalog
+ * @returns {Array<Record<string, unknown>>}
  */
 function loadRequirementTypes(controlledFieldCatalog) {
   const valueSet = requireObject(
-    getDocumentationFieldValueSetByName(
-      controlledFieldCatalog,
-      "requirement_type",
-    ),
+    getDocumentationFieldValueSetByName(controlledFieldCatalog, "requirement_type"),
     "requirement_type value set",
   );
-  const values = requireArray(
-    valueSet.values,
-    "requirement_type.values",
-  );
-
+  const values = requireArray(valueSet.values, "requirement_type.values");
   const types = values
     .map((entry) => {
       const value = requireObject(entry, "requirement_type value");
-      const typeName = requireString(
-        value.value,
-        "requirement_type.value",
-      );
-
+      const typeName = requireString(value.value, "requirement_type.value");
       if (typeof value.is_specialized !== "boolean") {
         throw new Error(`${typeName}.is_specialized must be boolean.`);
       }
       if (typeof value.requires_parent_requirement !== "boolean") {
-        throw new Error(
-          `${typeName}.requires_parent_requirement must be boolean.`,
-        );
+        throw new Error(`${typeName}.requires_parent_requirement must be boolean.`);
       }
-
       const allowedParentTypes = requireArray(
         value.allowed_parent_requirement_types,
         `${typeName}.allowed_parent_requirement_types`,
-      ).map((item) =>
-        requireString(
-          item,
-          `${typeName}.allowed_parent_requirement_types entry`,
-        ),
-      );
-
+      ).map((item) => requireString(item, `${typeName}.allowed_parent_requirement_types entry`));
       const seenParentTypes = new Set();
       for (const parentType of allowedParentTypes) {
-        requireUnique(
-          seenParentTypes,
-          parentType,
-          `${typeName} allowed parent requirement type`,
-        );
+        requireUnique(seenParentTypes, parentType, `${typeName} allowed parent requirement type`);
       }
-
       return {
         value: typeName,
         meaning: requireString(value.meaning, `${typeName}.meaning`),
         is_specialized: value.is_specialized,
-        requires_parent_requirement:
-          value.requires_parent_requirement,
-        allowed_parent_requirement_types:
-          allowedParentTypes.sort(compareIds),
+        requires_parent_requirement: value.requires_parent_requirement,
+        allowed_parent_requirement_types: allowedParentTypes.sort(compareIds),
       };
     })
     .sort((left, right) => compareIds(left.value, right.value));
 
   const knownTypes = new Set(types.map((entry) => entry.value));
-
   for (const type of types) {
     for (const parentType of type.allowed_parent_requirement_types) {
       if (!knownTypes.has(parentType)) {
-        throw new Error(
-          `${type.value} allows unknown parent requirement type: ${parentType}`,
-        );
+        throw new Error(`${type.value} allows unknown parent requirement type: ${parentType}`);
       }
     }
-
-    if (
-      !type.requires_parent_requirement &&
-      type.allowed_parent_requirement_types.length > 0
-    ) {
-      throw new Error(
-        `${type.value} forbids a parent but declares allowed parent types.`,
-      );
+    if (!type.requires_parent_requirement && type.allowed_parent_requirement_types.length > 0) {
+      throw new Error(`${type.value} forbids a parent but declares allowed parent types.`);
     }
-
-    if (
-      type.requires_parent_requirement &&
-      type.allowed_parent_requirement_types.length === 0
-    ) {
-      throw new Error(
-        `${type.value} requires a parent but declares no allowed parent types.`,
-      );
+    if (type.requires_parent_requirement && type.allowed_parent_requirement_types.length === 0) {
+      throw new Error(`${type.value} requires a parent but declares no allowed parent types.`);
     }
   }
-
   return types;
 }
 
 /**
- * Builds the deterministic requirement authoring catalog.
+ * Resolves selectable Macro-requirement type values from the canonical catalog.
  *
- * @param {string} [baseRootDir] - Repository root; primarily for deterministic tests.
- * @returns {Record<string, unknown>} Catalog derived only from canonical registries.
+ * @param {Record<string, unknown>} controlledFieldCatalog
+ * @returns {Set<string>}
+ */
+function loadMacroRequirementTypes(controlledFieldCatalog) {
+  const valueSet = requireObject(
+    getDocumentationFieldValueSetByName(controlledFieldCatalog, "macro_requirement_type"),
+    "macro_requirement_type value set",
+  );
+  return new Set(
+    requireArray(valueSet.values, "macro_requirement_type.values").map((entry) =>
+      requireString(requireObject(entry, "macro_requirement_type value").value, "macro_requirement_type.value"),
+    ),
+  );
+}
+
+/**
+ * Builds the deterministic Requirement authoring catalog.
+ *
+ * @returns {Record<string, unknown>} Catalog derived only from canonical sources.
  */
 export function buildRequirementAuthoringCatalog() {
   const sources = [];
-  const macroRegistry = readGovernedRegistry(
-    macroRequirementsRegistryProjectPath,
+  const documentModelSourceSet = loadGovernedDocumentModelSourceSet({ rootDir });
+  const macroRegistryProfile = documentModelSourceSet.profiles.find(
+    (entry) => entry.value.profile_id === "macro-requirement-registry",
+  )?.value;
+  const macroRegistryProjectPath = requireString(
+    macroRegistryProfile?.source_path,
+    "macro-requirement registry profile source_path",
   );
-  registerSource(
-    sources,
-    "macro_requirements",
-    macroRequirementsRegistryProjectPath,
-    macroRegistry,
-  );
+  const macroRegistry = readGovernedRegistry(macroRegistryProjectPath);
+  registerSource(sources, "macro_requirements", macroRegistryProjectPath, macroRegistry);
 
-  const controlledFieldCatalog =
-    loadDocumentationFieldValueCatalog({
-      rootDir,
-      taxonomyProjectPath: taxonomyRegistryProjectPath,
-    });
+  const controlledFieldCatalog = loadDocumentationFieldValueCatalog({
+    rootDir,
+    taxonomyProjectPath: documentationFieldValuesRegistryProjectPath,
+  });
   const controlledFieldSource = requireObject(
     controlledFieldCatalog.canonical_source,
     "documentation field value catalog canonical_source",
@@ -255,20 +231,16 @@ export function buildRequirementAuthoringCatalog() {
   registerSource(
     sources,
     "documentation_field_values",
-    requireString(
-      controlledFieldSource.registry_path,
-      "documentation field value registry path",
-    ),
+    requireString(controlledFieldSource.registry_path, "documentation field value registry path"),
     {
       schema_version: controlledFieldSource.schema_version,
       registry_id: controlledFieldSource.registry_id,
     },
   );
 
-  const requirementTypes =
-    loadRequirementTypes(controlledFieldCatalog);
+  const requirementTypes = loadRequirementTypes(controlledFieldCatalog);
   const requirementTypesByName = new Map(requirementTypes.map((entry) => [entry.value, entry]));
-
+  const macroRequirementTypes = loadMacroRequirementTypes(controlledFieldCatalog);
   const macroRecords = requireArray(macroRegistry.macro_requirements, "macro_requirements");
   const seenMacroIds = new Set();
   const catalogMacros = [];
@@ -276,13 +248,25 @@ export function buildRequirementAuthoringCatalog() {
   for (const macroValue of macroRecords) {
     const macro = requireObject(macroValue, "macro-requirement record");
     const macroId = requireString(macro.id, "macro-requirement id");
-    if (!macroRequirementIdPattern.test(macroId)) throw new Error(`Invalid macro-requirement id: ${macroId}`);
+    if (!macroRequirementIdPattern.test(macroId)) {
+      throw new Error(`Invalid macro-requirement id: ${macroId}`);
+    }
     requireUnique(seenMacroIds, macroId, "macro-requirement id");
+
+    const macroRequirementType = requireString(
+      macro.macro_requirement_type,
+      `${macroId}.macro_requirement_type`,
+    );
+    if (!macroRequirementTypes.has(macroRequirementType)) {
+      throw new Error(`${macroId} uses unknown macro_requirement_type: ${macroRequirementType}`);
+    }
 
     const decisionsPath = normalizeProjectPath(
       requireString(macro.decisions_registry_path, `${macroId}.decisions_registry_path`),
     );
-    const requirementsPath = `${requirementsDirectoryProjectPath}/${macroId}.requirements.registry.yml`;
+    const requirementsPath = normalizeProjectPath(
+      requireString(macro.requirements_registry_path, `${macroId}.requirements_registry_path`),
+    );
     const decisionsRegistry = readGovernedRegistry(decisionsPath);
     const requirementsRegistry = readGovernedRegistry(requirementsPath);
     registerSource(sources, "decisions", decisionsPath, decisionsRegistry);
@@ -301,7 +285,9 @@ export function buildRequirementAuthoringCatalog() {
     for (const decisionValue of decisions) {
       const decision = requireObject(decisionValue, `${macroId} decision record`);
       const decisionId = requireString(decision.id, `${macroId} decision id`);
-      if (!decisionIdPattern.test(decisionId)) throw new Error(`Invalid Decision id in ${macroId}: ${decisionId}`);
+      if (!decisionIdPattern.test(decisionId)) {
+        throw new Error(`Invalid Decision id in ${macroId}: ${decisionId}`);
+      }
       requireUnique(seenDecisionIds, decisionId, `${macroId} Decision id`);
       if (requireString(decision.macro_requirement_id, `${macroId}/${decisionId}.macro_requirement_id`) !== macroId) {
         throw new Error(`${macroId}/${decisionId} declares a different macro_requirement_id.`);
@@ -324,13 +310,17 @@ export function buildRequirementAuthoringCatalog() {
       const requirement = requireObject(requirementValue, `${macroId} Requirement record`);
       const requirementId = requireString(requirement.id, `${macroId} Requirement id`);
       const idMatch = requirementId.match(requirementIdPattern);
-      if (!idMatch || idMatch[1] !== macroId) throw new Error(`Invalid Requirement id for ${macroId}: ${requirementId}`);
+      if (!idMatch || idMatch[1] !== macroId) {
+        throw new Error(`Invalid Requirement id for ${macroId}: ${requirementId}`);
+      }
       requireUnique(seenRequirementIds, requirementId, `${macroId} Requirement id`);
       if (requireString(requirement.macro_requirement_id, `${requirementId}.macro_requirement_id`) !== macroId) {
         throw new Error(`${requirementId} declares a different macro_requirement_id.`);
       }
       const decisionId = idMatch[2];
-      if (!decisionById.has(decisionId)) throw new Error(`${requirementId} references unknown Decision ${macroId}/${decisionId}.`);
+      if (!decisionById.has(decisionId)) {
+        throw new Error(`${requirementId} references unknown Decision ${macroId}/${decisionId}.`);
+      }
       const requirementType = requireString(requirement.requirement_type, `${requirementId}.requirement_type`);
       if (!requirementTypesByName.has(requirementType)) {
         throw new Error(`${requirementId} uses unknown concrete requirement_type: ${requirementType}`);
@@ -358,7 +348,9 @@ export function buildRequirementAuthoringCatalog() {
       }
       if (requirement.parent_requirement_id) {
         const parent = requirementRecords.get(requirement.parent_requirement_id);
-        if (!parent) throw new Error(`${requirement.id} references unknown parent Requirement ${requirement.parent_requirement_id}.`);
+        if (!parent) {
+          throw new Error(`${requirement.id} references unknown parent Requirement ${requirement.parent_requirement_id}.`);
+        }
         if (!typeRule.allowed_parent_requirement_types.includes(parent.requirement_type)) {
           throw new Error(
             `${requirement.id} cannot use parent type ${parent.requirement_type}; allowed: ${typeRule.allowed_parent_requirement_types.join(", ")}`,
@@ -380,7 +372,7 @@ export function buildRequirementAuthoringCatalog() {
       id: macroId,
       title: requireString(macro.title, `${macroId}.title`),
       status: requireString(macro.status, `${macroId}.status`),
-      type: requireString(macro.type, `${macroId}.type`),
+      macro_requirement_type: macroRequirementType,
       body_path: normalizeProjectPath(requireString(macro.body_path, `${macroId}.body_path`)),
       decisions: catalogDecisions,
     });
