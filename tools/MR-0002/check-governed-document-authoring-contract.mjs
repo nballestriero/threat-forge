@@ -274,7 +274,7 @@ function main() {
   console.log(`Document types checked: ${firstCatalog.value.document_types.length}`);
   console.log(`Macro-requirements checked: ${firstCatalog.value.macro_requirements.length}`);
   console.log(`Negative fixtures checked: ${fixtures.length}`);
-  const match = testOutput.match(/# tests (\d+)/u);
+  const match = testOutput.match(/(?:#|ℹ)\s*tests\s+(\d+)/u);
   console.log(`Authoring tests checked: ${match ? match[1] : "unknown"}`);
   console.log("Warnings: 0");
   console.log("Errors: 0");

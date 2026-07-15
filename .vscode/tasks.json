@@ -11,9 +11,12 @@
  * @implementsRequirement MR-0002ADR-0003REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0003REQ-0002
  * @implementsRequirement MR-0002ADR-0003REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0002
+ * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
+ * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  */
@@ -193,6 +196,25 @@
         "--create",
         "--request",
         "${relativeFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
+      "label": "ThreatForge: install governed Markdown assistance",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/install-vscode-governed-markdown-assistance.mjs",
+        "--install"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

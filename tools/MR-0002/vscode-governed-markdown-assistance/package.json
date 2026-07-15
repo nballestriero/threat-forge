@@ -1,0 +1,22 @@
+{
+  "name": "threatforge-governed-markdown-assistance",
+  "displayName": "ThreatForge Governed Markdown Assistance",
+  "description": "Live diagnostics, completion, hover and quick fixes for governed ThreatForge Markdown bodies.",
+  "version": "0.1.0",
+  "publisher": "threatforge",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./extension.cjs",
+  "extensionKind": [
+    "workspace"
+  ]
+}

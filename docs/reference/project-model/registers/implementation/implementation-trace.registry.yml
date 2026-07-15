@@ -312,8 +312,10 @@ artifacts:
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0002ADR-0005REQ-0001GOV-0001
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
     implemented_path: tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs
-    reason: Materialize schema association, YAML extension recommendation and active-file preview/create tasks while preserving unrelated workspace configuration and removing the obsolete Requirement-only projection.
+    reason: Materialize schema association, YAML extension recommendation, active-file preview/create tasks and the explicit local governed Markdown assistance installation task while preserving unrelated workspace configuration.
     verification_command: node tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs --check
 
   - id: MR-0001ADR-0004REQ-0002IMPL-0001
@@ -422,8 +424,10 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
     implemented_path: tools/MR-0002/tests/materialize-vscode-governed-document-authoring-adapter.test.mjs
-    reason: Verify active-file task delegation, preservation of unrelated configuration, removal of obsolete managed fragments, non-automatic confirmation and idempotent materialization.
+    reason: Verify active-file authoring delegation, governed Markdown assistance installation task projection, preservation of unrelated configuration, non-automatic confirmation and idempotent materialization.
     verification_command: node --test tools/MR-0002/tests/materialize-vscode-governed-document-authoring-adapter.test.mjs
 
   - id: MR-0002ADR-0002REQ-0002IMPL-0001
@@ -756,3 +760,71 @@ artifacts:
     implemented_path: tools/MR-0001/fixtures/governed-document-model-coherence
     reason: Provide model-organized invalid examples for duplicate and orphan child registries, broken relation chains, duplicate body ownership and orphan bodies.
     verification_command: node --test tools/MR-0001/test/governed-document-model-coherence.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0001IMPL-0001
+    title: Governed Markdown assistance core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0001
+      - MR-0002ADR-0006REQ-0001GOV-0001
+    implemented_path: tools/MR-0002/lib/governed-markdown-assistance.mjs
+    reason: Analyze current unsaved governed Markdown through canonical body profiles and controlled value sets, returning deterministic completions, diagnostics, hover and quick fixes without repository mutation.
+    verification_command: node --test tools/MR-0002/tests/governed-markdown-assistance.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0001GOV-0001IMPL-0001
+    title: Governed Markdown assistance core verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0001
+      - MR-0002ADR-0006REQ-0001GOV-0001
+    implemented_path: tools/MR-0002/tests/governed-markdown-assistance.test.mjs
+    reason: Verify all four models, missing and duplicate sections, canonical ordering, controlled values, deterministic output, hover, quick fixes and side-effect-free analysis.
+    verification_command: node --test tools/MR-0002/tests/governed-markdown-assistance.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0002IMPL-0001
+    title: Thin VS Code governed Markdown assistance adapter
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
+    implemented_path: tools/MR-0002/vscode-governed-markdown-assistance/extension.cjs
+    reason: Map current unsaved VS Code documents, cursor coordinates and editor presentation objects to the shared assistance core without owning canonical rules or performing repository writes.
+    verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0002IMPL-0002
+    title: Local governed Markdown assistance VSIX installer
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
+    implemented_path: tools/MR-0002/install-vscode-governed-markdown-assistance.mjs
+    reason: Package the thin adapter into a deterministic temporary VSIX and install it through the official VS Code CLI without changing canonical repository files.
+    verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0002GOV-0001IMPL-0001
+    title: VS Code governed Markdown assistance adapter verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
+    implemented_path: tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
+    reason: Verify unsaved-text delegation, semantic ordering, stable diagnostic identities, core-supplied quick fixes, absence of duplicated canonical inventories and deterministic VSIX packaging.
+    verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0002GOV-0001IMPL-0002
+    title: Governed Markdown assistance consistency checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0001
+      - MR-0002ADR-0006REQ-0001GOV-0001
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
+    implemented_path: tools/MR-0002/check-governed-markdown-assistance.mjs
+    reason: Enforce four-model coverage, thin-adapter boundaries, deterministic tests and reproducible local VSIX packaging as one blocking repository check.
+    verification_command: node tools/MR-0002/check-governed-markdown-assistance.mjs

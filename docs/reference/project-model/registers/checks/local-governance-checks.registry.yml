@@ -177,3 +177,16 @@ checks:
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
     description: Verify the current generated governed-document schema, active-file preview/create tasks, YAML association and absence of editor-owned canonical rules without modifying the workspace.
+
+  - id: MR-0002ADR-0006REQ-0002GOV-0001CHECK-0001
+    title: Governed Markdown assistance consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0002/check-governed-markdown-assistance.mjs
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0001
+      - MR-0002ADR-0006REQ-0001GOV-0001
+      - MR-0002ADR-0006REQ-0002
+      - MR-0002ADR-0006REQ-0002GOV-0001
+    description: Validate editor-independent analysis for all four governed body models, thin VS Code delegation, live diagnostic and completion semantics, quick fixes and deterministic local VSIX packaging.

@@ -11,7 +11,10 @@ import {
  *
  * @implementsRequirement MR-0002ADR-0005REQ-0003
  * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0002
+ * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0005
+ * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  */
@@ -40,6 +43,7 @@ test("adds managed tasks and preserves unrelated workspace configuration", () =>
     [
       "ThreatForge: preview governed document authoring",
       "ThreatForge: create governed document authoring",
+      "ThreatForge: install governed Markdown assistance",
     ],
   );
   assert.deepEqual(merged.inputs, [unrelatedInput]);
@@ -48,7 +52,10 @@ test("adds managed tasks and preserves unrelated workspace configuration", () =>
 
 test("managed tasks delegate the active request file without automatic confirmation", () => {
   const merged = mergeGovernedDocumentAuthoringTasks({ version: "2.0.0", tasks: [] });
-  for (const task of merged.tasks) {
+  const authoringTasks = merged.tasks.filter((task) =>
+    task.label.includes("document authoring"),
+  );
+  for (const task of authoringTasks) {
     assert.equal(task.command, "node");
     assert.equal(task.options.cwd, "${workspaceFolder}");
     assert.equal(task.args[0], "tools/MR-0002/run-governed-document-authoring.mjs");
@@ -56,6 +63,13 @@ test("managed tasks delegate the active request file without automatic confirmat
     assert.equal(task.args[3], "${relativeFile}");
     assert.equal(task.args.includes("create"), false);
   }
+  const installTask = merged.tasks.find((task) =>
+    task.label.includes("install governed Markdown assistance"),
+  );
+  assert.deepEqual(installTask.args, [
+    "tools/MR-0002/install-vscode-governed-markdown-assistance.mjs",
+    "--install",
+  ]);
   validateGovernedDocumentAuthoringTasks(merged);
 });
 

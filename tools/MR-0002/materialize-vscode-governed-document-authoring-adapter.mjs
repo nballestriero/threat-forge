@@ -10,6 +10,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
  * @implementsRequirement MR-0002ADR-0005REQ-0003
  * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
  * @implementsRequirement MR-0002ADR-0005REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0002
+ * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @macroRequirement MR-0002
  * @implementationStatus implemented
@@ -39,6 +41,8 @@ const schemaMaterializerProjectPath =
   "tools/MR-0002/materialize-governed-document-authoring-schema.mjs";
 const authoringRunnerProjectPath =
   "tools/MR-0002/run-governed-document-authoring.mjs";
+const governedMarkdownInstallerProjectPath =
+  "tools/MR-0002/install-vscode-governed-markdown-assistance.mjs";
 const materializedSchemaProjectPath =
   ".vscode/schemas/governed-document-authoring.schema.json";
 const settingsProjectPath = ".vscode/settings.json";
@@ -49,7 +53,13 @@ const authoringRequestGlob = "**/*.governed-document-authoring.yml";
 const yamlExtensionId = "redhat.vscode-yaml";
 const previewTaskLabel = "ThreatForge: preview governed document authoring";
 const createTaskLabel = "ThreatForge: create governed document authoring";
-const managedTaskLabels = new Set([previewTaskLabel, createTaskLabel]);
+const installMarkdownAssistanceTaskLabel =
+  "ThreatForge: install governed Markdown assistance";
+const managedTaskLabels = new Set([
+  previewTaskLabel,
+  createTaskLabel,
+  installMarkdownAssistanceTaskLabel,
+]);
 const implementationTraceTag = ["@implements", "Requirement"].join("");
 const tasksHeader = `/**
  * @file ThreatForge local VS Code task catalog.
@@ -64,9 +74,12 @@ const tasksHeader = `/**
  * ${implementationTraceTag} MR-0002ADR-0003REQ-0001GOV-0001
  * ${implementationTraceTag} MR-0002ADR-0003REQ-0002
  * ${implementationTraceTag} MR-0002ADR-0003REQ-0002GOV-0001
+ * ${implementationTraceTag} MR-0002ADR-0006REQ-0002
+ * ${implementationTraceTag} MR-0002ADR-0006REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0003
+ * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  */`;
@@ -209,6 +222,22 @@ function writeAtomically(projectPath, text) {
 }
 
 function buildManagedTask(mode) {
+  if (mode === "install-markdown-assistance") {
+    return {
+      label: installMarkdownAssistanceTaskLabel,
+      type: "process",
+      command: "node",
+      args: [governedMarkdownInstallerProjectPath, "--install"],
+      options: { cwd: "${workspaceFolder}" },
+      problemMatcher: [],
+      presentation: {
+        reveal: "always",
+        panel: "shared",
+        clear: true,
+        focus: true,
+      },
+    };
+  }
   const preview = mode === "preview";
   return {
     label: preview ? previewTaskLabel : createTaskLabel,
@@ -239,7 +268,13 @@ export function mergeGovernedDocumentAuthoringTasks(existing) {
     if (replaceable.has(label)) { insertionIndex = Math.min(insertionIndex, preserved.length); continue; }
     preserved.push(task);
   }
-  preserved.splice(insertionIndex, 0, buildManagedTask("preview"), buildManagedTask("create"));
+  preserved.splice(
+    insertionIndex,
+    0,
+    buildManagedTask("preview"),
+    buildManagedTask("create"),
+    buildManagedTask("install-markdown-assistance"),
+  );
   inputs.forEach((value, index) => requireObject(value, `tasks.inputs[${index}]`));
   return { ...existing, version: existing.version ?? "2.0.0", tasks: preserved };
 }
@@ -286,7 +321,7 @@ export function validateGovernedDocumentAuthoringTasks(tasks) {
     if (byLabel.has(label)) throw new Error(`Duplicate VS Code task label: ${label}`);
     byLabel.set(label, task);
   }
-  for (const mode of ["preview", "create"]) {
+  for (const mode of ["preview", "create", "install-markdown-assistance"]) {
     const expected = buildManagedTask(mode);
     const task = byLabel.get(expected.label);
     if (!task) throw new Error(`Missing managed VS Code task: ${expected.label}`);
@@ -337,6 +372,7 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
     tasksStatus: "current",
     previewTask: previewTaskLabel,
     createTask: createTaskLabel,
+    installMarkdownAssistanceTask: installMarkdownAssistanceTaskLabel,
     schema: `./${materializedSchemaProjectPath}`,
     requestGlob: authoringRequestGlob,
     recommendedExtension: yamlExtensionId,
@@ -358,6 +394,7 @@ function main() {
   console.log(`Tasks status: ${result.tasksStatus}`);
   console.log(`Preview task: ${result.previewTask}`);
   console.log(`Create task: ${result.createTask}`);
+  console.log(`Install Markdown assistance task: ${result.installMarkdownAssistanceTask}`);
   console.log(`Schema: ${result.schema}`);
   console.log(`Authoring request glob: ${result.requestGlob}`);
   console.log(`Recommended extension: ${result.recommendedExtension}`);
