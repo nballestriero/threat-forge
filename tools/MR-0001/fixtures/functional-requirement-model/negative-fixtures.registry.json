@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "registry_id": "functional-requirement-model-negative-fixtures",
+  "scope": "functional_requirement_complete_model_checker",
+  "fixtures": [
+    {
+      "id": "missing-record-field",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/registry-fields/missing-record-field.json",
+      "expected_rule_ids": [
+        "functional-requirement.registry.record.fields"
+      ]
+    },
+    {
+      "id": "invalid-controlled-value",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/controlled-values/invalid-controlled-value.json",
+      "expected_rule_ids": [
+        "functional-requirement.registry.record.controlled-value"
+      ]
+    },
+    {
+      "id": "invalid-identity",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/model-coherence/invalid-identity.json",
+      "expected_rule_ids": [
+        "functional-requirement.registry.record.identity"
+      ]
+    },
+    {
+      "id": "owner-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/model-coherence/owner-mismatch.json",
+      "expected_rule_ids": [
+        "functional-requirement.registry.record.owner"
+      ]
+    },
+    {
+      "id": "forbidden-parent",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/model-coherence/forbidden-parent.json",
+      "expected_rule_ids": [
+        "functional-requirement.registry.record.fields",
+        "functional-requirement.registry.record.parent.forbidden"
+      ]
+    },
+    {
+      "id": "derived-path-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/model-coherence/derived-path-mismatch.json",
+      "expected_rule_ids": [
+        "functional-requirement.registry.record.derived-path"
+      ]
+    },
+    {
+      "id": "body-section-structure",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/body-sections/body-section-structure.json",
+      "expected_rule_ids": [
+        "functional-requirement.body.section.structure"
+      ]
+    },
+    {
+      "id": "body-content",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/body-content/invalid-content.json",
+      "expected_rule_ids": [
+        "functional-requirement.body.section.content"
+      ]
+    },
+    {
+      "id": "title-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/functional-requirement-model/model-coherence/title-mismatch.json",
+      "expected_rule_ids": [
+        "functional-requirement.body.header.identity",
+        "functional-requirement.model.title.mirror"
+      ]
+    }
+  ]
+}

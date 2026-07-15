@@ -1,0 +1,9 @@
+{
+  "operations": [
+    {
+      "file": "docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md",
+      "find": "Describe the canonical functional outcome.\n",
+      "replace": "The project must describe the canonical functional outcome.\n"
+    }
+  ]
+}

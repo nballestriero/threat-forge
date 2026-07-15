@@ -617,3 +617,48 @@ artifacts:
     implemented_path: tools/MR-0001/fixtures/decision-model
     reason: Provide deterministic invalid examples for registry fields, controlled values, owner relations, body sections, normative language and registry-to-body coherence.
     verification_command: node --test tools/MR-0001/test/decision-model.test.mjs
+
+  - id: MR-0001ADR-0007REQ-0002IMPL-0005
+    title: Functional Requirement complete-model validation core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    implemented_path: tools/MR-0001/lib/functional-requirement-model-validation.mjs
+    reason: Validate Functional Requirement registry variants, owning Macro-requirement and Decision identities, derived body paths and canonical Markdown bodies with stable deterministic diagnostics.
+    verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
+
+  - id: MR-0001ADR-0007REQ-0002IMPL-0006
+    title: Functional Requirement complete-model migration checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    implemented_path: tools/MR-0001/check-functional-requirement-model.mjs
+    reason: Produce deterministic non-blocking Functional Requirement migration reports and provide the future enforcement entrypoint after the corpus reaches zero errors.
+    verification_command: node tools/MR-0001/check-functional-requirement-model.mjs --report
+
+  - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0006
+    title: Functional Requirement complete-model verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/functional-requirement-model.test.mjs
+    reason: Verify canonical Functional Requirement acceptance, unique stable rule identifiers and model-organized negative fixture coverage.
+    verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
+
+  - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0007
+    title: Functional Requirement complete-model negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/fixtures/functional-requirement-model
+    reason: Provide deterministic invalid examples for registry fields, controlled values, identity and owner relations, forbidden parents, derived paths, body sections, body content and title coherence.
+    verification_command: node --test tools/MR-0001/test/functional-requirement-model.test.mjs
