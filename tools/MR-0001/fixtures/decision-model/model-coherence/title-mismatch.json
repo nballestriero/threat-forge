@@ -1,0 +1,9 @@
+{
+  "operations": [
+    {
+      "file": "docs/reference/project-model/body/decisions/MR-0001/ADR-0001_body.md",
+      "find": "# ADR-0001 \u2014 Canonical decision",
+      "replace": "# ADR-0001 \u2014 Different title"
+    }
+  ]
+}

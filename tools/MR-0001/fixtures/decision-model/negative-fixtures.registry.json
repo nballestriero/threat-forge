@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "registry_id": "decision-model-negative-fixtures",
+  "scope": "decision_complete_model_checker",
+  "fixtures": [
+    {
+      "id": "missing-record-field",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/registry-fields/missing-record-field.json",
+      "expected_rule_ids": [
+        "decision.registry.record.fields"
+      ]
+    },
+    {
+      "id": "invalid-controlled-value",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/controlled-values/invalid-controlled-value.json",
+      "expected_rule_ids": [
+        "decision.registry.record.controlled-value"
+      ]
+    },
+    {
+      "id": "owner-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/model-coherence/owner-mismatch.json",
+      "expected_rule_ids": [
+        "decision.registry.record.owner"
+      ]
+    },
+    {
+      "id": "body-section-structure",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/body-sections/body-section-structure.json",
+      "expected_rule_ids": [
+        "decision.body.section.structure"
+      ]
+    },
+    {
+      "id": "normative-language",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/body-content/normative-language.json",
+      "expected_rule_ids": [
+        "decision.body.section.content"
+      ]
+    },
+    {
+      "id": "status-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/model-coherence/status-mismatch.json",
+      "expected_rule_ids": [
+        "decision.body.status.mirror"
+      ]
+    },
+    {
+      "id": "title-mismatch",
+      "fixture_path": "tools/MR-0001/fixtures/decision-model/model-coherence/title-mismatch.json",
+      "expected_rule_ids": [
+        "decision.body.header.identity",
+        "decision.model.title.mirror"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "operations": [
+    {
+      "file": "docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml",
+      "find": "    decision_type: structural\n",
+      "replace": "    decision_type: unknown\n"
+    }
+  ]
+}

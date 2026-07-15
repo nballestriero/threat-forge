@@ -1,0 +1,9 @@
+{
+  "operations": [
+    {
+      "file": "docs/reference/project-model/body/decisions/MR-0001/ADR-0001_body.md",
+      "find": "Canonical context without normative wording.",
+      "replace": "The project must use this descriptive context."
+    }
+  ]
+}
