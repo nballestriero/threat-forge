@@ -1,0 +1,104 @@
+schema_version: 1
+profile_id: macro-requirement-registry
+title: Macro-requirement YAML registry
+representation_kind: yaml_registry
+applies_to_model_ids:
+  - macro-requirement
+source_path: docs/reference/project-model/registers/macro-requirements.registry.yml
+unknown_root_fields: forbidden
+unknown_record_fields: forbidden
+
+root_fields:
+  - id: macro-requirement.registry.root.schema-version
+    name: schema_version
+    order: 1
+    cardinality: exactly_one
+    value_kind: positive_integer
+    source_kind: format_managed
+    fixed_value: 1
+
+  - id: macro-requirement.registry.root.registry-id
+    name: registry_id
+    order: 2
+    cardinality: exactly_one
+    value_kind: fixed_scalar
+    source_kind: format_managed
+    fixed_value: governed-documentation-macro-requirements-registry
+
+  - id: macro-requirement.registry.root.project
+    name: project
+    order: 3
+    cardinality: exactly_one
+    value_kind: project_identifier
+    source_kind: workspace_derived
+    pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+
+  - id: macro-requirement.registry.root.macro-requirements
+    name: macro_requirements
+    order: 4
+    cardinality: exactly_one
+    value_kind: ordered_record_collection
+    source_kind: authored_collection
+    append_behavior: append_first
+
+record_fields:
+  - id: macro-requirement.registry.record.id
+    name: id
+    order: 1
+    cardinality: exactly_one
+    value_kind: canonical_identifier
+    source_kind: generated
+    pattern: '^MR-\d{4}$'
+    mutable: false
+
+  - id: macro-requirement.registry.record.title
+    name: title
+    order: 2
+    cardinality: exactly_one
+    value_kind: single_line_text
+    source_kind: authored
+    terminal_punctuation: forbidden
+    mirrors_member_id: macro-requirement.body.header.title
+
+  - id: macro-requirement.registry.record.status
+    name: status
+    order: 3
+    cardinality: exactly_one
+    value_kind: controlled_scalar
+    source_kind: controlled
+    value_set_id: FIELD-VALUE-SET-0012
+
+  - id: macro-requirement.registry.record.macro-requirement-type
+    name: macro_requirement_type
+    order: 4
+    cardinality: exactly_one
+    value_kind: controlled_scalar
+    source_kind: controlled
+    value_set_id: FIELD-VALUE-SET-0013
+
+  - id: macro-requirement.registry.record.body-path
+    name: body_path
+    order: 5
+    cardinality: exactly_one
+    value_kind: repository_relative_path
+    source_kind: generated
+    template: docs/reference/project-model/body/macro-requirements/{id}_body.md
+    mutable: false
+
+  - id: macro-requirement.registry.record.decisions-registry-path
+    name: decisions_registry_path
+    order: 6
+    cardinality: exactly_one
+    value_kind: repository_relative_path
+    source_kind: generated
+    template: docs/reference/project-model/registers/decisions/{id}.decisions.registry.yml
+    mutable: false
+
+  - id: macro-requirement.registry.record.requirements-registry-path
+    name: requirements_registry_path
+    order: 7
+    cardinality: exactly_one
+    value_kind: repository_relative_path
+    source_kind: generated
+    template: docs/reference/project-model/registers/requirements/{id}.requirements.registry.yml
+    mutable: false

@@ -1,0 +1,116 @@
+schema_version: 1
+profile_id: decision-registry
+title: Decision YAML registry
+representation_kind: yaml_registry
+applies_to_model_ids:
+  - decision
+source_path_pattern: docs/reference/project-model/registers/decisions/MR-*.decisions.registry.yml
+unknown_root_fields: forbidden
+unknown_record_fields: forbidden
+
+root_fields:
+  - id: decision.registry.root.schema-version
+    name: schema_version
+    order: 1
+    cardinality: exactly_one
+    value_kind: positive_integer
+    source_kind: format_managed
+    fixed_value: 1
+
+  - id: decision.registry.root.registry-id
+    name: registry_id
+    order: 2
+    cardinality: exactly_one
+    value_kind: derived_scalar
+    source_kind: generated
+    template: "{macro_requirement_id}-decisions-registry"
+    mutable: false
+
+  - id: decision.registry.root.macro-requirement-id
+    name: macro_requirement_id
+    order: 3
+    cardinality: exactly_one
+    value_kind: canonical_identifier
+    source_kind: path_derived
+    pattern: '^MR-\d{4}$'
+    mutable: false
+
+  - id: decision.registry.root.decisions
+    name: decisions
+    order: 4
+    cardinality: exactly_one
+    value_kind: ordered_record_collection
+    source_kind: authored_collection
+    append_behavior: append_first
+
+record_fields:
+  - id: decision.registry.record.id
+    name: id
+    order: 1
+    cardinality: exactly_one
+    value_kind: canonical_identifier
+    source_kind: generated
+    pattern: '^ADR-\d{4}$'
+    uniqueness_scope: macro_requirement
+    mutable: false
+
+  - id: decision.registry.record.title
+    name: title
+    order: 2
+    cardinality: exactly_one
+    value_kind: single_line_text
+    source_kind: authored
+    terminal_punctuation: forbidden
+    mirrors_member_id: decision.body.header.title
+
+  - id: decision.registry.record.status
+    name: status
+    order: 3
+    cardinality: exactly_one
+    value_kind: controlled_scalar
+    source_kind: controlled
+    value_set_id: FIELD-VALUE-SET-0007
+    mirrors_member_id: decision.body.section.status
+
+  - id: decision.registry.record.decision-type
+    name: decision_type
+    order: 4
+    cardinality: exactly_one
+    value_kind: controlled_scalar
+    source_kind: controlled
+    value_set_id: FIELD-VALUE-SET-0014
+
+  - id: decision.registry.record.author
+    name: author
+    order: 5
+    cardinality: exactly_one
+    value_kind: single_line_text
+    source_kind: authored_or_configured
+
+  - id: decision.registry.record.date
+    name: date
+    order: 6
+    cardinality: exactly_one
+    value_kind: calendar_date
+    source_kind: generated
+    pattern: '^\d{4}-\d{2}-\d{2}$'
+    mutable: false
+
+  - id: decision.registry.record.macro-requirement-id
+    name: macro_requirement_id
+    order: 7
+    cardinality: exactly_one
+    value_kind: canonical_identifier
+    source_kind: derived
+    pattern: '^MR-\d{4}$'
+    must_equal_member_id: decision.registry.root.macro-requirement-id
+    mutable: false
+
+  - id: decision.registry.record.body-path
+    name: body_path
+    order: 8
+    cardinality: exactly_one
+    value_kind: repository_relative_path
+    source_kind: generated
+    template: docs/reference/project-model/body/decisions/{macro_requirement_id}/{id}_body.md
+    mutable: false

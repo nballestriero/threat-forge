@@ -1,0 +1,38 @@
+schema_version: 1
+model_id: macro-requirement
+title: Macro-requirement
+description: Governed project-level intent represented by one registry record, one Markdown body and two child registries.
+registry_profile_id: macro-requirement-registry
+body_profile_id: macro-requirement-body
+
+identity:
+  registry_id_member_id: macro-requirement.registry.record.id
+  body_id_member_id: macro-requirement.body.header.id
+  registry_title_member_id: macro-requirement.registry.record.title
+  body_title_member_id: macro-requirement.body.header.title
+
+coherence_rules:
+  - id: macro-requirement.model.header.identity
+    kind: mirrored_identity
+    source_member_id: macro-requirement.registry.record.id
+    target_member_id: macro-requirement.body.header.id
+
+  - id: macro-requirement.model.header.title
+    kind: mirrored_value
+    source_member_id: macro-requirement.registry.record.title
+    target_member_id: macro-requirement.body.header.title
+
+  - id: macro-requirement.model.body-path
+    kind: derived_path
+    source_member_id: macro-requirement.registry.record.body-path
+    target_profile_id: macro-requirement-body
+
+  - id: macro-requirement.model.decision-registry
+    kind: required_child_registry
+    source_member_id: macro-requirement.registry.record.decisions-registry-path
+    target_profile_id: decision-registry
+
+  - id: macro-requirement.model.requirement-registry
+    kind: required_child_registry
+    source_member_id: macro-requirement.registry.record.requirements-registry-path
+    target_profile_id: requirement-registry

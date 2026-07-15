@@ -1,0 +1,74 @@
+schema_version: 1
+profile_id: functional-requirement-body
+title: Functional Requirement Markdown body
+representation_kind: markdown_body
+applies_to_model_ids:
+  - functional-requirement
+source_path_pattern: docs/reference/project-model/body/requirements/MR-*/MR-*ADR-*REQ-*_body.md
+excluded_path_patterns:
+  - docs/reference/project-model/body/requirements/MR-*/MR-*ADR-*REQ-*GOV-*_body.md
+unknown_sections: forbidden
+
+header:
+  id: functional-requirement.body.header
+  level: 1
+  order: 1
+  cardinality: exactly_one
+  content_kind: governed_identity_heading
+  template: "# {id} — {title}"
+  members:
+    - id: functional-requirement.body.header.id
+      source_member_id: functional-requirement.registry.record.id
+    - id: functional-requirement.body.header.title
+      source_member_id: functional-requirement.registry.record.title
+
+sections:
+  - id: functional-requirement.body.section.intent
+    heading: Intent
+    order: 1
+    cardinality: exactly_one
+    content_kind: prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: functional-requirement.body.section.functional-obligation
+    heading: Functional obligation
+    order: 2
+    cardinality: exactly_one
+    content_kind: normative_list
+    minimum_items: 1
+    item_subject: explicit
+    normative_keywords:
+      - must
+      - must not
+    obligations_per_item: exactly_one
+    terminal_punctuation: period
+
+  - id: functional-requirement.body.section.scope
+    heading: Scope
+    order: 3
+    cardinality: exactly_one
+    content_kind: classified_label_list
+    minimum_items: 1
+    allowed_prefixes:
+      - "Includes:"
+      - "Excludes:"
+    terminal_punctuation: forbidden
+    normative_keywords: forbidden
+    duplicate_items: forbidden
+
+  - id: functional-requirement.body.section.acceptance
+    heading: Acceptance
+    order: 4
+    cardinality: exactly_one
+    content_kind: acceptance_condition_list
+    minimum_items: 1
+    required_item_prefix: "The requirement is accepted when "
+    conditions_per_item: exactly_one
+    terminal_punctuation: period
+    forbidden_normative_keywords:
+      - shall
+      - shall not
+      - should
+      - should not
+      - may

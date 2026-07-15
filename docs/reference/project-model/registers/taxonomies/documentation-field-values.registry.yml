@@ -123,14 +123,19 @@ field_value_sets:
     description: Lifecycle values for decision records in the governed documentation model.
     values:
       - value: draft
+        label: Draft
         meaning: The decision is under review and can still change.
       - value: accepted
+        label: Accepted
         meaning: The decision is valid and applies to current governed documentation.
       - value: superseded
+        label: Superseded
         meaning: The decision has been replaced by a later governed decision.
       - value: deprecated
+        label: Deprecated
         meaning: The decision is retained for history but should not guide new work.
       - value: rejected
+        label: Rejected
         meaning: The decision record documents an option that was explicitly not adopted.
 
   - id: FIELD-VALUE-SET-0008
@@ -205,3 +210,50 @@ field_value_sets:
         meaning: The materializer remains registered but is intentionally not executed.
       - value: deprecated
         meaning: The materializer remains registered for historical traceability and must not be executed.
+
+  - id: FIELD-VALUE-SET-0012
+    name: macro_requirement_lifecycle_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/macro-requirements.registry.yml
+    applies_to_record: macro_requirements
+    status: draft
+    description: Lifecycle values for Macro-requirement records in the governed document model.
+    values:
+      - value: draft
+        meaning: The Macro-requirement is under review and can still change.
+      - value: accepted
+        meaning: The Macro-requirement is valid and applies to the current governed project model.
+      - value: superseded
+        meaning: The Macro-requirement has been replaced by a newer governed Macro-requirement.
+      - value: deprecated
+        meaning: The Macro-requirement is retained for history but should not guide new work.
+      - value: removed
+        meaning: The Macro-requirement is no longer active and is retained only for traceability.
+
+  - id: FIELD-VALUE-SET-0013
+    name: macro_requirement_type
+    field_name: macro_requirement_type
+    applies_to_registry: docs/reference/project-model/registers/macro-requirements.registry.yml
+    applies_to_record: macro_requirements
+    status: draft
+    description: Concrete Macro-requirement types that can be stored in the governed Macro-requirement registry.
+    values:
+      - value: functional
+        meaning: Macro-requirement that defines a project-level functional intent and owns Decisions and Requirements.
+
+  - id: FIELD-VALUE-SET-0014
+    name: decision_type
+    field_name: decision_type
+    applies_to_registry: docs/reference/project-model/registers/decisions/MR-*.decisions.registry.yml
+    applies_to_record: decisions
+    status: draft
+    description: Concrete classifications for the primary concern governed by a Decision.
+    values:
+      - value: structural
+        meaning: Decision that establishes organization, boundaries, ownership or composition.
+      - value: behavioral
+        meaning: Decision that establishes observable runtime or authoring behavior.
+      - value: operational
+        meaning: Decision that establishes execution, lifecycle or repository operation behavior.
+      - value: governance
+        meaning: Decision that establishes deterministic governance, validation or compliance behavior.

@@ -1,0 +1,195 @@
+schema_version: 1
+profile_id: requirement-registry
+title: Requirement YAML registry
+representation_kind: yaml_registry
+applies_to_model_ids:
+  - functional-requirement
+  - governance-requirement
+source_path_pattern: docs/reference/project-model/registers/requirements/MR-*.requirements.registry.yml
+unknown_root_fields: forbidden
+unknown_record_fields: forbidden
+
+root_fields:
+  - id: requirement.registry.root.schema-version
+    name: schema_version
+    order: 1
+    cardinality: exactly_one
+    value_kind: positive_integer
+    source_kind: format_managed
+    fixed_value: 1
+
+  - id: requirement.registry.root.registry-id
+    name: registry_id
+    order: 2
+    cardinality: exactly_one
+    value_kind: derived_scalar
+    source_kind: generated
+    template: "{macro_requirement_id}-requirements-registry"
+    mutable: false
+
+  - id: requirement.registry.root.macro-requirement-id
+    name: macro_requirement_id
+    order: 3
+    cardinality: exactly_one
+    value_kind: canonical_identifier
+    source_kind: path_derived
+    pattern: '^MR-\d{4}$'
+    mutable: false
+
+  - id: requirement.registry.root.requirements
+    name: requirements
+    order: 4
+    cardinality: exactly_one
+    value_kind: ordered_record_collection
+    source_kind: authored_collection
+    append_behavior: append_first
+
+record_variants:
+  - id: functional-requirement
+    model_id: functional-requirement
+    discriminator_field: requirement_type
+    discriminator_value: functional
+    fields:
+      - id: functional-requirement.registry.record.id
+        name: id
+        order: 1
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: generated
+        pattern: '^MR-\d{4}ADR-\d{4}REQ-\d{4}$'
+        mutable: false
+
+      - id: functional-requirement.registry.record.title
+        name: title
+        order: 2
+        cardinality: exactly_one
+        value_kind: single_line_text
+        source_kind: authored
+        terminal_punctuation: forbidden
+        mirrors_member_id: functional-requirement.body.header.title
+
+      - id: functional-requirement.registry.record.status
+        name: status
+        order: 3
+        cardinality: exactly_one
+        value_kind: controlled_scalar
+        source_kind: controlled
+        value_set_id: FIELD-VALUE-SET-0008
+
+      - id: functional-requirement.registry.record.requirement-type
+        name: requirement_type
+        order: 4
+        cardinality: exactly_one
+        value_kind: controlled_scalar
+        source_kind: controlled
+        value_set_id: FIELD-VALUE-SET-0010
+        required_value: functional
+
+      - id: functional-requirement.registry.record.macro-requirement-id
+        name: macro_requirement_id
+        order: 5
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: derived
+        pattern: '^MR-\d{4}$'
+        mutable: false
+
+      - id: functional-requirement.registry.record.decision-id
+        name: decision_id
+        order: 6
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: derived
+        pattern: '^ADR-\d{4}$'
+        mutable: false
+
+      - id: functional-requirement.registry.record.body-path
+        name: body_path
+        order: 7
+        cardinality: exactly_one
+        value_kind: repository_relative_path
+        source_kind: generated
+        template: docs/reference/project-model/body/requirements/{macro_requirement_id}/{id}_body.md
+        mutable: false
+
+    forbidden_fields:
+      - parent_requirement_id
+
+  - id: governance-requirement
+    model_id: governance-requirement
+    discriminator_field: requirement_type
+    discriminator_value: governance
+    fields:
+      - id: governance-requirement.registry.record.id
+        name: id
+        order: 1
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: generated
+        pattern: '^MR-\d{4}ADR-\d{4}REQ-\d{4}GOV-\d{4}$'
+        mutable: false
+
+      - id: governance-requirement.registry.record.title
+        name: title
+        order: 2
+        cardinality: exactly_one
+        value_kind: single_line_text
+        source_kind: authored
+        terminal_punctuation: forbidden
+        mirrors_member_id: governance-requirement.body.header.title
+
+      - id: governance-requirement.registry.record.status
+        name: status
+        order: 3
+        cardinality: exactly_one
+        value_kind: controlled_scalar
+        source_kind: controlled
+        value_set_id: FIELD-VALUE-SET-0008
+
+      - id: governance-requirement.registry.record.requirement-type
+        name: requirement_type
+        order: 4
+        cardinality: exactly_one
+        value_kind: controlled_scalar
+        source_kind: controlled
+        value_set_id: FIELD-VALUE-SET-0010
+        required_value: governance
+
+      - id: governance-requirement.registry.record.macro-requirement-id
+        name: macro_requirement_id
+        order: 5
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: derived
+        pattern: '^MR-\d{4}$'
+        mutable: false
+
+      - id: governance-requirement.registry.record.decision-id
+        name: decision_id
+        order: 6
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: derived
+        pattern: '^ADR-\d{4}$'
+        mutable: false
+
+      - id: governance-requirement.registry.record.parent-requirement-id
+        name: parent_requirement_id
+        order: 7
+        cardinality: exactly_one
+        value_kind: canonical_identifier
+        source_kind: authored_relation
+        pattern: '^MR-\d{4}ADR-\d{4}REQ-\d{4}$'
+        parent_model_id: functional-requirement
+        same_macro_requirement: true
+        same_decision: true
+        identity_prefix_required: true
+
+      - id: governance-requirement.registry.record.body-path
+        name: body_path
+        order: 8
+        cardinality: exactly_one
+        value_kind: repository_relative_path
+        source_kind: generated
+        template: docs/reference/project-model/body/requirements/{macro_requirement_id}/{id}_body.md
+        mutable: false

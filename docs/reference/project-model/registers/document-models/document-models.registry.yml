@@ -1,0 +1,79 @@
+schema_version: 1
+registry_id: governed-document-models-registry
+scope: governed_project_model_documents
+
+models:
+  - id: macro-requirement
+    title: Macro-requirement
+    definition_path: docs/reference/project-model/registers/document-models/models/macro-requirement.model.yml
+    registry_profile_id: macro-requirement-registry
+    body_profile_id: macro-requirement-body
+
+  - id: decision
+    title: Decision
+    definition_path: docs/reference/project-model/registers/document-models/models/decision.model.yml
+    registry_profile_id: decision-registry
+    body_profile_id: decision-body
+
+  - id: functional-requirement
+    title: Functional Requirement
+    definition_path: docs/reference/project-model/registers/document-models/models/functional-requirement.model.yml
+    registry_profile_id: requirement-registry
+    body_profile_id: functional-requirement-body
+
+  - id: governance-requirement
+    title: Governance Requirement
+    definition_path: docs/reference/project-model/registers/document-models/models/governance-requirement.model.yml
+    registry_profile_id: requirement-registry
+    body_profile_id: governance-requirement-body
+
+representation_profiles:
+  - id: macro-requirement-registry
+    title: Macro-requirement YAML registry
+    representation_kind: yaml_registry
+    profile_path: docs/reference/project-model/registers/document-models/profiles/macro-requirement-registry.profile.yml
+    applies_to_model_ids:
+      - macro-requirement
+
+  - id: macro-requirement-body
+    title: Macro-requirement Markdown body
+    representation_kind: markdown_body
+    profile_path: docs/reference/project-model/registers/document-models/profiles/macro-requirement-body.profile.yml
+    applies_to_model_ids:
+      - macro-requirement
+
+  - id: decision-registry
+    title: Decision YAML registry
+    representation_kind: yaml_registry
+    profile_path: docs/reference/project-model/registers/document-models/profiles/decision-registry.profile.yml
+    applies_to_model_ids:
+      - decision
+
+  - id: decision-body
+    title: Decision Markdown body
+    representation_kind: markdown_body
+    profile_path: docs/reference/project-model/registers/document-models/profiles/decision-body.profile.yml
+    applies_to_model_ids:
+      - decision
+
+  - id: requirement-registry
+    title: Requirement YAML registry
+    representation_kind: yaml_registry
+    profile_path: docs/reference/project-model/registers/document-models/profiles/requirement-registry.profile.yml
+    applies_to_model_ids:
+      - functional-requirement
+      - governance-requirement
+
+  - id: functional-requirement-body
+    title: Functional Requirement Markdown body
+    representation_kind: markdown_body
+    profile_path: docs/reference/project-model/registers/document-models/profiles/functional-requirement-body.profile.yml
+    applies_to_model_ids:
+      - functional-requirement
+
+  - id: governance-requirement-body
+    title: Governance Requirement Markdown body
+    representation_kind: markdown_body
+    profile_path: docs/reference/project-model/registers/document-models/profiles/governance-requirement-body.profile.yml
+    applies_to_model_ids:
+      - governance-requirement

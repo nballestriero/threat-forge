@@ -1,0 +1,42 @@
+schema_version: 1
+model_id: functional-requirement
+title: Functional Requirement
+description: Independently testable governed obligation represented by one functional Requirement registry record and one Markdown body.
+registry_profile_id: requirement-registry
+body_profile_id: functional-requirement-body
+
+identity:
+  registry_id_member_id: functional-requirement.registry.record.id
+  body_id_member_id: functional-requirement.body.header.id
+  registry_title_member_id: functional-requirement.registry.record.title
+  body_title_member_id: functional-requirement.body.header.title
+
+coherence_rules:
+  - id: functional-requirement.model.header.identity
+    kind: mirrored_identity
+    source_member_id: functional-requirement.registry.record.id
+    target_member_id: functional-requirement.body.header.id
+
+  - id: functional-requirement.model.header.title
+    kind: mirrored_value
+    source_member_id: functional-requirement.registry.record.title
+    target_member_id: functional-requirement.body.header.title
+
+  - id: functional-requirement.model.macro-requirement
+    kind: composite_identity_relation
+    source_member_id: functional-requirement.registry.record.macro-requirement-id
+    owner_model_id: macro-requirement
+
+  - id: functional-requirement.model.decision
+    kind: composite_identity_relation
+    source_member_id: functional-requirement.registry.record.decision-id
+    owner_model_id: decision
+
+  - id: functional-requirement.model.parent.forbidden
+    kind: forbidden_relation
+    member_name: parent_requirement_id
+
+  - id: functional-requirement.model.body-path
+    kind: derived_path
+    source_member_id: functional-requirement.registry.record.body-path
+    target_profile_id: functional-requirement-body

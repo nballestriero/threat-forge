@@ -1,0 +1,72 @@
+schema_version: 1
+profile_id: decision-body
+title: Decision Markdown body
+representation_kind: markdown_body
+applies_to_model_ids:
+  - decision
+source_path_pattern: docs/reference/project-model/body/decisions/MR-*/ADR-*_body.md
+unknown_sections: forbidden
+
+header:
+  id: decision.body.header
+  level: 1
+  order: 1
+  cardinality: exactly_one
+  content_kind: governed_identity_heading
+  template: "# {id} — {title}"
+  members:
+    - id: decision.body.header.id
+      source_member_id: decision.registry.record.id
+    - id: decision.body.header.title
+      source_member_id: decision.registry.record.title
+
+sections:
+  - id: decision.body.section.status
+    heading: Status
+    order: 1
+    cardinality: exactly_one
+    content_kind: controlled_scalar_label
+    value_set_id: FIELD-VALUE-SET-0007
+    value_metadata_field: label
+    mirrors_member_id: decision.registry.record.status
+    terminal_punctuation: forbidden
+
+  - id: decision.body.section.context
+    heading: Context
+    order: 2
+    cardinality: exactly_one
+    content_kind: prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: decision.body.section.decision
+    heading: Decision
+    order: 3
+    cardinality: exactly_one
+    content_kind: decision_prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: decision.body.section.consequences
+    heading: Consequences
+    order: 4
+    cardinality: exactly_one
+    content_kind: classified_sentence_list
+    minimum_items: 1
+    allowed_prefixes:
+      - "Benefit:"
+      - "Cost:"
+      - "Risk:"
+      - "Constraint:"
+    terminal_punctuation: period
+    duplicate_items: forbidden
+
+  - id: decision.body.section.non-goals
+    heading: Non-goals
+    order: 5
+    cardinality: zero_or_one
+    content_kind: label_list
+    minimum_items_when_present: 1
+    terminal_punctuation: forbidden
+    normative_keywords: forbidden
+    duplicate_items: forbidden

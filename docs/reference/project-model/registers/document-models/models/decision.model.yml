@@ -1,0 +1,40 @@
+schema_version: 1
+model_id: decision
+title: Decision
+description: Governed architectural or operational choice represented by one Decision registry record and one ADR Markdown body.
+registry_profile_id: decision-registry
+body_profile_id: decision-body
+
+identity:
+  registry_id_member_id: decision.registry.record.id
+  body_id_member_id: decision.body.header.id
+  registry_title_member_id: decision.registry.record.title
+  body_title_member_id: decision.body.header.title
+
+coherence_rules:
+  - id: decision.model.header.identity
+    kind: mirrored_identity
+    source_member_id: decision.registry.record.id
+    target_member_id: decision.body.header.id
+
+  - id: decision.model.header.title
+    kind: mirrored_value
+    source_member_id: decision.registry.record.title
+    target_member_id: decision.body.header.title
+
+  - id: decision.model.status.mirror
+    kind: controlled_value_label_mirror
+    source_member_id: decision.registry.record.status
+    target_member_id: decision.body.section.status
+    value_set_id: FIELD-VALUE-SET-0007
+    label_metadata_field: label
+
+  - id: decision.model.macro-requirement
+    kind: required_owner_relation
+    source_member_id: decision.registry.record.macro-requirement-id
+    owner_model_id: macro-requirement
+
+  - id: decision.model.body-path
+    kind: derived_path
+    source_member_id: decision.registry.record.body-path
+    target_profile_id: decision-body

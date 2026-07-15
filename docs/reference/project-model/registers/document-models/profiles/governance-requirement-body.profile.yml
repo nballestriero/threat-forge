@@ -1,0 +1,66 @@
+schema_version: 1
+profile_id: governance-requirement-body
+title: Governance Requirement Markdown body
+representation_kind: markdown_body
+applies_to_model_ids:
+  - governance-requirement
+source_path_pattern: docs/reference/project-model/body/requirements/MR-*/MR-*ADR-*REQ-*GOV-*_body.md
+unknown_sections: forbidden
+
+header:
+  id: governance-requirement.body.header
+  level: 1
+  order: 1
+  cardinality: exactly_one
+  content_kind: governed_identity_heading
+  template: "# {id} — {title}"
+  members:
+    - id: governance-requirement.body.header.id
+      source_member_id: governance-requirement.registry.record.id
+    - id: governance-requirement.body.header.title
+      source_member_id: governance-requirement.registry.record.title
+
+sections:
+  - id: governance-requirement.body.section.intent
+    heading: Intent
+    order: 1
+    cardinality: exactly_one
+    content_kind: prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: governance-requirement.body.section.governance-obligation
+    heading: Governance obligation
+    order: 2
+    cardinality: exactly_one
+    content_kind: normative_list
+    minimum_items: 1
+    item_subject: explicit
+    normative_keywords:
+      - must
+      - must not
+    obligations_per_item: exactly_one
+    terminal_punctuation: period
+
+  - id: governance-requirement.body.section.verification-obligations
+    heading: Verification obligations
+    order: 3
+    cardinality: exactly_one
+    content_kind: normative_verification_list
+    minimum_items: 1
+    item_subject: explicit_verification_subject
+    normative_keywords:
+      - must
+      - must not
+    obligations_per_item: exactly_one
+    terminal_punctuation: period
+
+  - id: governance-requirement.body.section.failure-conditions
+    heading: Failure conditions
+    order: 4
+    cardinality: exactly_one
+    content_kind: failure_condition_list
+    minimum_items: 1
+    required_item_prefix: "The verification must fail when "
+    conditions_per_item: exactly_one
+    terminal_punctuation: period

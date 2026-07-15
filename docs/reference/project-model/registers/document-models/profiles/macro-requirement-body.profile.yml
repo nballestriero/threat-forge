@@ -1,0 +1,74 @@
+schema_version: 1
+profile_id: macro-requirement-body
+title: Macro-requirement Markdown body
+representation_kind: markdown_body
+applies_to_model_ids:
+  - macro-requirement
+source_path_pattern: docs/reference/project-model/body/macro-requirements/MR-*_body.md
+unknown_sections: forbidden
+
+header:
+  id: macro-requirement.body.header
+  level: 1
+  order: 1
+  cardinality: exactly_one
+  content_kind: governed_identity_heading
+  template: "# {id} — {title}"
+  members:
+    - id: macro-requirement.body.header.id
+      source_member_id: macro-requirement.registry.record.id
+    - id: macro-requirement.body.header.title
+      source_member_id: macro-requirement.registry.record.title
+
+sections:
+  - id: macro-requirement.body.section.intent
+    heading: Intent
+    order: 1
+    cardinality: exactly_one
+    content_kind: prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: macro-requirement.body.section.context
+    heading: Context
+    order: 2
+    cardinality: exactly_one
+    content_kind: prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: macro-requirement.body.section.macro-obligation
+    heading: Macro obligation
+    order: 3
+    cardinality: exactly_one
+    content_kind: normative_list
+    minimum_items: 1
+    item_subject: explicit
+    normative_keywords:
+      - must
+      - must not
+    obligations_per_item: exactly_one
+    terminal_punctuation: period
+
+  - id: macro-requirement.body.section.scope
+    heading: Scope
+    order: 4
+    cardinality: exactly_one
+    content_kind: classified_label_list
+    minimum_items: 1
+    allowed_prefixes:
+      - "Includes:"
+      - "Excludes:"
+    terminal_punctuation: forbidden
+    normative_keywords: forbidden
+    duplicate_items: forbidden
+
+  - id: macro-requirement.body.section.non-goals
+    heading: Non-goals
+    order: 5
+    cardinality: zero_or_one
+    content_kind: label_list
+    minimum_items_when_present: 1
+    terminal_punctuation: forbidden
+    normative_keywords: forbidden
+    duplicate_items: forbidden
