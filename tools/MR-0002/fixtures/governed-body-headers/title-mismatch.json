@@ -1,0 +1,9 @@
+{
+  "record_type": "decision",
+  "record": {
+    "id": "ADR-9999",
+    "title": "Canonical",
+    "body_path": "fixture/ADR-9999_body.md"
+  },
+  "body_text": "# ADR-9999 — Different\n"
+}

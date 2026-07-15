@@ -1,26 +1,40 @@
-schema_version: 1
-registry_id: governed-body-header-negative-fixtures
-scope: governed_body_header_checker
+schema_version: 2
+registry_id: transitional-decision-requirement-body-header-negative-fixtures
+scope: transitional_decision_requirement_body_header_checker
 
 fixtures:
   - id: missing-title
-    root_path: tools/MR-0002/fixtures/governed-body-headers/missing-title
-    expected_error_contains: "MR-9999 is missing title."
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/missing-title.json
+    expected_rule_ids:
+      - transitional-body-header.registry.title
+
   - id: legacy-name-field
-    root_path: tools/MR-0002/fixtures/governed-body-headers/legacy-name-field
-    expected_error_contains: "uses legacy name field"
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/legacy-name-field.json
+    expected_rule_ids:
+      - transitional-body-header.registry.title
+
   - id: missing-body
-    root_path: tools/MR-0002/fixtures/governed-body-headers/missing-body
-    expected_error_contains: "MR-9999 body file is missing"
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/missing-body.json
+    expected_rule_ids:
+      - transitional-body-header.body.exists
+
   - id: missing-h1
-    root_path: tools/MR-0002/fixtures/governed-body-headers/missing-h1
-    expected_error_contains: "has no H1 header"
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/missing-h1.json
+    expected_rule_ids:
+      - transitional-body-header.body.h1.cardinality
+
   - id: duplicate-h1
-    root_path: tools/MR-0002/fixtures/governed-body-headers/duplicate-h1
-    expected_error_contains: "has multiple H1 headers"
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/duplicate-h1.json
+    expected_rule_ids:
+      - transitional-body-header.body.h1.cardinality
+
   - id: legacy-hyphen-separator
-    root_path: tools/MR-0002/fixtures/governed-body-headers/legacy-hyphen-separator
-    expected_error_contains: "uses legacy hyphen separator"
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/legacy-hyphen-separator.json
+    expected_rule_ids:
+      - transitional-body-header.body.h1.separator
+      - transitional-body-header.body.h1.mirror
+
   - id: title-mismatch
-    root_path: tools/MR-0002/fixtures/governed-body-headers/title-mismatch
-    expected_error_contains: "H1 mismatch for MR-9999"
+    fixture_path: tools/MR-0002/fixtures/governed-body-headers/title-mismatch.json
+    expected_rule_ids:
+      - transitional-body-header.body.h1.mirror

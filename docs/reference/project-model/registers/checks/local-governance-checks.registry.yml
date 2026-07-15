@@ -37,7 +37,7 @@ checks:
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0001
     title: Macro-requirement model consistency
-    status: planned
+    status: active
     command: node
     args:
       - tools/MR-0001/check-macro-requirement-model.mjs
@@ -45,7 +45,7 @@ checks:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
-    description: Planned complete-model checker activated only after the Macro-requirement corpus migration reaches zero errors.
+    description: Validate the complete Macro-requirement logical model after the governed corpus migration reached zero errors.
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0002
     title: Decision model consistency
@@ -96,14 +96,15 @@ checks:
     description: Planned cross-model checker activated only after every model-specific migration report reaches zero errors.
 
   - id: MR-0002ADR-0004REQ-0002GOV-0001CHECK-0001
-    title: Governed body header consistency
+    title: Transitional Decision and Requirement body header consistency
     status: active
     command: node
     args:
       - tools/MR-0002/check-governed-body-headers.mjs
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0002GOV-0001
-    description: Validate that registry title fields and Markdown body H1 headers remain coherent.
+      - MR-0002ADR-0004REQ-0002GOV-0002
+    description: Temporarily validate Decision and Requirement title-to-H1 coherence until their complete-model checkers are active; Macro-requirements are owned exclusively by the active complete-model checker.
 
   - id: MR-0002ADR-0002REQ-0001GOV-0002CHECK-0001
     title: Governed repository operation consistency
@@ -135,7 +136,7 @@ checks:
       - tools/MR-0002/check-governed-implementation-scaffolder.mjs
     linked_requirement_ids:
       - MR-0002ADR-0003REQ-0001GOV-0002
-    description: Validate governed scaffold creation, trace synchronization, VS Code mapping and negative fixtures.
+    description: Validate governed scaffold creation, source and registry coherence, implementation trace compatibility, VS Code mapping and governed negative fixtures.
 
   - id: MR-0002ADR-0003REQ-0002GOV-0002CHECK-0001
     title: Governed implementation promotion consistency

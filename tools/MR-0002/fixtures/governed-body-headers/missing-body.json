@@ -1,0 +1,9 @@
+{
+  "record_type": "decision",
+  "record": {
+    "id": "ADR-9999",
+    "title": "Example",
+    "body_path": "fixture/ADR-9999_body.md"
+  },
+  "body_exists": false
+}
