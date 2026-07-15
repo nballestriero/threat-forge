@@ -1,29 +1,30 @@
 # ADR-0006 — Handoff locale come artefatto governato di continuità operativa
 
-## Stato
+## Status
 
-Draft.
+Draft
 
-## Contesto
+## Context
 
-Il lavoro governato può diventare più lungo della singola sessione operativa. In questi casi serve un handoff riproducibile che permetta di riprendere il lavoro senza dipendere dalla memoria della chat o da archivi prodotti esternamente.
+Il lavoro governato può estendersi oltre una singola sessione operativa. In questi casi un handoff riproducibile consente di riprendere il lavoro senza dipendere dalla memoria della chat o da archivi prodotti esternamente.
 
-Lo ZIP di handoff deve essere generato dal repository locale, perché il repository è la fonte canonica per stato, registri, check, comandi e contenuto del progetto.
+Lo ZIP di handoff nasce dal repository locale, che costituisce la fonte canonica per stato, registri, check, comandi e contenuto del progetto.
 
-Un handoff solo riassuntivo non è sufficiente quando un LLM deve ripartire dallo sviluppo: il modello deve poter leggere anche i file governati, il codice, i contratti, i test e gli altri sorgenti tracciati.
+Un handoff soltanto riassuntivo non offre sufficiente continuità per la ripresa dello sviluppo da parte di un LLM: il modello necessita anche dei file governati, del codice, dei contratti, dei test e degli altri sorgenti tracciati.
 
-## Decisione
+## Decision
 
-Il progetto introduce un handoff archive locale come artefatto governato di continuità operativa.
+ThreatForge introduce un handoff archive locale come artefatto governato di continuità operativa.
 
-L'archive deve essere prodotto da un tool locale tracciato nel registro di implementation trace. Il contenuto deve usare la label canonica di prodotto `ThreatForge` e includere esclusivamente il progetto operativo corrente; gli artefatti legacy archiviati sotto `old/` restano fuori dallo snapshot di continuità.
+Un tool locale tracciato nell'implementation trace registry produce l'archive. Il contenuto usa la label canonica di prodotto `ThreatForge` e include esclusivamente il progetto operativo corrente; gli artefatti legacy archiviati sotto `old/` restano esclusi dallo snapshot di continuità.
 
-L'archive deve includere anche uno snapshot del progetto basato sui file tracciati da Git, così da permettere a un LLM o a un operatore di leggere l'intero stato sorgente necessario per riprendere lo sviluppo. Lo snapshot non deve includere `.git`, dipendenze installate, cache, build output o artifact generati non tracciati.
+L'archive include uno snapshot del progetto basato sui file tracciati da Git, così che un LLM o un operatore possa leggere lo stato sorgente necessario per riprendere lo sviluppo. Lo snapshot esclude `.git`, dipendenze installate, cache, build output e artifact generati non tracciati.
 
-## Conseguenze
+## Consequences
 
-- L'handoff non viene più prodotto dalla sandbox della chat come fonte canonica.
-- Lo stato del repository e l'output dei check vengono raccolti dal tool locale.
-- Il contenuto dell'archive può essere usato per continuare in una nuova chat o consegnare il contesto a un operatore.
-- L'archive diventa più grande, perché contiene anche lo snapshot dei file tracciati del progetto.
-- Il tool resta sotto MR-0001 perché impacchetta documentazione governata, registri, sorgenti tracciati e verifiche di continuità.
+- Benefit: L'handoff deriva dalla fonte canonica locale anziché dalla sandbox della chat.
+- Benefit: Lo stato del repository e l'output dei check vengono raccolti dal tool locale.
+- Benefit: L'archive supporta la continuazione in una nuova chat o la consegna del contesto a un operatore.
+- Cost: L'archive aumenta di dimensione perché contiene lo snapshot dei file tracciati.
+- Constraint: Il tool resta sotto MR-0001 perché impacchetta documentazione governata, registri, sorgenti tracciati e verifiche di continuità.
+- Constraint: Lo snapshot include soltanto il progetto operativo corrente e gli artefatti Git tracciati ammessi.

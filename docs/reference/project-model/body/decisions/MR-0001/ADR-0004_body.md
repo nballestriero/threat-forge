@@ -2,27 +2,25 @@
 
 ## Status
 
-Draft.
+Draft
 
 ## Context
 
 Il vocabolario controllato introdotto da ADR-0002 richiede una distinzione più precisa tra termine canonico, alias ammesso, traduzione, label storica, label candidata e label vietata.
 
-Un campo generico come `allowed_labels` è troppo permissivo: può mescolare sinonimi, acronimi, traduzioni, nomi storici, varianti operative e label di visualizzazione. Questa ambiguità rende difficile stabilire quale forma sia canonica, quale sia solo leggibile, quale sia accettata per compatibilità e quale debba essere segnalata dai controlli.
+Un campo generico come `allowed_labels` è troppo permissivo: può mescolare sinonimi, acronimi, traduzioni, nomi storici, varianti operative e label di visualizzazione. Questa ambiguità rende difficile stabilire quale forma sia canonica, quale sia soltanto leggibile, quale sia accettata per compatibilità e quale sia segnalata dai controlli.
 
-La documentazione governata usa anche campi ricorrenti come `status`, `artifact_type`, `requirement_type`, `decision_type`, `check_status` e ruoli delle label. Se tali valori restano stringhe libere, registri diversi possono usare valori simili con significati diversi.
+La documentazione governata usa anche campi ricorrenti come `status`, `artifact_type`, `requirement_type`, `decision_type`, `check_status` e ruoli delle label. Stringhe libere in questi campi consentono a registri diversi di usare valori simili con significati differenti.
 
-Il caso più rischioso è `status`: valori come `active`, `draft`, `implemented` o `deprecated` non hanno un significato universale. Il significato cambia in base al registro e al tipo di record. Un check `active` viene eseguito dall'orchestratore; un termine `active` è utilizzabile nel vocabolario; una decisione `accepted` è applicabile; un artefatto `implemented` esiste ed è verificabile. Una tassonomia globale di `status` sarebbe quindi ambigua.
+Il caso più rischioso è `status`: valori come `active`, `draft`, `implemented` o `deprecated` non hanno un significato universale. Il significato cambia in base al registro e al tipo di record. Un check `active` viene eseguito dall'orchestratore; un termine `active` è utilizzabile nel vocabolario; una Decision `accepted` è applicabile; un artefatto `implemented` esiste ed è verificabile. Una tassonomia globale di `status` risulterebbe ambigua.
 
-I nomi temporanei usati per organizzare il lavoro non devono diventare concetti canonici del modello documentale. Possono restare nei path tecnici o nelle procedure operative, ma non devono essere usati come termini di dominio nella documentazione governata.
+I nomi temporanei usati per organizzare il lavoro non appartengono ai concetti canonici del modello documentale. Restano utilizzabili nei path tecnici o nelle procedure operative senza diventare termini di dominio nella documentazione governata.
 
 ## Decision
 
-Il vocabolario controllato deve rappresentare le label tramite un modello esplicito basato su ruolo, lingua e ragione d'uso.
+Il vocabolario controllato rappresenta le label tramite un modello esplicito basato su ruolo, lingua e ragione d'uso.
 
-Ogni termine governato deve mantenere un solo `canonical_name` e una `canonical_language`.
-
-Ogni label associata a un termine deve dichiarare almeno:
+Ogni termine governato mantiene un solo `canonical_name` e una `canonical_language`. Ogni label associata a un termine dichiara almeno:
 
 - `value`;
 - `language`;
@@ -31,22 +29,16 @@ Ogni label associata a un termine deve dichiarare almeno:
 
 I ruoli iniziali delle label sono:
 
-- `preferred`: forma preferita da usare nella documentazione governata;
-- `accepted_alias`: alias ammesso per una ragione esplicita, per esempio acronimo tecnico o compatibilità storica;
-- `translation`: traduzione leggibile, non fonte canonica;
-- `forbidden`: forma vietata da segnalare;
-- `candidate`: forma proposta ma non ancora accettata;
-- `historical`: forma storica riconoscibile ma non preferita per nuovo testo.
+- `preferred`: forma preferita nella documentazione governata;
+- `accepted_alias`: alias ammesso per una ragione esplicita, come un acronimo tecnico o una compatibilità storica;
+- `translation`: traduzione leggibile e non canonica;
+- `forbidden`: forma vietata e segnalabile;
+- `candidate`: forma proposta e non ancora accettata;
+- `historical`: forma storica riconoscibile e non preferita per nuovo testo.
 
-Un sinonimo non è automaticamente una label ammessa. Ogni alias accettato deve avere una ragione esplicita.
+Un sinonimo non costituisce automaticamente una label ammessa. Ogni alias accettato conserva una ragione esplicita. Le traduzioni supportano la lettura senza creare una seconda fonte canonica. Le label vietate e le frasi temporanee da evitare sono registrate esplicitamente per consentire segnalazioni deterministiche.
 
-Le traduzioni possono aiutare la lettura, ma non creano una seconda fonte canonica.
-
-Le label vietate e le frasi temporanee da evitare devono essere registrate in modo esplicito, così che futuri controlli terminologici possano segnalarle deterministicamente.
-
-I campi documentali e di registro con valori ripetuti devono essere progressivamente controllati tramite value set tassonomici.
-
-Ogni value set deve dichiarare almeno:
+I campi documentali e di registro con valori ripetuti evolvono verso value set tassonomici contestuali. Ogni value set dichiara almeno:
 
 - `name`;
 - `field_name`;
@@ -56,57 +48,35 @@ Ogni value set deve dichiarare almeno:
 - `description`;
 - lista dei valori ammessi con `value` e `meaning`.
 
-Non deve esistere una tassonomia globale generica per `status` quando lo stesso valore può avere significati diversi in registri diversi. I valori controllati devono essere specifici del contesto: per esempio `check_status`, `implementation_artifact_status`, `decision_status`, `requirement_lifecycle_status`, `vocabulary_term_status` e `field_value_set_status`.
+Non esiste una tassonomia globale generica per `status` quando lo stesso valore assume significati differenti in registri diversi. I valori controllati sono specifici del contesto, tra cui `check_status`, `implementation_artifact_status`, `decision_status`, `requirement_lifecycle_status`, `vocabulary_term_status` e `field_value_set_status`.
 
-Lo stato di un requirement deve essere distinto dallo stato di implementazione. Il lifecycle di un requirement può essere `draft`, `accepted`, `superseded`, `deprecated` o `removed`; l'implementazione deve essere derivata da tracciabilità e verifiche, non forzata nello stesso campo `status`.
+Lo stato di un Requirement resta distinto dallo stato di implementazione. Il lifecycle di un Requirement comprende `draft`, `accepted`, `superseded`, `deprecated` e `removed`; lo stato implementativo deriva dalla tracciabilità e dalle verifiche anziché dal medesimo campo `status`.
 
-Il campo `requirement_type` deve contenere esclusivamente tipi concreti registrati nel proprio value set contestuale. `specialized` rappresenta una categoria astratta e non deve essere registrato come valore del campo né trattato come alias di un tipo concreto.
+Il campo `requirement_type` contiene esclusivamente tipi concreti registrati nel proprio value set contestuale. `specialized` rappresenta una categoria astratta e non compare come valore del campo né come alias di un tipo concreto.
 
-Ogni tipo concreto deve dichiarare, oltre a `value` e `meaning`, se appartiene alla categoria specializzata, se richiede un requisito padre e quali tipi concreti sono ammessi come padre. Il primo insieme supportato comprende `functional` e `governance`; nuovi tipi come `security`, `performance`, `privacy` o `compliance` devono essere aggiunti come valori concreti governati con proprie regole applicabili.
+Ogni tipo concreto dichiara, oltre a `value` e `meaning`, l'eventuale appartenenza alla categoria specializzata, la presenza di un Requirement padre e i tipi concreti ammessi come padre. Il primo insieme supportato comprende `functional` e `governance`; valori futuri come `security`, `performance`, `privacy` o `compliance` entrano come tipi concreti governati con regole applicabili proprie.
 
-## Scope
-
-In scope:
-
-- sostituire `allowed_labels` con label dotate di ruolo esplicito;
-- distinguere termine canonico, alias, traduzione, label vietata, label candidata e label storica;
-- chiarire che le traduzioni non sono fonti canoniche alternative;
-- introdurre value set tassonomici contestuali per i campi ricorrenti;
-- scomporre `status` in value set specifici per registro e situazione;
-- impedire che nomi temporanei operativi diventino concetti canonici.
-
-Out of scope:
-
-- definire tutte le tassonomie del progetto;
-- implementare il controllo terminologico completo sul corpus;
-- definire metriche di qualità del corpus;
-- definire il registro asset;
-- decidere il modello completo di implementation state derivato.
+La decisione comprende la sostituzione di `allowed_labels`, la distinzione dei ruoli delle label, i value set contestuali, la scomposizione di `status` e l'esclusione dei nomi temporanei dai concetti canonici. Gli incrementi derivati aggiornano il registro del vocabolario, definiscono i primi value set, introducono il Governance Requirement di coerenza e aggiungono il controllo sulle label e sui valori fuori contesto.
 
 ## Consequences
 
-### Conseguenze Positive (Benefici)
+- Benefit: Il vocabolario riduce l'ambiguità tra forme canoniche, sinonimi, traduzioni e acronimi.
+- Benefit: Le label ammesse conservano una ragione esplicita.
+- Benefit: Le traduzioni migliorano la leggibilità senza diventare fonti canoniche.
+- Benefit: I controlli futuri distinguono errori, warning e candidati.
+- Benefit: I valori dei campi ricorrenti diventano verificabili nel proprio contesto.
+- Benefit: Il campo `status` non viene trattato come una lista globale ambigua.
+- Benefit: Ogni valore controllato conserva un significato adatto al registro e al record di applicazione.
+- Cost: Il registro del vocabolario diventa più verboso.
+- Cost: Il registro dei valori tassonomici richiede più record.
+- Cost: La classificazione delle label richiede disciplina editoriale.
+- Cost: I tool di validazione gestiscono più campi e più contesti.
+- Risk: Una label utile alla lettura può sembrare canonica quando il ruolo non è classificato correttamente.
 
-- Il vocabolario diventa meno ambiguo.
-- Sinonimi, traduzioni e acronimi vengono trattati come casi distinti.
-- Le label ammesse richiedono una ragione esplicita.
-- Le traduzioni possono essere usate per leggibilità senza diventare fonte canonica.
-- I futuri controlli possono distinguere errori, warning e candidati.
-- I valori dei campi ricorrenti diventano verificabili.
-- Il campo `status` non viene più trattato come una lista globale ambigua.
-- Ogni valore controllato ha un significato adatto alla situazione in cui viene usato.
+## Non-goals
 
-### Conseguenze Negative (Costi/Rischi)
-
-- Il registro vocabolario diventa più verboso.
-- Il registro dei valori tassonomici richiede più record.
-- Serve disciplina editoriale per non accettare sinonimi inutili.
-- I tool futuri devono validare più campi e più contesti.
-- Alcune label utili alla lettura devono essere classificate con attenzione per non sembrare canoniche.
-
-## Follow-up
-
-1. Aggiornare il registro `documentation-terms.registry.yml` al modello label con ruoli espliciti.
-2. Definire un primo registro di value set contestuali per i campi ricorrenti.
-3. Definire un requisito specializzato per verificare schema e coerenza dei value set.
-4. Implementare un tool che segnali label vietate, alias sospetti, termini candidati e valori fuori dal proprio value set contestuale.
+- Definire tutte le tassonomie del progetto
+- Implementare il controllo terminologico completo sul corpus nella decisione stessa
+- Definire metriche di qualità del corpus
+- Definire il registro asset
+- Decidere il modello completo di implementation state derivato

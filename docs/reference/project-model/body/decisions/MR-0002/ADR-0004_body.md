@@ -2,15 +2,15 @@
 
 ## Status
 
-Draft.
+Draft
 
 ## Context
 
-I controlli deterministici intercettano divergenze dopo che la documentazione e stata scritta. Questo e necessario, ma non basta dal punto di vista operativo: l'autore puo gia aver duplicato titoli, id, path e campi controllati in piu file.
+I controlli deterministici intercettano divergenze dopo la scrittura della documentazione. Questa protezione è necessaria, ma non elimina il rischio operativo di duplicare titoli, identificativi, path e campi controllati in più file.
 
-La documentazione governata richiede coerenza tra registri YAML, body Markdown, identificativi, titoli, path e valori controllati. Se questi elementi vengono scritti manualmente, la probabilita di errore cresce a ogni nuovo requisito o decisione.
+La documentazione governata richiede coerenza tra registri YAML, body Markdown, identificativi, titoli, path e valori controllati. La scrittura manuale di questi elementi aumenta la probabilità di errore a ogni nuovo Requirement o Decision.
 
-Il modello deve quindi distinguere tre livelli:
+Il modello distingue tre livelli:
 
 - guida editoriale durante la scrittura;
 - generatori deterministici che creano record e body coerenti;
@@ -18,31 +18,29 @@ Il modello deve quindi distinguere tre livelli:
 
 ## Decision
 
-La documentazione governata deve supportare authoring guidato tramite strumenti locali e deterministici.
+ThreatForge supporta l'authoring guidato della documentazione governata tramite strumenti locali e deterministici.
 
-Il registro rimane la fonte canonica strutturata per campi come `id`, `title`, `status`, `body_path` e relazioni. Il body Markdown ripete i dati necessari alla lettura, ma non diventa fonte autonoma per i campi strutturati.
+Il registro rimane la fonte canonica strutturata per campi come `id`, `title`, `status`, `body_path` e relazioni. Il body Markdown ripete i dati necessari alla lettura senza diventare fonte autonoma dei campi strutturati.
 
-I generatori devono creare insieme il record di registro e il body associato, derivando automaticamente identificativi, path e header Markdown quando possibile.
+I generatori creano insieme il record di registro e il body associato, derivando automaticamente identificativi, path e header Markdown quando possibile.
 
-L'authoring guidato dei requisiti deve derivare dalle fonti canoniche un catalogo deterministico di macro-requirement, decisioni, requisiti padre, valori controllati, significati e regole applicabili. Dal medesimo catalogo devono poter essere prodotti lo schema editoriale e il wizard CLI, senza duplicare enum o descrizioni nel codice.
+L'authoring guidato dei Requirement deriva dalle fonti canoniche un catalogo deterministico di Macro-requirement, Decision, Requirement padre, valori controllati, significati e regole applicabili. Il medesimo catalogo alimenta lo schema editoriale e il wizard CLI senza duplicare enum o descrizioni nel codice.
 
-Il flusso di scrittura deve separare preview e creazione confermata. La creazione deve applicare atomicamente record e body, quindi eseguire i controlli governati applicabili. `specialized` non deve essere accettato come tipo concreto né come alias di `governance`.
+Il flusso separa preview e creazione confermata. La creazione applica atomicamente record e body e poi esegue i controlli governati applicabili. `specialized` non è un tipo concreto né un alias di `governance`.
 
-Il core di authoring deve restare indipendente dall'IDE e riutilizzabile da CLI, editor, app e automazioni.
+Il core di authoring rimane indipendente dall'IDE e riutilizzabile da CLI, editor, app e automazioni.
 
-I check restano obbligatori come rete di sicurezza, ma non devono essere l'unico modo per mantenere coerenza.
+I check restano la rete di sicurezza finale senza costituire l'unico meccanismo di coerenza.
 
 ## Consequences
 
-- Gli autori non dovrebbero creare manualmente id e path quando questi possono essere generati.
-- VS Code o editor equivalenti possono usare JSON Schema, task e snippet per guidare la compilazione.
-- I generatori CLI sono il primo livello implementativo, prima di eventuali estensioni editor dedicate.
-- Ogni generatore deve essere tracciato come artefatto implementativo e collegato ai requisiti che supporta.
+- Benefit: Gli autori evitano la creazione manuale di identificativi e path derivabili.
+- Benefit: VS Code ed editor equivalenti possono usare JSON Schema, task e snippet per guidare la compilazione.
+- Benefit: I generatori CLI costituiscono il primo livello implementativo prima di estensioni editor dedicate.
+- Constraint: Ogni generatore resta tracciato come artefatto implementativo e collegato ai Requirement supportati.
 
 ## Non-goals
 
-Questa decisione non introduce ancora una estensione VS Code dedicata.
-
-Questa decisione non sostituisce i controlli deterministici esistenti.
-
-Questa decisione non rende il body Markdown fonte canonica dei campi strutturati.
+- Introdurre immediatamente una estensione VS Code dedicata
+- Sostituire i controlli deterministici esistenti
+- Rendere il body Markdown fonte canonica dei campi strutturati
