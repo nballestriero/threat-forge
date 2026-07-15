@@ -131,14 +131,16 @@
               "ADR-0002",
               "ADR-0003",
               "ADR-0004",
-              "ADR-0006"
+              "ADR-0006",
+              "ADR-0007"
             ],
             "markdownEnumDescriptions": [
               "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
               "Vocabolario controllato della documentazione governata — MR-0001/ADR-0002 — status: draft",
               "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft",
               "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
-              "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft"
+              "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
+              "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
@@ -160,6 +162,10 @@
               {
                 "value": "ADR-0006",
                 "description": "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft"
+              },
+              {
+                "value": "ADR-0007",
+                "description": "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
               }
             ],
             "description": "Decision belonging to MR-0001."
@@ -344,6 +350,58 @@
     {
       "if": {
         "required": [
+          "macro_requirement_id",
+          "decision_id",
+          "requirement_type"
+        ],
+        "properties": {
+          "macro_requirement_id": {
+            "const": "MR-0001"
+          },
+          "decision_id": {
+            "const": "ADR-0007"
+          },
+          "requirement_type": {
+            "const": "governance"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parent_requirement_id": {
+            "type": "string",
+            "enum": [
+              "MR-0001ADR-0007REQ-0001",
+              "MR-0001ADR-0007REQ-0002",
+              "MR-0001ADR-0007REQ-0003"
+            ],
+            "markdownEnumDescriptions": [
+              "Canonical profiles for governed document models — type: functional — status: draft",
+              "Model-oriented validation of governed documents — type: functional — status: draft",
+              "Governed migration of the active document corpus — type: functional — status: draft"
+            ],
+            "x-threatforge-enum-metadata": [
+              {
+                "value": "MR-0001ADR-0007REQ-0001",
+                "description": "Canonical profiles for governed document models — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0001ADR-0007REQ-0002",
+                "description": "Model-oriented validation of governed documents — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0001ADR-0007REQ-0003",
+                "description": "Governed migration of the active document corpus — type: functional — status: draft"
+              }
+            ],
+            "description": "Existing parent Requirement allowed for governance under MR-0001/ADR-0007."
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
           "macro_requirement_id"
         ],
         "properties": {
@@ -361,14 +419,16 @@
               "ADR-0002",
               "ADR-0003",
               "ADR-0004",
-              "ADR-0005"
+              "ADR-0005",
+              "ADR-0006"
             ],
             "markdownEnumDescriptions": [
               "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft",
               "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft",
               "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft",
               "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft",
-              "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft"
+              "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft",
+              "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
@@ -390,6 +450,10 @@
               {
                 "value": "ADR-0005",
                 "description": "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft"
+              },
+              {
+                "value": "ADR-0006",
+                "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
               }
             ],
             "description": "Decision belonging to MR-0002."
@@ -635,6 +699,58 @@
               }
             ],
             "description": "Existing parent Requirement allowed for governance under MR-0002/ADR-0005."
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "macro_requirement_id",
+          "decision_id",
+          "requirement_type"
+        ],
+        "properties": {
+          "macro_requirement_id": {
+            "const": "MR-0002"
+          },
+          "decision_id": {
+            "const": "ADR-0006"
+          },
+          "requirement_type": {
+            "const": "governance"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "parent_requirement_id": {
+            "type": "string",
+            "enum": [
+              "MR-0002ADR-0006REQ-0001",
+              "MR-0002ADR-0006REQ-0002",
+              "MR-0002ADR-0006REQ-0003"
+            ],
+            "markdownEnumDescriptions": [
+              "Contextual analysis of governed Markdown bodies — type: functional — status: draft",
+              "Live VS Code assistance for governed Markdown bodies — type: functional — status: draft",
+              "Web editor reuse of governed Markdown assistance — type: functional — status: draft"
+            ],
+            "x-threatforge-enum-metadata": [
+              {
+                "value": "MR-0002ADR-0006REQ-0001",
+                "description": "Contextual analysis of governed Markdown bodies — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0002ADR-0006REQ-0002",
+                "description": "Live VS Code assistance for governed Markdown bodies — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0002ADR-0006REQ-0003",
+                "description": "Web editor reuse of governed Markdown assistance — type: functional — status: draft"
+              }
+            ],
+            "description": "Existing parent Requirement allowed for governance under MR-0002/ADR-0006."
           }
         }
       }

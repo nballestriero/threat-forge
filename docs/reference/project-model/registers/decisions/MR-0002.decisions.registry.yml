@@ -47,3 +47,12 @@ decisions:
     date: 2026-07-12
     macro_requirement_id: MR-0002
     body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0005_body.md
+
+  - id: ADR-0006
+    title: Shared Markdown assistance core and thin editor adapters
+    status: draft
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-07-15
+    macro_requirement_id: MR-0002
+    body_path: docs/reference/project-model/body/decisions/MR-0002/ADR-0006_body.md

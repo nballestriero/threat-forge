@@ -117,3 +117,56 @@ requirements:
     macro_requirement_id: MR-0001
     parent_requirement_id: MR-0001ADR-0004REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0004REQ-0002GOV-0002_body.md
+
+  - id: MR-0001ADR-0007REQ-0001
+    title: Canonical profiles for governed document models
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0001_body.md
+
+  - id: MR-0001ADR-0007REQ-0001GOV-0001
+    title: Single source and deterministic profile validation
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    parent_requirement_id: MR-0001ADR-0007REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0001GOV-0001_body.md
+
+  - id: MR-0001ADR-0007REQ-0002
+    title: Model-oriented validation of governed documents
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0002_body.md
+
+  - id: MR-0001ADR-0007REQ-0002GOV-0001
+    title: Stable rule identifiers and model-organized fixtures
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    parent_requirement_id: MR-0001ADR-0007REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0002GOV-0001_body.md
+
+  - id: MR-0001ADR-0007REQ-0002GOV-0002
+    title: Absorption of overlapping partial document checks
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    parent_requirement_id: MR-0001ADR-0007REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0002GOV-0002_body.md
+
+  - id: MR-0001ADR-0007REQ-0003
+    title: Governed migration of the active document corpus
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0003_body.md
+
+  - id: MR-0001ADR-0007REQ-0003GOV-0001
+    title: Gate activation only after complete migration
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    parent_requirement_id: MR-0001ADR-0007REQ-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0003GOV-0001_body.md

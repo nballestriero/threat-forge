@@ -191,7 +191,7 @@ test("validates canonical scope, concrete type and parent rules", () => {
       validateRequirementAuthoringRequest(
         {
           macro_requirement_id: "MR-0002",
-          decision_id: "ADR-0006",
+          decision_id: "ADR-9999",
           requirement_type: "functional",
           title: "Wrong decision",
         },
