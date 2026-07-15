@@ -92,6 +92,8 @@ field_value_sets:
         meaning: The check is registered but intentionally not executed.
       - value: experimental
         meaning: The check is visible and may be run manually, but should not yet fail the local gate.
+      - value: planned
+        meaning: The check is registered for a governed future activation and is not executed by the local repository check orchestrator.
       - value: deprecated
         meaning: The check remains registered for traceability but should no longer be used.
 
