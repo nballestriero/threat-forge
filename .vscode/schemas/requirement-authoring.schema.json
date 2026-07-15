@@ -531,15 +531,21 @@
           "parent_requirement_id": {
             "type": "string",
             "enum": [
-              "MR-0002ADR-0002REQ-0001"
+              "MR-0002ADR-0002REQ-0001",
+              "MR-0002ADR-0002REQ-0002"
             ],
             "markdownEnumDescriptions": [
-              "Commit e push governati dalla root canonica — type: functional — status: draft"
+              "Commit e push governati dalla root canonica — type: functional — status: draft",
+              "Deterministic materialization before governed repository gates — type: functional — status: draft"
             ],
             "x-threatforge-enum-metadata": [
               {
                 "value": "MR-0002ADR-0002REQ-0001",
                 "description": "Commit e push governati dalla root canonica — type: functional — status: draft"
+              },
+              {
+                "value": "MR-0002ADR-0002REQ-0002",
+                "description": "Deterministic materialization before governed repository gates — type: functional — status: draft"
               }
             ],
             "description": "Existing parent Requirement allowed for governance under MR-0002/ADR-0002."

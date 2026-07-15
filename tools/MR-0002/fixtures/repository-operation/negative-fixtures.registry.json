@@ -4,15 +4,39 @@
   "fixtures": [
     {
       "id": "missing-requirement-trace",
-      "description": "The runner must declare its functional requirement.",
+      "description": "The runner must declare its original functional requirement.",
       "remove_fragment": " * @implementsRequirement MR-0002ADR-0002REQ-0001\n",
       "expected_error": "missing traceability marker: @implementsRequirement MR-0002ADR-0002REQ-0001"
+    },
+    {
+      "id": "missing-materialization-requirement-trace",
+      "description": "The runner must declare deterministic pre-gate materialization.",
+      "remove_fragment": " * @implementsRequirement MR-0002ADR-0002REQ-0002\n",
+      "expected_error": "missing traceability marker: @implementsRequirement MR-0002ADR-0002REQ-0002"
     },
     {
       "id": "missing-repo-check-reference",
       "description": "The runner must invoke the canonical repository check.",
       "remove_fragment": "[\"tools/repo-check.mjs\"]",
       "expected_error": "missing canonical repo-check invocation"
+    },
+    {
+      "id": "missing-materialization-session",
+      "description": "Commit-push mode must create a registry-driven materialization session.",
+      "remove_fragment": "createRepositoryProjectionMaterializationSession({ rootDir })",
+      "expected_error": "missing registered materialization session"
+    },
+    {
+      "id": "missing-materialization-execution",
+      "description": "The materialization session must execute before the repository gate.",
+      "remove_fragment": "materializationSession.execute();",
+      "expected_error": "missing registered materialization execution"
+    },
+    {
+      "id": "missing-materialization-rollback",
+      "description": "Pre-stage failures must roll back generated projections.",
+      "remove_fragment": "materializationSession.rollback();",
+      "expected_error": "missing pre-stage materialization rollback"
     },
     {
       "id": "missing-stage-operation",

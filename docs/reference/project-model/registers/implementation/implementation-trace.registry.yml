@@ -138,8 +138,11 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0002REQ-0001
       - MR-0002ADR-0002REQ-0001GOV-0001
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
     implemented_path: tools/MR-0002/run-governed-repository-operation.mjs
-    reason: Execute the canonical ThreatForge check before staging, validating, committing and pushing repository changes to the configured upstream.
+    reason: Execute registered projection materializers with idempotence and rollback before the read-only repository gate, then stage, validate, commit and push only after every pre-stage operation succeeds.
     verification_command: node tools/MR-0002/run-governed-repository-operation.mjs --check
 
   - id: MR-0002ADR-0002REQ-0001GOV-0002IMPL-0001
@@ -148,8 +151,10 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0002REQ-0001GOV-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
     implemented_path: tools/MR-0002/check-governed-repository-operation.mjs
-    reason: Detect loss of runner traceability, canonical gate invocation, mandatory Git operations and governed operation ordering.
+    reason: Validate registry-driven pre-gate materialization, read-only check mode, fail-closed operation ordering, deterministic integration coverage and negative source mutations.
     verification_command: node tools/MR-0002/check-governed-repository-operation.mjs
 
   - id: MR-0002ADR-0002REQ-0001GOV-0002IMPL-0002
@@ -158,8 +163,10 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0002REQ-0001GOV-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
     implemented_path: tools/MR-0002/fixtures/repository-operation
-    reason: Prove deterministic detection of missing requirement trace, gate invocation, stage, staged diff validation and push operations.
+    reason: Prove deterministic detection of missing materialization trace, session execution, rollback, repository gate, stage, staged diff validation and push operations.
     verification_command: node tools/MR-0002/check-governed-repository-operation.mjs
 
   - id: MR-0002ADR-0001REQ-0001GOV-0001IMPL-0001
@@ -427,3 +434,49 @@ artifacts:
     implemented_path: tools/MR-0002/tests/materialize-vscode-requirement-authoring-adapter.test.mjs
     reason: "Verify read-only current-state checking, deterministic migration from legacy static prompts, preservation of unrelated tasks, exact preview/create delegation, repository-root cwd and rejection of bypass or automatic confirmation."
     verification_command: node --test tools/MR-0002/tests/materialize-vscode-requirement-authoring-adapter.test.mjs
+
+  - id: MR-0002ADR-0002REQ-0002IMPL-0001
+    title: Registered repository projection materialization core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+    implemented_path: tools/MR-0002/lib/repository-projection-materialization.mjs
+    reason: Load and validate registered materializers, enforce declared output boundaries, execute two deterministic passes and restore the pre-run workspace after pre-stage failures.
+    verification_command: node --test tools/MR-0002/tests/repository-projection-materialization.test.mjs
+
+  - id: MR-0002ADR-0002REQ-0002GOV-0001IMPL-0001
+    title: Canonical repository projection materialization registry
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+    implemented_path: docs/reference/project-model/registers/materialization/repository-projections.registry.yml
+    reason: Declare active materializer commands, ordered arguments, generated path boundaries and governed Requirement traceability without duplicating projection-specific commands in the runner.
+    verification_command: node tools/MR-0002/check-governed-repository-operation.mjs
+
+  - id: MR-0002ADR-0002REQ-0002GOV-0002IMPL-0001
+    title: Repository projection materialization integration verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+    implemented_path: tools/MR-0002/tests/repository-projection-materialization.test.mjs
+    reason: Verify stale and current projections, controlled status, output boundaries, idempotence, rollback, unrelated-change preservation, read-only check mode and absence of staged changes after failures.
+    verification_command: node --test tools/MR-0002/tests/repository-projection-materialization.test.mjs
+
+  - id: MR-0002ADR-0002REQ-0002GOV-0002IMPL-0002
+    title: Repository projection materialization behavioral fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+    implemented_path: tools/MR-0002/fixtures/repository-materialization
+    reason: Provide deterministic, non-idempotent, check-failure and undeclared-output materializer behaviors for isolated verification.
+    verification_command: node --test tools/MR-0002/tests/repository-projection-materialization.test.mjs

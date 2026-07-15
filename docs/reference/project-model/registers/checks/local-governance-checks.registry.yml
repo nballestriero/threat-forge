@@ -41,7 +41,9 @@ checks:
       - tools/MR-0002/check-governed-repository-operation.mjs
     linked_requirement_ids:
       - MR-0002ADR-0002REQ-0001GOV-0002
-    description: Validate the canonical repository runner and its negative regression fixtures.
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+    description: Validate registry-driven pre-gate materialization, rollback, idempotence, read-only check mode, runner ordering and deterministic fixtures.
 
   - id: MR-0002ADR-0001REQ-0001GOV-0002CHECK-0001
     title: Governed implementation planner consistency

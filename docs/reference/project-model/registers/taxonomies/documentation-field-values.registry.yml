@@ -190,3 +190,18 @@ field_value_sets:
         requires_parent_requirement: true
         allowed_parent_requirement_types:
           - functional
+
+  - id: FIELD-VALUE-SET-0011
+    name: repository_materializer_status
+    field_name: status
+    applies_to_registry: docs/reference/project-model/registers/materialization/repository-projections.registry.yml
+    applies_to_record: materializers
+    status: draft
+    description: Lifecycle values for repository projection materializers executed by the governed repository operation runner.
+    values:
+      - value: active
+        meaning: The materializer is executed in canonical registry order before the repository gate in governed commit-push mode.
+      - value: disabled
+        meaning: The materializer remains registered but is intentionally not executed.
+      - value: deprecated
+        meaning: The materializer remains registered for historical traceability and must not be executed.
