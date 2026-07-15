@@ -1,0 +1,16 @@
+{
+  "fixture_id": "unknown-value-set",
+  "model_id": "macro-requirement",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/profiles/macro-requirement-registry.profile.yml",
+      "operation": "set",
+      "path": [
+        "record_fields",
+        2,
+        "value_set_id"
+      ],
+      "value": "FIELD-VALUE-SET-9999"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "fixture_id": "unknown-profile-model",
+  "model_id": "decision",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/profiles/decision-body.profile.yml",
+      "operation": "set",
+      "path": [
+        "applies_to_model_ids",
+        0
+      ],
+      "value": "unknown-model"
+    }
+  ]
+}

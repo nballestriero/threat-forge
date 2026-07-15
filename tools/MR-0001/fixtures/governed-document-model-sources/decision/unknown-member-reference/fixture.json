@@ -1,0 +1,16 @@
+{
+  "fixture_id": "unknown-member-reference",
+  "model_id": "decision",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/models/decision.model.yml",
+      "operation": "set",
+      "path": [
+        "coherence_rules",
+        0,
+        "source_member_id"
+      ],
+      "value": "decision.registry.record.unknown"
+    }
+  ]
+}

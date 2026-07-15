@@ -1,0 +1,18 @@
+{
+  "fixture_id": "embedded-values",
+  "model_id": "functional-requirement",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/profiles/functional-requirement-body.profile.yml",
+      "operation": "set",
+      "path": [
+        "sections",
+        0,
+        "values"
+      ],
+      "value": [
+        "draft"
+      ]
+    }
+  ]
+}

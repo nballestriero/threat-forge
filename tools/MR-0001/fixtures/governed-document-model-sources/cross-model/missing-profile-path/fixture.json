@@ -1,0 +1,16 @@
+{
+  "fixture_id": "missing-profile-path",
+  "model_id": "cross-model",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/document-models.registry.yml",
+      "operation": "set",
+      "path": [
+        "representation_profiles",
+        0,
+        "profile_path"
+      ],
+      "value": "docs/reference/project-model/registers/document-models/profiles/missing.profile.yml"
+    }
+  ]
+}

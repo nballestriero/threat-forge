@@ -23,6 +23,78 @@ checks:
       - MR-0001ADR-0004REQ-0001GOV-0001
     description: Validate controlled documentation field values and vocabulary label roles.
 
+  - id: MR-0001ADR-0007REQ-0001GOV-0001CHECK-0001
+    title: Governed document model source consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-governed-document-model-sources.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0001
+      - MR-0001ADR-0007REQ-0001GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0001
+    description: Validate the canonical four-model and seven-profile source definitions, stable identifiers, controlled value-set references and deterministic negative fixtures without validating the active corpus.
+
+  - id: MR-0001ADR-0007REQ-0002CHECK-0001
+    title: Macro-requirement model consistency
+    status: planned
+    command: node
+    args:
+      - tools/MR-0001/check-macro-requirement-model.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    description: Planned complete-model checker activated only after the Macro-requirement corpus migration reaches zero errors.
+
+  - id: MR-0001ADR-0007REQ-0002CHECK-0002
+    title: Decision model consistency
+    status: planned
+    command: node
+    args:
+      - tools/MR-0001/check-decision-model.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    description: Planned complete-model checker activated only after the Decision corpus migration reaches zero errors.
+
+  - id: MR-0001ADR-0007REQ-0002CHECK-0003
+    title: Functional Requirement model consistency
+    status: planned
+    command: node
+    args:
+      - tools/MR-0001/check-functional-requirement-model.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    description: Planned complete-model checker activated only after the Functional Requirement corpus migration reaches zero errors.
+
+  - id: MR-0001ADR-0007REQ-0002CHECK-0004
+    title: Governance Requirement model consistency
+    status: planned
+    command: node
+    args:
+      - tools/MR-0001/check-governance-requirement-model.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    description: Planned complete-model checker activated only after the Governance Requirement corpus migration reaches zero errors.
+
+  - id: MR-0001ADR-0007REQ-0002CHECK-0005
+    title: Governed document cross-model coherence
+    status: planned
+    command: node
+    args:
+      - tools/MR-0001/check-governed-document-model-coherence.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0007REQ-0002GOV-0002
+    description: Planned cross-model checker activated only after every model-specific migration report reaches zero errors.
+
   - id: MR-0002ADR-0004REQ-0002GOV-0001CHECK-0001
     title: Governed body header consistency
     status: active

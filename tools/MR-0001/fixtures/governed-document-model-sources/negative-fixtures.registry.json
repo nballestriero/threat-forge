@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "registry_id": "governed-document-model-source-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "duplicate-model-id",
+      "model_id": "cross-model",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/cross-model/duplicate-model-id/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.identifier.unique"
+      ]
+    },
+    {
+      "id": "missing-profile-path",
+      "model_id": "cross-model",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/cross-model/missing-profile-path/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.path.resolution"
+      ]
+    },
+    {
+      "id": "unknown-profile-model",
+      "model_id": "decision",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/decision/unknown-profile-model/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.profile.model-reference"
+      ]
+    },
+    {
+      "id": "duplicate-member-id",
+      "model_id": "decision",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/decision/duplicate-member-id/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.identifier.unique"
+      ]
+    },
+    {
+      "id": "duplicate-section-order",
+      "model_id": "decision",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/decision/duplicate-section-order/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.order.deterministic"
+      ]
+    },
+    {
+      "id": "unknown-value-set",
+      "model_id": "macro-requirement",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/macro-requirement/unknown-value-set/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.value-set.reference"
+      ]
+    },
+    {
+      "id": "embedded-values",
+      "model_id": "functional-requirement",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/functional-requirement/embedded-values/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.value-set.no-duplication"
+      ]
+    },
+    {
+      "id": "unknown-member-reference",
+      "model_id": "decision",
+      "fixture_path": "tools/MR-0001/fixtures/governed-document-model-sources/decision/unknown-member-reference/fixture.json",
+      "expected_rule_ids": [
+        "document-model.source.member.reference"
+      ]
+    }
+  ]
+}

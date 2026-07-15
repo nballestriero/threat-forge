@@ -1,0 +1,16 @@
+{
+  "fixture_id": "duplicate-member-id",
+  "model_id": "decision",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/profiles/decision-registry.profile.yml",
+      "operation": "set",
+      "path": [
+        "record_fields",
+        1,
+        "id"
+      ],
+      "value": "decision.registry.record.id"
+    }
+  ]
+}

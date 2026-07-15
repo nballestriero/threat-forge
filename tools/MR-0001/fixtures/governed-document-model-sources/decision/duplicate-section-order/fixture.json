@@ -1,0 +1,16 @@
+{
+  "fixture_id": "duplicate-section-order",
+  "model_id": "decision",
+  "operations": [
+    {
+      "source_path": "docs/reference/project-model/registers/document-models/profiles/decision-body.profile.yml",
+      "operation": "set",
+      "path": [
+        "sections",
+        1,
+        "order"
+      ],
+      "value": 1
+    }
+  ]
+}

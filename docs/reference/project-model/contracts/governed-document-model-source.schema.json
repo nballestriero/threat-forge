@@ -1,0 +1,475 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:threatforge:schema:governed-document-model-source:1",
+  "title": "ThreatForge governed document model source",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/index"
+    },
+    {
+      "$ref": "#/$defs/model"
+    },
+    {
+      "$ref": "#/$defs/registryProfile"
+    },
+    {
+      "$ref": "#/$defs/markdownProfile"
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+    },
+    "indexModel": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "definition_path",
+        "registry_profile_id",
+        "body_profile_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "definition_path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "registry_profile_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "body_profile_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "indexProfile": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "representation_kind",
+        "profile_path",
+        "applies_to_model_ids"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "representation_kind": {
+          "enum": [
+            "yaml_registry",
+            "markdown_body"
+          ]
+        },
+        "profile_path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "applies_to_model_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "index": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "registry_id",
+        "scope",
+        "models",
+        "representation_profiles"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "registry_id": {
+          "const": "governed-document-models-registry"
+        },
+        "scope": {
+          "const": "governed_project_model_documents"
+        },
+        "models": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/indexModel"
+          }
+        },
+        "representation_profiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/indexProfile"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "coherenceRule": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "kind": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": true
+    },
+    "model": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "model_id",
+        "title",
+        "description",
+        "registry_profile_id",
+        "body_profile_id",
+        "identity",
+        "coherence_rules"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "model_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "description": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "registry_profile_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "body_profile_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "identity": {
+          "type": "object",
+          "required": [
+            "registry_id_member_id",
+            "body_id_member_id",
+            "registry_title_member_id",
+            "body_title_member_id"
+          ],
+          "properties": {
+            "registry_id_member_id": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "body_id_member_id": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "registry_title_member_id": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "body_title_member_id": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          },
+          "additionalProperties": false
+        },
+        "coherence_rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/coherenceRule"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "member": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "additionalProperties": true
+    },
+    "registryProfile": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "profile_id",
+        "title",
+        "representation_kind",
+        "applies_to_model_ids",
+        "root_fields"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "profile_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "representation_kind": {
+          "const": "yaml_registry"
+        },
+        "applies_to_model_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "source_path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "source_path_pattern": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "unknown_root_fields": {
+          "enum": [
+            "forbidden"
+          ]
+        },
+        "unknown_record_fields": {
+          "enum": [
+            "forbidden"
+          ]
+        },
+        "root_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/registryField"
+          }
+        },
+        "record_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/registryField"
+          }
+        },
+        "record_variants": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "model_id",
+              "fields"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "model_id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "fields": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/registryField"
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "markdownProfile": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "profile_id",
+        "title",
+        "representation_kind",
+        "applies_to_model_ids",
+        "source_path_pattern",
+        "unknown_sections",
+        "header",
+        "sections"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "profile_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "representation_kind": {
+          "const": "markdown_body"
+        },
+        "applies_to_model_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/identifier"
+          }
+        },
+        "source_path_pattern": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "excluded_path_patterns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "unknown_sections": {
+          "const": "forbidden"
+        },
+        "header": {
+          "type": "object",
+          "required": [
+            "id",
+            "level",
+            "order",
+            "cardinality",
+            "content_kind",
+            "template",
+            "members"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/identifier"
+            },
+            "level": {
+              "const": 1
+            },
+            "order": {
+              "const": 1
+            },
+            "cardinality": {
+              "const": "exactly_one"
+            },
+            "content_kind": {
+              "const": "governed_identity_heading"
+            },
+            "template": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "members": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/member"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "heading",
+              "order",
+              "cardinality",
+              "content_kind"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "heading": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "order": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "cardinality": {
+                "enum": [
+                  "exactly_one",
+                  "zero_or_one"
+                ]
+              },
+              "content_kind": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "registryField": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "order",
+        "cardinality",
+        "value_kind",
+        "source_kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cardinality": {
+          "enum": [
+            "exactly_one",
+            "zero_or_one"
+          ]
+        },
+        "value_kind": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "source_kind": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
