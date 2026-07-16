@@ -101,7 +101,7 @@ function runTests() {
     );
   }
   const count = parseTestCount(`${result.stdout ?? ""}\n${result.stderr ?? ""}`);
-  if (count < 16) {
+  if (count < 18) {
     throw new Error(
       `Governed Markdown assistance verification count is incomplete: ${count}.`,
     );

@@ -8,6 +8,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 import {
+  buildVsCodeCliInvocation,
   packageGovernedMarkdownExtension,
 } from "../install-vscode-governed-markdown-assistance.mjs";
 
@@ -132,7 +133,9 @@ test("adapter preserves canonical completion ordering and identities", () => {
         detail: "one",
         documentation: "doc one",
         insert_text: "first text",
+        filter_text: "## first",
         sort_text: "0000",
+        preselect: true,
         range: {
           start: { line: 0, character: 0 },
           end: { line: 0, character: 2 },
@@ -157,6 +160,8 @@ test("adapter preserves canonical completion ordering and identities", () => {
   assert.deepEqual(mapped.map((item) => item.label), ["first", "second"]);
   assert.deepEqual(mapped.map((item) => item.sortText), ["0000", "0001"]);
   assert.deepEqual(mapped.map((item) => item.insertText), ["first text", "second text"]);
+  assert.deepEqual(mapped.map((item) => item.filterText), ["## first", "second"]);
+  assert.deepEqual(mapped.map((item) => item.preselect), [true, false]);
 });
 
 test("adapter preserves diagnostic rule identifiers", () => {
@@ -246,6 +251,28 @@ test("thin adapter source contains no canonical section or value inventory", () 
   }
   assert.equal(source.includes("writeFile"), false);
   assert.equal(source.includes("appendFile"), false);
+});
+
+test("Windows installer passes cmd.exe call tokens without embedded quoting", () => {
+  const invocation = buildVsCodeCliInvocation({
+    outputPath: "C:\\Temp Folder\\threatforge.vsix",
+    platform: "win32",
+    env: {
+      VSCODE_CLI: "code.cmd",
+      ComSpec: "C:\\Windows\\System32\\cmd.exe",
+    },
+  });
+  assert.equal(invocation.command, "C:\\Windows\\System32\\cmd.exe");
+  assert.deepEqual(invocation.args, [
+    "/d",
+    "/c",
+    "call",
+    "code.cmd",
+    "--install-extension",
+    "C:\\Temp Folder\\threatforge.vsix",
+    "--force",
+  ]);
+  assert.equal(invocation.args.some((value) => value.includes('\"')), false);
 });
 
 test("VSIX packaging is deterministic and contains the thin adapter", () => {

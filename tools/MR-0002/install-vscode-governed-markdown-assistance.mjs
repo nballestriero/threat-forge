@@ -185,6 +185,38 @@ export function packageGovernedMarkdownExtension({ rootDir, outputPath }) {
   };
 }
 
+/**
+ * Builds a platform-safe VS Code CLI invocation.
+ *
+ * @param {{outputPath: string, platform?: string, env?: NodeJS.ProcessEnv}} input - Invocation context.
+ * @returns {{command: string, args: string[]}} Executable and arguments.
+ */
+export function buildVsCodeCliInvocation({
+  outputPath,
+  platform = process.platform,
+  env = process.env,
+}) {
+  const configured = String(env.VSCODE_CLI ?? "").trim();
+  const executable = configured || (platform === "win32" ? "code.cmd" : "code");
+  const installArgs = ["--install-extension", outputPath, "--force"];
+  if (platform === "win32" && /\.(?:cmd|bat)$/iu.test(executable)) {
+    const command = String(env.ComSpec ?? env.COMSPEC ?? "cmd.exe").trim() || "cmd.exe";
+    return {
+      command,
+      args: [
+        "/d",
+        "/c",
+        "call",
+        executable,
+        "--install-extension",
+        outputPath,
+        "--force",
+      ],
+    };
+  }
+  return { command: executable, args: installArgs };
+}
+
 function runInstall(rootDir) {
   const temporaryDirectory = fs.mkdtempSync(
     path.join(os.tmpdir(), "threatforge-governed-markdown-"),
@@ -195,11 +227,10 @@ function runInstall(rootDir) {
   );
   try {
     const packaged = packageGovernedMarkdownExtension({ rootDir, outputPath });
-    const executable = process.env.VSCODE_CLI ||
-      (process.platform === "win32" ? "code.cmd" : "code");
+    const invocation = buildVsCodeCliInvocation({ outputPath });
     const result = spawnSync(
-      executable,
-      ["--install-extension", outputPath, "--force"],
+      invocation.command,
+      invocation.args,
       {
         cwd: rootDir,
         encoding: "utf8",

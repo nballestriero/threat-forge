@@ -67,6 +67,8 @@ test("typing a section marker prioritizes the next missing required section", ()
   ].join("\n");
   const result = analyze(projectPath, text, { line: 2, character: 2 });
   assert.equal(result.completions[0].label, "Status");
+  assert.equal(result.completions[0].filter_text, "## Status");
+  assert.equal(result.completions[0].preselect, true);
   assert.match(result.completions[0].insert_text, /^## Status\n/u);
 
   const withStatus = [
@@ -80,6 +82,7 @@ test("typing a section marker prioritizes the next missing required section", ()
   ].join("\n");
   const next = analyze(projectPath, withStatus, { line: 6, character: 2 });
   assert.equal(next.completions[0].label, "Context");
+  assert.equal(next.completions[0].filter_text, "## Context");
 });
 
 test("does not propose a section already present at maximum cardinality", () => {
@@ -111,7 +114,11 @@ test("reports an invalid controlled status and supplies canonical values and fix
     result.completions
       .filter((item) => item.id.startsWith("controlled:"))
       .map((item) => item.label),
-    ["Draft", "Accepted", "Superseded", "Deprecated", "Rejected"],
+    ["Draft"],
+  );
+  assert.match(
+    result.completions.find((item) => item.id.startsWith("controlled:")).documentation,
+    /authoritative registry value/u,
   );
   const diagnostic = result.diagnostics.find(
     (item) => item.rule_id === "decision.body.status.mirror",
@@ -197,6 +204,30 @@ test("hover output identifies canonical profile members", () => {
   assert.equal(result.hovers.length, 1);
   assert.match(result.hovers[0].markdown, /Canonical member/u);
   assert.match(result.hovers[0].markdown, /macro-requirement\.body\.section\.intent/u);
+});
+
+test("hover explains registry authority and taxonomy meanings for mirrored Status", () => {
+  const projectPath = bodyPaths.decision;
+  const text = read(projectPath);
+  const lines = text.split("\n");
+  const headingLine = lines.findIndex((value) => value === "## Status");
+  const headingResult = analyze(projectPath, text, {
+    line: headingLine,
+    character: 5,
+  });
+  assert.equal(headingResult.hovers.length, 1);
+  assert.match(headingResult.hovers[0].markdown, /Authority:\*\* registry mirror/u);
+  assert.match(headingResult.hovers[0].markdown, /decision\.registry\.record\.status/u);
+  assert.match(headingResult.hovers[0].markdown, /FIELD-VALUE-SET-0007/u);
+  assert.match(headingResult.hovers[0].markdown, /accepted.*Accepted/su);
+
+  const valueLine = lines.findIndex((value) => value === "Draft");
+  const valueResult = analyze(projectPath, text, {
+    line: valueLine,
+    character: 2,
+  });
+  assert.equal(valueResult.hovers.length, 1);
+  assert.match(valueResult.hovers[0].markdown, /Current registry value: `draft`/u);
 });
 
 test("identical input returns equivalent ordered semantic output", () => {

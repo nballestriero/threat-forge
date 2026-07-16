@@ -116,7 +116,8 @@ function mapCompletionItems(vscode, result) {
     completion.insertText = item.insert_text;
     completion.range = toRange(vscode, item.range);
     completion.sortText = item.sort_text;
-    completion.filterText = item.label;
+    completion.filterText = item.filter_text ?? item.label;
+    completion.preselect = item.preselect === true;
     return completion;
   });
 }

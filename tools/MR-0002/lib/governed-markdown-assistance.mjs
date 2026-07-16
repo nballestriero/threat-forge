@@ -279,14 +279,103 @@ function diagnostic(ruleId, message, range, options = {}) {
   };
 }
 
-function controlledLabelForSection(sectionProfile, record, valueSets) {
-  if (!sectionProfile?.value_set_id) return "";
-  const value = String(record?.status ?? "").trim();
-  const entry = (valueSets.get(String(sectionProfile.value_set_id)) ?? []).find(
+/**
+ * Resolves the registry field mirrored by one body section.
+ *
+ * @param {Record<string, unknown>} sectionProfile - Canonical section profile.
+ * @returns {string} Registry field name, or empty text when the section is not a mirror.
+ */
+function mirroredRecordFieldName(sectionProfile) {
+  const memberId = String(sectionProfile?.mirrors_member_id ?? "").trim();
+  const finalSegment = memberId.split(".").at(-1) ?? "";
+  return finalSegment.replaceAll("-", "_");
+}
+
+/**
+ * Resolves the authoritative controlled value for one mirrored section.
+ *
+ * @param {Record<string, unknown>} sectionProfile - Canonical section profile.
+ * @param {Record<string, unknown>} record - Governed body owner record.
+ * @returns {string} Canonical registry value.
+ */
+function controlledValueForSection(sectionProfile, record) {
+  const fieldName = mirroredRecordFieldName(sectionProfile);
+  if (
+    fieldName &&
+    record?.record &&
+    Object.prototype.hasOwnProperty.call(record.record, fieldName)
+  ) {
+    return String(record.record[fieldName] ?? "").trim();
+  }
+  return String(record?.status ?? "").trim();
+}
+
+/**
+ * Resolves the taxonomy entry for the authoritative value of one section.
+ *
+ * @param {Record<string, unknown>} sectionProfile - Canonical section profile.
+ * @param {Record<string, unknown>} record - Governed body owner record.
+ * @param {Map<string, Array<Record<string, unknown>>>} valueSets - Canonical value sets.
+ * @returns {Record<string, unknown>|null} Matching taxonomy entry.
+ */
+function controlledEntryForSection(sectionProfile, record, valueSets) {
+  if (!sectionProfile?.value_set_id) return null;
+  const value = controlledValueForSection(sectionProfile, record);
+  return (valueSets.get(String(sectionProfile.value_set_id)) ?? []).find(
     (candidate) => String(candidate.value) === value,
-  );
+  ) ?? null;
+}
+
+function controlledLabelForSection(sectionProfile, record, valueSets) {
+  const entry = controlledEntryForSection(sectionProfile, record, valueSets);
   const metadataField = String(sectionProfile.value_metadata_field ?? "value");
   return String(entry?.[metadataField] ?? entry?.value ?? "").trim();
+}
+
+/**
+ * Builds progressive-disclosure help for a canonical body section.
+ *
+ * @param {Record<string, unknown>} sectionProfile - Canonical section profile.
+ * @param {Record<string, unknown>} record - Governed body owner record.
+ * @param {Map<string, Array<Record<string, unknown>>>} valueSets - Canonical value sets.
+ * @returns {string} Markdown hover content.
+ */
+function sectionHoverMarkdown(sectionProfile, record, valueSets) {
+  const lines = [
+    `**${sectionProfile.heading}**`,
+    `Content kind: \`${sectionProfile.content_kind}\``,
+    `Cardinality: \`${sectionProfile.cardinality}\``,
+    `Canonical member: \`${sectionProfile.id}\``,
+  ];
+  const valueSetId = String(sectionProfile.value_set_id ?? "").trim();
+  const entries = valueSetId ? valueSets.get(valueSetId) ?? [] : [];
+  const mirrorMemberId = String(sectionProfile.mirrors_member_id ?? "").trim();
+  const currentValue = controlledValueForSection(sectionProfile, record);
+  const currentLabel = controlledLabelForSection(sectionProfile, record, valueSets);
+
+  if (mirrorMemberId) {
+    lines.push(
+      "**Authority:** registry mirror",
+      `Source member: \`${mirrorMemberId}\``,
+      `Current registry value: \`${currentValue}\``,
+      `Current body label: **${currentLabel || "<unresolved>"}**`,
+      "Direct body edits do not change the authoritative registry value. Use a governed lifecycle operation to select a different value.",
+    );
+  }
+  if (valueSetId) lines.push(`Value set: \`${valueSetId}\``);
+  if (entries.length > 0) {
+    lines.push(
+      "**Controlled values**",
+      entries.map((entry) => {
+        const metadataField = String(sectionProfile.value_metadata_field ?? "value");
+        const label = String(entry[metadataField] ?? entry.value ?? "");
+        const meaning = String(entry.meaning ?? "Controlled canonical value");
+        const current = String(entry.value) === currentValue ? " ← current" : "";
+        return `- \`${entry.value}\` → **${label}**${current}: ${meaning}`;
+      }).join("\n"),
+    );
+  }
+  return lines.join("\n\n");
 }
 
 function findCurrentSection(sections, line) {
@@ -481,10 +570,26 @@ function buildAssistanceResult(service, input) {
       }
       continue;
     }
+    const hoverMarkdown = sectionHoverMarkdown(
+      sectionProfile,
+      record,
+      service.valueSets,
+    );
     hovers.push({
       range: lineRange(parsed.lines, section.lineIndex),
-      markdown: `**${sectionProfile.heading}**\n\nContent kind: \`${sectionProfile.content_kind}\`\n\nCardinality: \`${sectionProfile.cardinality}\`\n\nCanonical member: \`${sectionProfile.id}\``,
+      markdown: hoverMarkdown,
     });
+    for (
+      let contentLine = section.lineIndex + 1;
+      contentLine <= section.endLineIndex;
+      contentLine += 1
+    ) {
+      if (!String(parsed.lines[contentLine] ?? "").trim()) continue;
+      hovers.push({
+        range: lineRange(parsed.lines, contentLine),
+        markdown: hoverMarkdown,
+      });
+    }
     if (Number(sectionProfile.order) < previousOrder) {
       outOfOrder = true;
       diagnostics.push(
@@ -518,24 +623,31 @@ function buildAssistanceResult(service, input) {
     if (sectionProfile.cardinality === "exactly_one" && occurrences.length === 0) {
       missingRequiredCount += 1;
       const fixId = `insert-section:${sectionProfile.id}`;
+      const insertionEdit = insertionEditForSection(
+        parsed,
+        profileSections,
+        sectionProfile,
+        {
+          controlledLabel: controlledLabelForSection(
+            sectionProfile,
+            record,
+            service.valueSets,
+          ),
+        },
+      );
       quickFixes.set(fixId, {
         id: fixId,
         title: `Insert missing section: ${sectionProfile.heading}`,
-        edits: [
-          insertionEditForSection(parsed, profileSections, sectionProfile, {
-            controlledLabel: controlledLabelForSection(
-              sectionProfile,
-              record,
-              service.valueSets,
-            ),
-          }),
-        ],
+        edits: [insertionEdit],
       });
       diagnostics.push(
         diagnostic(
           rules.bodySections,
           `Required section ${JSON.stringify(sectionProfile.heading)} is missing.`,
-          eofRange(parsed.lines),
+          {
+            start: { ...insertionEdit.range.start },
+            end: { ...insertionEdit.range.start },
+          },
           { quickFixIds: [fixId, "insert-canonical-skeleton"] },
         ),
       );
@@ -685,7 +797,9 @@ function buildAssistanceResult(service, input) {
           ),
         }),
         range: completionRangeForLine(parsed.lines, position),
+        filter_text: `## ${sectionProfile.heading}`,
         sort_text: String(index).padStart(4, "0"),
+        preselect: index === 0,
       });
     });
   }
@@ -695,22 +809,31 @@ function buildAssistanceResult(service, input) {
     ? profileByHeading.get(currentSection.heading)
     : null;
   if (currentSectionProfile?.content_kind === "controlled_scalar_label") {
-    const entries = service.valueSets.get(
+    const allEntries = service.valueSets.get(
       String(currentSectionProfile.value_set_id),
     ) ?? [];
+    const isMirror = Boolean(currentSectionProfile.mirrors_member_id);
+    const currentValue = controlledValueForSection(currentSectionProfile, record);
+    const entries = isMirror
+      ? allEntries.filter((entry) => String(entry.value) === currentValue)
+      : allEntries;
     entries.forEach((entry, index) => {
       const metadataField = String(
         currentSectionProfile.value_metadata_field ?? "value",
       );
       const label = String(entry[metadataField] ?? entry.value ?? "");
+      const meaning = String(entry.meaning ?? "Controlled canonical value");
       completions.push({
         id: `controlled:${currentSectionProfile.id}:${entry.value}`,
         kind: "value",
         label,
-        detail: String(entry.meaning ?? "Controlled canonical value"),
-        documentation: `Canonical value \`${entry.value}\` from ${currentSectionProfile.value_set_id}.`,
+        detail: isMirror ? `${meaning} · current registry mirror` : meaning,
+        documentation: isMirror
+          ? `Current authoritative registry value \`${entry.value}\` from ${currentSectionProfile.value_set_id}. Direct body edits cannot select a different lifecycle value.`
+          : `Canonical value \`${entry.value}\` from ${currentSectionProfile.value_set_id}.`,
         insert_text: label,
         range: lineRange(parsed.lines, position.line),
+        filter_text: label,
         sort_text: `1000-${String(index).padStart(4, "0")}`,
       });
     });
