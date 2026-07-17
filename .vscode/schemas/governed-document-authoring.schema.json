@@ -487,7 +487,8 @@
                   "ADR-0003",
                   "ADR-0004",
                   "ADR-0006",
-                  "ADR-0007"
+                  "ADR-0007",
+                  "ADR-0008"
                 ],
                 "markdownEnumDescriptions": [
                   "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
@@ -495,7 +496,8 @@
                   "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft",
                   "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
                   "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
-                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft",
+                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -521,6 +523,10 @@
                   {
                     "value": "ADR-0007",
                     "description": "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0008",
+                    "description": "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
                   }
                 ]
               }
@@ -756,7 +762,8 @@
                   "ADR-0003",
                   "ADR-0004",
                   "ADR-0006",
-                  "ADR-0007"
+                  "ADR-0007",
+                  "ADR-0008"
                 ],
                 "markdownEnumDescriptions": [
                   "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
@@ -764,7 +771,8 @@
                   "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft",
                   "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
                   "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
-                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft",
+                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -790,6 +798,10 @@
                   {
                     "value": "ADR-0007",
                     "description": "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0008",
+                    "description": "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
                   }
                 ]
               }
@@ -1080,6 +1092,47 @@
                   {
                     "value": "MR-0001ADR-0007REQ-0003",
                     "description": "Governed migration of the active document corpus — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0008"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0008REQ-0001",
+                  "MR-0001ADR-0008REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Markdown representation of governed entity references — status: draft",
+                  "Deterministic governed entity reference resolution — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0008REQ-0001",
+                    "description": "Canonical Markdown representation of governed entity references — status: draft"
+                  },
+                  {
+                    "value": "MR-0001ADR-0008REQ-0002",
+                    "description": "Deterministic governed entity reference resolution — status: draft"
                   }
                 ]
               }

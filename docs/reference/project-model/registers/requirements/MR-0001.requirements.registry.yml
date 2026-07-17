@@ -192,3 +192,37 @@ requirements:
     decision_id: ADR-0007
     parent_requirement_id: MR-0001ADR-0007REQ-0003
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0007REQ-0003GOV-0001_body.md
+
+  - id: MR-0001ADR-0008REQ-0001
+    title: Canonical Markdown representation of governed entity references
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0008REQ-0001_body.md
+
+  - id: MR-0001ADR-0008REQ-0001GOV-0001
+    title: Single reference grammar and source-derived labels
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0008
+    parent_requirement_id: MR-0001ADR-0008REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0008REQ-0001GOV-0001_body.md
+
+  - id: MR-0001ADR-0008REQ-0002
+    title: Deterministic governed entity reference resolution
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0008
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0008REQ-0002_body.md
+
+  - id: MR-0001ADR-0008REQ-0002GOV-0001
+    title: Stable reference diagnostics and resolver coverage
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0008
+    parent_requirement_id: MR-0001ADR-0008REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0008REQ-0002GOV-0001_body.md

@@ -56,3 +56,12 @@ decisions:
     date: 2026-07-15
     macro_requirement_id: MR-0001
     body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0007_body.md
+
+  - id: ADR-0008
+    title: Canonical governed entity references in Markdown bodies
+    status: draft
+    decision_type: structural
+    author: Nicolo Ballestriero
+    date: 2026-07-17
+    macro_requirement_id: MR-0001
+    body_path: docs/reference/project-model/body/decisions/MR-0001/ADR-0008_body.md
