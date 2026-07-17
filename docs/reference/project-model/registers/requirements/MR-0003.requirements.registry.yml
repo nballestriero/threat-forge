@@ -2,4 +2,71 @@ schema_version: 1
 registry_id: MR-0003-requirements-registry
 macro_requirement_id: MR-0003
 
-requirements: []
+requirements:
+  - id: MR-0003ADR-0001REQ-0001
+    title: Canonical Base Analysis Element inventory
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0001_body.md
+
+  - id: MR-0003ADR-0001REQ-0001GOV-0001
+    title: Deterministic BAE identity and record consistency
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0003ADR-0001REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0001GOV-0001_body.md
+
+  - id: MR-0003ADR-0001REQ-0002
+    title: Governed BAE origin and documentary provenance
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0002_body.md
+
+  - id: MR-0003ADR-0001REQ-0002GOV-0001
+    title: Valid BAE provenance and dependency direction
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0003ADR-0001REQ-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0002GOV-0001_body.md
+
+  - id: MR-0003ADR-0001REQ-0003
+    title: Canonical BAE relations and system topology
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0003_body.md
+
+  - id: MR-0003ADR-0001REQ-0003GOV-0001
+    title: Controlled BAE relation integrity
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0003ADR-0001REQ-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0003GOV-0001_body.md
+
+  - id: MR-0003ADR-0001REQ-0004
+    title: BAE lifecycle change impact and analysis staleness
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0004_body.md
+
+  - id: MR-0003ADR-0001REQ-0004GOV-0001
+    title: Deterministic BAE change-impact evidence
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0003ADR-0001REQ-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0004GOV-0001_body.md

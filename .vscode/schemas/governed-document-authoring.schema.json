@@ -603,9 +603,18 @@
             "properties": {
               "decision_id": {
                 "type": "string",
-                "enum": [],
-                "markdownEnumDescriptions": [],
-                "x-threatforge-enum-metadata": []
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  }
+                ]
               }
             }
           }
@@ -863,9 +872,18 @@
             "properties": {
               "decision_id": {
                 "type": "string",
-                "enum": [],
-                "markdownEnumDescriptions": [],
-                "x-threatforge-enum-metadata": []
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  }
+                ]
               }
             }
           }
@@ -1332,6 +1350,59 @@
                   {
                     "value": "MR-0002ADR-0006REQ-0003",
                     "description": "Web editor reuse of governed Markdown assistance — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft",
+                  "Governed BAE origin and documentary provenance — status: draft",
+                  "Canonical BAE relations and system topology — status: draft",
+                  "BAE lifecycle change impact and analysis staleness — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft"
                   }
                 ]
               }
