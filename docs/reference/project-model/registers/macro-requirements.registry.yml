@@ -18,3 +18,11 @@ macro_requirements:
     body_path: docs/reference/project-model/body/macro-requirements/MR-0002_body.md
     decisions_registry_path: docs/reference/project-model/registers/decisions/MR-0002.decisions.registry.yml
     requirements_registry_path: docs/reference/project-model/registers/requirements/MR-0002.requirements.registry.yml
+
+  - id: MR-0003
+    title: Modello di Analisi Base derivato dalla documentazione
+    status: draft
+    macro_requirement_type: functional
+    body_path: docs/reference/project-model/body/macro-requirements/MR-0003_body.md
+    decisions_registry_path: docs/reference/project-model/registers/decisions/MR-0003.decisions.registry.yml
+    requirements_registry_path: docs/reference/project-model/registers/requirements/MR-0003.requirements.registry.yml

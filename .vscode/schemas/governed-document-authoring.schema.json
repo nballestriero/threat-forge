@@ -262,11 +262,13 @@
           "type": "string",
           "enum": [
             "MR-0001",
-            "MR-0002"
+            "MR-0002",
+            "MR-0003"
           ],
           "markdownEnumDescriptions": [
             "Gestione documentale governata — status: draft",
-            "Authoring e implementazione governata — status: draft"
+            "Authoring e implementazione governata — status: draft",
+            "Modello di Analisi Base derivato dalla documentazione — status: draft"
           ],
           "x-threatforge-enum-metadata": [
             {
@@ -276,6 +278,10 @@
             {
               "value": "MR-0002",
               "description": "Authoring e implementazione governata — status: draft"
+            },
+            {
+              "value": "MR-0003",
+              "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
             }
           ],
           "description": "Existing canonical Macro-requirement that owns the new document."
@@ -429,11 +435,13 @@
           "type": "string",
           "enum": [
             "MR-0001",
-            "MR-0002"
+            "MR-0002",
+            "MR-0003"
           ],
           "markdownEnumDescriptions": [
             "Gestione documentale governata — status: draft",
-            "Authoring e implementazione governata — status: draft"
+            "Authoring e implementazione governata — status: draft",
+            "Modello di Analisi Base derivato dalla documentazione — status: draft"
           ],
           "x-threatforge-enum-metadata": [
             {
@@ -443,6 +451,10 @@
             {
               "value": "MR-0002",
               "description": "Authoring e implementazione governata — status: draft"
+            },
+            {
+              "value": "MR-0003",
+              "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
             }
           ],
           "description": "Existing canonical Macro-requirement that owns the new document."
@@ -575,6 +587,28 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [],
+                "markdownEnumDescriptions": [],
+                "x-threatforge-enum-metadata": []
+              }
+            }
+          }
         }
       ]
     },
@@ -656,11 +690,13 @@
           "type": "string",
           "enum": [
             "MR-0001",
-            "MR-0002"
+            "MR-0002",
+            "MR-0003"
           ],
           "markdownEnumDescriptions": [
             "Gestione documentale governata — status: draft",
-            "Authoring e implementazione governata — status: draft"
+            "Authoring e implementazione governata — status: draft",
+            "Modello di Analisi Base derivato dalla documentazione — status: draft"
           ],
           "x-threatforge-enum-metadata": [
             {
@@ -670,6 +706,10 @@
             {
               "value": "MR-0002",
               "description": "Authoring e implementazione governata — status: draft"
+            },
+            {
+              "value": "MR-0003",
+              "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
             }
           ],
           "description": "Existing canonical Macro-requirement that owns the new document."
@@ -804,6 +844,28 @@
                     "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
                   }
                 ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [],
+                "markdownEnumDescriptions": [],
+                "x-threatforge-enum-metadata": []
               }
             }
           }
@@ -1298,6 +1360,12 @@
         "registry_id": "MR-0002-decisions-registry"
       },
       {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0003.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0003-decisions-registry"
+      },
+      {
         "kind": "document_model_index",
         "path": "docs/reference/project-model/registers/document-models/document-models.registry.yml",
         "schema_version": 1,
@@ -1320,6 +1388,12 @@
         "path": "docs/reference/project-model/registers/requirements/MR-0002.requirements.registry.yml",
         "schema_version": 1,
         "registry_id": "MR-0002-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0003.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0003-requirements-registry"
       },
       {
         "kind": "documentation_field_values",
