@@ -1,0 +1,74 @@
+schema_version: 1
+registry_id: base-analysis-taxonomies-registry
+macro_requirement_id: MR-0003
+
+base_types:
+  - value: actor
+    label: Actor
+    meaning: External or internal participant that initiates, receives or influences system behavior.
+  - value: component
+    label: Component
+    meaning: Executable, deployable or logical processing unit within the analyzed system.
+  - value: data_resource
+    label: Data Resource
+    meaning: Persisted or managed information resource used by one or more system interactions.
+  - value: boundary
+    label: Boundary
+    meaning: Explicit separation between trust, responsibility, deployment or control domains.
+  - value: data_flow
+    label: Data Flow
+    meaning: Directed transfer of information between canonical Base Analysis Elements.
+
+lifecycle_states:
+  - value: active
+    label: Active
+    meaning: Canonical element currently applicable to the analyzed project state.
+  - value: superseded
+    label: Superseded
+    meaning: Canonical element replaced by another governed element while retained for traceability.
+  - value: deprecated
+    label: Deprecated
+    meaning: Canonical element retained for traceability but no longer recommended for current analysis.
+
+origin_kinds:
+  - value: governed_document
+    label: Governed document
+    meaning: Element originates from an authoritative governed project document.
+  - value: reviewed_analytical_addition
+    label: Reviewed analytical addition
+    meaning: Element originates from an analytical addition accepted through explicit review evidence.
+
+provenance_relations:
+  - value: origin
+    label: Origin
+    meaning: Source that semantically introduced the canonical element.
+  - value: support
+    label: Support
+    meaning: Additional governed source that supports the canonical element interpretation.
+
+relation_predicates:
+  - value: has_source_endpoint
+    label: Has source endpoint
+    meaning: Data Flow starts from the target Actor, Component or Data Resource.
+    allowed_source_base_types:
+      - data_flow
+    allowed_target_base_types:
+      - actor
+      - component
+      - data_resource
+  - value: has_target_endpoint
+    label: Has target endpoint
+    meaning: Data Flow terminates at the target Actor, Component or Data Resource.
+    allowed_source_base_types:
+      - data_flow
+    allowed_target_base_types:
+      - actor
+      - component
+      - data_resource
+  - value: crosses_boundary
+    label: Crosses boundary
+    meaning: Data Flow crosses the target Boundary.
+    allowed_source_base_types:
+      - data_flow
+    allowed_target_base_types:
+      - boundary

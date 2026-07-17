@@ -190,3 +190,14 @@ checks:
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
     description: Validate editor-independent analysis for all four governed body models, thin VS Code delegation, live diagnostic and completion semantics, quick fixes and deterministic local VSIX packaging.
+
+  - id: MR-0003ADR-0001REQ-0005GOV-0001CHECK-0001
+    title: Base Analysis registry consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0003/check-base-analysis-registry.mjs
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0005
+      - MR-0003ADR-0001REQ-0005GOV-0001
+    description: Validate canonical BAE inventory, controlled taxonomies, provenance, relations, deterministic reference-source projection and governed negative fixtures.

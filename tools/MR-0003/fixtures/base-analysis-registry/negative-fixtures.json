@@ -1,0 +1,5332 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "base-analysis-registry-negative-fixtures",
+  "cases": [
+    {
+      "id": "unknown-root-member",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ],
+        "unexpected": "x"
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unknown-root-member"
+      ]
+    },
+    {
+      "id": "duplicate-bae-id",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.duplicate-element-id"
+      ]
+    },
+    {
+      "id": "malformed-bae-id",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-1",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.invalid-element-id"
+      ]
+    },
+    {
+      "id": "unknown-base-type",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "service",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unknown-base-type"
+      ]
+    },
+    {
+      "id": "unknown-lifecycle",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "retired",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unknown-lifecycle-state"
+      ]
+    },
+    {
+      "id": "unknown-origin-kind",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "inferred",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unknown-origin-kind",
+        "bae.registry.divergent-origin-provenance"
+      ]
+    },
+    {
+      "id": "missing-review-evidence",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "reviewed_analytical_addition",
+              "source_id": "REVIEW-0001",
+              "source_path": "docs/reviews/REVIEW-0001.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "reviewed_analytical_addition",
+                "source_id": "REVIEW-0001",
+                "source_path": "docs/reviews/REVIEW-0001.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.missing-review-evidence",
+        "bae.registry.unresolved-origin-source",
+        "bae.registry.unresolved-provenance-source"
+      ]
+    },
+    {
+      "id": "unresolved-origin",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-9999",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unresolved-origin-source",
+        "bae.registry.divergent-origin-provenance"
+      ]
+    },
+    {
+      "id": "missing-origin-provenance",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": []
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.missing-origin-provenance"
+      ]
+    },
+    {
+      "id": "multiple-origin-provenance",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              },
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.multiple-origin-provenance"
+      ]
+    },
+    {
+      "id": "divergent-origin-provenance",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0002",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.divergent-origin-provenance",
+        "bae.registry.unresolved-provenance-source"
+      ]
+    },
+    {
+      "id": "duplicate-relation-id",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          },
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.duplicate-relation-id",
+        "bae.registry.multiple-source-endpoints"
+      ]
+    },
+    {
+      "id": "malformed-relation-id",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "REL-1",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.invalid-relation-id"
+      ]
+    },
+    {
+      "id": "unknown-endpoint",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-9999"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unknown-relation-endpoint"
+      ]
+    },
+    {
+      "id": "unknown-predicate",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "connects_to",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.unknown-relation-predicate",
+        "bae.registry.missing-source-endpoint"
+      ]
+    },
+    {
+      "id": "invalid-endpoint-type",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0002"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.invalid-relation-endpoint-type"
+      ]
+    },
+    {
+      "id": "missing-source-endpoint",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.missing-source-endpoint"
+      ]
+    },
+    {
+      "id": "multiple-source-endpoints",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          },
+          {
+            "id": "BAE-REL-0004",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0003"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.multiple-source-endpoints"
+      ]
+    },
+    {
+      "id": "missing-target-endpoint",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.missing-target-endpoint"
+      ]
+    },
+    {
+      "id": "multiple-target-endpoints",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          },
+          {
+            "id": "BAE-REL-0004",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0003"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.registry.multiple-target-endpoints"
+      ]
+    },
+    {
+      "id": "divergent-projection",
+      "inventory": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-elements-registry",
+        "macro_requirement_id": "MR-0003",
+        "elements": [
+          {
+            "id": "BAE-0001",
+            "title": "User",
+            "base_type": "actor",
+            "meaning": "User meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0002",
+            "title": "API",
+            "base_type": "component",
+            "meaning": "API meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0003",
+            "title": "User database",
+            "base_type": "data_resource",
+            "meaning": "User database meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0004",
+            "title": "Internet boundary",
+            "base_type": "boundary",
+            "meaning": "Internet boundary meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          },
+          {
+            "id": "BAE-0005",
+            "title": "Login request",
+            "base_type": "data_flow",
+            "meaning": "Login request meaning",
+            "lifecycle_state": "active",
+            "origin": {
+              "kind": "governed_document",
+              "source_id": "ADR-0001",
+              "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+            },
+            "provenance": [
+              {
+                "relation": "origin",
+                "source_kind": "governed_document",
+                "source_id": "ADR-0001",
+                "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+              }
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "id": "BAE-REL-0001",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_source_endpoint",
+            "target_bae_id": "BAE-0001"
+          },
+          {
+            "id": "BAE-REL-0002",
+            "source_bae_id": "BAE-0005",
+            "predicate": "has_target_endpoint",
+            "target_bae_id": "BAE-0002"
+          },
+          {
+            "id": "BAE-REL-0003",
+            "source_bae_id": "BAE-0005",
+            "predicate": "crosses_boundary",
+            "target_bae_id": "BAE-0004"
+          }
+        ]
+      },
+      "taxonomies": {
+        "schema_version": 1,
+        "registry_id": "base-analysis-taxonomies-registry",
+        "macro_requirement_id": "MR-0003",
+        "base_types": [
+          {
+            "value": "actor",
+            "label": "Actor",
+            "meaning": "Actor meaning"
+          },
+          {
+            "value": "component",
+            "label": "Component",
+            "meaning": "Component meaning"
+          },
+          {
+            "value": "data_resource",
+            "label": "Data Resource",
+            "meaning": "Data resource meaning"
+          },
+          {
+            "value": "boundary",
+            "label": "Boundary",
+            "meaning": "Boundary meaning"
+          },
+          {
+            "value": "data_flow",
+            "label": "Data Flow",
+            "meaning": "Data flow meaning"
+          }
+        ],
+        "lifecycle_states": [
+          {
+            "value": "active",
+            "label": "Active",
+            "meaning": "Active meaning"
+          },
+          {
+            "value": "superseded",
+            "label": "Superseded",
+            "meaning": "Superseded meaning"
+          },
+          {
+            "value": "deprecated",
+            "label": "Deprecated",
+            "meaning": "Deprecated meaning"
+          }
+        ],
+        "origin_kinds": [
+          {
+            "value": "governed_document",
+            "label": "Governed document",
+            "meaning": "Governed origin"
+          },
+          {
+            "value": "reviewed_analytical_addition",
+            "label": "Reviewed analytical addition",
+            "meaning": "Reviewed origin"
+          }
+        ],
+        "provenance_relations": [
+          {
+            "value": "origin",
+            "label": "Origin",
+            "meaning": "Origin provenance"
+          },
+          {
+            "value": "support",
+            "label": "Support",
+            "meaning": "Support provenance"
+          }
+        ],
+        "relation_predicates": [
+          {
+            "value": "has_source_endpoint",
+            "label": "Has source endpoint",
+            "meaning": "Source endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "has_target_endpoint",
+            "label": "Has target endpoint",
+            "meaning": "Target endpoint",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "actor",
+              "component",
+              "data_resource"
+            ]
+          },
+          {
+            "value": "crosses_boundary",
+            "label": "Crosses boundary",
+            "meaning": "Boundary crossing",
+            "allowed_source_base_types": [
+              "data_flow"
+            ],
+            "allowed_target_base_types": [
+              "boundary"
+            ]
+          }
+        ]
+      },
+      "existing_sources": [
+        {
+          "source_kind": "governed_document",
+          "source_id": "ADR-0001",
+          "source_path": "docs/reference/project-model/body/decisions/MR-0003/ADR-0001_body.md"
+        }
+      ],
+      "candidate_projection": [],
+      "expected_rule_ids": [
+        "bae.registry.projection-divergence"
+      ]
+    }
+  ]
+}

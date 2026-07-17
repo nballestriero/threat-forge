@@ -1,0 +1,6 @@
+schema_version: 1
+registry_id: base-analysis-elements-registry
+macro_requirement_id: MR-0003
+
+elements: []
+relations: []
