@@ -7,6 +7,18 @@ applies_to_model_ids:
 source_path_pattern: docs/reference/project-model/body/decisions/MR-*/ADR-*_body.md
 unknown_sections: forbidden
 
+reference_positions:
+  - id: decision.body.reference.consequences-classified-item
+    section_id: decision.body.section.consequences
+    container_kind: classified_list_item
+    allowed_prefixes:
+      - "Benefit:"
+      - "Cost:"
+      - "Risk:"
+      - "Constraint:"
+    terminal_punctuation: period
+    allowed_entity_types:
+      - base_analysis_element
 header:
   id: decision.body.header
   level: 1

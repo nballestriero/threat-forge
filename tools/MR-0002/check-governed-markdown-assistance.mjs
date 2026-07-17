@@ -19,6 +19,8 @@ import {
  * @implementsRequirement MR-0002ADR-0006REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0004
+ * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
  * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0002
  * @implementationStatus implemented
@@ -38,6 +40,7 @@ const extensionProjectPath =
 const testProjectPaths = [
   "tools/MR-0002/tests/governed-markdown-assistance.test.mjs",
   "tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs",
+  "tools/MR-0002/tests/governed-markdown-bae-references.test.mjs",
 ];
 const modelBodyPaths = [
   "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
@@ -101,7 +104,7 @@ function runTests() {
     );
   }
   const count = parseTestCount(`${result.stdout ?? ""}\n${result.stderr ?? ""}`);
-  if (count < 18) {
+  if (count < 23) {
     throw new Error(
       `Governed Markdown assistance verification count is incomplete: ${count}.`,
     );
@@ -211,6 +214,8 @@ try {
   console.log("Implemented requirement: MR-0002ADR-0006REQ-0001GOV-0001");
   console.log("Implemented requirement: MR-0002ADR-0006REQ-0002");
   console.log("Implemented requirement: MR-0002ADR-0006REQ-0002GOV-0001");
+  console.log("Implemented requirement: MR-0002ADR-0006REQ-0004");
+  console.log("Implemented requirement: MR-0002ADR-0006REQ-0004GOV-0001");
   console.log(`Models checked: ${modelsChecked}`);
   console.log(`Assistance tests checked: ${testsChecked}`);
   console.log(`VSIX entries checked: ${vsixEntriesChecked}`);

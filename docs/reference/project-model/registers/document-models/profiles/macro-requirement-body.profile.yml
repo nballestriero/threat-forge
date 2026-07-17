@@ -7,6 +7,16 @@ applies_to_model_ids:
 source_path_pattern: docs/reference/project-model/body/macro-requirements/MR-*_body.md
 unknown_sections: forbidden
 
+reference_positions:
+  - id: macro-requirement.body.reference.scope-classified-item
+    section_id: macro-requirement.body.section.scope
+    container_kind: classified_list_item
+    allowed_prefixes:
+      - "Includes:"
+      - "Excludes:"
+    terminal_punctuation: forbidden
+    allowed_entity_types:
+      - base_analysis_element
 header:
   id: macro-requirement.body.header
   level: 1

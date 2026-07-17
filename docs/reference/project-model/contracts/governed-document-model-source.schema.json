@@ -356,6 +356,12 @@
         "unknown_sections": {
           "const": "forbidden"
         },
+        "reference_positions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/referencePosition"
+          }
+        },
         "header": {
           "type": "object",
           "required": [
@@ -430,6 +436,59 @@
               }
             },
             "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "referencePosition": {
+      "type": "object",
+      "required": [
+        "id",
+        "section_id",
+        "container_kind",
+        "allowed_prefixes",
+        "terminal_punctuation",
+        "allowed_entity_types"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "section_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "container_kind": {
+          "const": "classified_list_item"
+        },
+        "allowed_prefixes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              {
+                "type": "object",
+                "minProperties": 1
+              }
+            ]
+          }
+        },
+        "terminal_punctuation": {
+          "enum": [
+            "forbidden",
+            "period"
+          ]
+        },
+        "allowed_entity_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
           }
         }
       },

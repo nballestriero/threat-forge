@@ -768,6 +768,8 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0006REQ-0001
       - MR-0002ADR-0006REQ-0001GOV-0001
+      - MR-0002ADR-0006REQ-0004
+      - MR-0002ADR-0006REQ-0004GOV-0001
     implemented_path: tools/MR-0002/lib/governed-markdown-assistance.mjs
     reason: Analyze current unsaved governed Markdown through canonical body profiles and controlled value sets, returning deterministic completions, diagnostics, hover and quick fixes without repository mutation.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-assistance.test.mjs
@@ -825,6 +827,8 @@ artifacts:
       - MR-0002ADR-0006REQ-0001GOV-0001
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
+      - MR-0002ADR-0006REQ-0004
+      - MR-0002ADR-0006REQ-0004GOV-0001
     implemented_path: tools/MR-0002/check-governed-markdown-assistance.mjs
     reason: Enforce four-model coverage, thin-adapter boundaries, deterministic tests and reproducible local VSIX packaging as one blocking repository check.
     verification_command: node tools/MR-0002/check-governed-markdown-assistance.mjs
@@ -891,3 +895,115 @@ artifacts:
     implemented_path: tools/MR-0003/fixtures/base-analysis-registry
     reason: Prove deterministic rejection of malformed identities, unknown controlled values, invalid provenance, broken relations, invalid Data Flow endpoints and divergent projections.
     verification_command: node tools/MR-0003/check-base-analysis-registry.mjs
+  - id: MR-0001ADR-0008REQ-0001IMPL-0001
+    title: Canonical governed entity reference grammar and resolver core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0001GOV-0001
+      - MR-0001ADR-0008REQ-0002
+      - MR-0001ADR-0008REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/lib/governed-entity-references.mjs
+    reason: Parse and serialize the canonical reference payload and resolve registered governed entities through authoritative source and eligibility providers with stable diagnostics.
+    verification_command: node --test tools/MR-0001/test/governed-entity-references.test.mjs
+
+  - id: MR-0001ADR-0008REQ-0002IMPL-0001
+    title: Governed entity resolver registry
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0001GOV-0001
+      - MR-0001ADR-0008REQ-0002
+      - MR-0001ADR-0008REQ-0002GOV-0001
+    implemented_path: docs/reference/project-model/registers/references/governed-entity-resolvers.registry.yml
+    reason: Register exactly one active Base Analysis Element resolver with its authoritative source projection and documentary precedence eligibility providers.
+    verification_command: node tools/MR-0001/check-governed-entity-references.mjs
+
+  - id: MR-0001ADR-0008REQ-0002GOV-0001IMPL-0001
+    title: Governed entity reference consistency checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0001GOV-0001
+      - MR-0001ADR-0008REQ-0002
+      - MR-0001ADR-0008REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/check-governed-entity-references.mjs
+    reason: Enforce resolver uniqueness, provider coverage, profile-declared reference positions and deterministic grammar, resolution and eligibility verification.
+    verification_command: node tools/MR-0001/check-governed-entity-references.mjs
+
+  - id: MR-0001ADR-0008REQ-0002GOV-0001IMPL-0002
+    title: Governed entity reference verification suite
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0001GOV-0001
+      - MR-0001ADR-0008REQ-0002
+      - MR-0001ADR-0008REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/governed-entity-references.test.mjs
+    reason: Verify canonical parse and serialization, stable diagnostics, resolver uniqueness, provider coverage, deterministic resolution and side-effect-free processing.
+    verification_command: node --test tools/MR-0001/test/governed-entity-references.test.mjs
+
+  - id: MR-0001ADR-0008REQ-0002GOV-0001IMPL-0003
+    title: Governed entity reference fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0008REQ-0001GOV-0001
+      - MR-0001ADR-0008REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/fixtures/governed-entity-references
+    reason: Prove valid, noncanonical, unknown, ambiguous, disallowed, title-divergent and ineligible governed reference behavior before BAE resolver activation.
+    verification_command: node --test tools/MR-0001/test/governed-entity-references.test.mjs
+
+  - id: MR-0003ADR-0001REQ-0002IMPL-0001
+    title: Base Analysis documentary precedence eligibility provider
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0002
+      - MR-0003ADR-0001REQ-0002GOV-0001
+      - MR-0001ADR-0008REQ-0002
+    implemented_path: tools/MR-0003/lib/base-analysis-reference-eligibility.mjs
+    reason: Permit BAE references originating from the current document, an ancestor or an independent source while rejecting descendant-only origin.
+    verification_command: node --test tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
+
+  - id: MR-0003ADR-0001REQ-0002GOV-0001IMPL-0001
+    title: Base Analysis documentary precedence verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0002
+      - MR-0003ADR-0001REQ-0002GOV-0001
+      - MR-0001ADR-0008REQ-0002
+    implemented_path: tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
+    reason: Verify current, ancestor, independent, descendant-only and reviewed analytical addition BAE origin eligibility.
+    verification_command: node --test tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0004IMPL-0001
+    title: Governed Markdown reference assistance projection
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0004
+      - MR-0002ADR-0006REQ-0004GOV-0001
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0002
+    implemented_path: tools/MR-0002/lib/governed-markdown-reference-assistance.mjs
+    reason: Apply shared reference resolution only at profile-declared positions and expose BAE diagnostics, hover metadata and canonical-title quick fixes without editor-owned rules.
+    verification_command: node --test tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
+
+  - id: MR-0002ADR-0006REQ-0004GOV-0001IMPL-0001
+    title: Governed Markdown BAE reference assistance verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0006REQ-0004
+      - MR-0002ADR-0006REQ-0004GOV-0001
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0002
+    implemented_path: tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
+    reason: Verify canonical BAE resolution, unknown and noncanonical diagnostics, descendant eligibility, hover metadata and deterministic title quick fixes.
+    verification_command: node --test tools/MR-0002/tests/governed-markdown-bae-references.test.mjs

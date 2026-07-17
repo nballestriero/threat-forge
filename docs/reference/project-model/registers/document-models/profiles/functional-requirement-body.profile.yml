@@ -9,6 +9,16 @@ excluded_path_patterns:
   - docs/reference/project-model/body/requirements/MR-*/MR-*ADR-*REQ-*GOV-*_body.md
 unknown_sections: forbidden
 
+reference_positions:
+  - id: functional-requirement.body.reference.scope-classified-item
+    section_id: functional-requirement.body.section.scope
+    container_kind: classified_list_item
+    allowed_prefixes:
+      - "Includes:"
+      - "Excludes:"
+    terminal_punctuation: forbidden
+    allowed_entity_types:
+      - base_analysis_element
 header:
   id: functional-requirement.body.header
   level: 1

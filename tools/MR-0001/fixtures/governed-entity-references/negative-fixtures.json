@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "id": "canonical-valid",
+      "payload": "[BAE-0001] Web API",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": []
+    },
+    {
+      "id": "parenthesized-noncanonical",
+      "payload": "(@BAE-0001) Web API",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.noncanonical-syntax"
+      ]
+    },
+    {
+      "id": "bare-noncanonical",
+      "payload": "BAE-0001 Web API",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.noncanonical-syntax"
+      ]
+    },
+    {
+      "id": "markdown-link-noncanonical",
+      "payload": "[BAE-0001](target)",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.noncanonical-syntax"
+      ]
+    },
+    {
+      "id": "unknown",
+      "payload": "[BAE-9999] Missing",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.unknown-identifier"
+      ]
+    },
+    {
+      "id": "ambiguous",
+      "payload": "[BAE-0001] Web API",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        },
+        {
+          "id": "BAE-0001",
+          "title": "Web API duplicate",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.ambiguous-identifier"
+      ]
+    },
+    {
+      "id": "disallowed",
+      "payload": "[BAE-0001] Web API",
+      "allowed_entity_types": [
+        "threat"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.disallowed-entity-type"
+      ]
+    },
+    {
+      "id": "ineligible",
+      "payload": "[BAE-0001] Web API",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": false,
+      "expected_rule_ids": [
+        "governed-reference.ineligible-entity"
+      ]
+    },
+    {
+      "id": "title-divergence",
+      "payload": "[BAE-0001] Old title",
+      "allowed_entity_types": [
+        "base_analysis_element"
+      ],
+      "projection": [
+        {
+          "id": "BAE-0001",
+          "title": "Web API",
+          "entity_type": "base_analysis_element"
+        }
+      ],
+      "eligible": true,
+      "expected_rule_ids": [
+        "governed-reference.title-divergence"
+      ],
+      "expected_canonical_payload": "[BAE-0001] Web API"
+    }
+  ]
+}

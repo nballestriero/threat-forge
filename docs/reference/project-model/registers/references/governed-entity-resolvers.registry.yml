@@ -1,0 +1,11 @@
+schema_version: 1
+registry_id: governed-entity-resolvers-registry
+scope: governed_entity_reference_resolution
+
+resolvers:
+  - id: base-analysis-element-reference-resolver
+    entity_type: base_analysis_element
+    status: active
+    identifier_pattern: "^BAE-[0-9]{4}$"
+    source_projection_provider: base-analysis-registry-reference-source
+    eligibility_provider: base-analysis-documentary-precedence

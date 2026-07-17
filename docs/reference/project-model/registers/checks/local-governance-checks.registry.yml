@@ -189,6 +189,8 @@ checks:
       - MR-0002ADR-0006REQ-0001GOV-0001
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
+      - MR-0002ADR-0006REQ-0004
+      - MR-0002ADR-0006REQ-0004GOV-0001
     description: Validate editor-independent analysis for all four governed body models, thin VS Code delegation, live diagnostic and completion semantics, quick fixes and deterministic local VSIX packaging.
 
   - id: MR-0003ADR-0001REQ-0005GOV-0001CHECK-0001
@@ -201,3 +203,17 @@ checks:
       - MR-0003ADR-0001REQ-0005
       - MR-0003ADR-0001REQ-0005GOV-0001
     description: Validate canonical BAE inventory, controlled taxonomies, provenance, relations, deterministic reference-source projection and governed negative fixtures.
+  - id: MR-0001ADR-0008REQ-0002GOV-0001CHECK-0001
+    title: Governed entity reference consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-governed-entity-references.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0008REQ-0001
+      - MR-0001ADR-0008REQ-0001GOV-0001
+      - MR-0001ADR-0008REQ-0002
+      - MR-0001ADR-0008REQ-0002GOV-0001
+      - MR-0003ADR-0001REQ-0002
+      - MR-0003ADR-0001REQ-0002GOV-0001
+    description: Validate canonical reference grammar, resolver uniqueness and providers, profile-declared positions, BAE documentary precedence and deterministic positive and negative fixtures.

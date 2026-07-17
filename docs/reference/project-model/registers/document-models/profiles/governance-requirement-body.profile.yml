@@ -7,6 +7,7 @@ applies_to_model_ids:
 source_path_pattern: docs/reference/project-model/body/requirements/MR-*/MR-*ADR-*REQ-*GOV-*_body.md
 unknown_sections: forbidden
 
+reference_positions: []
 header:
   id: governance-requirement.body.header
   level: 1

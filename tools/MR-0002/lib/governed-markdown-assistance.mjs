@@ -13,12 +13,27 @@ import { macroRequirementModelRuleIds } from "../../MR-0001/lib/macro-requiremen
 import { decisionModelRuleIds } from "../../MR-0001/lib/decision-model-validation.mjs";
 import { functionalRequirementModelRuleIds } from "../../MR-0001/lib/functional-requirement-model-validation.mjs";
 import { governanceRequirementModelRuleIds } from "../../MR-0001/lib/governance-requirement-model-validation.mjs";
+import {
+  createGovernedEntityReferenceService,
+  loadGovernedEntityResolverRegistry,
+} from "../../MR-0001/lib/governed-entity-references.mjs";
+import {
+  applyGovernedMarkdownReferenceAssistance,
+} from "./governed-markdown-reference-assistance.mjs";
+import {
+  loadAndValidateBaseAnalysisRegistry,
+} from "../../MR-0003/lib/base-analysis-registry.mjs";
+import {
+  evaluateBaseAnalysisReferenceEligibility,
+} from "../../MR-0003/lib/base-analysis-reference-eligibility.mjs";
 
 /**
  * @file Editor-independent governed Markdown assistance core.
  *
  * @implementsRequirement MR-0002ADR-0006REQ-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0001GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0004
+ * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
  * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0002
  * @implementationStatus implemented
@@ -463,6 +478,38 @@ function completionRangeForLine(lines, position) {
   };
 }
 
+function createDefaultGovernedEntityReferenceService({
+  rootDir,
+  recordsByPath,
+}) {
+  const bae = loadAndValidateBaseAnalysisRegistry({ rootDir });
+  if (!bae.valid) {
+    throw new Error(
+      `Canonical BAE registry is invalid: ${bae.errors
+        .map((entry) => `${entry.rule_id}: ${entry.message}`)
+        .join(" | ")}`,
+    );
+  }
+  const registry = loadGovernedEntityResolverRegistry({ rootDir });
+  return createGovernedEntityReferenceService({
+    registry,
+    sourceProjectionProviders: new Map([
+      ["base-analysis-registry-reference-source", () => bae.projection],
+    ]),
+    eligibilityProviders: new Map([
+      [
+        "base-analysis-documentary-precedence",
+        ({ currentDocument, entity }) =>
+          evaluateBaseAnalysisReferenceEligibility({
+            currentDocument,
+            entity,
+            documentsByPath: recordsByPath,
+          }),
+      ],
+    ]),
+  });
+}
+
 function buildAssistanceResult(service, input) {
   const projectPath = normalizeProjectPath(input.projectPath);
   const record = service.recordsByPath.get(projectPath);
@@ -759,6 +806,17 @@ function buildAssistanceResult(service, input) {
     }
   }
 
+  applyGovernedMarkdownReferenceAssistance({
+    profile,
+    parsed,
+    record,
+    referenceService: service.referenceService,
+    diagnostics,
+    hovers,
+    quickFixes,
+    lineRange,
+  });
+
   const position = {
     line: Math.max(0, Number(input.position?.line ?? 0)),
     character: Math.max(0, Number(input.position?.character ?? 0)),
@@ -897,12 +955,27 @@ function buildAssistanceResult(service, input) {
  * @param {{rootDir: string}} input - Repository root.
  * @returns {{analyze: (input: {projectPath: string, text: string, position?: {line: number, character: number}}) => Record<string, unknown>}}
  */
-export function createGovernedMarkdownAssistanceService({ rootDir }) {
+export function createGovernedMarkdownAssistanceService({
+  rootDir,
+  referenceService = null,
+}) {
   const absoluteRoot = path.resolve(rootDir);
   const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir: absoluteRoot });
   const recordsByPath = loadBodyRecords(absoluteRoot);
   const valueSets = loadValueSets(absoluteRoot);
-  const service = { rootDir: absoluteRoot, sourceSet, recordsByPath, valueSets };
+  const governedEntityReferenceService =
+    referenceService ??
+    createDefaultGovernedEntityReferenceService({
+      rootDir: absoluteRoot,
+      recordsByPath,
+    });
+  const service = {
+    rootDir: absoluteRoot,
+    sourceSet,
+    recordsByPath,
+    valueSets,
+    referenceService: governedEntityReferenceService,
+  };
   return {
     analyze(input) {
       return buildAssistanceResult(service, input);
