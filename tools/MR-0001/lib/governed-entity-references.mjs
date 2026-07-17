@@ -383,6 +383,7 @@ function resolverForIdentifier(id, activeResolvers) {
  * }} input - Canonical registry and provider catalogs.
  * @returns {{
  *   validation: Record<string, unknown>,
+ *   listEligibleCandidates: (input: Record<string, unknown>) => Array<Record<string, unknown>>,
  *   analyzePayload: (input: Record<string, unknown>) => Record<string, unknown>
  * }}
  */
@@ -410,8 +411,102 @@ export function createGovernedEntityReferenceService(input) {
 
   const activeResolvers = validation.active_resolvers;
 
+  function evaluateEligibility(resolver, entity, request) {
+    const eligibilityProvider = eligibilityProviders.get(
+      String(resolver.eligibility_provider),
+    );
+    const eligibilityResult = eligibilityProvider({
+      currentDocument: structuredClone(request?.currentDocument ?? {}),
+      entity: structuredClone(entity),
+      positionId: String(request?.positionId ?? ""),
+    });
+
+    if (typeof eligibilityResult === "boolean") {
+      return { eligible: eligibilityResult, reason: "" };
+    }
+
+    const metadata =
+      eligibilityResult &&
+      typeof eligibilityResult === "object" &&
+      !Array.isArray(eligibilityResult)
+        ? structuredClone(eligibilityResult)
+        : {};
+
+    return {
+      ...metadata,
+      eligible: eligibilityResult?.eligible === true,
+      reason: String(eligibilityResult?.reason ?? ""),
+    };
+  }
+
   return {
     validation,
+
+    listEligibleCandidates(request) {
+      const allowedEntityTypes = new Set(
+        Array.isArray(request?.allowedEntityTypes)
+          ? request.allowedEntityTypes.map(String)
+          : [],
+      );
+      const candidatesById = new Map();
+
+      for (const resolver of activeResolvers) {
+        if (
+          allowedEntityTypes.size > 0 &&
+          !allowedEntityTypes.has(String(resolver.entity_type))
+        ) {
+          continue;
+        }
+
+        const sourceProvider = sourceProjectionProviders.get(
+          String(resolver.source_projection_provider),
+        );
+        const projection = sourceProvider({
+          currentDocument: request?.currentDocument,
+          resolver: structuredClone(resolver),
+        });
+        const matchesById = new Map();
+
+        for (const projectedEntity of Array.isArray(projection)
+          ? projection
+          : []) {
+          const id = String(projectedEntity?.id ?? "").trim();
+          const title = String(projectedEntity?.title ?? "").trim();
+          if (!id || !title) continue;
+
+          const owningResolver = resolverForIdentifier(id, activeResolvers);
+          if (String(owningResolver?.id ?? "") !== String(resolver.id ?? "")) {
+            continue;
+          }
+
+          const matches = matchesById.get(id) ?? [];
+          matches.push(projectedEntity);
+          matchesById.set(id, matches);
+        }
+
+        for (const [id, matches] of matchesById) {
+          if (matches.length !== 1 || candidatesById.has(id)) continue;
+
+          const entity = structuredClone(matches[0]);
+          const eligibility = evaluateEligibility(resolver, entity, request);
+          if (!eligibility.eligible) continue;
+
+          candidatesById.set(id, {
+            id,
+            title: String(entity.title),
+            entity_type: String(resolver.entity_type),
+            entity,
+            eligibility,
+            canonical_payload: serializeGovernedReferencePayload(entity),
+          });
+        }
+      }
+
+      return [...candidatesById.values()].sort((left, right) =>
+        compare(left.id, right.id),
+      );
+    },
+
     analyzePayload(request) {
       const payload = String(request?.payload ?? "");
       const allowedEntityTypes = new Set(
@@ -517,21 +612,7 @@ export function createGovernedEntityReferenceService(input) {
       }
 
       const entity = structuredClone(matches[0]);
-      const eligibilityProvider = eligibilityProviders.get(
-        String(resolver.eligibility_provider),
-      );
-      const eligibilityResult = eligibilityProvider({
-        currentDocument: structuredClone(request?.currentDocument ?? {}),
-        entity: structuredClone(entity),
-        positionId: String(request?.positionId ?? ""),
-      });
-      const eligibility =
-        typeof eligibilityResult === "boolean"
-          ? { eligible: eligibilityResult, reason: "" }
-          : {
-              eligible: eligibilityResult?.eligible === true,
-              reason: String(eligibilityResult?.reason ?? ""),
-            };
+      const eligibility = evaluateEligibility(resolver, entity, request);
       if (!eligibility.eligible) {
         return {
           recognized: true,

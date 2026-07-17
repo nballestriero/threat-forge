@@ -3,7 +3,7 @@ import {
 } from "../../MR-0001/lib/governed-entity-references.mjs";
 
 /**
- * @file Governed entity reference diagnostics, hover and quick-fix projection.
+ * @file Governed entity reference completion and validation projection.
  *
  * @implementsRequirement MR-0002ADR-0006REQ-0004
  * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
@@ -33,6 +33,123 @@ function normalizeAllowedPrefix(value) {
     if (key) return `${key}:`;
   }
   return "";
+}
+
+/**
+ * Resolves the replaceable reference fragment at the current cursor position.
+ *
+ * @implementsRequirement MR-0002ADR-0006REQ-0004
+ * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
+ * @derivedFromDecision MR-0002/ADR-0006
+ * @macroRequirement MR-0002
+ * @implementationStatus implemented
+ *
+ * @param {string} line - Current unsaved Markdown line.
+ * @param {{line: number, character: number}} cursorPosition - Editor cursor.
+ * @param {Record<string, unknown>} position - Canonical reference position.
+ * @returns {{startCharacter: number, endCharacter: number} | null}
+ */
+function completionContextFromLine(line, cursorPosition, position) {
+  if (position.container_kind !== "classified_list_item") return null;
+
+  const prefixes = Array.isArray(position.allowed_prefixes)
+    ? position.allowed_prefixes.map(normalizeAllowedPrefix).filter(Boolean)
+    : [];
+
+  if (prefixes.length === 0) return null;
+
+  const character = Math.max(
+    0,
+    Math.min(Number(cursorPosition?.character ?? 0), String(line).length),
+  );
+  const beforeCursor = String(line).slice(0, character);
+  const alternation = [...prefixes]
+    .sort((left, right) => right.length - left.length)
+    .map(escapeRegExp)
+    .join("|");
+  const match = beforeCursor.match(
+    new RegExp(`^\\s*-\\s*(?:${alternation})\\s+(.*)$`, "u"),
+  );
+
+  if (!match) return null;
+
+  return {
+    startCharacter: character - match[1].length,
+    endCharacter: character,
+  };
+}
+
+/**
+ * Ranks eligible candidates by authored occurrence and documentary relation.
+ *
+ * @implementsRequirement MR-0002ADR-0006REQ-0004
+ * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
+ * @derivedFromDecision MR-0002/ADR-0006
+ * @macroRequirement MR-0002
+ * @implementationStatus implemented
+ *
+ * @param {Array<Record<string, unknown>>} candidates - Eligible candidates.
+ * @param {string} unsavedText - Current unsaved Markdown body.
+ * @returns {Array<Record<string, unknown>>}
+ */
+function rankCompletionCandidates(candidates, unsavedText) {
+  const text = String(unsavedText ?? "");
+  const lastOccurrenceById = new Map();
+
+  for (const candidate of candidates) {
+    const id = String(candidate?.id ?? "");
+    if (!id) continue;
+
+    const lastOccurrence = text.lastIndexOf(`[${id}]`);
+    if (lastOccurrence >= 0) {
+      lastOccurrenceById.set(id, lastOccurrence);
+    }
+  }
+
+  const authored = [];
+  const related = [];
+  const remaining = [];
+
+  for (const candidate of candidates) {
+    const id = String(candidate?.id ?? "");
+    if (lastOccurrenceById.has(id)) {
+      authored.push(candidate);
+      continue;
+    }
+
+    const relation = String(
+      candidate?.eligibility?.document_relation ?? "",
+    );
+    if (
+      relation === "current_document" ||
+      relation === "ancestor_document"
+    ) {
+      related.push(candidate);
+      continue;
+    }
+
+    remaining.push(candidate);
+  }
+
+  authored.sort((left, right) => {
+    const occurrence =
+      Number(lastOccurrenceById.get(String(right?.id ?? ""))) -
+      Number(lastOccurrenceById.get(String(left?.id ?? "")));
+
+    return (
+      occurrence ||
+      String(left?.id ?? "").localeCompare(String(right?.id ?? ""), "en")
+    );
+  });
+
+  related.sort((left, right) =>
+    String(left?.id ?? "").localeCompare(String(right?.id ?? ""), "en"),
+  );
+  remaining.sort((left, right) =>
+    String(left?.id ?? "").localeCompare(String(right?.id ?? ""), "en"),
+  );
+
+  return [...authored, ...related, ...remaining];
 }
 
 function referencePayloadFromLine(line, position) {
@@ -108,6 +225,8 @@ export function applyGovernedMarkdownReferenceAssistance(input) {
   const parsed = input?.parsed ?? {};
   const record = input?.record ?? {};
   const referenceService = input?.referenceService;
+  const cursorPosition = input?.position;
+  const completions = input?.completions;
   const diagnostics = input?.diagnostics;
   const hovers = input?.hovers;
   const quickFixes = input?.quickFixes;
@@ -136,6 +255,60 @@ export function applyGovernedMarkdownReferenceAssistance(input) {
       (section) => section.heading === sectionProfile.heading,
     );
     for (const occurrence of occurrences) {
+      if (
+        Array.isArray(completions) &&
+        cursorPosition &&
+        typeof referenceService.listEligibleCandidates === "function" &&
+        Number(cursorPosition.line) > occurrence.lineIndex &&
+        Number(cursorPosition.line) <= occurrence.endLineIndex
+      ) {
+        const context = completionContextFromLine(
+          parsed.lines[Number(cursorPosition.line)] ?? "",
+          cursorPosition,
+          position,
+        );
+
+        if (context) {
+          const candidates = rankCompletionCandidates(
+            referenceService.listEligibleCandidates({
+              allowedEntityTypes: position.allowed_entity_types ?? [],
+              currentDocument: record,
+              positionId: String(position.id ?? ""),
+            }),
+            parsed.lines.join("\n"),
+          );
+
+          candidates.forEach((candidate, index) => {
+            const canonicalPayload = String(candidate.canonical_payload ?? "");
+            if (!canonicalPayload) return;
+
+            completions.push({
+              id: `governed-reference:${String(candidate.id ?? "")}`,
+              kind: "value",
+              label: canonicalPayload,
+              detail: `${String(
+                candidate.entity_type ?? "governed_entity",
+              )} · ${String(candidate.id ?? "")}`,
+              documentation: String(
+                candidate.entity?.meaning ??
+                  "Canonical governed entity reference.",
+              ),
+              insert_text: canonicalPayload,
+              range: lineRange(
+                parsed.lines,
+                Number(cursorPosition.line),
+                context.startCharacter,
+                context.endCharacter,
+              ),
+              filter_text: `${String(candidate.id ?? "")} ${String(
+                candidate.title ?? "",
+              )} ${canonicalPayload}`,
+              sort_text: `3000-${String(index).padStart(4, "0")}`,
+            });
+          });
+        }
+      }
+
       for (
         let lineIndex = occurrence.lineIndex + 1;
         lineIndex <= occurrence.endLineIndex;

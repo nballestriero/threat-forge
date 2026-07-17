@@ -966,8 +966,9 @@ artifacts:
       - MR-0003ADR-0001REQ-0002
       - MR-0003ADR-0001REQ-0002GOV-0001
       - MR-0001ADR-0008REQ-0002
+      - MR-0002ADR-0006REQ-0004GOV-0001
     implemented_path: tools/MR-0003/lib/base-analysis-reference-eligibility.mjs
-    reason: Permit BAE references originating from the current document, an ancestor or an independent source while rejecting descendant-only origin.
+    reason: Permit BAE references originating from the current document, an ancestor or an independent source, reject descendant-only origin and expose the canonical documentary relation used by governed completion ranking.
     verification_command: node --test tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
 
   - id: MR-0003ADR-0001REQ-0002GOV-0001IMPL-0001
@@ -992,7 +993,7 @@ artifacts:
       - MR-0001ADR-0008REQ-0001
       - MR-0001ADR-0008REQ-0002
     implemented_path: tools/MR-0002/lib/governed-markdown-reference-assistance.mjs
-    reason: Apply shared reference resolution only at profile-declared positions and expose BAE diagnostics, hover metadata and canonical-title quick fixes without editor-owned rules.
+    reason: Apply shared reference resolution only at profile-declared positions and expose canonical BAE completions, contextual ranking, deduplication, diagnostics, hover metadata and canonical-title quick fixes without editor-owned rules.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
 
   - id: MR-0002ADR-0006REQ-0004GOV-0001IMPL-0001
@@ -1005,5 +1006,5 @@ artifacts:
       - MR-0001ADR-0008REQ-0001
       - MR-0001ADR-0008REQ-0002
     implemented_path: tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
-    reason: Verify canonical BAE resolution, unknown and noncanonical diagnostics, descendant eligibility, hover metadata and deterministic title quick fixes.
+    reason: Verify canonical BAE completion, authored-related-remaining ranking, deduplication, equal-rank determinism, declared-position boundaries, resolution diagnostics, descendant eligibility, hover metadata and canonical-title quick fixes.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-bae-references.test.mjs

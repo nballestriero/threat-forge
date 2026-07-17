@@ -115,7 +115,11 @@ function resolveSectionPrefixes(sectionProfile) {
   for (const prefix of sectionProfile.allowed_prefixes ?? []) {
     if (typeof prefix === "string") prefixes.push(prefix);
     else if (prefix && typeof prefix === "object" && !Array.isArray(prefix)) {
-      const key = Object.keys(prefix)[0];
+      const key = String(Object.keys(prefix)[0] ?? "")
+        .replace(/^["']+/u, "")
+        .replace(/["']+$/u, "")
+        .replace(/:+$/u, "")
+        .trim();
       if (key) prefixes.push(`${key}:`);
     }
   }
@@ -806,17 +810,6 @@ function buildAssistanceResult(service, input) {
     }
   }
 
-  applyGovernedMarkdownReferenceAssistance({
-    profile,
-    parsed,
-    record,
-    referenceService: service.referenceService,
-    diagnostics,
-    hovers,
-    quickFixes,
-    lineRange,
-  });
-
   const position = {
     line: Math.max(0, Number(input.position?.line ?? 0)),
     character: Math.max(0, Number(input.position?.character ?? 0)),
@@ -824,6 +817,20 @@ function buildAssistanceResult(service, input) {
   const currentLine = String(parsed.lines[position.line] ?? "");
   const beforeCursor = currentLine.slice(0, position.character);
   const completions = [];
+
+  applyGovernedMarkdownReferenceAssistance({
+    profile,
+    parsed,
+    record,
+    referenceService: service.referenceService,
+    position,
+    completions,
+    diagnostics,
+    hovers,
+    quickFixes,
+    lineRange,
+  });
+
   if (/^\s*##\s*[^#]*$/u.test(beforeCursor) || /^\s*$/u.test(beforeCursor)) {
     const available = profileSections.filter((sectionProfile) => {
       const count = (sectionOccurrences.get(sectionProfile.heading) ?? []).length;

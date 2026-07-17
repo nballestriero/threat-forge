@@ -77,6 +77,7 @@ test("accepts a BAE originating from the current document", () => {
     documentsByPath: documentIndex(functional),
   });
   assert.equal(result.eligible, true);
+  assert.equal(result.document_relation, "current_document");
 });
 
 test("accepts a BAE originating from an ancestor document", () => {
@@ -86,6 +87,7 @@ test("accepts a BAE originating from an ancestor document", () => {
     documentsByPath: documentIndex(decision, functional),
   });
   assert.equal(result.eligible, true);
+  assert.equal(result.document_relation, "ancestor_document");
 });
 
 test("accepts a BAE originating from an independent document", () => {
@@ -102,6 +104,7 @@ test("accepts a BAE originating from an independent document", () => {
     documentsByPath: documentIndex(independent, functional),
   });
   assert.equal(result.eligible, true);
+  assert.equal(result.document_relation, "independent_source");
 });
 
 test("rejects a BAE originating only from a descendant document", () => {
@@ -111,6 +114,7 @@ test("rejects a BAE originating only from a descendant document", () => {
     documentsByPath: documentIndex(macro, decision),
   });
   assert.equal(macroResult.eligible, false);
+  assert.equal(macroResult.document_relation, "descendant_document");
   assert.match(macroResult.reason, /descendant/u);
 
   const functionalResult = evaluateBaseAnalysisReferenceEligibility({
@@ -128,4 +132,5 @@ test("accepts a reviewed analytical addition", () => {
     documentsByPath: documentIndex(functional),
   });
   assert.equal(result.eligible, true);
+  assert.equal(result.document_relation, "independent_source");
 });

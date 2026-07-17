@@ -50,6 +50,81 @@ function isDescendantDocument(currentDocument, sourceDocument) {
 }
 
 /**
+ * Classifies an eligible governed-document origin relative to the current body.
+ *
+ * @implementsRequirement MR-0003ADR-0001REQ-0002
+ * @implementsRequirement MR-0003ADR-0001REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
+ * @derivedFromDecision MR-0003/ADR-0001
+ * @macroRequirement MR-0003
+ * @implementationStatus implemented
+ *
+ * @param {Record<string, unknown>} currentDocument - Current governed document.
+ * @param {Record<string, unknown>} sourceDocument - BAE origin document.
+ * @returns {"ancestor_document" | "independent_source"}
+ */
+function classifyEligibleDocumentRelation(currentDocument, sourceDocument) {
+  const currentModel = String(currentDocument?.modelId ?? "");
+  const sourceModel = String(sourceDocument?.modelId ?? "");
+  const currentMacro = String(currentDocument?.macroRequirementId ?? "");
+  const sourceMacro =
+    sourceModel === "macro-requirement"
+      ? String(sourceDocument?.id ?? "")
+      : String(sourceDocument?.macroRequirementId ?? "");
+
+  if (
+    currentModel === "decision" &&
+    sourceModel === "macro-requirement" &&
+    sourceMacro === currentMacro
+  ) {
+    return "ancestor_document";
+  }
+
+  if (currentModel === "functional-requirement") {
+    if (
+      sourceModel === "decision" &&
+      sourceMacro === currentMacro &&
+      String(sourceDocument?.id ?? "") ===
+        String(currentDocument?.decisionId ?? "")
+    ) {
+      return "ancestor_document";
+    }
+    if (
+      sourceModel === "macro-requirement" &&
+      sourceMacro === currentMacro
+    ) {
+      return "ancestor_document";
+    }
+  }
+
+  if (currentModel === "governance-requirement") {
+    if (
+      sourceModel === "functional-requirement" &&
+      String(sourceDocument?.id ?? "") ===
+        String(currentDocument?.parentRequirementId ?? "")
+    ) {
+      return "ancestor_document";
+    }
+    if (
+      sourceModel === "decision" &&
+      sourceMacro === currentMacro &&
+      String(sourceDocument?.id ?? "") ===
+        String(currentDocument?.decisionId ?? "")
+    ) {
+      return "ancestor_document";
+    }
+    if (
+      sourceModel === "macro-requirement" &&
+      sourceMacro === currentMacro
+    ) {
+      return "ancestor_document";
+    }
+  }
+
+  return "independent_source";
+}
+
+/**
  * Evaluates BAE documentary precedence.
  *
  * @param {{
@@ -67,12 +142,14 @@ export function evaluateBaseAnalysisReferenceEligibility(input) {
     return {
       eligible: true,
       reason: "Reviewed analytical additions are independently justified.",
+      document_relation: "independent_source",
     };
   }
   if (originKind !== "governed_document") {
     return {
       eligible: false,
       reason: `BAE ${String(entity.id ?? "")} has an unsupported origin kind.`,
+      document_relation: "unsupported_source",
     };
   }
 
@@ -82,6 +159,7 @@ export function evaluateBaseAnalysisReferenceEligibility(input) {
     return {
       eligible: true,
       reason: "The BAE originates from the current governed document.",
+      document_relation: "current_document",
     };
   }
 
@@ -92,16 +170,22 @@ export function evaluateBaseAnalysisReferenceEligibility(input) {
     return {
       eligible: false,
       reason: `BAE ${String(entity.id ?? "")} origin document is not registered.`,
+      document_relation: "unresolved_source",
     };
   }
   if (isDescendantDocument(input?.currentDocument ?? {}, sourceDocument)) {
     return {
       eligible: false,
       reason: `BAE ${String(entity.id ?? "")} originates only from a descendant governed document.`,
+      document_relation: "descendant_document",
     };
   }
   return {
     eligible: true,
     reason: "The BAE originates from an ancestor or independent governed source.",
+    document_relation: classifyEligibleDocumentRelation(
+      input?.currentDocument ?? {},
+      sourceDocument,
+    ),
   };
 }
