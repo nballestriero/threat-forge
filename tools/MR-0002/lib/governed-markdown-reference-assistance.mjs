@@ -22,10 +22,25 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 }
 
+function normalizeAllowedPrefix(value) {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const key = String(Object.keys(value)[0] ?? "")
+      .replace(/^["']+/u, "")
+      .replace(/["']+$/u, "")
+      .replace(/:+$/u, "")
+      .trim();
+    if (key) return `${key}:`;
+  }
+  return "";
+}
+
 function referencePayloadFromLine(line, position) {
   if (position.container_kind !== "classified_list_item") return null;
   const prefixes = Array.isArray(position.allowed_prefixes)
-    ? position.allowed_prefixes.map(String)
+    ? position.allowed_prefixes
+        .map(normalizeAllowedPrefix)
+        .filter(Boolean)
     : [];
   if (prefixes.length === 0) return null;
   const alternation = [...prefixes]

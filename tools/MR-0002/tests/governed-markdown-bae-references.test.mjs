@@ -91,7 +91,7 @@ function analysis(text, service = referenceService()) {
         id: "functional-requirement.body.reference.scope-classified-item",
         section_id: "functional-requirement.body.section.scope",
         container_kind: "classified_list_item",
-        allowed_prefixes: ["Includes:", "Excludes:"],
+        allowed_prefixes: [{ "\"Includes": "" }, { "\"Excludes": "" }],
         terminal_punctuation: "forbidden",
         allowed_entity_types: ["base_analysis_element"],
       },

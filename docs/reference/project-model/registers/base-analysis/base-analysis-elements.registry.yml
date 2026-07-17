@@ -2,5 +2,20 @@ schema_version: 1
 registry_id: base-analysis-elements-registry
 macro_requirement_id: MR-0003
 
-elements: []
+elements:
+  - id: BAE-0001
+    title: Governed project documentation
+    base_type: data_resource
+    meaning: Canonical project knowledge maintained through governed registries and Markdown bodies and used by ThreatForge as the primary project model.
+    lifecycle_state: active
+    origin:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    provenance:
+      - relation: origin
+        source_kind: governed_document
+        source_id: MR-0001
+        source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+
 relations: []
