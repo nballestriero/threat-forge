@@ -12,6 +12,22 @@ elements:
       kind: governed_document
       source_id: MR-0001
       source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    authoritative_source:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    source_history:
+      - sequence: 1
+        outcome: continuity_confirmed
+        previous_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        next_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        review_evidence_id: MR-0003/ADR-0002
     provenance:
       - relation: origin
         source_kind: governed_document

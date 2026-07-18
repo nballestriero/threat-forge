@@ -46,6 +46,20 @@ provenance_relations:
     label: Support
     meaning: Additional governed source that supports the canonical element interpretation.
 
+source_history_outcomes:
+  - value: continuity_confirmed
+    label: Continuity confirmed
+    meaning: The current authority remains with the same governed source.
+  - value: authority_transferred
+    label: Authority transferred
+    meaning: Current authority moved from one governed source to another while historical origin remained unchanged.
+  - value: bae_superseded
+    label: BAE superseded
+    meaning: Review concluded that the previous BAE identity is superseded and retained for historical traceability.
+  - value: bae_deprecated
+    label: BAE deprecated
+    meaning: Review concluded that the BAE is retained but no longer applicable to current analysis.
+
 relation_predicates:
   - value: has_source_endpoint
     label: Has source endpoint

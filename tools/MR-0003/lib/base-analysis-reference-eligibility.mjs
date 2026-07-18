@@ -4,14 +4,15 @@
  * @implementsRequirement MR-0003ADR-0001REQ-0002
  * @implementsRequirement MR-0003ADR-0001REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0008REQ-0002
+ * @implementsRequirement MR-0003ADR-0002REQ-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0003/ADR-0001
  * @macroRequirement MR-0003
  * @implementationStatus implemented
  *
  * Determines whether a canonical BAE may be referenced by the current governed
- * document. A BAE originating from the current document, an ancestor, or an
- * independent governed source is eligible; a BAE originating only from a
- * descendant document is ineligible.
+ * document. Documentary precedence follows the current authoritative source;
+ * immutable historical origin remains available for provenance and history.
  */
 
 function normalizeProjectPath(value) {
@@ -50,17 +51,18 @@ function isDescendantDocument(currentDocument, sourceDocument) {
 }
 
 /**
- * Classifies an eligible governed-document origin relative to the current body.
+ * Classifies an eligible governed-document authority relative to the current body.
  *
  * @implementsRequirement MR-0003ADR-0001REQ-0002
  * @implementsRequirement MR-0003ADR-0001REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001
  * @derivedFromDecision MR-0003/ADR-0001
  * @macroRequirement MR-0003
  * @implementationStatus implemented
  *
  * @param {Record<string, unknown>} currentDocument - Current governed document.
- * @param {Record<string, unknown>} sourceDocument - BAE origin document.
+ * @param {Record<string, unknown>} sourceDocument - BAE authority document.
  * @returns {"ancestor_document" | "independent_source"}
  */
 function classifyEligibleDocumentRelation(currentDocument, sourceDocument) {
@@ -125,40 +127,40 @@ function classifyEligibleDocumentRelation(currentDocument, sourceDocument) {
 }
 
 /**
- * Evaluates BAE documentary precedence.
+ * Evaluates BAE documentary precedence from the current authoritative source.
  *
  * @param {{
  *   currentDocument: Record<string, unknown>,
  *   entity: Record<string, unknown>,
  *   documentsByPath: Map<string, Record<string, unknown>>
  * }} input - Current document, BAE projection and governed document index.
- * @returns {{eligible: boolean, reason: string}}
+ * @returns {{eligible: boolean, reason: string, document_relation: string}}
  */
 export function evaluateBaseAnalysisReferenceEligibility(input) {
   const entity = input?.entity ?? {};
-  const origin = entity.origin ?? {};
-  const originKind = String(origin.kind ?? "");
-  if (originKind === "reviewed_analytical_addition") {
+  const source = entity.authoritative_source ?? entity.origin ?? {};
+  const sourceKind = String(source.kind ?? "");
+  if (sourceKind === "reviewed_analytical_addition") {
     return {
       eligible: true,
       reason: "Reviewed analytical additions are independently justified.",
       document_relation: "independent_source",
     };
   }
-  if (originKind !== "governed_document") {
+  if (sourceKind !== "governed_document") {
     return {
       eligible: false,
-      reason: `BAE ${String(entity.id ?? "")} has an unsupported origin kind.`,
+      reason: `BAE ${String(entity.id ?? "")} has an unsupported authoritative source kind.`,
       document_relation: "unsupported_source",
     };
   }
 
-  const sourcePath = normalizeProjectPath(origin.source_path);
+  const sourcePath = normalizeProjectPath(source.source_path);
   const currentPath = normalizeProjectPath(input?.currentDocument?.bodyPath);
   if (sourcePath && sourcePath === currentPath) {
     return {
       eligible: true,
-      reason: "The BAE originates from the current governed document.",
+      reason: "The BAE is currently authoritative in this governed document.",
       document_relation: "current_document",
     };
   }
@@ -169,20 +171,20 @@ export function evaluateBaseAnalysisReferenceEligibility(input) {
   if (!sourceDocument) {
     return {
       eligible: false,
-      reason: `BAE ${String(entity.id ?? "")} origin document is not registered.`,
+      reason: `BAE ${String(entity.id ?? "")} authoritative document is not registered.`,
       document_relation: "unresolved_source",
     };
   }
   if (isDescendantDocument(input?.currentDocument ?? {}, sourceDocument)) {
     return {
       eligible: false,
-      reason: `BAE ${String(entity.id ?? "")} originates only from a descendant governed document.`,
+      reason: `BAE ${String(entity.id ?? "")} is authoritative only in a descendant governed document.`,
       document_relation: "descendant_document",
     };
   }
   return {
     eligible: true,
-    reason: "The BAE originates from an ancestor or independent governed source.",
+    reason: "The BAE is authoritative in an ancestor or independent governed source.",
     document_relation: classifyEligibleDocumentRelation(
       input?.currentDocument ?? {},
       sourceDocument,

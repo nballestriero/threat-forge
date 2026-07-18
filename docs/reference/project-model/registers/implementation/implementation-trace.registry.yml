@@ -840,6 +840,8 @@ artifacts:
     linked_requirement_ids:
       - MR-0003ADR-0001REQ-0005
       - MR-0003ADR-0001REQ-0005GOV-0001
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0003/lib/base-analysis-registry.mjs
     reason: Validate canonical BAE inventory, taxonomies, provenance and relations and derive the deterministic reference-source projection without mutating governed sources.
     verification_command: node --test tools/MR-0003/test/base-analysis-registry.test.mjs
@@ -850,6 +852,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0003ADR-0001REQ-0005
+      - MR-0003ADR-0002REQ-0001
     implemented_path: docs/reference/project-model/registers/base-analysis/base-analysis-elements.registry.yml
     reason: Persist the authoritative Base Analysis Element inventory and canonical BAE relations for the analyzed project.
     verification_command: node tools/MR-0003/check-base-analysis-registry.mjs
@@ -860,6 +863,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0003ADR-0001REQ-0005
+      - MR-0003ADR-0002REQ-0001
     implemented_path: docs/reference/project-model/registers/base-analysis/base-analysis-taxonomies.registry.yml
     reason: Persist canonical BAE base types, lifecycle states, origin kinds, provenance relations and relation predicate contracts.
     verification_command: node tools/MR-0003/check-base-analysis-registry.mjs
@@ -871,6 +875,8 @@ artifacts:
     linked_requirement_ids:
       - MR-0003ADR-0001REQ-0005
       - MR-0003ADR-0001REQ-0005GOV-0001
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0003/check-base-analysis-registry.mjs
     reason: Enforce BAE registry identity, controlled values, documentary provenance, relation integrity, deterministic projection and negative fixture coverage.
     verification_command: node tools/MR-0003/check-base-analysis-registry.mjs
@@ -882,6 +888,8 @@ artifacts:
     linked_requirement_ids:
       - MR-0003ADR-0001REQ-0005
       - MR-0003ADR-0001REQ-0005GOV-0001
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0003/test/base-analysis-registry.test.mjs
     reason: Verify empty and complete canonical inventories, stable rule identifiers, deterministic projection, side-effect-free processing and every governed negative fixture.
     verification_command: node --test tools/MR-0003/test/base-analysis-registry.test.mjs
@@ -892,6 +900,7 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0003ADR-0001REQ-0005GOV-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0003/fixtures/base-analysis-registry
     reason: Prove deterministic rejection of malformed identities, unknown controlled values, invalid provenance, broken relations, invalid Data Flow endpoints and divergent projections.
     verification_command: node tools/MR-0003/check-base-analysis-registry.mjs
@@ -930,6 +939,8 @@ artifacts:
       - MR-0001ADR-0008REQ-0001GOV-0001
       - MR-0001ADR-0008REQ-0002
       - MR-0001ADR-0008REQ-0002GOV-0001
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0001/check-governed-entity-references.mjs
     reason: Enforce resolver uniqueness, provider coverage, profile-declared reference positions and deterministic grammar, resolution and eligibility verification.
     verification_command: node tools/MR-0001/check-governed-entity-references.mjs
@@ -967,8 +978,10 @@ artifacts:
       - MR-0003ADR-0001REQ-0002GOV-0001
       - MR-0001ADR-0008REQ-0002
       - MR-0002ADR-0006REQ-0004GOV-0001
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0003/lib/base-analysis-reference-eligibility.mjs
-    reason: Permit BAE references originating from the current document, an ancestor or an independent source, reject descendant-only origin and expose the canonical documentary relation used by governed completion ranking.
+    reason: Permit BAE references originating from the current document, an ancestor or an independent source while rejecting descendant-only origin.
     verification_command: node --test tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
 
   - id: MR-0003ADR-0001REQ-0002GOV-0001IMPL-0001
@@ -979,6 +992,8 @@ artifacts:
       - MR-0003ADR-0001REQ-0002
       - MR-0003ADR-0001REQ-0002GOV-0001
       - MR-0001ADR-0008REQ-0002
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
     reason: Verify current, ancestor, independent, descendant-only and reviewed analytical addition BAE origin eligibility.
     verification_command: node --test tools/MR-0003/test/base-analysis-reference-eligibility.test.mjs
@@ -993,7 +1008,7 @@ artifacts:
       - MR-0001ADR-0008REQ-0001
       - MR-0001ADR-0008REQ-0002
     implemented_path: tools/MR-0002/lib/governed-markdown-reference-assistance.mjs
-    reason: Apply shared reference resolution only at profile-declared positions and expose canonical BAE completions, contextual ranking, deduplication, diagnostics, hover metadata and canonical-title quick fixes without editor-owned rules.
+    reason: Apply shared reference resolution only at profile-declared positions and expose BAE diagnostics, hover metadata and canonical-title quick fixes without editor-owned rules.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
 
   - id: MR-0002ADR-0006REQ-0004GOV-0001IMPL-0001
@@ -1006,5 +1021,15 @@ artifacts:
       - MR-0001ADR-0008REQ-0001
       - MR-0001ADR-0008REQ-0002
     implemented_path: tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
-    reason: Verify canonical BAE completion, authored-related-remaining ranking, deduplication, equal-rank determinism, declared-position boundaries, resolution diagnostics, descendant eligibility, hover metadata and canonical-title quick fixes.
+    reason: Verify canonical BAE resolution, unknown and noncanonical diagnostics, descendant eligibility, hover metadata and deterministic title quick fixes.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-bae-references.test.mjs
+  - id: MR-0003ADR-0002REQ-0001GOV-0001IMPL-0001
+    title: "BAE source continuity and occurrence projection core"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0002REQ-0001GOV-0001
+      - MR-0003ADR-0002REQ-0001
+    implemented_path: tools/MR-0003/lib/base-analysis-source-continuity.mjs
+    reason: "Promoted MR-0003ADR-0002REQ-0001GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0003/lib/base-analysis-source-continuity.mjs

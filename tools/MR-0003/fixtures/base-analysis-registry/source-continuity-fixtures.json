@@ -1,0 +1,649 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "base-analysis-source-continuity-fixtures",
+  "base": {
+    "inventory": {
+      "schema_version": 1,
+      "registry_id": "base-analysis-elements-registry",
+      "macro_requirement_id": "MR-0003",
+      "elements": [
+        {
+          "id": "BAE-0001",
+          "title": "Governed project documentation",
+          "base_type": "data_resource",
+          "meaning": "Canonical project knowledge.",
+          "lifecycle_state": "active",
+          "origin": {
+            "kind": "governed_document",
+            "source_id": "MR-0001",
+            "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+          },
+          "authoritative_source": {
+            "kind": "governed_document",
+            "source_id": "MR-0001",
+            "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+          },
+          "source_history": [
+            {
+              "sequence": 1,
+              "outcome": "continuity_confirmed",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            }
+          ],
+          "provenance": [
+            {
+              "relation": "origin",
+              "source_kind": "governed_document",
+              "source_id": "MR-0001",
+              "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+            }
+          ]
+        }
+      ],
+      "relations": []
+    },
+    "documents": [
+      {
+        "id": "MR-0001",
+        "canonical_id": "MR-0001",
+        "aliases": [
+          "MR-0001"
+        ],
+        "model_id": "macro-requirement",
+        "status": "draft",
+        "body_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
+        "profile_id": "macro-requirement-body",
+        "body_text": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- BAE origin: [BAE-0001] Governed project documentation\n- Includes: [BAE-0001] Governed project documentation\n- Includes: ordinary prose without governed payload\n"
+      },
+      {
+        "id": "MR-0002",
+        "canonical_id": "MR-0002",
+        "aliases": [
+          "MR-0002"
+        ],
+        "model_id": "macro-requirement",
+        "status": "draft",
+        "body_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md",
+        "profile_id": "macro-requirement-body",
+        "body_text": "# MR-0002 \u2014 Authoring\n\n## Scope\n\n- Includes: authoring behavior\n"
+      }
+    ],
+    "profiles": [
+      {
+        "profile_id": "macro-requirement-body",
+        "representation_kind": "markdown_body",
+        "sections": [
+          {
+            "id": "macro-requirement.body.section.scope",
+            "heading": "Scope"
+          }
+        ],
+        "reference_positions": [
+          {
+            "id": "macro-requirement.body.reference.scope-classified-item",
+            "section_id": "macro-requirement.body.section.scope",
+            "container_kind": "classified_list_item",
+            "allowed_prefixes": [
+              "Includes:",
+              "Excludes:"
+            ],
+            "terminal_punctuation": "forbidden",
+            "allowed_entity_types": [
+              "base_analysis_element"
+            ]
+          }
+        ],
+        "origin_declaration_positions": [
+          {
+            "id": "macro-requirement.body.origin.scope-bae-origin-item",
+            "section_id": "macro-requirement.body.section.scope",
+            "container_kind": "classified_list_item",
+            "allowed_prefixes": [
+              "BAE origin:"
+            ],
+            "terminal_punctuation": "forbidden",
+            "allowed_entity_types": [
+              "base_analysis_element"
+            ]
+          }
+        ]
+      }
+    ],
+    "existing_sources": [
+      {
+        "kind": "governed_document",
+        "source_id": "MR-0001",
+        "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+      },
+      {
+        "kind": "governed_document",
+        "source_id": "MR-0002",
+        "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+      }
+    ],
+    "review_evidence_ids": [
+      "MR-0003/ADR-0002"
+    ]
+  },
+  "cases": [
+    {
+      "id": "valid-current-authority",
+      "operations": [],
+      "expected_rule_ids": []
+    },
+    {
+      "id": "valid-authority-transfer",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "authoritative_source"
+          ],
+          "value": {
+            "kind": "governed_document",
+            "source_id": "MR-0002",
+            "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+          }
+        },
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history"
+          ],
+          "value": [
+            {
+              "sequence": 1,
+              "outcome": "authority_transferred",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0002",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": []
+    },
+    {
+      "id": "valid-bae-supersession",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "lifecycle_state"
+          ],
+          "value": "superseded"
+        },
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "authoritative_source"
+          ],
+          "value": {
+            "kind": "governed_document",
+            "source_id": "MR-0002",
+            "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+          }
+        },
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history"
+          ],
+          "value": [
+            {
+              "sequence": 1,
+              "outcome": "bae_superseded",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0002",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": []
+    },
+    {
+      "id": "valid-bae-deprecation",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "lifecycle_state"
+          ],
+          "value": "deprecated"
+        },
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "outcome"
+          ],
+          "value": "bae_deprecated"
+        }
+      ],
+      "expected_rule_ids": []
+    },
+    {
+      "id": "missing-authoritative-source",
+      "operations": [
+        {
+          "operation": "delete",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "authoritative_source"
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.authoritative-source.record"
+      ]
+    },
+    {
+      "id": "unresolved-authoritative-source",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "authoritative_source"
+          ],
+          "value": {
+            "kind": "governed_document",
+            "source_id": "MR-9999",
+            "source_path": "docs/missing.md"
+          }
+        },
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "next_source"
+          ],
+          "value": {
+            "kind": "governed_document",
+            "source_id": "MR-9999",
+            "source_path": "docs/missing.md"
+          }
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.authoritative-source.unresolved"
+      ]
+    },
+    {
+      "id": "source-history-sequence-gap",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "sequence"
+          ],
+          "value": 2
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.sequence"
+      ]
+    },
+    {
+      "id": "source-history-origin-start-mismatch",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "previous_source"
+          ],
+          "value": {
+            "kind": "governed_document",
+            "source_id": "MR-0002",
+            "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+          }
+        },
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "outcome"
+          ],
+          "value": "authority_transferred"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.origin-start"
+      ]
+    },
+    {
+      "id": "source-history-authoritative-end-mismatch",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "authoritative_source"
+          ],
+          "value": {
+            "kind": "governed_document",
+            "source_id": "MR-0002",
+            "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+          }
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.authoritative-end"
+      ]
+    },
+    {
+      "id": "source-history-discontinuity",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history"
+          ],
+          "value": [
+            {
+              "sequence": 1,
+              "outcome": "authority_transferred",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0002",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            },
+            {
+              "sequence": 2,
+              "outcome": "continuity_confirmed",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.discontinuity"
+      ]
+    },
+    {
+      "id": "source-history-cycle",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history"
+          ],
+          "value": [
+            {
+              "sequence": 1,
+              "outcome": "authority_transferred",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0002",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            },
+            {
+              "sequence": 2,
+              "outcome": "authority_transferred",
+              "previous_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0002",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0002_body.md"
+              },
+              "next_source": {
+                "kind": "governed_document",
+                "source_id": "MR-0001",
+                "source_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+              },
+              "review_evidence_id": "MR-0003/ADR-0002"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.cycle"
+      ]
+    },
+    {
+      "id": "source-history-invalid-outcome",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "outcome"
+          ],
+          "value": "silent_rewrite"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.outcome"
+      ]
+    },
+    {
+      "id": "source-history-missing-review-evidence",
+      "operations": [
+        {
+          "operation": "delete",
+          "path": [
+            "inventory",
+            "elements",
+            0,
+            "source_history",
+            0,
+            "review_evidence_id"
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.source-history.review-evidence"
+      ]
+    },
+    {
+      "id": "active-bae-nonactive-authority",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "documents",
+            0,
+            "status"
+          ],
+          "value": "superseded"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.lifecycle.authority"
+      ]
+    },
+    {
+      "id": "missing-origin-declaration",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "documents",
+            0,
+            "body_text"
+          ],
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.origin-declaration.missing"
+      ]
+    },
+    {
+      "id": "origin-declaration-wrong-document",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "documents",
+            0,
+            "body_text"
+          ],
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n"
+        },
+        {
+          "operation": "set",
+          "path": [
+            "documents",
+            1,
+            "body_text"
+          ],
+          "value": "# MR-0002 \u2014 Authoring\n\n## Scope\n\n- BAE origin: [BAE-0001] Governed project documentation\n"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.origin-declaration.missing",
+        "bae.source-continuity.origin-declaration.owner"
+      ]
+    },
+    {
+      "id": "duplicate-origin-declaration",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "documents",
+            0,
+            "body_text"
+          ],
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- BAE origin: [BAE-0001] Governed project documentation\n- BAE origin: [BAE-0001] Governed project documentation\n"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.origin-declaration.multiple"
+      ]
+    },
+    {
+      "id": "origin-declaration-title-divergence",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "documents",
+            0,
+            "body_text"
+          ],
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- BAE origin: [BAE-0001] Divergent title\n"
+        }
+      ],
+      "expected_rule_ids": [
+        "bae.source-continuity.origin-declaration.payload",
+        "bae.source-continuity.origin-declaration.missing"
+      ]
+    },
+    {
+      "id": "occurrence-projection-divergence",
+      "operations": [],
+      "candidate_occurrence_projection": [],
+      "expected_rule_ids": [
+        "bae.source-continuity.reference-occurrence.projection-divergence"
+      ]
+    }
+  ]
+}

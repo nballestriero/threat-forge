@@ -6,11 +6,13 @@ import {
 } from "../lib/base-analysis-reference-eligibility.mjs";
 
 /**
- * @file BAE documentary precedence eligibility verification suite.
+ * @file BAE documentary precedence and current-authority verification suite.
  *
  * @implementsRequirement MR-0003ADR-0001REQ-0002
  * @implementsRequirement MR-0003ADR-0001REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0008REQ-0002
+ * @implementsRequirement MR-0003ADR-0002REQ-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0003/ADR-0001
  * @macroRequirement MR-0003
  * @implementationStatus implemented
@@ -47,22 +49,27 @@ const governance = {
     "docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001GOV-0001_body.md",
 };
 
+function sourceFrom(document, kind = "governed_document") {
+  return kind === "reviewed_analytical_addition"
+    ? {
+        kind,
+        source_id: "REVIEW-0001",
+        source_path: "docs/reference/base-analysis/reviews/REVIEW-0001.md",
+        review_evidence_id: "REVIEW-0001",
+      }
+    : {
+        kind,
+        source_id: document.id,
+        source_path: document.bodyPath,
+      };
+}
+
 function entityFrom(document, kind = "governed_document") {
+  const source = sourceFrom(document, kind);
   return {
     id: "BAE-0001",
-    origin:
-      kind === "reviewed_analytical_addition"
-        ? {
-            kind,
-            source_id: "REVIEW-0001",
-            source_path: "docs/reference/base-analysis/reviews/REVIEW-0001.md",
-            review_evidence_id: "REVIEW-0001",
-          }
-        : {
-            kind,
-            source_id: document.id,
-            source_path: document.bodyPath,
-          },
+    origin: structuredClone(source),
+    authoritative_source: structuredClone(source),
   };
 }
 
@@ -70,7 +77,7 @@ function documentIndex(...documents) {
   return new Map(documents.map((entry) => [entry.bodyPath, entry]));
 }
 
-test("accepts a BAE originating from the current document", () => {
+test("accepts a BAE authoritative in the current document", () => {
   const result = evaluateBaseAnalysisReferenceEligibility({
     currentDocument: functional,
     entity: entityFrom(functional),
@@ -80,7 +87,7 @@ test("accepts a BAE originating from the current document", () => {
   assert.equal(result.document_relation, "current_document");
 });
 
-test("accepts a BAE originating from an ancestor document", () => {
+test("accepts a BAE authoritative in an ancestor document", () => {
   const result = evaluateBaseAnalysisReferenceEligibility({
     currentDocument: functional,
     entity: entityFrom(decision),
@@ -90,7 +97,7 @@ test("accepts a BAE originating from an ancestor document", () => {
   assert.equal(result.document_relation, "ancestor_document");
 });
 
-test("accepts a BAE originating from an independent document", () => {
+test("accepts a BAE authoritative in an independent document", () => {
   const independent = {
     ...decision,
     id: "ADR-0002",
@@ -107,7 +114,7 @@ test("accepts a BAE originating from an independent document", () => {
   assert.equal(result.document_relation, "independent_source");
 });
 
-test("rejects a BAE originating only from a descendant document", () => {
+test("rejects a BAE authoritative only in a descendant document", () => {
   const macroResult = evaluateBaseAnalysisReferenceEligibility({
     currentDocument: macro,
     entity: entityFrom(decision),
@@ -133,4 +140,16 @@ test("accepts a reviewed analytical addition", () => {
   });
   assert.equal(result.eligible, true);
   assert.equal(result.document_relation, "independent_source");
+});
+
+test("uses current authority instead of immutable historical origin", () => {
+  const entity = entityFrom(decision);
+  entity.authoritative_source = sourceFrom(macro);
+  const result = evaluateBaseAnalysisReferenceEligibility({
+    currentDocument: macro,
+    entity,
+    documentsByPath: documentIndex(macro, decision),
+  });
+  assert.equal(result.eligible, true);
+  assert.equal(result.document_relation, "current_document");
 });

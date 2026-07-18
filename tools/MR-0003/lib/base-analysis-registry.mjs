@@ -2,12 +2,20 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { readGovernedYamlFile } from "../../MR-0001/lib/governed-yaml.mjs";
+import {
+  baseAnalysisSourceContinuityRuleIds,
+  canonicalSourceHistoryOutcomes,
+  loadBaseAnalysisDocumentContext,
+  validateBaseAnalysisSourceContinuity,
+} from "./base-analysis-source-continuity.mjs";
 
 /**
  * @file Canonical Base Analysis Element registry validation and projection core.
  *
  * @implementsRequirement MR-0003ADR-0001REQ-0005
  * @implementsRequirement MR-0003ADR-0001REQ-0005GOV-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0003/ADR-0001
  * @macroRequirement MR-0003
  * @implementationStatus implemented
@@ -70,6 +78,9 @@ const requiredTaxonomyValues = Object.freeze({
     "reviewed_analytical_addition",
   ]),
   provenance_relations: Object.freeze(["origin", "support"]),
+  source_history_outcomes: Object.freeze(
+    canonicalSourceHistoryOutcomes,
+  ),
   relation_predicates: Object.freeze([
     "has_source_endpoint",
     "has_target_endpoint",
@@ -371,6 +382,19 @@ export function validateBaseAnalysisRegistrySources(input) {
   const relations = Array.isArray(inventory?.relations)
     ? inventory.relations
     : [];
+
+  const continuity = validateBaseAnalysisSourceContinuity({
+    inventory,
+    documents: input?.documents,
+    profiles: input?.profiles,
+    sourceResolver,
+    reviewEvidenceResolver: input?.reviewEvidenceResolver,
+    allowedOutcomes: requiredTaxonomyValues.source_history_outcomes,
+    candidateOccurrenceProjection:
+      input?.candidateOccurrenceProjection,
+  });
+  errors.push(...continuity.errors);
+  warnings.push(...continuity.warnings);
 
   if (!Array.isArray(inventory?.elements)) {
     errors.push(
@@ -776,6 +800,10 @@ export function validateBaseAnalysisRegistrySources(input) {
       meaning: requiredText(element, "meaning"),
       lifecycle_state: requiredText(element, "lifecycle_state"),
       origin: structuredClone(element.origin),
+      authoritative_source: structuredClone(
+        element.authoritative_source,
+      ),
+      source_history: structuredClone(element.source_history),
       provenance: structuredClone(element.provenance),
       registry_path: canonicalBaseAnalysisRegistryPaths.inventory,
     }));
@@ -806,6 +834,10 @@ export function validateBaseAnalysisRegistrySources(input) {
     warnings,
     element_count: elements.length,
     relation_count: relations.length,
+    source_history_count: continuity.source_history_count,
+    origin_declaration_count: continuity.origin_declaration_count,
+    occurrence_count: continuity.occurrences.length,
+    occurrence_projection: continuity.occurrences,
     projection,
   };
 }
@@ -878,12 +910,34 @@ export function loadAndValidateBaseAnalysisRegistry(options = {}) {
     );
   }
 
+  let documentContext = options.documentContext ?? null;
+  if (!documentContext) {
+    try {
+      documentContext = loadBaseAnalysisDocumentContext({ rootDir });
+    } catch (error) {
+      loadingErrors.push(
+        problem(
+          baseAnalysisSourceContinuityRuleIds.documentContext,
+          error.message,
+          "governed-document-context",
+        ),
+      );
+    }
+  }
+
   const result = validateBaseAnalysisRegistrySources({
     inventory,
     taxonomies,
     sourceResolver:
       options.sourceResolver ?? defaultSourceResolver(rootDir),
+    documents: documentContext?.documents,
+    profiles: documentContext?.profiles,
+    reviewEvidenceResolver:
+      options.reviewEvidenceResolver ??
+      documentContext?.reviewEvidenceResolver,
     candidateProjection: options.candidateProjection,
+    candidateOccurrenceProjection:
+      options.candidateOccurrenceProjection,
   });
   result.errors = [...loadingErrors, ...result.errors].sort((left, right) =>
     compare(

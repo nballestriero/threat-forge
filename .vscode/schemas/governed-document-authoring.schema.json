@@ -81,6 +81,17 @@
                     "pattern": "^[^\\r\\n]+$"
                   },
                   "description": "Items rendered with canonical prefix Excludes:"
+                },
+                "bae_origin": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix BAE origin:"
                 }
               },
               "anyOf": [
@@ -92,6 +103,11 @@
                 {
                   "required": [
                     "excludes"
+                  ]
+                },
+                {
+                  "required": [
+                    "bae_origin"
                   ]
                 }
               ],
@@ -610,15 +626,21 @@
               "decision_id": {
                 "type": "string",
                 "enum": [
-                  "ADR-0001"
+                  "ADR-0001",
+                  "ADR-0002"
                 ],
                 "markdownEnumDescriptions": [
-                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft",
+                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
                     "value": "ADR-0001",
                     "description": "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
                   }
                 ]
               }
@@ -885,15 +907,21 @@
               "decision_id": {
                 "type": "string",
                 "enum": [
-                  "ADR-0001"
+                  "ADR-0001",
+                  "ADR-0002"
                 ],
                 "markdownEnumDescriptions": [
-                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft",
+                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
                     "value": "ADR-0001",
                     "description": "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
                   }
                 ]
               }
@@ -1468,6 +1496,41 @@
                   {
                     "value": "MR-0003ADR-0001REQ-0005",
                     "description": "Canonical BAE registry and reference-source projection — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0002REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "BAE source continuity and reference occurrence projection — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0002REQ-0001",
+                    "description": "BAE source continuity and reference occurrence projection — status: draft"
                   }
                 ]
               }

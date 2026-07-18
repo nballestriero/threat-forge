@@ -20,6 +20,8 @@ import {
  * @implementsRequirement MR-0001ADR-0008REQ-0001GOV-0001
  * @implementsRequirement MR-0001ADR-0008REQ-0002
  * @implementsRequirement MR-0001ADR-0008REQ-0002GOV-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001
+ * @implementsRequirement MR-0003ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0008
  * @macroRequirement MR-0001
  * @implementationStatus implemented
@@ -144,7 +146,7 @@ try {
   const testCount = parseTestCount(
     `${testResult.stdout ?? ""}\n${testResult.stderr ?? ""}`,
   );
-  if (testCount < 20) {
+  if (testCount < 21) {
     throw new Error(
       `Governed entity reference verification count is incomplete: ${testCount}.`,
     );
@@ -155,6 +157,10 @@ try {
   console.log("Implemented requirement: MR-0001ADR-0008REQ-0001GOV-0001");
   console.log("Implemented requirement: MR-0001ADR-0008REQ-0002");
   console.log("Implemented requirement: MR-0001ADR-0008REQ-0002GOV-0001");
+  console.log("Implemented requirement: MR-0003ADR-0002REQ-0001");
+  console.log(
+    "Implemented requirement: MR-0003ADR-0002REQ-0001GOV-0001",
+  );
   console.log(`Resolvers checked: ${service.validation.active_resolvers.length}`);
   console.log(`Markdown profiles checked: ${profileResult.profiles}`);
   console.log(`Reference positions checked: ${profileResult.positions}`);

@@ -87,3 +87,18 @@ requirements:
     decision_id: ADR-0001
     parent_requirement_id: MR-0003ADR-0001REQ-0005
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0005GOV-0001_body.md
+  - id: MR-0003ADR-0002REQ-0001
+    title: "BAE source continuity and reference occurrence projection"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0002REQ-0001_body.md
+  - id: MR-0003ADR-0002REQ-0001GOV-0001
+    title: "Deterministic BAE source continuity and occurrence validation"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0002
+    parent_requirement_id: MR-0003ADR-0002REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0002REQ-0001GOV-0001_body.md
