@@ -356,7 +356,7 @@
         "unknown_sections": {
           "const": "forbidden"
         },
-        "origin_declaration_positions": {
+        "origin_evidence_positions": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/referencePosition"

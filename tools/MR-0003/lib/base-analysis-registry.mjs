@@ -835,7 +835,7 @@ export function validateBaseAnalysisRegistrySources(input) {
     element_count: elements.length,
     relation_count: relations.length,
     source_history_count: continuity.source_history_count,
-    origin_declaration_count: continuity.origin_declaration_count,
+    origin_evidence_count: continuity.origin_evidence_count,
     occurrence_count: continuity.occurrences.length,
     occurrence_projection: continuity.occurrences,
     projection,

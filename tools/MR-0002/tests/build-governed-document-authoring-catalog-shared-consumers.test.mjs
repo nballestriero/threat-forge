@@ -44,7 +44,7 @@ test("projects controlled fields and canonical body sections", () => {
   );
   assert.deepEqual(
     byId.get("macro-requirement").body_sections.find((section) => section.input_name === "scope").allowed_prefixes,
-    ["Includes:", "Excludes:", "BAE origin:"],
+    ["Includes:", "Excludes:"],
   );
 });
 

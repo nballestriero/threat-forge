@@ -36,7 +36,7 @@ The model organizes project knowledge by Macro-requirement and uses explicit Dec
 
 - Includes: Macro-requirement registry records and Markdown bodies
 - Includes: Decision and Requirement registries and bodies
-- BAE origin: [BAE-0001] Governed project documentation
+- Includes: [BAE-0001] Governed project documentation
 - Includes: governed assets, controlled vocabularies and taxonomies
 - Includes: stable identifiers, controlled fields and explicit relations
 - Includes: implementation and verification traceability

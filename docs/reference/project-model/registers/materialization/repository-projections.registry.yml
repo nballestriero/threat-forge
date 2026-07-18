@@ -3,6 +3,26 @@ registry_id: repository-projection-materialization-registry
 scope: governed_repository_projections
 
 materializers:
+  - id: base-analysis-reference-occurrences
+    title: Base Analysis reference occurrence projection
+    status: active
+    write_command: node
+    write_args:
+      - tools/MR-0003/check-base-analysis-registry.mjs
+      - --write-reference-occurrences
+    check_command: node
+    check_args:
+      - tools/MR-0003/check-base-analysis-registry.mjs
+      - --check-reference-occurrences
+    generated_paths:
+      - docs/reference/project-model/registers/base-analysis/base-analysis-elements.registry.yml
+    linked_requirement_ids:
+      - MR-0003ADR-0002REQ-0001
+      - MR-0003ADR-0002REQ-0001GOV-0001
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+
   - id: governed-document-authoring-schema
     title: Governed document authoring schema projection
     status: active

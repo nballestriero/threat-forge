@@ -7,12 +7,12 @@ applies_to_model_ids:
 source_path_pattern: docs/reference/project-model/body/macro-requirements/MR-*_body.md
 unknown_sections: forbidden
 
-origin_declaration_positions:
-  - id: macro-requirement.body.origin.scope-bae-origin-item
+origin_evidence_positions:
+  - id: macro-requirement.body.origin.scope-includes-item
     section_id: macro-requirement.body.section.scope
     container_kind: classified_list_item
     allowed_prefixes:
-      - "BAE origin:"
+      - "Includes:"
     terminal_punctuation: forbidden
     allowed_entity_types:
       - base_analysis_element
@@ -79,7 +79,6 @@ sections:
     allowed_prefixes:
       - "Includes:"
       - "Excludes:"
-      - "BAE origin:"
     terminal_punctuation: forbidden
     normative_keywords: forbidden
     duplicate_items: forbidden

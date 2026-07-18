@@ -16,7 +16,7 @@ import {
  * @implementationStatus implemented
  *
  * Validates immutable historical origin, current documentary authority,
- * append-only source-history topology, canonical origin declarations and
+ * append-only source-history topology, natural documentary origin evidence and
  * deterministic repository-wide BAE reference occurrences. Side effects:
  * reads governed registries and Markdown bodies only when loading the canonical
  * repository context; validation and projection are side-effect free.
@@ -403,8 +403,8 @@ function scanDeclaredPositions({ documents, profiles, elementsById }) {
     const positionGroups = [
       {
         role: "origin",
-        positions: Array.isArray(profile.origin_declaration_positions)
-          ? profile.origin_declaration_positions
+        positions: Array.isArray(profile.origin_evidence_positions)
+          ? profile.origin_evidence_positions
           : [],
       },
       {
@@ -433,11 +433,14 @@ function scanDeclaredPositions({ documents, profiles, elementsById }) {
         const context = `${document.body_path}:${lineIndex + 1}:${extracted.column + 1}`;
 
         if (!parsed) {
-          if (role === "origin") {
+          if (
+            role === "origin" &&
+            /^\[BAE-/u.test(text(extracted.payload))
+          ) {
             errors.push(
               problem(
                 baseAnalysisSourceContinuityRuleIds.originDeclarationPayload,
-                `BAE origin declaration must contain canonical payload [BAE-0000] Canonical title.`,
+                `BAE origin evidence must contain canonical payload [BAE-0000] Canonical title.`,
                 context,
               ),
             );
@@ -528,7 +531,7 @@ function scanDeclaredPositions({ documents, profiles, elementsById }) {
  *   errors: Array<Record<string, string>>,
  *   warnings: Array<Record<string, string>>,
  *   source_history_count: number,
- *   origin_declaration_count: number,
+ *   origin_evidence_count: number,
  *   occurrences: Array<Record<string, unknown>>
  * }} Deterministic side-effect-free result.
  */
@@ -835,7 +838,7 @@ export function validateBaseAnalysisSourceContinuity(input = {}) {
         errors.push(
           problem(
             baseAnalysisSourceContinuityRuleIds.originDeclarationMissing,
-            `BAE ${id} historical origin body must contain exactly one canonical origin declaration.`,
+            `BAE ${id} historical origin body must contain exactly one canonical origin evidence.`,
             id,
           ),
         );
@@ -843,7 +846,7 @@ export function validateBaseAnalysisSourceContinuity(input = {}) {
         errors.push(
           problem(
             baseAnalysisSourceContinuityRuleIds.originDeclarationMultiple,
-            `BAE ${id} historical origin body contains multiple canonical origin declarations.`,
+            `BAE ${id} historical origin body contains multiple canonical origin evidence occurrences.`,
             id,
           ),
         );
@@ -857,7 +860,7 @@ export function validateBaseAnalysisSourceContinuity(input = {}) {
           errors.push(
             problem(
               baseAnalysisSourceContinuityRuleIds.originDeclarationOwner,
-              `BAE ${id} origin declaration belongs to a document different from its immutable historical origin.`,
+              `BAE ${id} origin evidence belongs to a document different from its immutable historical origin.`,
               `${declaration.body_path}:${declaration.line}`,
             ),
           );
@@ -893,7 +896,7 @@ export function validateBaseAnalysisSourceContinuity(input = {}) {
     errors,
     warnings,
     source_history_count: sourceHistoryCount,
-    origin_declaration_count: originDeclarations.length,
+    origin_evidence_count: originDeclarations.length,
     occurrences,
   };
 }

@@ -204,7 +204,7 @@ checks:
       - MR-0003ADR-0001REQ-0005GOV-0001
       - MR-0003ADR-0002REQ-0001
       - MR-0003ADR-0002REQ-0001GOV-0001
-    description: Validate canonical BAE inventory, controlled taxonomies, immutable origin, current authority, source-history continuity, canonical origin declarations, deterministic reference-source and occurrence projections and governed fixtures.
+    description: Validate canonical BAE inventory, controlled taxonomies, immutable origin, current authority, source-history continuity, natural origin evidence, materialized reference occurrences, deterministic projections and governed fixtures.
   - id: MR-0001ADR-0008REQ-0002GOV-0001CHECK-0001
     title: Governed entity reference consistency
     status: active
@@ -220,4 +220,4 @@ checks:
       - MR-0003ADR-0001REQ-0002GOV-0001
       - MR-0003ADR-0002REQ-0001
       - MR-0003ADR-0002REQ-0001GOV-0001
-    description: Validate canonical reference grammar, resolver uniqueness and providers, profile-declared origin and reference positions, current BAE documentary authority and deterministic positive and negative fixtures.
+    description: Validate canonical reference grammar, resolver uniqueness and providers, profile-declared reference positions, current BAE documentary authority and deterministic positive and negative fixtures.

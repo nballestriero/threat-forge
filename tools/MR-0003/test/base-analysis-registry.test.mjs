@@ -12,15 +12,20 @@ import {
   baseAnalysisSourceContinuityRuleIds,
   validateBaseAnalysisSourceContinuity,
 } from "../lib/base-analysis-source-continuity.mjs";
+import {
+  materializeReferenceOccurrencesInRegistryText,
+  readStoredReferenceOccurrences,
+} from "../check-base-analysis-registry.mjs";
 
 /**
- * @file Canonical BAE registry, source continuity and projection verification suite.
+ * @file Canonical BAE registry, source continuity, occurrence materialization and projection verification suite.
  *
  * @implementsRequirement MR-0003ADR-0001REQ-0005
  * @implementsRequirement MR-0003ADR-0001REQ-0005GOV-0001
  * @implementsRequirement MR-0003ADR-0002REQ-0001
  * @implementsRequirement MR-0003ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0003/ADR-0001
+ * @derivedFromDecision MR-0003/ADR-0002
  * @macroRequirement MR-0003
  * @implementationStatus implemented
  */
@@ -135,7 +140,9 @@ function applyOperations(baseValue, operations) {
     } else if (operation.operation === "delete") {
       delete parent[key];
     } else {
-      throw new Error(`Unsupported fixture operation: ${operation.operation}`);
+      throw new Error(
+        `Unsupported fixture operation: ${operation.operation}`,
+      );
     }
   }
   return value;
@@ -166,6 +173,31 @@ function validateContinuityFixture(caseRecord) {
   };
 }
 
+function currentAuthorityCase() {
+  return continuityFixtureSet.cases.find(
+    (entry) => entry.id === "valid-current-authority",
+  );
+}
+
+function sampleOccurrence(overrides = {}) {
+  return {
+    bae_id: "BAE-0001",
+    document_model: "macro-requirement",
+    document_id: "MR-0001",
+    body_path:
+      "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
+    profile_id: "macro-requirement-body",
+    position_id:
+      "macro-requirement.body.reference.scope-classified-item",
+    line: 39,
+    column: 13,
+    source_offset: 3057,
+    canonical_payload:
+      "[BAE-0001] Governed project documentation",
+    ...overrides,
+  };
+}
+
 test("publishes unique stable BAE rule identifiers", () => {
   const values = Object.values(baseAnalysisRegistryRuleIds);
   assert.equal(new Set(values).size, values.length);
@@ -180,7 +212,9 @@ test("accepts the complete five-type BAE fixture", () => {
     inventory: withContinuity(fixture.inventory),
     taxonomies: withSourceHistoryOutcomes(fixture.taxonomies),
     sourceResolver: (source) =>
-      new Set(fixture.existing_sources.map(sourceKey)).has(sourceKey(source)),
+      new Set(fixture.existing_sources.map(sourceKey)).has(
+        sourceKey(source),
+      ),
   });
   assert.equal(result.valid, true, JSON.stringify(result.errors, null, 2));
   assert.equal(result.element_count, 5);
@@ -191,12 +225,8 @@ test("accepts the complete five-type BAE fixture", () => {
   );
   assert.ok(
     result.projection.every(
-      (entry) => entry.entity_type === "base_analysis_element",
-    ),
-  );
-  assert.ok(
-    result.projection.every(
       (entry) =>
+        entry.entity_type === "base_analysis_element" &&
         entry.authoritative_source &&
         Array.isArray(entry.source_history),
     ),
@@ -223,7 +253,9 @@ test("negative fixtures emit every declared stable rule", async (t) => {
   for (const fixture of fixtureSet.cases) {
     await t.test(fixture.id, () => {
       const result = validateFixture(fixture);
-      const emitted = new Set(result.errors.map((entry) => entry.rule_id));
+      const emitted = new Set(
+        result.errors.map((entry) => entry.rule_id),
+      );
       for (const ruleId of fixture.expected_rule_ids) {
         assert.ok(
           emitted.has(ruleId),
@@ -245,7 +277,9 @@ test("projection is deterministic and source inputs remain unchanged", () => {
   const inventoryBefore = structuredClone(fixture.inventory);
   const taxonomyBefore = structuredClone(fixture.taxonomies);
   const resolver = (source) =>
-    new Set(fixture.existing_sources.map(sourceKey)).has(sourceKey(source));
+    new Set(fixture.existing_sources.map(sourceKey)).has(
+      sourceKey(source),
+    );
   const first = validateBaseAnalysisRegistrySources({
     inventory: fixture.inventory,
     taxonomies: fixture.taxonomies,
@@ -265,28 +299,25 @@ test("publishes unique stable BAE source-continuity rule identifiers", () => {
   const values = Object.values(baseAnalysisSourceContinuityRuleIds);
   assert.equal(new Set(values).size, values.length);
   assert.ok(
-    values.every((value) => value.startsWith("bae.source-continuity.")),
+    values.every((value) =>
+      value.startsWith("bae.source-continuity."),
+    ),
   );
 });
 
 test("source-continuity fixtures cover positive and negative outcomes", () => {
   assert.equal(continuityFixtureSet.schema_version, 1);
   assert.ok(continuityFixtureSet.cases.length >= 15);
-  assert.ok(
-    continuityFixtureSet.cases.some(
-      (entry) => entry.id === "valid-authority-transfer",
-    ),
-  );
-  assert.ok(
-    continuityFixtureSet.cases.some(
-      (entry) => entry.id === "valid-bae-supersession",
-    ),
-  );
-  assert.ok(
-    continuityFixtureSet.cases.some(
-      (entry) => entry.id === "valid-bae-deprecation",
-    ),
-  );
+  for (const id of [
+    "valid-authority-transfer",
+    "valid-bae-supersession",
+    "valid-bae-deprecation",
+  ]) {
+    assert.ok(
+      continuityFixtureSet.cases.some((entry) => entry.id === id),
+      `Missing source-continuity fixture ${id}.`,
+    );
+  }
 });
 
 test("source-continuity fixtures emit every declared stable rule", async (t) => {
@@ -294,12 +325,18 @@ test("source-continuity fixtures emit every declared stable rule", async (t) => 
     await t.test(caseRecord.id, () => {
       const { result } = validateContinuityFixture(caseRecord);
       const expected = caseRecord.expected_rule_ids ?? [];
-      const emitted = new Set(result.errors.map((entry) => entry.rule_id));
+      const emitted = new Set(
+        result.errors.map((entry) => entry.rule_id),
+      );
       if (expected.length === 0) {
         assert.equal(
           result.valid,
           true,
-          `${caseRecord.id}: ${JSON.stringify(result.errors, null, 2)}`,
+          `${caseRecord.id}: ${JSON.stringify(
+            result.errors,
+            null,
+            2,
+          )}`,
         );
       } else {
         for (const ruleId of expected) {
@@ -317,34 +354,32 @@ test("source-continuity fixtures emit every declared stable rule", async (t) => 
   }
 });
 
-test("occurrence projection is deterministic and excludes origin declarations", () => {
-  const caseRecord = continuityFixtureSet.cases.find(
-    (entry) => entry.id === "valid-current-authority",
-  );
-  const first = validateContinuityFixture(caseRecord);
-  const second = validateContinuityFixture(caseRecord);
-  assert.equal(first.result.valid, true);
+test("a natural introductory citation is both origin evidence and an occurrence", () => {
+  const first = validateContinuityFixture(currentAuthorityCase());
+  const second = validateContinuityFixture(currentAuthorityCase());
+  assert.equal(first.result.valid, true, JSON.stringify(first.result.errors, null, 2));
   assert.deepEqual(first.result.occurrences, second.result.occurrences);
-  assert.equal(first.result.origin_declaration_count, 1);
+  assert.equal(first.result.origin_evidence_count, 1);
   assert.equal(first.result.occurrences.length, 1);
   assert.equal(first.result.occurrences[0].bae_id, "BAE-0001");
-  assert.notEqual(
-    first.result.occurrences[0].position_id,
-    "macro-requirement.body.reference.scope-bae-origin-item",
+  assert.equal(
+    first.result.occurrences[0].canonical_payload,
+    "[BAE-0001] Governed project documentation",
   );
 });
 
 test("source-continuity validation leaves canonical inputs unchanged", () => {
-  const caseRecord = continuityFixtureSet.cases.find(
-    (entry) => entry.id === "valid-current-authority",
-  );
   const input = applyOperations(
     continuityFixtureSet.base,
-    caseRecord.operations,
+    currentAuthorityCase().operations,
   );
   const before = structuredClone(input);
-  const existingSources = new Set(input.existing_sources.map(sourceKey));
-  const evidenceIds = new Set(input.review_evidence_ids.map(String));
+  const existingSources = new Set(
+    input.existing_sources.map(sourceKey),
+  );
+  const evidenceIds = new Set(
+    input.review_evidence_ids.map(String),
+  );
   validateBaseAnalysisSourceContinuity({
     inventory: input.inventory,
     documents: input.documents,
@@ -353,4 +388,95 @@ test("source-continuity validation leaves canonical inputs unchanged", () => {
     reviewEvidenceResolver: (id) => evidenceIds.has(String(id)),
   });
   assert.deepEqual(input, before);
+});
+
+test("stored per-BAE occurrences flatten deterministically", () => {
+  const occurrence = sampleOccurrence();
+  const projection = readStoredReferenceOccurrences({
+    elements: [
+      {
+        id: "BAE-0001",
+        reference_occurrences: [structuredClone(occurrence)],
+      },
+    ],
+  });
+  assert.deepEqual(projection, [occurrence]);
+});
+
+test("occurrence materialization replaces only the managed field and is idempotent", () => {
+  const registry =
+    "schema_version: 1\n" +
+    "registry_id: base-analysis-elements-registry\n" +
+    "macro_requirement_id: MR-0003\n\n" +
+    "elements:\n" +
+    "  - id: BAE-0001\n" +
+    "    title: Governed project documentation\n" +
+    "    base_type: data_resource\n" +
+    "    meaning: Canonical project knowledge.\n" +
+    "    lifecycle_state: active\n" +
+    "    origin:\n" +
+    "      kind: governed_document\n" +
+    "      source_id: MR-0001\n" +
+    "      source_path: docs/origin.md\n" +
+    "    authoritative_source:\n" +
+    "      kind: governed_document\n" +
+    "      source_id: MR-0001\n" +
+    "      source_path: docs/origin.md\n" +
+    "    reference_occurrences:\n" +
+    "      - bae_id: BAE-0001\n" +
+    "        document_model: stale\n" +
+    "        document_id: stale\n" +
+    "        body_path: stale.md\n" +
+    "        profile_id: stale\n" +
+    "        position_id: stale\n" +
+    "        line: 1\n" +
+    "        column: 1\n" +
+    "        source_offset: 0\n" +
+    "        canonical_payload: stale\n" +
+    "    source_history:\n" +
+    "      - sequence: 1\n" +
+    "        outcome: continuity_confirmed\n" +
+    "        previous_source:\n" +
+    "          kind: governed_document\n" +
+    "          source_id: MR-0001\n" +
+    "          source_path: docs/origin.md\n" +
+    "        next_source:\n" +
+    "          kind: governed_document\n" +
+    "          source_id: MR-0001\n" +
+    "          source_path: docs/origin.md\n" +
+    "        review_evidence_id: MR-0003/ADR-0002\n" +
+    "    provenance: []\n\n" +
+    "relations: []\n";
+  const first = materializeReferenceOccurrencesInRegistryText(
+    registry,
+    [sampleOccurrence()],
+  );
+  const second = materializeReferenceOccurrencesInRegistryText(
+    first,
+    [sampleOccurrence()],
+  );
+  assert.equal(first, second);
+  assert.match(first, /document_model: macro-requirement/u);
+  assert.doesNotMatch(first, /document_model: stale/u);
+  assert.match(first, /meaning: Canonical project knowledge\./u);
+  assert.ok(
+    first.indexOf("reference_occurrences:") <
+      first.indexOf("source_history:"),
+  );
+});
+
+test("occurrence materialization cannot create an unregistered BAE", () => {
+  const registry =
+    "schema_version: 1\n" +
+    "registry_id: base-analysis-elements-registry\n" +
+    "macro_requirement_id: MR-0003\n\n" +
+    "elements: []\n\n" +
+    "relations: []\n";
+  assert.throws(
+    () =>
+      materializeReferenceOccurrencesInRegistryText(registry, [
+        sampleOccurrence({ bae_id: "BAE-9999" }),
+      ]),
+    /not manually registered/u,
+  );
 });

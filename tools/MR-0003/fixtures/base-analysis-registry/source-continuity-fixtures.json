@@ -63,7 +63,7 @@
         "status": "draft",
         "body_path": "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
         "profile_id": "macro-requirement-body",
-        "body_text": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- BAE origin: [BAE-0001] Governed project documentation\n- Includes: [BAE-0001] Governed project documentation\n- Includes: ordinary prose without governed payload\n"
+        "body_text": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n- Includes: ordinary prose without governed payload\n"
       },
       {
         "id": "MR-0002",
@@ -103,13 +103,13 @@
             ]
           }
         ],
-        "origin_declaration_positions": [
+        "origin_evidence_positions": [
           {
             "id": "macro-requirement.body.origin.scope-bae-origin-item",
             "section_id": "macro-requirement.body.section.scope",
             "container_kind": "classified_list_item",
             "allowed_prefixes": [
-              "BAE origin:"
+              "Includes:"
             ],
             "terminal_punctuation": "forbidden",
             "allowed_entity_types": [
@@ -568,7 +568,7 @@
             0,
             "body_text"
           ],
-          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n"
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: ordinary governed documentation scope\n"
         }
       ],
       "expected_rule_ids": [
@@ -585,7 +585,7 @@
             0,
             "body_text"
           ],
-          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n"
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: ordinary governed documentation scope\n"
         },
         {
           "operation": "set",
@@ -594,7 +594,7 @@
             1,
             "body_text"
           ],
-          "value": "# MR-0002 \u2014 Authoring\n\n## Scope\n\n- BAE origin: [BAE-0001] Governed project documentation\n"
+          "value": "# MR-0002 \u2014 Authoring\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n"
         }
       ],
       "expected_rule_ids": [
@@ -612,7 +612,7 @@
             0,
             "body_text"
           ],
-          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- BAE origin: [BAE-0001] Governed project documentation\n- BAE origin: [BAE-0001] Governed project documentation\n"
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Governed project documentation\n- Includes: [BAE-0001] Governed project documentation\n"
         }
       ],
       "expected_rule_ids": [
@@ -629,7 +629,7 @@
             0,
             "body_text"
           ],
-          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- BAE origin: [BAE-0001] Divergent title\n"
+          "value": "# MR-0001 \u2014 Governed documentation\n\n## Scope\n\n- Includes: [BAE-0001] Divergent title\n"
         }
       ],
       "expected_rule_ids": [
