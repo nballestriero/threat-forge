@@ -198,7 +198,9 @@ export function readStoredReferenceOccurrences(inventory) {
 function yamlScalar(value) {
   if (typeof value === "number") return String(value);
   const normalized = String(value ?? "").replace(/\r?\n/gu, " ");
-  return normalized || '""';
+  // JSON double-quoted strings are valid YAML 1.2 scalars and prevent values
+  // such as `[BAE-0001] Title` from being parsed as malformed flow syntax.
+  return JSON.stringify(normalized);
 }
 
 function renderReferenceOccurrenceBlock(occurrences) {
@@ -372,26 +374,51 @@ async function loadRegistryModules() {
   return { ...registryModule, ...yamlModule };
 }
 
+/**
+ * Rejects materialization before any write when the canonical BAE model is
+ * invalid, including a manually registered BAE missing from its declared
+ * governed-document origin.
+ *
+ * @param {Record<string, unknown>} canonical - Canonical BAE validation result.
+ * @returns {Array<Record<string, unknown>>} Valid occurrence projection.
+ */
+export function requireValidReferenceOccurrenceMaterializationInput(canonical) {
+  if (!isRecord(canonical) || canonical.valid !== true) {
+    const diagnostics = Array.isArray(canonical?.errors)
+      ? canonical.errors
+          .map((entry) =>
+            isRecord(entry)
+              ? `${text(entry.rule_id)}: ${text(entry.message)}`
+              : text(entry),
+          )
+          .filter(Boolean)
+          .join("\n")
+      : "";
+    throw new Error(
+      "Cannot derive BAE reference occurrences from an invalid canonical model" +
+        (diagnostics ? `:\n${diagnostics}` : "."),
+    );
+  }
+  return Array.isArray(canonical.occurrence_projection)
+    ? canonical.occurrence_projection
+    : [];
+}
+
 async function buildReferenceOccurrenceMaterialization() {
   const {
     loadAndValidateBaseAnalysisRegistry,
     canonicalBaseAnalysisRegistryPaths,
   } = await loadRegistryModules();
   const canonical = loadAndValidateBaseAnalysisRegistry({ rootDir });
-  if (!canonical.valid) {
-    throw new Error(
-      `Cannot derive BAE reference occurrences from an invalid canonical model:\n${canonical.errors
-        .map((entry) => `${entry.rule_id}: ${entry.message}`)
-        .join("\n")}`,
-    );
-  }
+  const occurrenceProjection =
+    requireValidReferenceOccurrenceMaterializationInput(canonical);
   const projectPath =
     canonicalBaseAnalysisRegistryPaths?.inventory ?? inventoryProjectPath;
   const absolutePath = path.resolve(rootDir, ...projectPath.split("/"));
   const currentText = fs.readFileSync(absolutePath, "utf8");
   const expectedText = materializeReferenceOccurrencesInRegistryText(
     currentText,
-    canonical.occurrence_projection ?? [],
+    occurrenceProjection,
   );
   return {
     canonical,

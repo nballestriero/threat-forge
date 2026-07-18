@@ -17,16 +17,16 @@ elements:
       source_id: MR-0001
       source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
     reference_occurrences:
-      - bae_id: BAE-0001
-        document_model: macro-requirement
-        document_id: MR-0001
-        body_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
-        profile_id: macro-requirement-body
-        position_id: macro-requirement.body.reference.scope-classified-item
+      - bae_id: "BAE-0001"
+        document_model: "macro-requirement"
+        document_id: "MR-0001"
+        body_path: "docs/reference/project-model/body/macro-requirements/MR-0001_body.md"
+        profile_id: "macro-requirement-body"
+        position_id: "macro-requirement.body.reference.scope-classified-item"
         line: 39
         column: 13
         source_offset: 3057
-        canonical_payload: [BAE-0001] Governed project documentation
+        canonical_payload: "[BAE-0001] Governed project documentation"
     source_history:
       - sequence: 1
         outcome: continuity_confirmed

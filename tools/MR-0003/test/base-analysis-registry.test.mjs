@@ -15,6 +15,7 @@ import {
 import {
   materializeReferenceOccurrencesInRegistryText,
   readStoredReferenceOccurrences,
+  requireValidReferenceOccurrenceMaterializationInput,
 } from "../check-base-analysis-registry.mjs";
 
 /**
@@ -456,12 +457,44 @@ test("occurrence materialization replaces only the managed field and is idempote
     [sampleOccurrence()],
   );
   assert.equal(first, second);
-  assert.match(first, /document_model: macro-requirement/u);
+  assert.match(first, /document_model: "macro-requirement"/u);
   assert.doesNotMatch(first, /document_model: stale/u);
   assert.match(first, /meaning: Canonical project knowledge\./u);
+  assert.match(
+    first,
+    /canonical_payload: "\[BAE-0001\] Governed project documentation"/u,
+  );
+  assert.doesNotMatch(first, /canonical_payload: \[BAE-/u);
   assert.ok(
     first.indexOf("reference_occurrences:") <
       first.indexOf("source_history:"),
+  );
+});
+
+
+
+test("occurrence materializer blocks a registered BAE missing from its origin body", () => {
+  const caseRecord = continuityFixtureSet.cases.find(
+    (entry) => entry.id === "missing-origin-declaration",
+  );
+  assert.ok(caseRecord, "Missing missing-origin-declaration fixture.");
+  const { result } = validateContinuityFixture(caseRecord);
+  assert.equal(result.valid, false);
+  assert.ok(
+    result.errors.some(
+      (entry) =>
+        entry.rule_id ===
+        baseAnalysisSourceContinuityRuleIds.originDeclarationMissing,
+    ),
+  );
+  assert.throws(
+    () =>
+      requireValidReferenceOccurrenceMaterializationInput({
+        valid: result.valid,
+        errors: result.errors,
+        occurrence_projection: result.occurrences,
+      }),
+    /historical origin body must contain exactly one canonical origin evidence/u,
   );
 });
 
