@@ -566,7 +566,8 @@
                   "ADR-0003",
                   "ADR-0004",
                   "ADR-0005",
-                  "ADR-0006"
+                  "ADR-0006",
+                  "ADR-0007"
                 ],
                 "markdownEnumDescriptions": [
                   "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft",
@@ -574,7 +575,8 @@
                   "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft",
                   "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft",
                   "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft",
-                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft",
+                  "Architettura applicativa riutilizzabile per adapter CLI e web — MR-0002/ADR-0007 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -600,6 +602,10 @@
                   {
                     "value": "ADR-0006",
                     "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0007",
+                    "description": "Architettura applicativa riutilizzabile per adapter CLI e web — MR-0002/ADR-0007 — status: draft"
                   }
                 ]
               }
@@ -884,7 +890,8 @@
                   "ADR-0003",
                   "ADR-0004",
                   "ADR-0005",
-                  "ADR-0006"
+                  "ADR-0006",
+                  "ADR-0007"
                 ],
                 "markdownEnumDescriptions": [
                   "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft",
@@ -892,7 +899,8 @@
                   "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft",
                   "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft",
                   "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft",
-                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft",
+                  "Architettura applicativa riutilizzabile per adapter CLI e web — MR-0002/ADR-0007 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -918,6 +926,10 @@
                   {
                     "value": "ADR-0006",
                     "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0007",
+                    "description": "Architettura applicativa riutilizzabile per adapter CLI e web — MR-0002/ADR-0007 — status: draft"
                   }
                 ]
               }
@@ -1506,6 +1518,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0007"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
         },
         {
           "if": {
