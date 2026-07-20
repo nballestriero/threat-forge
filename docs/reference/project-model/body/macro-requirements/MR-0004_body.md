@@ -1,55 +1,59 @@
-# MR-0004 — Ciclo di vita governato dei progetti target
+﻿# MR-0004 — Ciclo di vita governato dei progetti target
 
 ## Intent
 
-Define how ThreatForge creates, identifies, versions, validates, migrates and maintains governed target projects across self-analysis, internal demonstrations and external child repositories.
+Define how ThreatForge creates, accesses, validates, isolates and analyzes governed Target Projects at user-selected filesystem locations.
 
 ## Context
 
-ThreatForge applies the same governed documentation and analysis principles to itself and to other projects. The target-project model combines a canonical Diátaxis structure, generated project-model registries and explicit compatibility coordinates so that project validity remains reproducible across supported engine versions.
+ThreatForge needs one small and reproducible path from project creation to governed documentation and documentation-derived Base Analysis. An internal demonstration project and a newly created external project use the same Target Project model even though their destination locations differ. The ThreatForge engine remains separate from every target, and the initial demonstrable target can represent a system through governed documentation before executable application code exists.
 
 ## Macro obligation
 
-- ThreatForge must treat self-analysis, internal demonstrations and external child repositories as target kinds governed by one lifecycle model.
-- Every target project must have a stable governed identity and an explicit target kind.
-- Every target project must conform to the canonical governed documentation structure defined by MR-0001.
-- Every target project must organize tutorials, how-to guides, reference material and explanations according to Diátaxis.
-- Required project folders, valid empty registries and initial governed documents must be generated deterministically.
-- Internal demonstrations and external child repositories must derive their initial structure from the same governed template source.
-- Each target project must keep its registries, counts, reports, materializations and generated artifacts isolated from every other target.
-- Every target project must declare the compatibility coordinates required to select its project contract and gate profile.
-- A target generated for one contract version must remain verifiable by an engine version declared compatible with that contract.
-- A newer engine must not silently reinterpret an older target through the latest schemas or gate rules.
-- Breaking project-contract or gate-profile changes must introduce an explicit version transition and a governed migration path.
-- Governed migrations must be deterministic, previewable and non-destructive toward authored project semantics.
-- An unsupported target contract must fail with an explicit compatibility diagnostic before secondary model validation.
-- ThreatForge self-analysis must use the same target-project contract exposed to internal demonstrations and external child repositories.
-- MR-0004 must own target identity, generation, compatibility and lifecycle without duplicating the documentation rules of MR-0001.
-- MR-0004 must consume reusable target-access and execution interfaces governed by MR-0002.
-- MR-0004 must expose target projects to the Base Analysis capabilities governed by MR-0003.
+- ThreatForge must use one Target Project model for an internal demonstration project and a newly created external project.
+- Target Project creation must receive one explicit destination root selected for the creation request.
+- Subsequent Target Project authoring, verification and analysis must receive one explicit target root.
+- Internal and external Target Projects must originate from the same governed template and application behavior.
+- Every Target Project must own its project-local documentation, registries, reports and materialized projections.
+- A Target Project must remain structurally valid without executable source code, a running backend, a frontend or a database instance.
+- Every Target Project must support project-local Macro-requirement, Decision, Functional Requirement and Base Analysis records.
+- Target Project documentation must provide project-local sources for actors, logical components, data resources, trust boundaries and information flows.
+- Target Project records must preserve stable project-local identifiers and source paths.
+- Base Analysis Element provenance must resolve to governed sources owned by the analyzed Target Project or to explicit reviewed analytical additions.
+- Target Project creation and use must not modify or contaminate the canonical ThreatForge project model.
+- ThreatForge repository verification must remain development governance.
+- ThreatForge repository verification must not be represented as a Target Project kind.
+- MR-0001 must remain authoritative for governed documentation structure, document semantics and Diátaxis organization.
+- MR-0002 must remain authoritative for reusable application interfaces, target-access boundaries and delivery-adapter separation.
+- MR-0003 must remain authoritative for Base Analysis Element semantics, provenance, relations and lifecycle.
+- Target-specific product requirements must remain inside the governed project model of the owning Target Project.
 
 ## Scope
 
-- Includes: Governed target-project identity and target kinds
-- Includes: Canonical generated project structure
-- Includes: Diátaxis documentation skeleton
-- Includes: Valid initial registries and governed document templates
-- Includes: Internal demonstration projects
-- Includes: External child repositories
-- Includes: Versioned project contracts and gate profiles
-- Includes: Compatibility resolution and governed migrations
-- Includes: Isolation and equivalence verification across target locations
-- Includes: ThreatForge self-analysis as a target project
-- Excludes: Product-domain requirements of a specific demonstration project
-- Excludes: Duplication of the ThreatForge engine inside every target project
-- Excludes: Threat-analysis methodology overlays
-- Excludes: Automatic migration of authored semantic decisions
-- Excludes: Immediate support for arbitrary unstructured legacy repositories
+- Includes: One Target Project model for internal and external destinations
+- Includes: Explicit destination-root project creation
+- Includes: Explicit target-root authoring, verification and analysis
+- Includes: Shared governed Target Project template
+- Includes: Project-local governed documentation and registries
+- Includes: Document-only Target Projects without executable application code
+- Includes: Project-local sources for actors, components, data resources, boundaries and flows
+- Includes: Base Analysis readiness and documentary provenance
+- Includes: Isolation of target records, reports and materializations
+- Includes: Minimal Target Project lifecycle orchestration
+- Excludes: Import or migration of arbitrary existing repositories
+- Excludes: Compatibility-version negotiation or migration mechanisms
+- Excludes: Multiple concurrent target sessions
+- Excludes: Final web-interface behavior
+- Excludes: Product-domain requirements of a specific Target Project
+- Excludes: STRIDE, STRIDE-AI or other methodology overlays
+- Excludes: Executable application code as a prerequisite for project analysis
 
 ## Non-goals
 
-- Make every target depend on the latest ThreatForge engine
-- Merge target-project records into the canonical ThreatForge project model
-- Maintain separate hand-authored templates for internal and external targets
-- Copy checker implementations into generated projects
-- Define the functional requirements of the first demonstration application
+- Model ThreatForge repository verification as a Target Project kind
+- Define compatibility versions, gate profiles or migration mechanisms
+- Import arbitrary unstructured repositories
+- Implement multiple concurrent Target Project sessions
+- Define the final web user interface
+- Define the product-domain requirements of the first demonstration Target Project
+- Require executable application code before documentation-derived Base Analysis
