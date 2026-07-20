@@ -263,12 +263,14 @@
           "enum": [
             "MR-0001",
             "MR-0002",
-            "MR-0003"
+            "MR-0003",
+            "MR-0004"
           ],
           "markdownEnumDescriptions": [
             "Gestione documentale governata — status: draft",
             "Authoring e implementazione governata — status: draft",
-            "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            "Modello di Analisi Base derivato dalla documentazione — status: draft",
+            "Ciclo di vita governato dei progetti target — status: draft"
           ],
           "x-threatforge-enum-metadata": [
             {
@@ -282,6 +284,10 @@
             {
               "value": "MR-0003",
               "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            },
+            {
+              "value": "MR-0004",
+              "description": "Ciclo di vita governato dei progetti target — status: draft"
             }
           ],
           "description": "Existing canonical Macro-requirement that owns the new document."
@@ -436,12 +442,14 @@
           "enum": [
             "MR-0001",
             "MR-0002",
-            "MR-0003"
+            "MR-0003",
+            "MR-0004"
           ],
           "markdownEnumDescriptions": [
             "Gestione documentale governata — status: draft",
             "Authoring e implementazione governata — status: draft",
-            "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            "Modello di Analisi Base derivato dalla documentazione — status: draft",
+            "Ciclo di vita governato dei progetti target — status: draft"
           ],
           "x-threatforge-enum-metadata": [
             {
@@ -455,6 +463,10 @@
             {
               "value": "MR-0003",
               "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            },
+            {
+              "value": "MR-0004",
+              "description": "Ciclo di vita governato dei progetti target — status: draft"
             }
           ],
           "description": "Existing canonical Macro-requirement that owns the new document."
@@ -630,6 +642,28 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [],
+                "markdownEnumDescriptions": [],
+                "x-threatforge-enum-metadata": []
+              }
+            }
+          }
         }
       ]
     },
@@ -712,12 +746,14 @@
           "enum": [
             "MR-0001",
             "MR-0002",
-            "MR-0003"
+            "MR-0003",
+            "MR-0004"
           ],
           "markdownEnumDescriptions": [
             "Gestione documentale governata — status: draft",
             "Authoring e implementazione governata — status: draft",
-            "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            "Modello di Analisi Base derivato dalla documentazione — status: draft",
+            "Ciclo di vita governato dei progetti target — status: draft"
           ],
           "x-threatforge-enum-metadata": [
             {
@@ -731,6 +767,10 @@
             {
               "value": "MR-0003",
               "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            },
+            {
+              "value": "MR-0004",
+              "description": "Ciclo di vita governato dei progetti target — status: draft"
             }
           ],
           "description": "Existing canonical Macro-requirement that owns the new document."
@@ -908,6 +948,28 @@
                     "description": "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
                   }
                 ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [],
+                "markdownEnumDescriptions": [],
+                "x-threatforge-enum-metadata": []
               }
             }
           }
@@ -1549,6 +1611,12 @@
         "registry_id": "MR-0003-decisions-registry"
       },
       {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0004.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0004-decisions-registry"
+      },
+      {
         "kind": "document_model_index",
         "path": "docs/reference/project-model/registers/document-models/document-models.registry.yml",
         "schema_version": 1,
@@ -1577,6 +1645,12 @@
         "path": "docs/reference/project-model/registers/requirements/MR-0003.requirements.registry.yml",
         "schema_version": 1,
         "registry_id": "MR-0003-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0004.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0004-requirements-registry"
       },
       {
         "kind": "documentation_field_values",
