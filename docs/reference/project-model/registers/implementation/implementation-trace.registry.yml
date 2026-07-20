@@ -1053,3 +1053,36 @@ artifacts:
     implemented_path: tools/MR-0004/test/target-project-check.test.mjs
     reason: Verify valid and invalid target checks, empty BAE acceptance, deterministic reports, path confinement and governed-source immutability.
     verification_command: node --test tools/MR-0004/test/target-project-check.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0001IMPL-0001
+    title: Target Project generation application service
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0001
+      - MR-0004ADR-0001REQ-0002
+    implemented_path: tools/MR-0004/lib/target-project-generator.mjs
+    reason: Validate an explicit destination, materialize the canonical document-only Target Project template in isolated staging, prove it with the Target Project checker and publish it atomically without changing ThreatForge canonical project-model sources.
+    verification_command: node --test tools/MR-0004/test/target-project-generator.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0001IMPL-0002
+    title: Target Project creation command-line adapter
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0001
+      - MR-0004ADR-0001REQ-0002
+    implemented_path: tools/MR-0004/create-target-project.mjs
+    reason: Expose explicit destination and project metadata input through a thin command-line adapter while delegating generation, validation and filesystem rules to the shared application service.
+    verification_command: node --test tools/MR-0004/test/target-project-generator.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0002IMPL-0001
+    title: Target Project generator verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0001
+      - MR-0004ADR-0001REQ-0002
+    implemented_path: tools/MR-0004/test/target-project-generator.test.mjs
+    reason: Verify equivalent internal and external generation, canonical document-only validation, five Base Analysis element classes, destination fail-closed behavior, atomic rollback and command-line delegation.
+    verification_command: node --test tools/MR-0004/test/target-project-generator.test.mjs
