@@ -10,3 +10,10 @@ requirements:
     macro_requirement_id: MR-0004
     decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0001REQ-0001_body.md
+  - id: MR-0004ADR-0001REQ-0002
+    title: "Struttura documentale analizzabile del progetto target"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0004
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0001REQ-0002_body.md
