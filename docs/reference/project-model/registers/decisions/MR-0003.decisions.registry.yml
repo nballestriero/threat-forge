@@ -19,3 +19,11 @@ decisions:
     date: 2026-07-18
     macro_requirement_id: MR-0003
     body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0002_body.md
+  - id: ADR-0003
+    title: "Estrazione documentale e revisione dei candidati BAE"
+    status: draft
+    decision_type: structural
+    author: "Nicolo Ballestriero"
+    date: 2026-07-20
+    macro_requirement_id: MR-0003
+    body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0003_body.md

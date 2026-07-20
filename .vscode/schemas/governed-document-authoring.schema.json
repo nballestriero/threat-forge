@@ -629,11 +629,13 @@
                 "type": "string",
                 "enum": [
                   "ADR-0001",
-                  "ADR-0002"
+                  "ADR-0002",
+                  "ADR-0003"
                 ],
                 "markdownEnumDescriptions": [
                   "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft",
-                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
+                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft",
+                  "Estrazione documentale e revisione dei candidati BAE — MR-0003/ADR-0003 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -643,6 +645,10 @@
                   {
                     "value": "ADR-0002",
                     "description": "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Estrazione documentale e revisione dei candidati BAE — MR-0003/ADR-0003 — status: draft"
                   }
                 ]
               }
@@ -953,11 +959,13 @@
                 "type": "string",
                 "enum": [
                   "ADR-0001",
-                  "ADR-0002"
+                  "ADR-0002",
+                  "ADR-0003"
                 ],
                 "markdownEnumDescriptions": [
                   "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft",
-                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
+                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft",
+                  "Estrazione documentale e revisione dei candidati BAE — MR-0003/ADR-0003 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -967,6 +975,10 @@
                   {
                     "value": "ADR-0002",
                     "description": "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Estrazione documentale e revisione dei candidati BAE — MR-0003/ADR-0003 — status: draft"
                   }
                 ]
               }
@@ -1629,6 +1641,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
         },
         {
           "if": {
