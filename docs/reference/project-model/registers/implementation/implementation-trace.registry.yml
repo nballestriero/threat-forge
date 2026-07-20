@@ -1086,3 +1086,33 @@ artifacts:
     implemented_path: tools/MR-0004/test/target-project-generator.test.mjs
     reason: Verify equivalent internal and external generation, canonical document-only validation, five Base Analysis element classes, destination fail-closed behavior, atomic rollback and command-line delegation.
     verification_command: node --test tools/MR-0004/test/target-project-generator.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0004IMPL-0001
+    title: Target Project governed-document authoring application service
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0004
+    implemented_path: tools/MR-0004/lib/target-project-authoring.mjs
+    reason: Reuse ThreatForge-owned authoring contracts and transaction primitives with target-local ownership projection, identifier allocation, path confinement, deterministic preview, canonical target validation and rollback.
+    verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0004IMPL-0002
+    title: Target Project governed-document authoring command-line adapter
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0004
+    implemented_path: tools/MR-0004/run-target-project-authoring.mjs
+    reason: Expose explicit target_root, target-relative request, preview and confirmed create operations while delegating all authoring and validation rules to the shared Target Project application service.
+    verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0004IMPL-0003
+    title: Target Project governed-document authoring verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0004
+    implemented_path: tools/MR-0004/test/target-project-authoring.test.mjs
+    reason: Verify engine-rule and target-ownership separation, deterministic preview, all governed document types, target-local identifier allocation, path confinement, rollback, engine immutability and command-line delegation.
+    verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
