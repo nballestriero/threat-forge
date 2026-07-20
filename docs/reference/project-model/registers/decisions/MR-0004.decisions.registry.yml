@@ -2,4 +2,12 @@ schema_version: 1
 registry_id: MR-0004-decisions-registry
 macro_requirement_id: MR-0004
 
-decisions: []
+decisions:
+  - id: ADR-0001
+    title: "Modello unificato dei progetti target e separazione tra motore e target"
+    status: draft
+    decision_type: structural
+    author: "Nicolo Ballestriero"
+    date: 2026-07-20
+    macro_requirement_id: MR-0004
+    body_path: docs/reference/project-model/body/decisions/MR-0004/ADR-0001_body.md

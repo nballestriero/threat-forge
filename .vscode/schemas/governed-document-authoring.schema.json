@@ -658,9 +658,18 @@
             "properties": {
               "decision_id": {
                 "type": "string",
-                "enum": [],
-                "markdownEnumDescriptions": [],
-                "x-threatforge-enum-metadata": []
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                  }
+                ]
               }
             }
           }
@@ -967,9 +976,18 @@
             "properties": {
               "decision_id": {
                 "type": "string",
-                "enum": [],
-                "markdownEnumDescriptions": [],
-                "x-threatforge-enum-metadata": []
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                  }
+                ]
               }
             }
           }
@@ -1582,6 +1600,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
         }
       ]
     }
