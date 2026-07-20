@@ -1033,3 +1033,23 @@ artifacts:
     implemented_path: tools/MR-0003/lib/base-analysis-source-continuity.mjs
     reason: "Promoted MR-0003ADR-0002REQ-0001GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0003/lib/base-analysis-source-continuity.mjs
+
+  - id: MR-0004ADR-0001REQ-0003IMPL-0001
+    title: Target Project governed-document validation runner
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0003
+    implemented_path: tools/MR-0004/run-target-project-check.mjs
+    reason: Validate target-owned governed documents and local Base Analysis data against engine-owned canonical definitions through an isolated overlay and write deterministic target-local reports without mutating governed sources.
+    verification_command: node --test tools/MR-0004/test/target-project-check.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0003IMPL-0002
+    title: Target Project governed-document validation verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0003
+    implemented_path: tools/MR-0004/test/target-project-check.test.mjs
+    reason: Verify valid and invalid target checks, empty BAE acceptance, deterministic reports, path confinement and governed-source immutability.
+    verification_command: node --test tools/MR-0004/test/target-project-check.test.mjs
