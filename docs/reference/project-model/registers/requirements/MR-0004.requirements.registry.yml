@@ -2,4 +2,11 @@ schema_version: 1
 registry_id: MR-0004-requirements-registry
 macro_requirement_id: MR-0004
 
-requirements: []
+requirements:
+  - id: MR-0004ADR-0001REQ-0001
+    title: "Creazione del progetto target in una destinazione esplicita"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0004
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0001REQ-0001_body.md
