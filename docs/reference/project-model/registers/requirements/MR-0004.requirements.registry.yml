@@ -24,3 +24,10 @@ requirements:
     macro_requirement_id: MR-0004
     decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0001REQ-0003_body.md
+  - id: MR-0004ADR-0001REQ-0004
+    title: "Authoring governato del progetto target tramite target_root"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0004
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0001REQ-0004_body.md
