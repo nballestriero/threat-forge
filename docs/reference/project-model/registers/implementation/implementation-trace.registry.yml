@@ -1116,3 +1116,53 @@ artifacts:
     implemented_path: tools/MR-0004/test/target-project-authoring.test.mjs
     reason: Verify engine-rule and target-ownership separation, deterministic preview, all governed document types, target-local identifier allocation, path confinement, rollback, engine immutability and command-line delegation.
     verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0005IMPL-0001
+    title: Target Project governed Markdown assistance composition root
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0005
+    implemented_path: tools/MR-0004/lib/target-project-markdown-assistance.mjs
+    reason: Combine engine-owned document profiles, controlled values and resolver rules with target-owned governed documents and Base Analysis records inside an isolated temporary overlay.
+    verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0005IMPL-0002
+    title: Target Project governed VS Code workspace materializer
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0005
+    implemented_path: tools/MR-0004/materialize-target-project-vscode-workspace.mjs
+    reason: Materialize target-local settings, tasks, extension recommendations and an engine-derived authoring schema with explicit engine and target root separation.
+    verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0005IMPL-0003
+    title: Target Project VS Code assistance installer
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0005
+    implemented_path: tools/MR-0004/install-vscode-target-project-assistance.mjs
+    reason: Package and install the thin Target Project editor adapter without duplicating canonical ThreatForge authoring or Markdown analysis rules.
+    verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0005IMPL-0004
+    title: Target Project VS Code Markdown assistance adapter
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0005
+    implemented_path: tools/MR-0004/vscode-target-project-assistance/extension.cjs
+    reason: Map target workspace coordinates to engine-owned analysis and expose target-local diagnostics, completion, hover and non-destructive quick fixes.
+    verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0005IMPL-0005
+    title: Target Project governed VS Code workspace verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0005
+    implemented_path: tools/MR-0004/test/target-project-vscode-workspace.test.mjs
+    reason: Verify workspace materialization, target-local schema ownership, task routing, deterministic projection, BAE isolation, empty inventory behavior, live Markdown assistance and VSIX packaging.
+    verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs

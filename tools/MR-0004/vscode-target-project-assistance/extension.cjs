@@ -2,24 +2,23 @@ const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 
 /**
- * @file Thin VS Code adapter for governed Markdown assistance.
+ * @file Thin VS Code adapter for Target Project governed Markdown assistance.
  *
- * @implementsRequirement MR-0002ADR-0006REQ-0002
- * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
- * @derivedFromDecision MR-0002/ADR-0006
- * @macroRequirement MR-0002
+ * @implementsRequirement MR-0004ADR-0001REQ-0005
+ * @derivedFromDecision MR-0004/ADR-0001
+ * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * The adapter maps editor coordinates and presentation objects only. Canonical
- * profiles, section definitions, controlled values, diagnostics and fixes are
- * supplied by the shared assistance core in the active workspace.
+ * The adapter maps workspace/editor coordinates and presentation objects only.
+ * Canonical rules are loaded from the configured ThreatForge engine, while the
+ * opened workspace is always the target-owned document and BAE source.
  */
 
-const coreProjectPath = path.join(
+const serviceProjectPath = path.join(
   "tools",
-  "MR-0002",
+  "MR-0004",
   "lib",
-  "governed-markdown-assistance.mjs",
+  "target-project-markdown-assistance.mjs",
 );
 const bodyProjectPathPattern =
   /^docs\/reference\/project-model\/body\/.+_body\.md$/u;
@@ -35,30 +34,50 @@ function normalizeProjectPath(value) {
 function workspaceContext(vscode, document) {
   const folder = vscode.workspace.getWorkspaceFolder(document.uri);
   if (!folder) return null;
-  const targetEngineRoot = String(
-    vscode.workspace.getConfiguration?.("threatforge", folder.uri)
-      ?.get?.("engineRoot") ?? "",
-  ).trim();
-  if (targetEngineRoot) return null;
   const projectPath = normalizeProjectPath(
     path.relative(folder.uri.fsPath, document.uri.fsPath),
   );
   if (!bodyProjectPathPattern.test(projectPath)) return null;
-  return { rootDir: folder.uri.fsPath, projectPath };
+  const engineRoot = String(
+    vscode.workspace
+      .getConfiguration("threatforge", folder.uri)
+      .get("engineRoot") ?? "",
+  ).trim();
+  if (!engineRoot) {
+    throw new Error(
+      "The Target Project workspace is missing the threatforge.engineRoot setting.",
+    );
+  }
+  return {
+    engineRoot: path.resolve(engineRoot),
+    targetRoot: folder.uri.fsPath,
+    projectPath,
+  };
 }
 
-async function loadService(rootDir) {
-  if (!serviceCache.has(rootDir)) {
-    const moduleUrl = pathToFileURL(path.join(rootDir, coreProjectPath)).href;
-    const modulePromise = import(moduleUrl).then((module) =>
-      module.createGovernedMarkdownAssistanceService({ rootDir }),
+async function loadService(engineRoot, targetRoot) {
+  const key = `${path.resolve(engineRoot)}\u0000${path.resolve(targetRoot)}`;
+  if (!serviceCache.has(key)) {
+    const moduleUrl = pathToFileURL(
+      path.join(engineRoot, serviceProjectPath),
+    ).href;
+    const promise = import(moduleUrl).then((module) =>
+      module.createTargetProjectMarkdownAssistanceService({
+        engineRoot,
+        targetRoot,
+      }),
     );
-    serviceCache.set(rootDir, modulePromise);
+    serviceCache.set(key, promise);
   }
-  return serviceCache.get(rootDir);
+  return serviceCache.get(key);
 }
 
 function invalidateServices() {
+  for (const promise of serviceCache.values()) {
+    Promise.resolve(promise)
+      .then((service) => service?.dispose?.())
+      .catch(() => {});
+  }
   serviceCache.clear();
 }
 
@@ -77,8 +96,12 @@ function createAnalysisRequest(vscode, document, position) {
 async function analyze(vscode, document, position) {
   const request = createAnalysisRequest(vscode, document, position);
   if (!request) return null;
-  const service = await loadService(request.rootDir);
-  return service.analyze(request);
+  const service = await loadService(request.engineRoot, request.targetRoot);
+  return service.analyze({
+    projectPath: request.projectPath,
+    text: request.text,
+    position: request.position,
+  });
 }
 
 function toRange(vscode, range) {
@@ -138,9 +161,8 @@ function quickFixIdsForContext(vscode, result, contextDiagnostics) {
   const ids = new Set();
   for (const editorDiagnostic of contextDiagnostics) {
     for (const coreDiagnostic of result?.diagnostics ?? []) {
-      const code = String(editorDiagnostic.code ?? "");
       if (
-        code === coreDiagnostic.rule_id &&
+        String(editorDiagnostic.code ?? "") === coreDiagnostic.rule_id &&
         editorDiagnostic.message === coreDiagnostic.message &&
         rangesEqual(editorDiagnostic.range, toRange(vscode, coreDiagnostic.range))
       ) {
@@ -157,9 +179,6 @@ function mapCodeActions(vscode, document, result, contextDiagnostics) {
     result,
     contextDiagnostics,
   );
-  const diagnosticByCode = new Map(
-    contextDiagnostics.map((item) => [String(item.code ?? ""), item]),
-  );
   return (result?.quick_fixes ?? [])
     .filter((fix) => applicableIds.has(fix.id))
     .map((fix, index) => {
@@ -169,32 +188,49 @@ function mapCodeActions(vscode, document, result, contextDiagnostics) {
       );
       const edit = new vscode.WorkspaceEdit();
       for (const operation of fix.edits ?? []) {
-        edit.replace(document.uri, toRange(vscode, operation.range), operation.new_text);
+        edit.replace(
+          document.uri,
+          toRange(vscode, operation.range),
+          operation.new_text,
+        );
       }
       action.edit = edit;
       action.isPreferred = index === 0;
-      action.diagnostics = [...diagnosticByCode.values()];
+      action.diagnostics = contextDiagnostics;
       return action;
     });
 }
 
 async function publishDiagnostics(vscode, document) {
   if (!diagnosticsCollection) return;
-  const context = workspaceContext(vscode, document);
+  let context;
+  try {
+    context = workspaceContext(vscode, document);
+  } catch (error) {
+    const diagnostic = new vscode.Diagnostic(
+      new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
+      `ThreatForge Target Project analysis failed: ${error.message}`,
+      vscode.DiagnosticSeverity.Error,
+    );
+    diagnostic.source = "ThreatForge";
+    diagnosticsCollection.set(document.uri, [diagnostic]);
+    return;
+  }
   if (!context) {
     diagnosticsCollection.delete(document.uri);
     return;
   }
-  const generation = (analysisGeneration.get(document.uri.toString()) ?? 0) + 1;
-  analysisGeneration.set(document.uri.toString(), generation);
+  const key = document.uri.toString();
+  const generation = (analysisGeneration.get(key) ?? 0) + 1;
+  analysisGeneration.set(key, generation);
   try {
     const result = await analyze(vscode, document);
-    if (analysisGeneration.get(document.uri.toString()) !== generation) return;
+    if (analysisGeneration.get(key) !== generation) return;
     diagnosticsCollection.set(document.uri, mapDiagnostics(vscode, result));
   } catch (error) {
     const diagnostic = new vscode.Diagnostic(
       new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
-      `ThreatForge Markdown analysis failed: ${error.message}`,
+      `ThreatForge Target Project analysis failed: ${error.message}`,
       vscode.DiagnosticSeverity.Error,
     );
     diagnostic.source = "ThreatForge";
@@ -205,7 +241,7 @@ async function publishDiagnostics(vscode, document) {
 async function activate(context) {
   const vscode = require("vscode");
   diagnosticsCollection = vscode.languages.createDiagnosticCollection(
-    "threatforge-governed-markdown",
+    "threatforge-target-project-markdown",
   );
   context.subscriptions.push(diagnosticsCollection);
 
@@ -216,7 +252,7 @@ async function activate(context) {
         const result = await analyze(vscode, document, position);
         return result?.supported ? mapCompletionItems(vscode, result) : [];
       },
-    }, "#", "-", ":"),
+    }, "#", "-", ":", "["),
     vscode.languages.registerHoverProvider(selector, {
       async provideHover(document, position) {
         const result = await analyze(vscode, document, position);
@@ -256,7 +292,7 @@ async function activate(context) {
       );
       if (
         relative.startsWith("docs/reference/project-model/registers/") ||
-        relative.startsWith("docs/reference/project-model/contracts/")
+        relative.startsWith(".vscode/")
       ) {
         invalidateServices();
         for (const candidate of vscode.workspace.textDocuments) {
@@ -278,7 +314,7 @@ async function activate(context) {
 }
 
 function deactivate() {
-  serviceCache.clear();
+  invalidateServices();
   analysisGeneration.clear();
 }
 
@@ -289,4 +325,5 @@ module.exports = {
   mapDiagnostics,
   mapCompletionItems,
   mapCodeActions,
+  workspaceContext,
 };

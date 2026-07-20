@@ -1,0 +1,34 @@
+{
+  "name": "threatforge-target-project-assistance",
+  "displayName": "ThreatForge Target Project Assistance",
+  "description": "Target-local governed Markdown diagnostics, completion, hover and quick fixes powered by the ThreatForge engine.",
+  "version": "0.1.0",
+  "publisher": "threatforge",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "main": "./extension.cjs",
+  "extensionKind": [
+    "workspace"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "ThreatForge",
+      "properties": {
+        "threatforge.engineRoot": {
+          "type": "string",
+          "scope": "resource",
+          "description": "Absolute path of the ThreatForge engine that owns Target Project authoring and Markdown assistance rules."
+        }
+      }
+    }
+  }
+}
