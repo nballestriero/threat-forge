@@ -1651,11 +1651,13 @@
                 "type": "string",
                 "enum": [
                   "MR-0004ADR-0001REQ-0001",
-                  "MR-0004ADR-0001REQ-0002"
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003"
                 ],
                 "markdownEnumDescriptions": [
                   "Creazione del progetto target in una destinazione esplicita — status: draft",
-                  "Struttura documentale analizzabile del progetto target — status: draft"
+                  "Struttura documentale analizzabile del progetto target — status: draft",
+                  "Verifica documentale del progetto target tramite target_root — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1665,6 +1667,10 @@
                   {
                     "value": "MR-0004ADR-0001REQ-0002",
                     "description": "Struttura documentale analizzabile del progetto target — status: draft"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft"
                   }
                 ]
               }
