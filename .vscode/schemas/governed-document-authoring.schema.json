@@ -1501,13 +1501,15 @@
                   "MR-0002ADR-0006REQ-0001",
                   "MR-0002ADR-0006REQ-0002",
                   "MR-0002ADR-0006REQ-0003",
-                  "MR-0002ADR-0006REQ-0004"
+                  "MR-0002ADR-0006REQ-0004",
+                  "MR-0002ADR-0006REQ-0005"
                 ],
                 "markdownEnumDescriptions": [
                   "Contextual analysis of governed Markdown bodies — status: draft",
                   "Live VS Code assistance for governed Markdown bodies — status: draft",
                   "Web editor reuse of governed Markdown assistance — status: draft",
-                  "Governed entity reference assistance in Markdown bodies — status: draft"
+                  "Governed entity reference assistance in Markdown bodies — status: draft",
+                  "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1525,6 +1527,10 @@
                   {
                     "value": "MR-0002ADR-0006REQ-0004",
                     "description": "Governed entity reference assistance in Markdown bodies — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0005",
+                    "description": "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft"
                   }
                 ]
               }

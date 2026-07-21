@@ -354,3 +354,18 @@ requirements:
     decision_id: ADR-0006
     parent_requirement_id: MR-0002ADR-0006REQ-0004
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0004GOV-0001_body.md
+  - id: MR-0002ADR-0006REQ-0005
+    title: "Unified VS Code assistance extension for engine and Target Project workspaces"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    decision_id: ADR-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0005_body.md
+  - id: MR-0002ADR-0006REQ-0005GOV-0001
+    title: "Deterministic workspace routing and single-provider migration"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    decision_id: ADR-0006
+    parent_requirement_id: MR-0002ADR-0006REQ-0005
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0005GOV-0001_body.md
