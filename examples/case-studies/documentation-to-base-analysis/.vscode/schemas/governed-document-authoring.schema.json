@@ -1,0 +1,710 @@
+{
+  "$id": "urn:threatforge:schema:governed-document-authoring-request:1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Target-local request whose document rules come from ThreatForge and whose ownership candidates come from the opened Target Project.",
+  "oneOf": [
+    {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "additionalProperties": false,
+          "description": "Canonical Markdown body inputs for Macro-requirement.",
+          "properties": {
+            "context": {
+              "description": "Context uses canonical content kind prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "intent": {
+              "description": "Intent uses canonical content kind prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "macro_obligation": {
+              "description": "Macro obligation uses canonical content kind normative_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "non_goals": {
+              "description": "Non-goals uses canonical content kind label_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "scope": {
+              "additionalProperties": false,
+              "anyOf": [
+                {
+                  "required": [
+                    "includes"
+                  ]
+                },
+                {
+                  "required": [
+                    "excludes"
+                  ]
+                }
+              ],
+              "description": "Scope uses canonical content kind classified_label_list.",
+              "properties": {
+                "excludes": {
+                  "description": "Items rendered with canonical prefix Excludes:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "includes": {
+                  "description": "Items rendered with canonical prefix Includes:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "intent",
+            "context",
+            "macro_obligation",
+            "scope"
+          ],
+          "type": "object"
+        },
+        "document_type": {
+          "const": "macro-requirement",
+          "description": "Governed project-level intent represented by one registry record, one Markdown body and two child registries."
+        },
+        "macro_requirement_type": {
+          "description": "Concrete Macro-requirement types that can be stored in the governed Macro-requirement registry.",
+          "enum": [
+            "functional"
+          ],
+          "markdownEnumDescriptions": [
+            "Macro-requirement that defines a project-level functional intent and owns Decisions and Requirements."
+          ],
+          "type": "string",
+          "x-threatforge-enum-metadata": [
+            {
+              "description": "Macro-requirement that defines a project-level functional intent and owns Decisions and Requirements.",
+              "value": "functional"
+            }
+          ]
+        },
+        "title": {
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1.",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_type"
+      ],
+      "title": "Macro-requirement",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "properties": {
+        "author": {
+          "description": "author is a single_line_text field whose canonical source kind is authored_or_configured.",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "type": "string"
+        },
+        "body": {
+          "additionalProperties": false,
+          "description": "Canonical Markdown body inputs for Decision.",
+          "properties": {
+            "consequences": {
+              "additionalProperties": false,
+              "anyOf": [
+                {
+                  "required": [
+                    "benefit"
+                  ]
+                },
+                {
+                  "required": [
+                    "cost"
+                  ]
+                },
+                {
+                  "required": [
+                    "risk"
+                  ]
+                },
+                {
+                  "required": [
+                    "constraint"
+                  ]
+                }
+              ],
+              "description": "Consequences uses canonical content kind classified_sentence_list.",
+              "properties": {
+                "benefit": {
+                  "description": "Items rendered with canonical prefix Benefit:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "constraint": {
+                  "description": "Items rendered with canonical prefix Constraint:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "cost": {
+                  "description": "Items rendered with canonical prefix Cost:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "risk": {
+                  "description": "Items rendered with canonical prefix Risk:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                }
+              },
+              "type": "object"
+            },
+            "context": {
+              "description": "Context uses canonical content kind prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "decision": {
+              "description": "Decision uses canonical content kind decision_prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "non_goals": {
+              "description": "Non-goals uses canonical content kind label_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "context",
+            "decision",
+            "consequences"
+          ],
+          "type": "object"
+        },
+        "decision_type": {
+          "description": "Concrete classifications for the primary concern governed by a Decision.",
+          "enum": [
+            "behavioral",
+            "governance",
+            "operational",
+            "structural"
+          ],
+          "markdownEnumDescriptions": [
+            "Decision that establishes observable runtime or authoring behavior.",
+            "Decision that establishes deterministic governance, validation or compliance behavior.",
+            "Decision that establishes execution, lifecycle or repository operation behavior.",
+            "Decision that establishes organization, boundaries, ownership or composition."
+          ],
+          "type": "string",
+          "x-threatforge-enum-metadata": [
+            {
+              "description": "Decision that establishes observable runtime or authoring behavior.",
+              "value": "behavioral"
+            },
+            {
+              "description": "Decision that establishes deterministic governance, validation or compliance behavior.",
+              "value": "governance"
+            },
+            {
+              "description": "Decision that establishes execution, lifecycle or repository operation behavior.",
+              "value": "operational"
+            },
+            {
+              "description": "Decision that establishes organization, boundaries, ownership or composition.",
+              "value": "structural"
+            }
+          ]
+        },
+        "document_type": {
+          "const": "decision",
+          "description": "Governed architectural or operational choice represented by one Decision registry record and one ADR Markdown body."
+        },
+        "macro_requirement_id": {
+          "description": "Existing canonical Macro-requirement that owns the new document.",
+          "enum": [
+            "MR-0001"
+          ],
+          "markdownEnumDescriptions": [
+            "Documentation to Base Analysis Case Study system description — status: draft"
+          ],
+          "type": "string",
+          "x-threatforge-enum-metadata": [
+            {
+              "description": "Documentation to Base Analysis Case Study system description — status: draft",
+              "value": "MR-0001"
+            }
+          ]
+        },
+        "title": {
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1.",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_type",
+        "author"
+      ],
+      "title": "Decision",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Use a document-only demonstration model — MR-0001/ADR-0001 — status: draft"
+                ],
+                "type": "string",
+                "x-threatforge-enum-metadata": [
+                  {
+                    "description": "Use a document-only demonstration model — MR-0001/ADR-0001 — status: draft",
+                    "value": "ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "body": {
+          "additionalProperties": false,
+          "description": "Canonical Markdown body inputs for Functional Requirement.",
+          "properties": {
+            "acceptance": {
+              "description": "Acceptance uses canonical content kind acceptance_condition_list. The core adds the canonical prefix \"The requirement is accepted when \".",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "functional_obligation": {
+              "description": "Functional obligation uses canonical content kind normative_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "intent": {
+              "description": "Intent uses canonical content kind prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "scope": {
+              "additionalProperties": false,
+              "anyOf": [
+                {
+                  "required": [
+                    "includes"
+                  ]
+                },
+                {
+                  "required": [
+                    "excludes"
+                  ]
+                }
+              ],
+              "description": "Scope uses canonical content kind classified_label_list.",
+              "properties": {
+                "excludes": {
+                  "description": "Items rendered with canonical prefix Excludes:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "includes": {
+                  "description": "Items rendered with canonical prefix Includes:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                }
+              },
+              "type": "object"
+            }
+          },
+          "required": [
+            "intent",
+            "functional_obligation",
+            "scope",
+            "acceptance"
+          ],
+          "type": "object"
+        },
+        "decision_id": {
+          "description": "Existing Decision belonging to macro_requirement_id.",
+          "pattern": "^ADR-\\d{4}$",
+          "type": "string"
+        },
+        "document_type": {
+          "const": "functional-requirement",
+          "description": "Independently testable governed obligation represented by one functional Requirement registry record and one Markdown body."
+        },
+        "macro_requirement_id": {
+          "description": "Existing canonical Macro-requirement that owns the new document.",
+          "enum": [
+            "MR-0001"
+          ],
+          "markdownEnumDescriptions": [
+            "Documentation to Base Analysis Case Study system description — status: draft"
+          ],
+          "type": "string",
+          "x-threatforge-enum-metadata": [
+            {
+              "description": "Documentation to Base Analysis Case Study system description — status: draft",
+              "value": "MR-0001"
+            }
+          ]
+        },
+        "title": {
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1.",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_id"
+      ],
+      "title": "Functional Requirement",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Use a document-only demonstration model — MR-0001/ADR-0001 — status: draft"
+                ],
+                "type": "string",
+                "x-threatforge-enum-metadata": [
+                  {
+                    "description": "Use a document-only demonstration model — MR-0001/ADR-0001 — status: draft",
+                    "value": "ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_id": {
+                "const": "ADR-0001"
+              },
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "enum": [
+                  "MR-0001ADR-0001REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Describe the demonstration interaction — status: draft"
+                ],
+                "type": "string",
+                "x-threatforge-enum-metadata": [
+                  {
+                    "description": "Describe the demonstration interaction — status: draft",
+                    "value": "MR-0001ADR-0001REQ-0001"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "body": {
+          "additionalProperties": false,
+          "description": "Canonical Markdown body inputs for Governance Requirement.",
+          "properties": {
+            "failure_conditions": {
+              "description": "Failure conditions uses canonical content kind failure_condition_list. The core adds the canonical prefix \"The verification must fail when \".",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "governance_obligation": {
+              "description": "Governance obligation uses canonical content kind normative_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "intent": {
+              "description": "Intent uses canonical content kind prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "verification_obligations": {
+              "description": "Verification obligations uses canonical content kind normative_verification_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "intent",
+            "governance_obligation",
+            "verification_obligations",
+            "failure_conditions"
+          ],
+          "type": "object"
+        },
+        "decision_id": {
+          "description": "Existing Decision belonging to macro_requirement_id.",
+          "pattern": "^ADR-\\d{4}$",
+          "type": "string"
+        },
+        "document_type": {
+          "const": "governance-requirement",
+          "description": "Deterministic governance obligation attached to one Functional Requirement and represented by one Requirement registry record and one Markdown body."
+        },
+        "macro_requirement_id": {
+          "description": "Existing canonical Macro-requirement that owns the new document.",
+          "enum": [
+            "MR-0001"
+          ],
+          "markdownEnumDescriptions": [
+            "Documentation to Base Analysis Case Study system description — status: draft"
+          ],
+          "type": "string",
+          "x-threatforge-enum-metadata": [
+            {
+              "description": "Documentation to Base Analysis Case Study system description — status: draft",
+              "value": "MR-0001"
+            }
+          ]
+        },
+        "parent_requirement_id": {
+          "description": "Existing Functional Requirement under the selected Macro-requirement and Decision.",
+          "pattern": "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
+          "type": "string"
+        },
+        "title": {
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1.",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_id",
+        "parent_requirement_id"
+      ],
+      "title": "Governance Requirement",
+      "type": "object"
+    }
+  ],
+  "title": "ThreatForge Target Project governed document authoring request",
+  "x-threatforge": {
+    "catalog_id": "governed-document-authoring-catalog",
+    "catalog_schema_version": 2,
+    "generated_fields": [
+      "id",
+      "status",
+      "date",
+      "body_path",
+      "decisions_registry_path",
+      "requirements_registry_path",
+      "requirement_type"
+    ],
+    "implemented_requirement_id": "MR-0004ADR-0001REQ-0005",
+    "ownership_scope": "target_project",
+    "request_suffix": ".governed-document-authoring.yml",
+    "schema_id": "governed-document-authoring-request-schema",
+    "schema_version": 1,
+    "sources": [
+      {
+        "kind": "decisions",
+        "ownership": "target_project",
+        "path": "docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml",
+        "registry_id": "MR-0001-decisions-registry",
+        "schema_version": 1
+      },
+      {
+        "kind": "document_model_index",
+        "ownership": "threatforge_engine",
+        "path": "docs/reference/project-model/registers/document-models/document-models.registry.yml",
+        "registry_id": "governed-document-models-registry",
+        "schema_version": 1
+      },
+      {
+        "kind": "macro_requirements",
+        "ownership": "target_project",
+        "path": "docs/reference/project-model/registers/macro-requirements.registry.yml",
+        "registry_id": "governed-documentation-macro-requirements-registry",
+        "schema_version": 1
+      },
+      {
+        "kind": "requirements",
+        "ownership": "target_project",
+        "path": "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+        "registry_id": "MR-0001-requirements-registry",
+        "schema_version": 1
+      },
+      {
+        "kind": "documentation_field_values",
+        "ownership": "threatforge_engine",
+        "path": "docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml",
+        "registry_id": "documentation-field-values-taxonomy",
+        "schema_version": 2
+      }
+    ],
+    "supported_document_types": [
+      "macro-requirement",
+      "decision",
+      "functional-requirement",
+      "governance-requirement"
+    ]
+  }
+}

@@ -5,6 +5,7 @@ const { pathToFileURL } = require("node:url");
  * @file Thin VS Code adapter for Target Project governed Markdown assistance.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0005
+ * @implementsRequirement MR-0004ADR-0001REQ-0006
  * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0004
  * @implementationStatus implemented
@@ -48,8 +49,12 @@ function workspaceContext(vscode, document) {
       "The Target Project workspace is missing the threatforge.engineRoot setting.",
     );
   }
+  const configuredEngineRoot =
+    path.isAbsolute(engineRoot) || path.win32.isAbsolute(engineRoot)
+      ? path.resolve(engineRoot)
+      : path.resolve(folder.uri.fsPath, engineRoot);
   return {
-    engineRoot: path.resolve(engineRoot),
+    engineRoot: configuredEngineRoot,
     targetRoot: folder.uri.fsPath,
     projectPath,
   };

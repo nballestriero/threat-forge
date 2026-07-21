@@ -1133,8 +1133,9 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
+      - MR-0004ADR-0001REQ-0006
     implemented_path: tools/MR-0004/materialize-target-project-vscode-workspace.mjs
-    reason: Materialize target-local settings, tasks, extension recommendations and an engine-derived authoring schema with explicit engine and target root separation.
+    reason: Materialize target-local settings, tasks, extension recommendations and an engine-derived authoring schema with explicit engine and target root separation, using portable workspace-relative engine references for repository-contained targets.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
 
   - id: MR-0004ADR-0001REQ-0005IMPL-0003
@@ -1153,8 +1154,9 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
+      - MR-0004ADR-0001REQ-0006
     implemented_path: tools/MR-0004/vscode-target-project-assistance/extension.cjs
-    reason: Map target workspace coordinates to engine-owned analysis and expose target-local diagnostics, completion, hover and non-destructive quick fixes.
+    reason: Map target workspace coordinates to engine-owned analysis, resolve absolute or workspace-relative engine roots and expose target-local diagnostics, completion, hover and non-destructive quick fixes.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
 
   - id: MR-0004ADR-0001REQ-0005IMPL-0005
@@ -1163,6 +1165,17 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
+      - MR-0004ADR-0001REQ-0006
     implemented_path: tools/MR-0004/test/target-project-vscode-workspace.test.mjs
-    reason: Verify workspace materialization, target-local schema ownership, task routing, deterministic projection, BAE isolation, empty inventory behavior, live Markdown assistance and VSIX packaging.
+    reason: Verify external and repository-contained workspace materialization, portable engine references, target-local schema ownership, task routing, deterministic projection, BAE isolation, empty inventory behavior, live Markdown assistance and VSIX packaging.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
+
+  - id: MR-0004ADR-0001REQ-0006IMPL-0001
+    title: Repository-contained documentation-to-Base-Analysis case study
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0004ADR-0001REQ-0006
+    implemented_path: examples/case-studies/documentation-to-base-analysis
+    reason: Provide a versioned and portable didactic Target Project initially created by the maintained generator and normalized to an empty pre-analysis Base Analysis inventory outside canonical engine sources and automated test fixtures.
+    verification_command: node tools/MR-0004/run-target-project-check.mjs --target-root examples/case-studies/documentation-to-base-analysis

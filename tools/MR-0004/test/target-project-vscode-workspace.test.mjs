@@ -19,13 +19,15 @@ import {
  * @file Target Project governed VS Code workspace and assistance verification.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0005
+ * @implementsRequirement MR-0004ADR-0001REQ-0006
  * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
  * Verifies target-local workspace materialization, schema ownership, task
- * routing, deterministic projection, BAE isolation, empty inventory behavior,
- * live Markdown diagnostics/completion/hover/quick fixes and VSIX packaging.
+ * routing, portable repository-contained projection, BAE isolation, empty
+ * inventory behavior, live Markdown diagnostics/completion/hover/quick fixes and
+ * VSIX packaging.
  */
 
 const testPath = fileURLToPath(import.meta.url);
@@ -58,6 +60,24 @@ function createWorkspace() {
     decisionDate: "2026-07-20",
   });
   return { root, targetRoot };
+}
+
+function createInternalWorkspace() {
+  const root = fs.mkdtempSync(path.join(engineRoot, ".threatforge-internal-vscode-"));
+  const targetRoot = path.join(root, "case-study");
+  createTargetProject({
+    engineRoot,
+    destinationRoot: targetRoot,
+    projectId: "internal-case-study-test",
+    projectTitle: "Internal Case Study Test",
+    author: "ThreatForge Test",
+    decisionDate: "2026-07-21",
+  });
+  return { root, targetRoot };
+}
+
+function portablePath(value) {
+  return String(value).replaceAll("\\", "/");
 }
 
 function removeWorkspace(workspace) {
@@ -166,6 +186,42 @@ test("materializes a target-local workspace whose schema and tasks use target ow
       hashPath(path.join(engineRoot, "docs", "reference", "project-model")),
       engineBefore,
     );
+  } finally {
+    removeWorkspace(workspace);
+  }
+});
+
+test("repository-contained target workspace uses portable engine references", () => {
+  const workspace = createInternalWorkspace();
+  try {
+    const result = materializeTargetProjectVsCodeWorkspace({
+      mode: "write",
+      engineRoot,
+      targetRoot: workspace.targetRoot,
+    });
+    const engineReference = portablePath(path.relative(workspace.targetRoot, engineRoot));
+    assert.equal(result.engineReference, engineReference);
+    assert.equal(path.isAbsolute(engineReference), false);
+
+    const settings = readJson(workspace.targetRoot, ".vscode/settings.json");
+    assert.equal(settings["threatforge.engineRoot"], engineReference);
+    assert.equal(JSON.stringify(settings).includes(engineRoot), false);
+
+    const tasks = readJson(workspace.targetRoot, ".vscode/tasks.json");
+    assert.equal(JSON.stringify(tasks).includes(engineRoot), false);
+    const byLabel = new Map(tasks.tasks.map((entry) => [entry.label, entry]));
+    const preview = byLabel.get(targetProjectWorkspaceTaskLabels.preview);
+    assert.equal(preview.args[0], `${engineReference}/tools/MR-0004/run-target-project-authoring.mjs`);
+    assert.ok(preview.args.includes(engineReference));
+    assert.equal(preview.options.cwd, "${workspaceFolder}");
+    const install = byLabel.get(targetProjectWorkspaceTaskLabels.installAssistance);
+    assert.equal(install.options.cwd, "${workspaceFolder}");
+
+    materializeTargetProjectVsCodeWorkspace({
+      mode: "check",
+      engineRoot,
+      targetRoot: workspace.targetRoot,
+    });
   } finally {
     removeWorkspace(workspace);
   }
@@ -351,6 +407,36 @@ test("VS Code adapter resolves the configured engine separately from the workspa
     context.projectPath,
     "docs/reference/project-model/body/requirements/MR-0001/example_body.md",
   );
+});
+
+test("VS Code adapter resolves a workspace-relative engine root", () => {
+  const adapter = require(extensionAdapterPath);
+  const targetRoot = path.join(engineRoot, "examples", "case-studies", "portable-target");
+  const documentPath = path.join(
+    targetRoot,
+    "docs",
+    "reference",
+    "project-model",
+    "body",
+    "requirements",
+    "MR-0001",
+    "example_body.md",
+  );
+  const engineReference = portablePath(path.relative(targetRoot, engineRoot));
+  const folderUri = { fsPath: targetRoot };
+  const document = { uri: { fsPath: documentPath } };
+  const vscode = {
+    workspace: {
+      getWorkspaceFolder() { return { uri: folderUri }; },
+      getConfiguration(section) {
+        assert.equal(section, "threatforge");
+        return { get(key) { return key === "engineRoot" ? engineReference : undefined; } };
+      },
+    },
+  };
+  const context = adapter.workspaceContext(vscode, document);
+  assert.equal(context.engineRoot, engineRoot);
+  assert.equal(context.targetRoot, targetRoot);
 });
 
 test("legacy Markdown adapter yields Target Project workspaces to the target adapter", () => {

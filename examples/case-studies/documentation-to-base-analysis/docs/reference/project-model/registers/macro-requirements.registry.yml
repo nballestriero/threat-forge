@@ -1,0 +1,12 @@
+schema_version: 1
+registry_id: governed-documentation-macro-requirements-registry
+project: documentation-to-base-analysis
+
+macro_requirements:
+  - id: MR-0001
+    title: "Documentation to Base Analysis Case Study system description"
+    status: draft
+    macro_requirement_type: functional
+    body_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    decisions_registry_path: docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml
+    requirements_registry_path: docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml

@@ -1,0 +1,12 @@
+schema_version: 1
+registry_id: MR-0001-requirements-registry
+macro_requirement_id: MR-0001
+
+requirements:
+  - id: MR-0001ADR-0001REQ-0001
+    title: "Describe the demonstration interaction"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
