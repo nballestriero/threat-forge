@@ -24,3 +24,11 @@ requirements:
     macro_requirement_id: MR-0005
     decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0001REQ-0003_body.md
+  - id: MR-0005ADR-0001REQ-0003GOV-0001
+    title: "Human-viewable DFD renderer validation"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0005
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0005ADR-0001REQ-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0001REQ-0003GOV-0001_body.md
