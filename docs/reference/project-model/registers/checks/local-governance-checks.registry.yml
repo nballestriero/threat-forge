@@ -221,3 +221,13 @@ checks:
       - MR-0003ADR-0002REQ-0001
       - MR-0003ADR-0002REQ-0001GOV-0001
     description: Validate canonical reference grammar, resolver uniqueness and providers, profile-declared reference positions, current BAE documentary authority and deterministic positive and negative fixtures.
+  - id: MR-0003ADR-0001REQ-0006GOV-0001CHECK-0001
+    title: Base DFD projection consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0003/check-base-dfd-projection.mjs
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0006
+      - MR-0003ADR-0001REQ-0006GOV-0001
+    description: Validate deterministic Base Analysis DFD projection, semantic contract conformance, canonical traceability, renderer neutrality, case-study expectations and positive and negative verification coverage.

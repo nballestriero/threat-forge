@@ -1199,3 +1199,54 @@ artifacts:
     implemented_path: examples/case-studies/documentation-to-base-analysis
     reason: Provide a versioned and portable didactic Target Project initially created by the maintained generator and normalized to an empty pre-analysis Base Analysis inventory outside canonical engine sources and automated test fixtures.
     verification_command: node tools/MR-0004/run-target-project-check.mjs --target-root examples/case-studies/documentation-to-base-analysis
+
+  - id: MR-0003ADR-0001REQ-0006GOV-0001IMPL-0001
+    title: "Base DFD semantic projection contract"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0006GOV-0001
+    implemented_path: tools/MR-0003/contracts/base-dfd-projection.contract.mjs
+    reason: "Promoted MR-0003ADR-0001REQ-0006GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0003/contracts/base-dfd-projection.contract.mjs
+
+  - id: MR-0003ADR-0001REQ-0006IMPL-0001
+    title: "Deterministic Base DFD projector"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0006
+      - MR-0003ADR-0001REQ-0006GOV-0001
+    implemented_path: tools/MR-0003/lib/base-dfd-projector.mjs
+    reason: "Promoted MR-0003ADR-0001REQ-0006IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0003/lib/base-dfd-projector.mjs
+
+  - id: MR-0003ADR-0001REQ-0006GOV-0001IMPL-0002
+    title: "Base DFD semantic projection validator"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0006GOV-0001
+    implemented_path: tools/MR-0003/lib/base-dfd-projection-validator.mjs
+    reason: "Promoted MR-0003ADR-0001REQ-0006GOV-0001IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0003/lib/base-dfd-projection-validator.mjs
+
+  - id: MR-0003ADR-0001REQ-0006GOV-0001IMPL-0003
+    title: "Base DFD projection verification suite"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0006GOV-0001
+    implemented_path: tools/MR-0003/test/base-dfd-projection.test.mjs
+    reason: "Promoted MR-0003ADR-0001REQ-0006GOV-0001IMPL-0003 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0003/test/base-dfd-projection.test.mjs
+
+  - id: MR-0003ADR-0001REQ-0006GOV-0001IMPL-0004
+    title: "Base DFD projection consistency checker"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0003ADR-0001REQ-0006GOV-0001
+    implemented_path: tools/MR-0003/check-base-dfd-projection.mjs
+    reason: "Promoted MR-0003ADR-0001REQ-0006GOV-0001IMPL-0004 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0003/check-base-dfd-projection.mjs
