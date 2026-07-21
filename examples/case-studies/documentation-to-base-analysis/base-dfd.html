@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThreatForge Base DFD — documentation-to-base-analysis</title>
+<style>
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f4f5;
+  color: #18181b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f4f5; }
+main {
+  width: min(1500px, calc(100% - 32px));
+  margin: 24px auto;
+}
+header, .diagram-panel, .traceability {
+  background: #ffffff;
+  border: 1px solid #d4d4d8;
+  border-radius: 14px;
+}
+header { padding: 22px 26px; margin-bottom: 16px; }
+h1, h2, h3, p { margin-top: 0; }
+header p { margin-bottom: 6px; color: #52525b; }
+code {
+  display: inline-block;
+  margin: 2px 3px 2px 0;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #f4f4f5;
+  overflow-wrap: anywhere;
+}
+.diagram-panel {
+  padding: 12px;
+  overflow-x: auto;
+}
+svg {
+  display: block;
+  width: 100%;
+  min-width: 820px;
+  height: auto;
+  background: #fafafa;
+  border-radius: 10px;
+}
+.dfd-boundary line {
+  stroke: #71717a;
+  stroke-width: 3;
+  stroke-dasharray: 12 9;
+}
+.dfd-boundary text {
+  font-size: 14px;
+  font-weight: 700;
+  fill: #3f3f46;
+}
+.dfd-boundary .identity {
+  font-size: 11px;
+  font-weight: 500;
+  fill: #71717a;
+}
+.dfd-node rect {
+  fill: #ffffff;
+  stroke: #18181b;
+  stroke-width: 2.5;
+}
+.dfd-node.role-external_entity rect {
+  fill: #f4f4f5;
+}
+.dfd-node.role-process rect {
+  fill: #ffffff;
+  stroke-width: 3;
+}
+.dfd-node.role-data_store rect {
+  fill: #fafafa;
+}
+.data-store-line {
+  stroke: #18181b;
+  stroke-width: 1.5;
+}
+.dfd-node text {
+  text-anchor: middle;
+  pointer-events: none;
+}
+.dfd-node .role {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  fill: #71717a;
+}
+.dfd-node .title {
+  font-size: 16px;
+  font-weight: 700;
+  fill: #18181b;
+}
+.dfd-node .identity {
+  font-size: 11px;
+  fill: #52525b;
+}
+.dfd-flow line {
+  stroke: #18181b;
+  stroke-width: 2.5;
+}
+.flow-label-background {
+  fill: #ffffff;
+  stroke: #d4d4d8;
+}
+.dfd-flow text {
+  text-anchor: middle;
+  pointer-events: none;
+}
+.flow-title {
+  font-size: 13px;
+  font-weight: 700;
+  fill: #18181b;
+}
+.flow-identity {
+  font-size: 10px;
+  fill: #71717a;
+}
+.traceability {
+  margin-top: 16px;
+  padding: 22px 26px;
+}
+.traceability > p { color: #52525b; }
+.trace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.trace-card {
+  border: 1px solid #e4e4e7;
+  border-radius: 10px;
+  padding: 14px;
+}
+.trace-card h3 {
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+.trace-card dl {
+  display: grid;
+  grid-template-columns: minmax(92px, 0.35fr) 1fr;
+  gap: 7px 10px;
+  margin-bottom: 0;
+  font-size: 13px;
+}
+.trace-card dt { font-weight: 700; }
+.trace-card dd { margin: 0; }
+.empty { color: #71717a; font-style: italic; }
+</style>
+</head>
+<body>
+<main data-projection-id="BASE-DFD-base-analysis-elements-registry">
+<header>
+<h1>ThreatForge Base DFD — documentation-to-base-analysis</h1>
+<p><strong>Projection:</strong> <code>BASE-DFD-base-analysis-elements-registry</code></p>
+<p><strong>Source registry:</strong> <code>base-analysis-elements-registry</code></p>
+<p><strong>Source path:</strong> <code>examples/case-studies/documentation-to-base-analysis/docs/reference/project-model/registers/base-analysis/base-analysis-elements.registry.yml</code></p>
+</header>
+<section class="diagram-panel" aria-labelledby="diagram-heading">
+<h2 id="diagram-heading">Diagram</h2>
+<svg viewBox="0 0 1100 314"
+ role="img"
+ aria-labelledby="diagram-title diagram-description"
+ data-projection-id="BASE-DFD-base-analysis-elements-registry">
+<title id="diagram-title">ThreatForge Base DFD — documentation-to-base-analysis</title>
+<desc id="diagram-description">Deterministic renderer-neutral DFD projection containing 2 nodes, 1 directed flows and 1 boundaries.</desc>
+<defs>
+<marker id="dfd-arrow" markerWidth="10" markerHeight="10"
+ refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+<path d="M0,0 L0,6 L9,3 z" fill="#18181b"></path>
+</marker>
+</defs>
+<g class="dfd-boundary" data-dfd-element-id="DFD-BOUNDARY-BAE-0004" data-contributing-bae-ids="BAE-0004" data-contributing-relation-ids=""><title>Service domain boundary — DFD-BOUNDARY-BAE-0004</title><line x1="550" y1="94" x2="550" y2="278" /><text x="560" y="112">Service domain boundary</text><text class="identity" x="560" y="132">DFD-BOUNDARY-BAE-0004</text></g>
+<g class="dfd-flow" data-dfd-element-id="DFD-FLOW-BAE-0005" data-source-node-id="DFD-NODE-BAE-0001" data-target-node-id="DFD-NODE-BAE-0002" data-crossed-boundary-ids="DFD-BOUNDARY-BAE-0004" data-contributing-bae-ids="BAE-0001,BAE-0002,BAE-0004,BAE-0005" data-contributing-relation-ids="BAE-REL-0001,BAE-REL-0002,BAE-REL-0003"><title>Demonstration request flow — DFD-FLOW-BAE-0005</title><line x1="312" y1="182" x2="788" y2="182" marker-end="url(#dfd-arrow)" /><rect class="flow-label-background" x="445" y="153" width="210" height="38" rx="7" /><text class="flow-title" x="550" y="170">Demonstration request flow</text><text class="flow-identity" x="550" y="184">DFD-FLOW-BAE-0005</text></g>
+<g class="dfd-node role-external_entity" data-dfd-element-id="DFD-NODE-BAE-0001" data-dfd-role="external_entity" data-contributing-bae-ids="BAE-0001" data-contributing-relation-ids=""><title>Demonstration user — DFD-NODE-BAE-0001</title><rect x="72" y="130" width="240" height="104" rx="8" /><text class="role" x="192" y="150">external entity</text><text class="title" x="192" y="177"><tspan x="192" dy="0">Demonstration user</tspan></text><text class="identity" x="192" y="223">DFD-NODE-BAE-0001</text></g><g class="dfd-node role-process" data-dfd-element-id="DFD-NODE-BAE-0002" data-dfd-role="process" data-contributing-bae-ids="BAE-0002" data-contributing-relation-ids=""><title>Demonstration service — DFD-NODE-BAE-0002</title><rect x="788" y="130" width="240" height="104" rx="28" /><text class="role" x="908" y="150">process</text><text class="title" x="908" y="177"><tspan x="908" dy="0">Demonstration service</tspan></text><text class="identity" x="908" y="223">DFD-NODE-BAE-0002</text></g>
+</svg>
+</section>
+<section class="traceability" aria-labelledby="trace-heading">
+<h2 id="trace-heading">Traceability</h2>
+<p>Semantic identities remain available independently from diagram layout.</p>
+<div class="trace-grid"><article class="trace-card" data-trace-kind="node" data-trace-id="DFD-NODE-BAE-0001"><h3>Demonstration user</h3><p><code>DFD-NODE-BAE-0001</code></p><dl><dt>BAE identities</dt><dd><code>BAE-0001</code></dd><dt>Relation identities</dt><dd><span class="empty">none</span></dd></dl></article><article class="trace-card" data-trace-kind="node" data-trace-id="DFD-NODE-BAE-0002"><h3>Demonstration service</h3><p><code>DFD-NODE-BAE-0002</code></p><dl><dt>BAE identities</dt><dd><code>BAE-0002</code></dd><dt>Relation identities</dt><dd><span class="empty">none</span></dd></dl></article><article class="trace-card" data-trace-kind="flow" data-trace-id="DFD-FLOW-BAE-0005"><h3>Demonstration request flow</h3><p><code>DFD-FLOW-BAE-0005</code></p><dl><dt>Source</dt><dd><code>DFD-NODE-BAE-0001</code></dd><dt>Target</dt><dd><code>DFD-NODE-BAE-0002</code></dd><dt>Crossed boundaries</dt><dd><code>DFD-BOUNDARY-BAE-0004</code></dd><dt>BAE identities</dt><dd><code>BAE-0001</code> <code>BAE-0002</code> <code>BAE-0004</code> <code>BAE-0005</code></dd><dt>Relation identities</dt><dd><code>BAE-REL-0001</code> <code>BAE-REL-0002</code> <code>BAE-REL-0003</code></dd></dl></article><article class="trace-card" data-trace-kind="boundary" data-trace-id="DFD-BOUNDARY-BAE-0004"><h3>Service domain boundary</h3><p><code>DFD-BOUNDARY-BAE-0004</code></p><dl><dt>BAE identities</dt><dd><code>BAE-0004</code></dd><dt>Relation identities</dt><dd><span class="empty">none</span></dd></dl></article><article class="trace-card" data-trace-kind="unprojected" data-trace-id="BAE-0003"><h3>Demonstration record</h3><p><code>BAE-0003</code></p><dl><dt>Reason</dt><dd><code>no_deterministic_dfd_role</code></dd></dl></article></div>
+</section>
+</main>
+</body>
+</html>

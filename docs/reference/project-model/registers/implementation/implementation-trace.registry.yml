@@ -1250,3 +1250,33 @@ artifacts:
     implemented_path: tools/MR-0003/check-base-dfd-projection.mjs
     reason: "Promoted MR-0003ADR-0001REQ-0006GOV-0001IMPL-0004 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0003/check-base-dfd-projection.mjs
+
+  - id: MR-0005ADR-0001REQ-0003IMPL-0001
+    title: "Deterministic static HTML and SVG DFD renderer"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0003
+    implemented_path: tools/MR-0005/lib/dfd-html-renderer.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0003IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/lib/dfd-html-renderer.mjs
+
+  - id: MR-0005ADR-0001REQ-0003GOV-0001IMPL-0001
+    title: "Static HTML and SVG DFD renderer verification"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0003GOV-0001
+    implemented_path: tools/MR-0005/test/dfd-html-renderer.test.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0003GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0005/test/dfd-html-renderer.test.mjs
+
+  - id: MR-0005ADR-0001REQ-0003IMPL-0002
+    title: "Base DFD static HTML materializer"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0003
+    implemented_path: tools/MR-0005/materialize-base-dfd-html.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0003IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/materialize-base-dfd-html.mjs
