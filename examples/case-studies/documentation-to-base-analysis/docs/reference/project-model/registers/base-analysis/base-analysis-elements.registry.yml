@@ -2,6 +2,192 @@ schema_version: 1
 registry_id: base-analysis-elements-registry
 macro_requirement_id: MR-0003
 
-elements: []
+elements:
+  - id: BAE-0001
+    title: Demonstration user
+    base_type: actor
+    meaning: Person outside the governed service domain who initiates the documented demonstration request.
+    lifecycle_state: active
+    origin:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    authoritative_source:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    source_history:
+      - sequence: 1
+        outcome: continuity_confirmed
+        previous_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        next_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        review_evidence_id: MR-0001/ADR-0001
+    provenance:
+      - relation: origin
+        source_kind: governed_document
+        source_id: MR-0001
+        source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+      - relation: support
+        source_kind: governed_document
+        source_id: MR-0001ADR-0001REQ-0001
+        source_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
 
-relations: []
+  - id: BAE-0002
+    title: Demonstration service
+    base_type: component
+    meaning: Logical processing service inside the governed domain that receives and processes the demonstration request.
+    lifecycle_state: active
+    origin:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    authoritative_source:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    source_history:
+      - sequence: 1
+        outcome: continuity_confirmed
+        previous_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        next_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        review_evidence_id: MR-0001/ADR-0001
+    provenance:
+      - relation: origin
+        source_kind: governed_document
+        source_id: MR-0001
+        source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+      - relation: support
+        source_kind: governed_document
+        source_id: MR-0001ADR-0001REQ-0001
+        source_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
+
+  - id: BAE-0003
+    title: Demonstration record
+    base_type: data_resource
+    meaning: Information resource supplied by the demonstration user and processed by the demonstration service.
+    lifecycle_state: active
+    origin:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    authoritative_source:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    source_history:
+      - sequence: 1
+        outcome: continuity_confirmed
+        previous_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        next_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        review_evidence_id: MR-0001/ADR-0001
+    provenance:
+      - relation: origin
+        source_kind: governed_document
+        source_id: MR-0001
+        source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+      - relation: support
+        source_kind: governed_document
+        source_id: MR-0001ADR-0001REQ-0001
+        source_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
+
+  - id: BAE-0004
+    title: Service domain boundary
+    base_type: boundary
+    meaning: Explicit separation between the demonstration user's external environment and the governed service domain.
+    lifecycle_state: active
+    origin:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    authoritative_source:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    source_history:
+      - sequence: 1
+        outcome: continuity_confirmed
+        previous_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        next_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        review_evidence_id: MR-0001/ADR-0001
+    provenance:
+      - relation: origin
+        source_kind: governed_document
+        source_id: MR-0001
+        source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+      - relation: support
+        source_kind: governed_document
+        source_id: MR-0001ADR-0001REQ-0001
+        source_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
+
+  - id: BAE-0005
+    title: Demonstration request flow
+    base_type: data_flow
+    meaning: Directed transfer carrying the demonstration record from the demonstration user to the demonstration service.
+    lifecycle_state: active
+    origin:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    authoritative_source:
+      kind: governed_document
+      source_id: MR-0001
+      source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+    source_history:
+      - sequence: 1
+        outcome: continuity_confirmed
+        previous_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        next_source:
+          kind: governed_document
+          source_id: MR-0001
+          source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+        review_evidence_id: MR-0001/ADR-0001
+    provenance:
+      - relation: origin
+        source_kind: governed_document
+        source_id: MR-0001
+        source_path: docs/reference/project-model/body/macro-requirements/MR-0001_body.md
+      - relation: support
+        source_kind: governed_document
+        source_id: MR-0001ADR-0001REQ-0001
+        source_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
+
+relations:
+  - id: BAE-REL-0001
+    source_bae_id: BAE-0005
+    predicate: has_source_endpoint
+    target_bae_id: BAE-0001
+  - id: BAE-REL-0002
+    source_bae_id: BAE-0005
+    predicate: has_target_endpoint
+    target_bae_id: BAE-0002
+  - id: BAE-REL-0003
+    source_bae_id: BAE-0005
+    predicate: crosses_boundary
+    target_bae_id: BAE-0004

@@ -1,10 +1,17 @@
 # Documentation to Base Analysis Case Study
 
-This repository-contained Target Project is the didactic case study used to demonstrate the transition from governed documentation to a methodology-neutral Base Analysis.
+This repository-contained Target Project demonstrates the transition from governed documentation to a methodology-neutral Base Analysis.
 
 ## Purpose
 
-The case study starts from governed documentary sources and an intentionally empty Base Analysis inventory. Its purpose is to make each analytical step observable: documentary reading, evidence identification, candidate review, canonical BAE registration, governed references, validation and derivation of a static data-flow view.
+The case study provides a small, coherent and potentially implementable service interaction. It demonstrates:
+
+1. governed documentary sources;
+2. canonical Base Analysis Elements;
+3. documentary references to those elements;
+4. canonical data-flow endpoint and boundary relations;
+5. Target Project validation;
+6. portable VS Code assistance.
 
 The case study is not an automated test fixture and is not the source of the Target Project generator template. External Target Projects remain independently creatable in any valid explicit destination.
 
@@ -21,30 +28,37 @@ node .\tools\MR-0004\create-target-project.mjs `
   --decision-date "2026-07-21"
 ```
 
-After generation, the demonstration BAE records supplied by the generic template were deliberately removed and the governed documentation was rewritten as the pre-analysis evidence corpus. The generator itself was not changed by that normalization.
+The pre-analysis state is preserved by the parent repository tag:
 
-## Pre-analysis baseline
+```text
+documentation-to-base-analysis-pre-analysis-baseline-complete
+```
 
-At this baseline:
+The current state completes the example with five canonical Base Analysis Elements and three canonical relations.
 
-- the governed Macro-requirement, Decision and Functional Requirement are the authoritative documentary sources;
-- the Base Analysis inventory is empty;
-- no canonical BAE identifier is referenced by the documentation;
-- no DFD has been asserted;
-- the Functional Requirement remains in draft because its Base Analysis acceptance condition has not yet been satisfied;
-- the VS Code workspace uses a repository-relative ThreatForge engine reference.
+## Implementable interaction
 
-## Demonstration workflow
+A demonstration user outside the governed service domain submits a request containing a demonstration record. A logical demonstration service inside the governed domain receives and processes the request.
 
-1. Read the governed documentation without assuming a predefined DFD.
-2. Identify documentary evidence for actors, components, data resources, boundaries and data flows.
-3. Record proposed candidates separately from the canonical inventory.
-4. Review each candidate against its documentary source and precedence.
-5. Register only accepted Base Analysis Elements and their relations.
-6. Add eligible governed BAE references to the documentary bodies.
-7. Run the Target Project checker.
-8. Derive a static DFD from the validated canonical inventory.
-9. Record ambiguities and any resulting documentation or ThreatForge changes.
+A future implementation may choose concrete frontend, transport, backend and persistence technologies without changing the canonical meaning of the documented interaction.
+
+## Canonical Base Analysis model
+
+- `[BAE-0001] Demonstration user` — Actor
+- `[BAE-0002] Demonstration service` — Component
+- `[BAE-0003] Demonstration record` — Data Resource
+- `[BAE-0004] Service domain boundary` — Boundary
+- `[BAE-0005] Demonstration request flow` — Data Flow
+
+Canonical relations:
+
+```text
+BAE-0005 --has_source_endpoint--> BAE-0001
+BAE-0005 --has_target_endpoint--> BAE-0002
+BAE-0005 --crosses_boundary-----> BAE-0004
+```
+
+The demonstration record is described as information carried by the request, but no additional relation is asserted because the current canonical Base Analysis taxonomy does not define a dedicated payload predicate.
 
 ## Validation
 

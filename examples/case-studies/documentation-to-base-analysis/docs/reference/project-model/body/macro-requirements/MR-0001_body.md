@@ -2,25 +2,24 @@
 
 ## Intent
 
-Describe the documentary system boundary and initial interaction for Documentation to Base Analysis Case Study before implementation artifacts exist.
+Describe one small and potentially implementable service interaction through governed documentary sources and a canonical Base Analysis model.
 
 ## Context
 
-A person outside the governed service domain submits a request containing a demonstration record. A logical service inside the governed domain receives the request and processes the supplied information. The request crosses the separation between the person's environment and the service domain. No executable backend, frontend, database or transport implementation has yet been selected.
+A demonstration user outside the governed service domain submits a request containing a demonstration record. A logical demonstration service inside the governed domain receives the request and processes the supplied information. The request crosses the separation between the user's environment and the service domain.
 
-The intended analytical process derives records from this evidence rather than assuming them in advance.
+No concrete frontend, transport, backend, database or deployment technology has been selected. A future implementation can realize the documented interaction without changing its canonical Base Analysis identities.
 
 ## Macro obligation
 
-- The demonstration project must preserve governed documentary sources for analysis.
+- The demonstration project must preserve governed documentary sources and their canonical Base Analysis interpretation.
 
 ## Scope
 
-- Includes: A person who initiates the documented request
-- Includes: A logical service that receives and processes the request
-- Includes: The demonstration record carried by the request
-- Includes: The separation between the external user environment and the governed service domain
-- Includes: The directed request from the person to the logical service
-- Excludes: Executable application source code
-- Excludes: A pre-established Base Analysis inventory
-- Excludes: A pre-established data-flow diagram
+- Includes: [BAE-0001] Demonstration user
+- Includes: [BAE-0002] Demonstration service
+- Includes: [BAE-0003] Demonstration record
+- Includes: [BAE-0004] Service domain boundary
+- Includes: [BAE-0005] Demonstration request flow
+- Excludes: Concrete executable application source code
+- Excludes: Technology-specific frontend, transport, backend or persistence choices
