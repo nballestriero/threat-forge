@@ -9,16 +9,24 @@ import { fileURLToPath } from "node:url";
 
 import {
   buildVsCodeCliInvocation,
+  buildVsCodeCliUninstallInvocation,
+  obsoleteTargetAssistanceExtensionId,
   packageGovernedMarkdownExtension,
+  parseInstalledExtensionIds,
 } from "../install-vscode-governed-markdown-assistance.mjs";
 
 /**
- * @file Verification of the thin VS Code governed Markdown adapter and VSIX.
+ * @file Verification of unified VS Code governed Markdown routing and VSIX.
  *
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0005
+ * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
+ * @implementsRequirement MR-0004ADR-0001REQ-0005
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0004
  * @implementationStatus implemented
  */
 
@@ -79,29 +87,50 @@ class CodeAction {
   }
 }
 
-const fakeVscode = {
-  Position,
-  Range,
-  MarkdownString,
-  CompletionItem,
-  Diagnostic,
-  WorkspaceEdit,
-  CodeAction,
-  CompletionItemKind: { Struct: 1, Value: 2 },
-  DiagnosticSeverity: { Error: 0, Warning: 1, Information: 2, Hint: 3 },
-  CodeActionKind: { QuickFix: "quickfix" },
-  workspace: {
-    getWorkspaceFolder() {
-      return { uri: { fsPath: rootDir } };
+function configurationInspection(values = {}) {
+  return {
+    inspect(key) {
+      assert.equal(key, "engineRoot");
+      return { key: "threatforge.engineRoot", ...values };
     },
-  },
-};
+    get(key) {
+      assert.equal(key, "engineRoot");
+      return values.workspaceFolderValue ?? values.workspaceValue ?? values.globalValue;
+    },
+  };
+}
 
-test("adapter forwards current unsaved document text and cursor position", () => {
-  const document = {
+function createFakeVscode(folderRoot = rootDir, inspected = {}) {
+  return {
+    Position,
+    Range,
+    MarkdownString,
+    CompletionItem,
+    Diagnostic,
+    WorkspaceEdit,
+    CodeAction,
+    CompletionItemKind: { Struct: 1, Value: 2 },
+    DiagnosticSeverity: { Error: 0, Warning: 1, Information: 2, Hint: 3 },
+    CodeActionKind: { QuickFix: "quickfix" },
+    workspace: {
+      getWorkspaceFolder() {
+        return { uri: { fsPath: folderRoot } };
+      },
+      getConfiguration(section) {
+        assert.equal(section, "threatforge");
+        return configurationInspection(inspected);
+      },
+    },
+  };
+}
+
+const fakeVscode = createFakeVscode();
+
+function governedDocument(root) {
+  return {
     uri: {
       fsPath: path.join(
-        rootDir,
+        root,
         "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
       ),
     },
@@ -109,11 +138,15 @@ test("adapter forwards current unsaved document text and cursor position", () =>
       return "unsaved text";
     },
   };
+}
+
+test("adapter forwards current unsaved engine document text and cursor position", () => {
   const request = adapter.createAnalysisRequest(
     fakeVscode,
-    document,
+    governedDocument(rootDir),
     new Position(7, 3),
   );
+  assert.equal(request.mode, "engine");
   assert.equal(request.rootDir, rootDir);
   assert.equal(
     request.projectPath,
@@ -121,6 +154,47 @@ test("adapter forwards current unsaved document text and cursor position", () =>
   );
   assert.equal(request.text, "unsaved text");
   assert.deepEqual(request.position, { line: 7, character: 3 });
+});
+
+test("adapter classifies an explicit workspace value as a Target Project", () => {
+  const targetRoot = path.join(os.tmpdir(), "unified-target-workspace");
+  const vscode = createFakeVscode(targetRoot, { workspaceValue: rootDir });
+  const request = adapter.createAnalysisRequest(
+    vscode,
+    governedDocument(targetRoot),
+    new Position(1, 2),
+  );
+  assert.equal(request.mode, "target");
+  assert.equal(request.engineRoot, rootDir);
+  assert.equal(request.targetRoot, targetRoot);
+});
+
+test("adapter resolves a workspace-folder relative Target Project engine root", () => {
+  const targetRoot = path.join(rootDir, "examples", "case-studies", "example");
+  const engineReference = path.relative(targetRoot, rootDir).replaceAll("\\", "/");
+  const vscode = createFakeVscode(targetRoot, { workspaceFolderValue: engineReference });
+  const context = adapter.workspaceContext(vscode, governedDocument(targetRoot));
+  assert.equal(context.mode, "target");
+  assert.equal(context.engineRoot, rootDir);
+  assert.equal(context.targetRoot, targetRoot);
+});
+
+test("adapter ignores globally inherited engine roots", () => {
+  const unrelatedRoot = path.join(os.tmpdir(), "unified-unrelated-workspace");
+  const vscode = createFakeVscode(unrelatedRoot, { globalValue: rootDir });
+  assert.equal(
+    adapter.createAnalysisRequest(vscode, governedDocument(unrelatedRoot), null),
+    null,
+  );
+});
+
+test("adapter ignores unsupported Markdown workspaces", () => {
+  const unrelatedRoot = path.join(os.tmpdir(), "unified-unsupported-workspace");
+  const vscode = createFakeVscode(unrelatedRoot);
+  assert.equal(
+    adapter.createAnalysisRequest(vscode, governedDocument(unrelatedRoot), null),
+    null,
+  );
 });
 
 test("adapter preserves canonical completion ordering and identities", () => {
@@ -209,18 +283,9 @@ test("adapter maps only core-supplied quick fixes and performs no direct write",
       {
         id: "canonical-fix",
         title: "Apply canonical fix",
-        edits: [
-          {
-            range: coreRange,
-            new_text: "replacement",
-          },
-        ],
+        edits: [{ range: coreRange, new_text: "replacement" }],
       },
-      {
-        id: "unrelated",
-        title: "Unrelated",
-        edits: [],
-      },
+      { id: "unrelated", title: "Unrelated", edits: [] },
     ],
   };
   const actions = adapter.mapCodeActions(
@@ -246,9 +311,7 @@ test("thin adapter source contains no canonical section or value inventory", () 
     '"Draft"',
     '"Accepted"',
   ];
-  for (const fragment of forbidden) {
-    assert.equal(source.includes(fragment), false, fragment);
-  }
+  for (const fragment of forbidden) assert.equal(source.includes(fragment), false, fragment);
   assert.equal(source.includes("writeFile"), false);
   assert.equal(source.includes("appendFile"), false);
 });
@@ -272,10 +335,28 @@ test("Windows installer passes cmd.exe call tokens without embedded quoting", ()
     "C:\\Temp Folder\\threatforge.vsix",
     "--force",
   ]);
-  assert.equal(invocation.args.some((value) => value.includes('\"')), false);
+  assert.equal(invocation.args.some((value) => value.includes('"')), false);
 });
 
-test("VSIX packaging is deterministic and contains the thin adapter", () => {
+test("Windows migration uninstalls the obsolete target extension id", () => {
+  const invocation = buildVsCodeCliUninstallInvocation({
+    extensionId: obsoleteTargetAssistanceExtensionId,
+    platform: "win32",
+    env: {
+      VSCODE_CLI: "code.cmd",
+      ComSpec: "C:\\Windows\\System32\\cmd.exe",
+    },
+  });
+  assert.deepEqual(invocation.args.slice(-2), [
+    "--uninstall-extension",
+    "threatforge.threatforge-target-project-assistance",
+  ]);
+  assert.ok(parseInstalledExtensionIds(
+    "THREATFORGE.THREATFORGE-TARGET-PROJECT-ASSISTANCE\nother.extension\n",
+  ).has(obsoleteTargetAssistanceExtensionId));
+});
+
+test("VSIX packaging is deterministic and contains the unified adapter", () => {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "tf-vsix-test-"));
   try {
     const firstPath = path.join(directory, "first.vsix");
@@ -296,6 +377,7 @@ test("VSIX packaging is deterministic and contains the thin adapter", () => {
       first.extensionId,
       "threatforge.threatforge-governed-markdown-assistance",
     );
+    assert.equal(first.version, "0.3.0");
   } finally {
     fs.rmSync(directory, { recursive: true, force: true });
   }

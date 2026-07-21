@@ -786,36 +786,46 @@ artifacts:
     verification_command: node --test tools/MR-0002/tests/governed-markdown-assistance.test.mjs
 
   - id: MR-0002ADR-0006REQ-0002IMPL-0001
-    title: Thin VS Code governed Markdown assistance adapter
+    title: Unified VS Code governed Markdown assistance adapter
     artifact_type: source_module
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
+      - MR-0004ADR-0001REQ-0005
+      - MR-0004ADR-0001REQ-0006
     implemented_path: tools/MR-0002/vscode-governed-markdown-assistance/extension.cjs
-    reason: Map current unsaved VS Code documents, cursor coordinates and editor presentation objects to the shared assistance core without owning canonical rules or performing repository writes.
+    reason: Register one VS Code provider set and route each supported workspace folder to the engine core or Target Project composition root while ignoring unsupported workspaces and preserving canonical adapter boundaries.
     verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
 
   - id: MR-0002ADR-0006REQ-0002IMPL-0002
-    title: Local governed Markdown assistance VSIX installer
+    title: Unified governed Markdown assistance VSIX installer
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
+      - MR-0004ADR-0001REQ-0005
     implemented_path: tools/MR-0002/install-vscode-governed-markdown-assistance.mjs
-    reason: Package the thin adapter into a deterministic temporary VSIX and install it through the official VS Code CLI without changing canonical repository files.
+    reason: Package one deterministic VSIX, remove the obsolete target-only extension when installed and force-install the unified extension without changing canonical repository files.
     verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
 
   - id: MR-0002ADR-0006REQ-0002GOV-0001IMPL-0001
-    title: VS Code governed Markdown assistance adapter verification
+    title: Unified VS Code governed Markdown assistance verification
     artifact_type: verification_artifact
     status: implemented
     linked_requirement_ids:
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
+      - MR-0004ADR-0001REQ-0005
     implemented_path: tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
-    reason: Verify unsaved-text delegation, semantic ordering, stable diagnostic identities, core-supplied quick fixes, absence of duplicated canonical inventories and deterministic VSIX packaging.
+    reason: Verify engine, target and unsupported workspace classification, global-setting isolation, semantic mapping, migration commands and deterministic unified VSIX packaging.
     verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
 
   - id: MR-0002ADR-0006REQ-0002GOV-0001IMPL-0002
@@ -829,6 +839,8 @@ artifacts:
       - MR-0002ADR-0006REQ-0002GOV-0001
       - MR-0002ADR-0006REQ-0004
       - MR-0002ADR-0006REQ-0004GOV-0001
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
     implemented_path: tools/MR-0002/check-governed-markdown-assistance.mjs
     reason: Enforce four-model coverage, thin-adapter boundaries, deterministic tests and reproducible local VSIX packaging as one blocking repository check.
     verification_command: node tools/MR-0002/check-governed-markdown-assistance.mjs
@@ -1134,29 +1146,35 @@ artifacts:
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
       - MR-0004ADR-0001REQ-0006
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
     implemented_path: tools/MR-0004/materialize-target-project-vscode-workspace.mjs
-    reason: Materialize target-local settings, tasks, extension recommendations and an engine-derived authoring schema with explicit engine and target root separation, using portable workspace-relative engine references for repository-contained targets.
+    reason: Materialize target-local settings, tasks, unified extension recommendations and an engine-derived authoring schema with explicit engine and target root separation, portable references and removal of the obsolete extension id.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
 
   - id: MR-0004ADR-0001REQ-0005IMPL-0003
-    title: Target Project VS Code assistance installer
+    title: Target Project assistance installer compatibility entrypoint
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
     implemented_path: tools/MR-0004/install-vscode-target-project-assistance.mjs
-    reason: Package and install the thin Target Project editor adapter without duplicating canonical ThreatForge authoring or Markdown analysis rules.
+    reason: Preserve the legacy command path while delegating package and install operations to the single unified VSIX and its obsolete-extension migration.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
 
   - id: MR-0004ADR-0001REQ-0005IMPL-0004
-    title: Target Project VS Code Markdown assistance adapter
+    title: Target Project assistance adapter compatibility module
     artifact_type: source_module
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
       - MR-0004ADR-0001REQ-0006
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
     implemented_path: tools/MR-0004/vscode-target-project-assistance/extension.cjs
-    reason: Map target workspace coordinates to engine-owned analysis, resolve absolute or workspace-relative engine roots and expose target-local diagnostics, completion, hover and non-destructive quick fixes.
+    reason: Preserve the legacy repository module path while re-exporting the single unified adapter; the directory has no package manifest and cannot produce a competing extension.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
 
   - id: MR-0004ADR-0001REQ-0005IMPL-0005
@@ -1166,8 +1184,10 @@ artifacts:
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0005
       - MR-0004ADR-0001REQ-0006
+      - MR-0002ADR-0006REQ-0005
+      - MR-0002ADR-0006REQ-0005GOV-0001
     implemented_path: tools/MR-0004/test/target-project-vscode-workspace.test.mjs
-    reason: Verify external and repository-contained workspace materialization, portable engine references, target-local schema ownership, task routing, deterministic projection, BAE isolation, empty inventory behavior, live Markdown assistance and VSIX packaging.
+    reason: Verify external and repository-contained materialization, portable engine references, target-local semantics, unified extension recommendations, workspace routing, BAE isolation and single-VSIX packaging.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
 
   - id: MR-0004ADR-0001REQ-0006IMPL-0001

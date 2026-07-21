@@ -1,8 +1,8 @@
 {
   "name": "threatforge-governed-markdown-assistance",
-  "displayName": "ThreatForge Governed Markdown Assistance",
-  "description": "Live diagnostics, completion, hover and quick fixes for governed ThreatForge Markdown bodies.",
-  "version": "0.2.1",
+  "displayName": "ThreatForge Unified Markdown Assistance",
+  "description": "Unified diagnostics, completion, hover and quick fixes for governed ThreatForge engine and Target Project Markdown bodies.",
+  "version": "0.3.0",
   "publisher": "threatforge",
   "license": "UNLICENSED",
   "engines": {
@@ -18,5 +18,17 @@
   "main": "./extension.cjs",
   "extensionKind": [
     "workspace"
-  ]
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "ThreatForge",
+      "properties": {
+        "threatforge.engineRoot": {
+          "type": "string",
+          "scope": "resource",
+          "description": "Absolute path or workspace-relative path of the ThreatForge engine used by an explicitly declared Target Project workspace. User-level values do not classify a workspace as a Target Project."
+        }
+      }
+    }
+  }
 }

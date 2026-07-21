@@ -3,8 +3,12 @@
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0005
  * @implementsRequirement MR-0004ADR-0001REQ-0006
+ * @implementsRequirement MR-0002ADR-0006REQ-0005
+ * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0004
+ * @macroRequirement MR-0002
  * @implementationStatus implemented
  */
 {
@@ -81,11 +85,11 @@
       }
     },
     {
-      "label": "ThreatForge: install target Markdown assistance",
+      "label": "ThreatForge: install unified Markdown assistance",
       "type": "process",
       "command": "node",
       "args": [
-        "../../../tools/MR-0004/install-vscode-target-project-assistance.mjs",
+        "../../../tools/MR-0002/install-vscode-governed-markdown-assistance.mjs",
         "--install"
       ],
       "options": {

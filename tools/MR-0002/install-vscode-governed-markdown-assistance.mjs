@@ -7,17 +7,23 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 /**
- * @file Local VSIX packager and installer for the thin VS Code adapter.
+ * @file Local VSIX packager, migrator and installer for unified assistance.
  *
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0005
+ * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
+ * @implementsRequirement MR-0004ADR-0001REQ-0005
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * Packages the governed Markdown adapter source into a deterministic temporary
- * VSIX and optionally asks the official VS Code CLI to install it. The tool does
- * not modify canonical repository files.
+ * Packages one deterministic VSIX for engine and Target Project workspaces.
+ * Installation removes the obsolete target-only extension when present, then
+ * force-installs the unified extension id. Canonical repository files are not
+ * modified.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -25,6 +31,8 @@ const scriptDir = path.dirname(scriptPath);
 const defaultRootDir = path.resolve(scriptDir, "..", "..");
 const extensionProjectDirectory =
   "tools/MR-0002/vscode-governed-markdown-assistance";
+export const obsoleteTargetAssistanceExtensionId =
+  "threatforge.threatforge-target-project-assistance";
 
 function xmlEscape(value) {
   return String(value)
@@ -69,12 +77,7 @@ function dosDateTime() {
   };
 }
 
-/**
- * Creates a deterministic ZIP-compatible VSIX from an entry map.
- *
- * @param {Map<string, Buffer>} entries - Archive entries.
- * @param {string} outputPath - Destination VSIX path.
- */
+/** Creates a deterministic ZIP-compatible VSIX from an entry map. */
 export function writeVsix(entries, outputPath) {
   const localParts = [];
   const centralParts = [];
@@ -155,12 +158,7 @@ function loadExtensionPackage(rootDir) {
   return { extensionDir, packageValue };
 }
 
-/**
- * Packages the current thin adapter into a deterministic VSIX.
- *
- * @param {{rootDir: string, outputPath: string}} input - Packaging input.
- * @returns {{outputPath: string, extensionId: string, version: string, entries: string[]}}
- */
+/** Packages the unified thin adapter into a deterministic VSIX. */
 export function packageGovernedMarkdownExtension({ rootDir, outputPath }) {
   const { extensionDir, packageValue } = loadExtensionPackage(rootDir);
   const sourceFiles = ["package.json", "extension.cjs", "README.md"];
@@ -185,39 +183,77 @@ export function packageGovernedMarkdownExtension({ rootDir, outputPath }) {
   };
 }
 
-/**
- * Builds a platform-safe VS Code CLI invocation.
- *
- * @param {{outputPath: string, platform?: string, env?: NodeJS.ProcessEnv}} input - Invocation context.
- * @returns {{command: string, args: string[]}} Executable and arguments.
- */
+function buildVsCodeCliCommand({ args, platform = process.platform, env = process.env }) {
+  const configured = String(env.VSCODE_CLI ?? "").trim();
+  const executable = configured || (platform === "win32" ? "code.cmd" : "code");
+  if (platform === "win32" && /\.(?:cmd|bat)$/iu.test(executable)) {
+    const command = String(env.ComSpec ?? env.COMSPEC ?? "cmd.exe").trim() || "cmd.exe";
+    return { command, args: ["/d", "/c", "call", executable, ...args] };
+  }
+  return { command: executable, args };
+}
+
+/** Builds a platform-safe VS Code install invocation. */
 export function buildVsCodeCliInvocation({
   outputPath,
   platform = process.platform,
   env = process.env,
 }) {
-  const configured = String(env.VSCODE_CLI ?? "").trim();
-  const executable = configured || (platform === "win32" ? "code.cmd" : "code");
-  const installArgs = ["--install-extension", outputPath, "--force"];
-  if (platform === "win32" && /\.(?:cmd|bat)$/iu.test(executable)) {
-    const command = String(env.ComSpec ?? env.COMSPEC ?? "cmd.exe").trim() || "cmd.exe";
-    return {
-      command,
-      args: [
-        "/d",
-        "/c",
-        "call",
-        executable,
-        "--install-extension",
-        outputPath,
-        "--force",
-      ],
-    };
-  }
-  return { command: executable, args: installArgs };
+  return buildVsCodeCliCommand({
+    args: ["--install-extension", outputPath, "--force"],
+    platform,
+    env,
+  });
 }
 
-function runInstall(rootDir) {
+/** Builds a platform-safe VS Code uninstall invocation. */
+export function buildVsCodeCliUninstallInvocation({
+  extensionId,
+  platform = process.platform,
+  env = process.env,
+}) {
+  return buildVsCodeCliCommand({
+    args: ["--uninstall-extension", extensionId],
+    platform,
+    env,
+  });
+}
+
+/** Builds a platform-safe VS Code extension-list invocation. */
+export function buildVsCodeCliListInvocation({
+  platform = process.platform,
+  env = process.env,
+} = {}) {
+  return buildVsCodeCliCommand({ args: ["--list-extensions"], platform, env });
+}
+
+function runCli(invocation, rootDir, label) {
+  const result = spawnSync(invocation.command, invocation.args, {
+    cwd: rootDir,
+    encoding: "utf8",
+    windowsHide: true,
+    shell: false,
+  });
+  if (result.error || result.status !== 0) {
+    const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`.trim();
+    throw new Error(
+      `${label} failed${output ? `: ${output}` : `: ${result.error?.message ?? "unknown error"}`}`,
+    );
+  }
+  return String(result.stdout ?? "").trim();
+}
+
+export function parseInstalledExtensionIds(output) {
+  return new Set(
+    String(output ?? "")
+      .split(/\r?\n/u)
+      .map((value) => value.trim().toLowerCase())
+      .filter(Boolean),
+  );
+}
+
+/** Packages, migrates and installs the unified extension. */
+export function installGovernedMarkdownExtension(rootDir, options = {}) {
   const temporaryDirectory = fs.mkdtempSync(
     path.join(os.tmpdir(), "threatforge-governed-markdown-"),
   );
@@ -227,33 +263,37 @@ function runInstall(rootDir) {
   );
   try {
     const packaged = packageGovernedMarkdownExtension({ rootDir, outputPath });
-    const invocation = buildVsCodeCliInvocation({ outputPath });
-    const result = spawnSync(
-      invocation.command,
-      invocation.args,
-      {
-        cwd: rootDir,
-        encoding: "utf8",
-        windowsHide: true,
-        shell: false,
-      },
+    const listOutput = runCli(
+      buildVsCodeCliListInvocation(options),
+      rootDir,
+      "VS Code extension discovery",
     );
-    if (result.error || result.status !== 0) {
-      const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`.trim();
-      throw new Error(
-        `VS Code CLI installation failed${output ? `: ${output}` : `: ${result.error?.message ?? "unknown error"}`}`,
+    const installed = parseInstalledExtensionIds(listOutput);
+    const removedExtensionIds = [];
+    if (installed.has(obsoleteTargetAssistanceExtensionId.toLowerCase())) {
+      runCli(
+        buildVsCodeCliUninstallInvocation({
+          extensionId: obsoleteTargetAssistanceExtensionId,
+          ...options,
+        }),
+        rootDir,
+        "Obsolete Target Project extension removal",
       );
+      removedExtensionIds.push(obsoleteTargetAssistanceExtensionId);
     }
-    return { ...packaged, output: String(result.stdout ?? "").trim() };
+    const output = runCli(
+      buildVsCodeCliInvocation({ outputPath, ...options }),
+      rootDir,
+      "VS Code CLI installation",
+    );
+    return { ...packaged, output, removedExtensionIds };
   } finally {
     fs.rmSync(temporaryDirectory, { recursive: true, force: true });
   }
 }
 
 function parseArgs(args) {
-  if (args.length === 1 && args[0] === "--install") {
-    return { mode: "install" };
-  }
+  if (args.length === 1 && args[0] === "--install") return { mode: "install" };
   if (args.length === 2 && args[0] === "--package") {
     return { mode: "package", outputPath: path.resolve(args[1]) };
   }
@@ -268,16 +308,21 @@ function main() {
     : defaultRootDir;
   const options = parseArgs(process.argv.slice(2));
   const result = options.mode === "install"
-    ? runInstall(rootDir)
+    ? installGovernedMarkdownExtension(rootDir)
     : packageGovernedMarkdownExtension({
         rootDir,
         outputPath: options.outputPath,
       });
-  console.log("ThreatForge governed Markdown assistance extension prepared.");
+  console.log("ThreatForge unified Markdown assistance extension prepared.");
+  console.log("Implemented requirement: MR-0002ADR-0006REQ-0005");
+  console.log("Implemented requirement: MR-0002ADR-0006REQ-0005GOV-0001");
   console.log(`Extension: ${result.extensionId}`);
   console.log(`Version: ${result.version}`);
   if (options.mode === "package") console.log(`VSIX: ${result.outputPath}`);
   if (options.mode === "install") {
+    for (const id of result.removedExtensionIds) {
+      console.log(`Removed obsolete extension: ${id}`);
+    }
     console.log("Installation completed. Reload the VS Code window to activate the extension.");
     if (result.output) console.log(result.output);
   }
@@ -291,7 +336,7 @@ if (import.meta.url === directExecutionUrl) {
     main();
   } catch (error) {
     console.error(
-      `ThreatForge governed Markdown assistance installation failed: ${error.message}`,
+      `ThreatForge unified Markdown assistance installation failed: ${error.message}`,
     );
     process.exitCode = 1;
   }

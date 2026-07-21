@@ -1,7 +1,18 @@
-# ThreatForge Target Project Assistance
+# Retired Target Project extension package
 
-This thin VS Code adapter analyzes governed Markdown bodies in a Target Project.
+The former `threatforge.threatforge-target-project-assistance` VSIX has been
+retired. Target Project support is now part of the single extension:
 
-The workspace setting `threatforge.engineRoot` identifies the ThreatForge engine through either an absolute path or a path relative to the opened Target Project workspace. Canonical profiles, controlled values, reference grammar and analysis logic remain engine-owned; governed documents and Base Analysis Elements are resolved only from the opened Target Project.
+```text
+threatforge.threatforge-governed-markdown-assistance
+```
 
-The extension is installed through the generated task `ThreatForge: install target Markdown assistance` and becomes active after reloading the VS Code window.
+`extension.cjs` remains only as a repository compatibility module. This
+directory intentionally contains no `package.json`, so it cannot be packaged or
+installed as a second VS Code extension.
+
+Use the unified installer:
+
+```powershell
+node .\tools\MR-0002\install-vscode-governed-markdown-assistance.mjs --install
+```

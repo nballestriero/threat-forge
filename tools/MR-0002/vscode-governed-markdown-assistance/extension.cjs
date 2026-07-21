@@ -1,18 +1,26 @@
+const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 
 /**
- * @file Thin VS Code adapter for governed Markdown assistance.
+ * @file Unified thin VS Code adapter for governed Markdown assistance.
  *
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0005
+ * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
+ * @implementsRequirement MR-0004ADR-0001REQ-0005
+ * @implementsRequirement MR-0004ADR-0001REQ-0006
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * The adapter maps editor coordinates and presentation objects only. Canonical
- * profiles, section definitions, controlled values, diagnostics and fixes are
- * supplied by the shared assistance core in the active workspace.
+ * The adapter registers one provider set and selects one composition per
+ * workspace folder. Engine workspaces delegate to the shared assistance core;
+ * declared Target Projects delegate to the target-local composition root.
+ * Canonical rules remain outside the extension.
  */
 
 const coreProjectPath = path.join(
@@ -20,6 +28,12 @@ const coreProjectPath = path.join(
   "MR-0002",
   "lib",
   "governed-markdown-assistance.mjs",
+);
+const targetServiceProjectPath = path.join(
+  "tools",
+  "MR-0004",
+  "lib",
+  "target-project-markdown-assistance.mjs",
 );
 const bodyProjectPathPattern =
   /^docs\/reference\/project-model\/body\/.+_body\.md$/u;
@@ -32,33 +46,103 @@ function normalizeProjectPath(value) {
   return String(value ?? "").replaceAll("\\", "/").replace(/^\.\//u, "");
 }
 
+function isRegularFile(filePath) {
+  try {
+    return fs.statSync(filePath).isFile();
+  } catch {
+    return false;
+  }
+}
+
+function explicitWorkspaceEngineRoot(vscode, folder) {
+  const configuration = vscode.workspace.getConfiguration("threatforge", folder.uri);
+  const inspected = typeof configuration.inspect === "function"
+    ? configuration.inspect("engineRoot")
+    : null;
+  if (inspected && typeof inspected === "object") {
+    if (inspected.workspaceFolderValue !== undefined) {
+      return String(inspected.workspaceFolderValue ?? "").trim();
+    }
+    const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
+    if (inspected.workspaceValue !== undefined && workspaceFolders.length <= 1) {
+      return String(inspected.workspaceValue ?? "").trim();
+    }
+    return "";
+  }
+  return String(configuration.get?.("engineRoot") ?? "").trim();
+}
+
+function isEngineWorkspace(rootDir) {
+  return isRegularFile(path.join(rootDir, coreProjectPath)) &&
+    isRegularFile(path.join(rootDir, targetServiceProjectPath));
+}
+
+function classifyWorkspaceFolder(vscode, folder) {
+  const targetEngineRoot = explicitWorkspaceEngineRoot(vscode, folder);
+  if (targetEngineRoot) {
+    const engineRoot =
+      path.isAbsolute(targetEngineRoot) || path.win32.isAbsolute(targetEngineRoot)
+        ? path.resolve(targetEngineRoot)
+        : path.resolve(folder.uri.fsPath, targetEngineRoot);
+    return {
+      mode: "target",
+      engineRoot,
+      targetRoot: folder.uri.fsPath,
+    };
+  }
+  if (isEngineWorkspace(folder.uri.fsPath)) {
+    return { mode: "engine", rootDir: folder.uri.fsPath };
+  }
+  return { mode: "unsupported" };
+}
+
 function workspaceContext(vscode, document) {
   const folder = vscode.workspace.getWorkspaceFolder(document.uri);
   if (!folder) return null;
-  const targetEngineRoot = String(
-    vscode.workspace.getConfiguration?.("threatforge", folder.uri)
-      ?.get?.("engineRoot") ?? "",
-  ).trim();
-  if (targetEngineRoot) return null;
   const projectPath = normalizeProjectPath(
     path.relative(folder.uri.fsPath, document.uri.fsPath),
   );
   if (!bodyProjectPathPattern.test(projectPath)) return null;
-  return { rootDir: folder.uri.fsPath, projectPath };
+  const classification = classifyWorkspaceFolder(vscode, folder);
+  if (classification.mode === "unsupported") return null;
+  return { ...classification, projectPath };
 }
 
-async function loadService(rootDir) {
-  if (!serviceCache.has(rootDir)) {
+async function loadEngineService(rootDir) {
+  const key = `engine\u0000${path.resolve(rootDir)}`;
+  if (!serviceCache.has(key)) {
     const moduleUrl = pathToFileURL(path.join(rootDir, coreProjectPath)).href;
-    const modulePromise = import(moduleUrl).then((module) =>
+    const promise = import(moduleUrl).then((module) =>
       module.createGovernedMarkdownAssistanceService({ rootDir }),
     );
-    serviceCache.set(rootDir, modulePromise);
+    serviceCache.set(key, promise);
   }
-  return serviceCache.get(rootDir);
+  return serviceCache.get(key);
+}
+
+async function loadTargetService(engineRoot, targetRoot) {
+  const key = `target\u0000${path.resolve(engineRoot)}\u0000${path.resolve(targetRoot)}`;
+  if (!serviceCache.has(key)) {
+    const moduleUrl = pathToFileURL(
+      path.join(engineRoot, targetServiceProjectPath),
+    ).href;
+    const promise = import(moduleUrl).then((module) =>
+      module.createTargetProjectMarkdownAssistanceService({
+        engineRoot,
+        targetRoot,
+      }),
+    );
+    serviceCache.set(key, promise);
+  }
+  return serviceCache.get(key);
 }
 
 function invalidateServices() {
+  for (const promise of serviceCache.values()) {
+    Promise.resolve(promise)
+      .then((service) => service?.dispose?.())
+      .catch(() => {});
+  }
   serviceCache.clear();
 }
 
@@ -77,8 +161,21 @@ function createAnalysisRequest(vscode, document, position) {
 async function analyze(vscode, document, position) {
   const request = createAnalysisRequest(vscode, document, position);
   if (!request) return null;
-  const service = await loadService(request.rootDir);
-  return service.analyze(request);
+  if (request.mode === "target") {
+    const service = await loadTargetService(request.engineRoot, request.targetRoot);
+    return service.analyze({
+      projectPath: request.projectPath,
+      text: request.text,
+      position: request.position,
+    });
+  }
+  const service = await loadEngineService(request.rootDir);
+  return service.analyze({
+    rootDir: request.rootDir,
+    projectPath: request.projectPath,
+    text: request.text,
+    position: request.position,
+  });
 }
 
 function toRange(vscode, range) {
@@ -138,9 +235,8 @@ function quickFixIdsForContext(vscode, result, contextDiagnostics) {
   const ids = new Set();
   for (const editorDiagnostic of contextDiagnostics) {
     for (const coreDiagnostic of result?.diagnostics ?? []) {
-      const code = String(editorDiagnostic.code ?? "");
       if (
-        code === coreDiagnostic.rule_id &&
+        String(editorDiagnostic.code ?? "") === coreDiagnostic.rule_id &&
         editorDiagnostic.message === coreDiagnostic.message &&
         rangesEqual(editorDiagnostic.range, toRange(vscode, coreDiagnostic.range))
       ) {
@@ -185,11 +281,12 @@ async function publishDiagnostics(vscode, document) {
     diagnosticsCollection.delete(document.uri);
     return;
   }
-  const generation = (analysisGeneration.get(document.uri.toString()) ?? 0) + 1;
-  analysisGeneration.set(document.uri.toString(), generation);
+  const key = document.uri.toString();
+  const generation = (analysisGeneration.get(key) ?? 0) + 1;
+  analysisGeneration.set(key, generation);
   try {
     const result = await analyze(vscode, document);
-    if (analysisGeneration.get(document.uri.toString()) !== generation) return;
+    if (analysisGeneration.get(key) !== generation) return;
     diagnosticsCollection.set(document.uri, mapDiagnostics(vscode, result));
   } catch (error) {
     const diagnostic = new vscode.Diagnostic(
@@ -199,6 +296,19 @@ async function publishDiagnostics(vscode, document) {
     );
     diagnostic.source = "ThreatForge";
     diagnosticsCollection.set(document.uri, [diagnostic]);
+  }
+}
+
+function documentProjectPath(vscode, document) {
+  const folder = vscode.workspace.getWorkspaceFolder(document.uri);
+  return folder
+    ? normalizeProjectPath(path.relative(folder.uri.fsPath, document.uri.fsPath))
+    : "";
+}
+
+function republishOpenDocuments(vscode) {
+  for (const document of vscode.workspace.textDocuments) {
+    publishDiagnostics(vscode, document);
   }
 }
 
@@ -216,7 +326,7 @@ async function activate(context) {
         const result = await analyze(vscode, document, position);
         return result?.supported ? mapCompletionItems(vscode, result) : [];
       },
-    }, "#", "-", ":"),
+    }, "#", "-", ":", "["),
     vscode.languages.registerHoverProvider(selector, {
       async provideHover(document, position) {
         const result = await analyze(vscode, document, position);
@@ -251,20 +361,22 @@ async function activate(context) {
       publishDiagnostics(vscode, event.document),
     ),
     vscode.workspace.onDidSaveTextDocument((document) => {
-      const relative = normalizeProjectPath(
-        vscode.workspace.asRelativePath(document.uri, false),
-      );
+      const relative = documentProjectPath(vscode, document);
       if (
         relative.startsWith("docs/reference/project-model/registers/") ||
-        relative.startsWith("docs/reference/project-model/contracts/")
+        relative.startsWith("docs/reference/project-model/contracts/") ||
+        relative.startsWith(".vscode/")
       ) {
         invalidateServices();
-        for (const candidate of vscode.workspace.textDocuments) {
-          publishDiagnostics(vscode, candidate);
-        }
+        republishOpenDocuments(vscode);
       } else {
         publishDiagnostics(vscode, document);
       }
+    }),
+    vscode.workspace.onDidChangeConfiguration((event) => {
+      if (!event.affectsConfiguration("threatforge.engineRoot")) return;
+      invalidateServices();
+      republishOpenDocuments(vscode);
     }),
     vscode.workspace.onDidCloseTextDocument((document) => {
       analysisGeneration.delete(document.uri.toString());
@@ -272,21 +384,22 @@ async function activate(context) {
     }),
   );
 
-  for (const document of vscode.workspace.textDocuments) {
-    publishDiagnostics(vscode, document);
-  }
+  republishOpenDocuments(vscode);
 }
 
 function deactivate() {
-  serviceCache.clear();
+  invalidateServices();
   analysisGeneration.clear();
 }
 
 module.exports = {
   activate,
   deactivate,
+  classifyWorkspaceFolder,
   createAnalysisRequest,
+  explicitWorkspaceEngineRoot,
   mapDiagnostics,
   mapCompletionItems,
   mapCodeActions,
+  workspaceContext,
 };

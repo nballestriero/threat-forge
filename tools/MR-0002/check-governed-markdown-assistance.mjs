@@ -21,6 +21,8 @@ import {
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0004
  * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
+ * @implementsRequirement MR-0002ADR-0006REQ-0005
+ * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
  * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0002
  * @implementationStatus implemented
@@ -37,6 +39,10 @@ const rootDir = process.env.TF_GOVERNED_MARKDOWN_ASSISTANCE_ROOT
   : path.resolve(scriptDir, "..", "..");
 const extensionProjectPath =
   "tools/MR-0002/vscode-governed-markdown-assistance/extension.cjs";
+const extensionPackageProjectPath =
+  "tools/MR-0002/vscode-governed-markdown-assistance/package.json";
+const obsoleteTargetPackageProjectPath =
+  "tools/MR-0004/vscode-target-project-assistance/package.json";
 const testProjectPaths = [
   "tools/MR-0002/tests/governed-markdown-assistance.test.mjs",
   "tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs",
@@ -160,6 +166,23 @@ function verifyThinAdapter() {
   }
 }
 
+function verifyUnifiedPackage() {
+  const packageValue = JSON.parse(
+    fs.readFileSync(resolveProjectPath(extensionPackageProjectPath), "utf8"),
+  );
+  if (packageValue.version !== "0.3.0") {
+    throw new Error(`Unexpected unified extension version: ${packageValue.version}`);
+  }
+  const engineRootProperty =
+    packageValue.contributes?.configuration?.properties?.["threatforge.engineRoot"];
+  if (engineRootProperty?.scope !== "resource") {
+    throw new Error("Unified extension must contribute resource-scoped threatforge.engineRoot.");
+  }
+  if (fs.existsSync(resolveProjectPath(obsoleteTargetPackageProjectPath))) {
+    throw new Error("Obsolete Target Project extension package.json must be removed.");
+  }
+}
+
 function verifyVsix() {
   const temporaryDirectory = fs.mkdtempSync(
     path.join(os.tmpdir(), "tf-governed-markdown-check-"),
@@ -207,6 +230,7 @@ function verifyVsix() {
 try {
   const modelsChecked = verifyModels();
   verifyThinAdapter();
+  verifyUnifiedPackage();
   const vsixEntriesChecked = verifyVsix();
   const testsChecked = runTests();
   console.log("Governed Markdown assistance check passed.");
@@ -216,6 +240,8 @@ try {
   console.log("Implemented requirement: MR-0002ADR-0006REQ-0002GOV-0001");
   console.log("Implemented requirement: MR-0002ADR-0006REQ-0004");
   console.log("Implemented requirement: MR-0002ADR-0006REQ-0004GOV-0001");
+  console.log("Implemented requirement: MR-0002ADR-0006REQ-0005");
+  console.log("Implemented requirement: MR-0002ADR-0006REQ-0005GOV-0001");
   console.log(`Models checked: ${modelsChecked}`);
   console.log(`Assistance tests checked: ${testsChecked}`);
   console.log(`VSIX entries checked: ${vsixEntriesChecked}`);

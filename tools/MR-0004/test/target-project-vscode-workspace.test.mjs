@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 
 import { createTargetProject } from "../lib/target-project-generator.mjs";
 import { createTargetProjectMarkdownAssistanceService } from "../lib/target-project-markdown-assistance.mjs";
-import { packageTargetProjectAssistanceExtension } from "../install-vscode-target-project-assistance.mjs";
+import { packageGovernedMarkdownExtension } from "../../MR-0002/install-vscode-governed-markdown-assistance.mjs";
 import {
   materializeTargetProjectVsCodeWorkspace,
   targetProjectWorkspaceTaskLabels,
@@ -20,8 +20,12 @@ import {
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0005
  * @implementsRequirement MR-0004ADR-0001REQ-0006
+ * @implementsRequirement MR-0002ADR-0006REQ-0005
+ * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0002/ADR-0006
  * @macroRequirement MR-0004
+ * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
  * Verifies target-local workspace materialization, schema ownership, task
@@ -34,13 +38,6 @@ const testPath = fileURLToPath(import.meta.url);
 const engineRoot = path.resolve(path.dirname(testPath), "..", "..", "..");
 const require = createRequire(import.meta.url);
 const extensionAdapterPath = path.join(
-  engineRoot,
-  "tools",
-  "MR-0004",
-  "vscode-target-project-assistance",
-  "extension.cjs",
-);
-const legacyExtensionAdapterPath = path.join(
   engineRoot,
   "tools",
   "MR-0002",
@@ -170,6 +167,19 @@ test("materializes a target-local workspace whose schema and tasks use target ow
     assert.deepEqual(
       settings["yaml.schemas"]["./.vscode/schemas/governed-document-authoring.schema.json"],
       ["**/*.governed-document-authoring.yml"],
+    );
+
+    const extensions = readJson(workspace.targetRoot, ".vscode/extensions.json");
+    assert.ok(
+      extensions.recommendations.includes(
+        "threatforge.threatforge-governed-markdown-assistance",
+      ),
+    );
+    assert.equal(
+      extensions.recommendations.includes(
+        "threatforge.threatforge-target-project-assistance",
+      ),
+      false,
     );
 
     const tasks = readJson(workspace.targetRoot, ".vscode/tasks.json");
@@ -376,7 +386,7 @@ test("empty valid target BAE inventory produces no completions and no service fa
   }
 });
 
-test("VS Code adapter resolves the configured engine separately from the workspace", () => {
+test("unified VS Code adapter resolves an explicit absolute target engine", () => {
   const adapter = require(extensionAdapterPath);
   const targetRoot = path.join(os.tmpdir(), "target-extension-context");
   const documentPath = path.join(
@@ -396,11 +406,17 @@ test("VS Code adapter resolves the configured engine separately from the workspa
       getWorkspaceFolder() { return { uri: folderUri }; },
       getConfiguration(section) {
         assert.equal(section, "threatforge");
-        return { get(key) { return key === "engineRoot" ? engineRoot : undefined; } };
+        return {
+          inspect(key) {
+            assert.equal(key, "engineRoot");
+            return { workspaceValue: engineRoot };
+          },
+        };
       },
     },
   };
   const context = adapter.workspaceContext(vscode, document);
+  assert.equal(context.mode, "target");
   assert.equal(context.engineRoot, engineRoot);
   assert.equal(context.targetRoot, targetRoot);
   assert.equal(
@@ -409,7 +425,7 @@ test("VS Code adapter resolves the configured engine separately from the workspa
   );
 });
 
-test("VS Code adapter resolves a workspace-relative engine root", () => {
+test("unified VS Code adapter resolves a workspace-relative target engine", () => {
   const adapter = require(extensionAdapterPath);
   const targetRoot = path.join(engineRoot, "examples", "case-studies", "portable-target");
   const documentPath = path.join(
@@ -430,63 +446,95 @@ test("VS Code adapter resolves a workspace-relative engine root", () => {
       getWorkspaceFolder() { return { uri: folderUri }; },
       getConfiguration(section) {
         assert.equal(section, "threatforge");
-        return { get(key) { return key === "engineRoot" ? engineReference : undefined; } };
-      },
-    },
-  };
-  const context = adapter.workspaceContext(vscode, document);
-  assert.equal(context.engineRoot, engineRoot);
-  assert.equal(context.targetRoot, targetRoot);
-});
-
-test("legacy Markdown adapter yields Target Project workspaces to the target adapter", () => {
-  const adapter = require(legacyExtensionAdapterPath);
-  const targetRoot = path.join(os.tmpdir(), "target-legacy-adapter-context");
-  const document = {
-    uri: {
-      fsPath: path.join(
-        targetRoot,
-        "docs",
-        "reference",
-        "project-model",
-        "body",
-        "requirements",
-        "MR-0001",
-        "example_body.md",
-      ),
-    },
-    getText() { return "unsaved target text"; },
-  };
-  const folderUri = { fsPath: targetRoot };
-  const vscode = {
-    workspace: {
-      getWorkspaceFolder() { return { uri: folderUri }; },
-      getConfiguration(section) {
-        assert.equal(section, "threatforge");
         return {
-          get(key) { return key === "engineRoot" ? engineRoot : undefined; },
+          inspect(key) {
+            assert.equal(key, "engineRoot");
+            return { workspaceFolderValue: engineReference };
+          },
         };
       },
     },
   };
-  assert.equal(adapter.createAnalysisRequest(vscode, document, null), null);
+  const context = adapter.workspaceContext(vscode, document);
+  assert.equal(context.mode, "target");
+  assert.equal(context.engineRoot, engineRoot);
+  assert.equal(context.targetRoot, targetRoot);
 });
 
-test("packages the thin target assistance adapter without canonical rule sources", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "threatforge-target-vsix-test-"));
+test("unified VS Code adapter ignores a globally inherited target engine", () => {
+  const adapter = require(extensionAdapterPath);
+  const targetRoot = path.join(os.tmpdir(), "target-global-setting-context");
+  const document = {
+    uri: {
+      fsPath: path.join(
+        targetRoot,
+        "docs/reference/project-model/body/requirements/MR-0001/example_body.md",
+      ),
+    },
+  };
+  const vscode = {
+    workspace: {
+      getWorkspaceFolder() { return { uri: { fsPath: targetRoot } }; },
+      getConfiguration() {
+        return {
+          inspect() {
+            return { globalValue: engineRoot };
+          },
+        };
+      },
+    },
+  };
+  assert.equal(adapter.workspaceContext(vscode, document), null);
+});
+
+test("unified VS Code adapter classifies the ThreatForge repository as engine", () => {
+  const adapter = require(extensionAdapterPath);
+  const document = {
+    uri: {
+      fsPath: path.join(
+        engineRoot,
+        "docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001_body.md",
+      ),
+    },
+  };
+  const vscode = {
+    workspace: {
+      getWorkspaceFolder() { return { uri: { fsPath: engineRoot } }; },
+      getConfiguration() {
+        return { inspect() { return {}; } };
+      },
+    },
+  };
+  const context = adapter.workspaceContext(vscode, document);
+  assert.equal(context.mode, "engine");
+  assert.equal(context.rootDir, engineRoot);
+});
+
+test("packages only the unified assistance adapter", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "threatforge-unified-vsix-test-"));
   try {
-    const outputPath = path.join(root, "target-project-assistance.vsix");
-    const result = packageTargetProjectAssistanceExtension({ engineRoot, outputPath });
-    assert.equal(result.extensionId, "threatforge.threatforge-target-project-assistance");
+    const outputPath = path.join(root, "unified-assistance.vsix");
+    const result = packageGovernedMarkdownExtension({
+      rootDir: engineRoot,
+      outputPath,
+    });
+    assert.equal(
+      result.extensionId,
+      "threatforge.threatforge-governed-markdown-assistance",
+    );
+    assert.equal(result.version, "0.3.0");
     assert.ok(fs.existsSync(outputPath));
     assert.ok(fs.statSync(outputPath).size > 0);
-    assert.deepEqual(result.entries, [
-      "[Content_Types].xml",
-      "extension.vsixmanifest",
-      "extension/README.md",
-      "extension/extension.cjs",
-      "extension/package.json",
-    ]);
+    assert.equal(
+      fs.existsSync(path.join(
+        engineRoot,
+        "tools",
+        "MR-0004",
+        "vscode-target-project-assistance",
+        "package.json",
+      )),
+      false,
+    );
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
