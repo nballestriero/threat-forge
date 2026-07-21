@@ -1683,14 +1683,16 @@
                   "MR-0004ADR-0001REQ-0002",
                   "MR-0004ADR-0001REQ-0003",
                   "MR-0004ADR-0001REQ-0004",
-                  "MR-0004ADR-0001REQ-0005"
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
                 ],
                 "markdownEnumDescriptions": [
                   "Creazione del progetto target in una destinazione esplicita — status: draft",
                   "Struttura documentale analizzabile del progetto target — status: draft",
                   "Verifica documentale del progetto target tramite target_root — status: draft",
                   "Authoring governato del progetto target tramite target_root — status: draft",
-                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft"
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft",
+                  "Caso di studio didattico interno e riproducibile — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1712,6 +1714,10 @@
                   {
                     "value": "MR-0004ADR-0001REQ-0005",
                     "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft"
                   }
                 ]
               }
