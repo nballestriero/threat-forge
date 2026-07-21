@@ -1658,14 +1658,16 @@
                   "MR-0003ADR-0001REQ-0002",
                   "MR-0003ADR-0001REQ-0003",
                   "MR-0003ADR-0001REQ-0004",
-                  "MR-0003ADR-0001REQ-0005"
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
                 ],
                 "markdownEnumDescriptions": [
                   "Canonical Base Analysis Element inventory — status: draft",
                   "Governed BAE origin and documentary provenance — status: draft",
                   "Canonical BAE relations and system topology — status: draft",
                   "BAE lifecycle change impact and analysis staleness — status: draft",
-                  "Canonical BAE registry and reference-source projection — status: draft"
+                  "Canonical BAE registry and reference-source projection — status: draft",
+                  "Deterministic Base Analysis DFD projection — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1687,6 +1689,10 @@
                   {
                     "value": "MR-0003ADR-0001REQ-0005",
                     "description": "Canonical BAE registry and reference-source projection — status: draft"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft"
                   }
                 ]
               }

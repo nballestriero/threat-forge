@@ -102,3 +102,18 @@ requirements:
     decision_id: ADR-0002
     parent_requirement_id: MR-0003ADR-0002REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0002REQ-0001GOV-0001_body.md
+  - id: MR-0003ADR-0001REQ-0006
+    title: "Deterministic Base Analysis DFD projection"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0006_body.md
+  - id: MR-0003ADR-0001REQ-0006GOV-0001
+    title: "Deterministic Base DFD projection validation"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0003
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0003ADR-0001REQ-0006
+    body_path: docs/reference/project-model/body/requirements/MR-0003/MR-0003ADR-0001REQ-0006GOV-0001_body.md
