@@ -27,8 +27,8 @@ relations and governed functional requirements. An analysis produces zero
 or more findings and documentation gaps. A common finding records its
 originating analysis, the affected Base Analysis Elements or relations, the
 affected functional requirements, a concrete threat scenario, the expected
-consequences, supporting rationale or evidence and a simple human review
-state of proposed, accepted or rejected. An accepted finding retains at
+consequences, supporting rationale or evidence and a simple review state of
+proposed, accepted or rejected. An accepted finding retains at
 least one affected governed functional requirement so subsequent security
 requirement proposals remain attached to the function they protect.
 Method-specific categories, applicability rules, failure modes, attack
@@ -42,10 +42,14 @@ governed documentary and Base Analysis review paths rather than directly
 changing canonical records. Findings authored by different analyses remain
 independently traceable even when they share subjects or consequences;
 shared references alone do not establish duplication or equivalence.
-Human review controls finding acceptance and any later consolidation.
-Accepted findings provide traceable inputs for later security requirement
-proposals, without establishing a one-to-one relationship between findings
-and security requirements.
+The finding review state is explicitly recorded and is not inferred
+automatically from finding content, shared references or method-specific
+data. The initial model does not certify reviewer identity, human
+participation or the process that assigned the state. Any later
+consolidation remains a separate governed action. Accepted findings provide
+traceable inputs for later security requirement proposals, without
+establishing a one-to-one relationship between findings and security
+requirements.
 
 ## Consequences
 
@@ -56,7 +60,7 @@ and security requirements.
 - Benefit: The common process remains small enough for application and evaluation in thesis case studies.
 - Cost: Method-specific models need adapters or references to the common finding boundary.
 - Cost: Analysts need to identify affected functional requirements before final finding acceptance.
-- Cost: Human review remains necessary for acceptance and consolidation decisions.
+- Cost: The initial model records review state without providing reviewer identity approval workflow or state-transition audit.
 - Risk: A common finding envelope that is too restrictive could hide useful method-specific meaning.
 - Risk: Incomplete functional documentation could delay acceptance of otherwise relevant findings.
 - Risk: Similar findings could remain duplicated when reviewers do not perform consolidation.
@@ -64,6 +68,7 @@ and security requirements.
 - Constraint: Accepted findings preserve references to affected Base Analysis knowledge and governed functional requirements.
 - Constraint: Documentation gaps do not directly modify governed documentation or canonical BAE records.
 - Constraint: Shared subjects or consequences do not trigger automatic finding merge.
+- Constraint: Finding review state is explicitly recorded and is never inferred automatically.
 - Constraint: Security requirement derivation remains a governed step separate from finding production.
 
 ## Non-goals
@@ -71,6 +76,8 @@ and security requirements.
 - Define methodology or taxonomy versioning
 - Define quantitative risk scoring
 - Define a complete multi-role approval workflow
+- Certify reviewer identity or human participation
+- Define authorization or audit for finding state transitions
 - Automatically correlate merge or consolidate findings
 - Define the governed Security Requirement document model
 - Define STRIDE-specific categories or analysis rules
