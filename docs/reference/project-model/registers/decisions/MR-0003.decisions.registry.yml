@@ -27,3 +27,11 @@ decisions:
     date: 2026-07-20
     macro_requirement_id: MR-0003
     body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0003_body.md
+  - id: ADR-0004
+    title: "Semantic boundary between Base Analysis and methodological interpretations"
+    status: draft
+    decision_type: structural
+    author: "Nicolo Ballestriero"
+    date: 2026-07-23
+    macro_requirement_id: MR-0003
+    body_path: docs/reference/project-model/body/decisions/MR-0003/ADR-0004_body.md
