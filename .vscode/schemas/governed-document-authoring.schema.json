@@ -1386,7 +1386,25 @@
               "decision_id"
             ]
           },
-          "then": false
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0009REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Security Requirement logical model and governed representations — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0009REQ-0001",
+                    "description": "Canonical Security Requirement logical model and governed representations — status: draft"
+                  }
+                ]
+              }
+            }
+          }
         },
         {
           "if": {

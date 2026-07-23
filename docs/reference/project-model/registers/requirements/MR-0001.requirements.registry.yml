@@ -226,3 +226,10 @@ requirements:
     decision_id: ADR-0008
     parent_requirement_id: MR-0001ADR-0008REQ-0002
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0008REQ-0002GOV-0001_body.md
+  - id: MR-0001ADR-0009REQ-0001
+    title: "Canonical Security Requirement logical model and governed representations"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0009
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0009REQ-0001_body.md
