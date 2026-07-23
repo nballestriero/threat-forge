@@ -1280,3 +1280,53 @@ artifacts:
     implemented_path: tools/MR-0005/materialize-base-dfd-html.mjs
     reason: "Promoted MR-0005ADR-0001REQ-0003IMPL-0002 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0005/materialize-base-dfd-html.mjs
+
+  - id: MR-0005ADR-0001REQ-0004IMPL-0001
+    title: "Canonical methodology-specific analysis record model"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004
+    implemented_path: tools/MR-0005/lib/methodology-specific-analysis-record-model.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0004IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/lib/methodology-specific-analysis-record-model.mjs
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001IMPL-0001
+    title: "Deterministic methodology-specific analysis record validator"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    implemented_path: tools/MR-0005/check-methodology-specific-analysis-records.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0004GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/check-methodology-specific-analysis-records.mjs
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001IMPL-0002
+    title: "Methodology-specific analysis record editor schema materializer"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    implemented_path: tools/MR-0005/lib/materialize-methodology-specific-analysis-record-schema.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0004GOV-0001IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/lib/materialize-methodology-specific-analysis-record-schema.mjs
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001IMPL-0003
+    title: "Methodology-specific analysis record model and validation verification"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    implemented_path: tools/MR-0005/test/methodology-specific-analysis-record.test.mjs
+    reason: "Promoted MR-0005ADR-0001REQ-0004GOV-0001IMPL-0003 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0005/test/methodology-specific-analysis-record.test.mjs
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001IMPL-0004
+    title: "Methodology-specific analysis record negative fixtures"
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    implemented_path: tools/MR-0005/fixtures/methodology-specific-analysis-record/negative-fixtures.registry.json
+    reason: "Provide deterministic invalid records proving stable diagnostics for canonical fields, governed subjects, explicit derivation state, duplicate identities, source registries, reference grammar and YAML sources."
+    verification_command: node --test tools/MR-0005/test/methodology-specific-analysis-record.test.mjs

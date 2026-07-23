@@ -2,6 +2,9 @@
   "yaml.schemas": {
     "./.vscode/schemas/governed-document-authoring.schema.json": [
       "**/*.governed-document-authoring.yml"
+    ],
+    "./.vscode/schemas/methodology-specific-analysis-record.schema.json": [
+      "**/*.analysis-record.yml"
     ]
   }
 }

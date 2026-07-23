@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "methodology-specific-analysis-record-negative-fixtures",
+  "base_record": {
+    "schema_version": 1,
+    "id": "ANALYSIS-0001",
+    "method_id": "stride",
+    "contributor_id": "analyst-0001",
+    "scope": "Demonstration request flow",
+    "subjects": [
+      {
+        "kind": "base_analysis_element",
+        "id": "BAE-0005"
+      }
+    ],
+    "derivation_state": "accepted",
+    "method_payload": {
+      "category": "spoofing"
+    }
+  },
+  "cases": [
+    {
+      "id": "record-not-mapping",
+      "mode": "model",
+      "candidate": "not-a-record",
+      "expected_rule_ids": [
+        "analysis-record.model.record"
+      ]
+    },
+    {
+      "id": "unknown-root-member",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "review_state"
+          ],
+          "value": "accepted"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.unknown-member"
+      ]
+    },
+    {
+      "id": "invalid-schema-version",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "schema_version"
+          ],
+          "value": 2
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.schema-version"
+      ]
+    },
+    {
+      "id": "invalid-identifier",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "id"
+          ],
+          "value": "analysis-1"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.identifier"
+      ]
+    },
+    {
+      "id": "duplicate-identifier",
+      "mode": "repository-duplicate-records",
+      "expected_rule_ids": [
+        "analysis-record.model.duplicate-identifier"
+      ]
+    },
+    {
+      "id": "invalid-method-identifier",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "method_id"
+          ],
+          "value": "STRIDE"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.method-id"
+      ]
+    },
+    {
+      "id": "unresolved-method",
+      "mode": "model",
+      "resolver_options": {
+        "resolve_method": false
+      },
+      "expected_rule_ids": [
+        "analysis-record.model.unresolved-method"
+      ]
+    },
+    {
+      "id": "missing-contributor",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "contributor_id"
+          ],
+          "value": ""
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.contributor-id"
+      ]
+    },
+    {
+      "id": "missing-scope",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "scope"
+          ],
+          "value": ""
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.scope"
+      ]
+    },
+    {
+      "id": "empty-subjects",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "subjects"
+          ],
+          "value": []
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.subjects"
+      ]
+    },
+    {
+      "id": "subject-not-mapping",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "subjects"
+          ],
+          "value": [
+            null
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.subject-record"
+      ]
+    },
+    {
+      "id": "unknown-subject-member",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "subjects",
+            0,
+            "title"
+          ],
+          "value": "Demonstration request flow"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.unknown-subject-member"
+      ]
+    },
+    {
+      "id": "unsupported-subject-kind",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "subjects",
+            0,
+            "kind"
+          ],
+          "value": "asset"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.subject-kind"
+      ]
+    },
+    {
+      "id": "invalid-subject-identifier",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "subjects",
+            0,
+            "id"
+          ],
+          "value": "BAE-5"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.subject-id"
+      ]
+    },
+    {
+      "id": "duplicate-subject",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "subjects"
+          ],
+          "value": [
+            {
+              "kind": "base_analysis_element",
+              "id": "BAE-0005"
+            },
+            {
+              "kind": "base_analysis_element",
+              "id": "BAE-0005"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.duplicate-subject"
+      ]
+    },
+    {
+      "id": "unresolved-subject",
+      "mode": "model",
+      "resolver_options": {
+        "resolve_subject": false
+      },
+      "expected_rule_ids": [
+        "analysis-record.model.unresolved-subject"
+      ]
+    },
+    {
+      "id": "invalid-derivation-state",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "derivation_state"
+          ],
+          "value": "proposed"
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.derivation-state"
+      ]
+    },
+    {
+      "id": "invalid-method-payload",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "method_payload"
+          ],
+          "value": []
+        }
+      ],
+      "expected_rule_ids": [
+        "analysis-record.model.method-payload"
+      ]
+    },
+    {
+      "id": "model-profile-divergence",
+      "mode": "model-boundary",
+      "boundary_mutation": "profile-id-divergence",
+      "expected_rule_ids": [
+        "analysis-record.validation.model-profile"
+      ]
+    },
+    {
+      "id": "duplicate-diagnostic-rule-id",
+      "mode": "model-boundary",
+      "boundary_mutation": "duplicate-rule-id",
+      "expected_rule_ids": [
+        "analysis-record.validation.model-profile"
+      ]
+    },
+    {
+      "id": "missing-source-registries",
+      "mode": "repository-missing-sources",
+      "expected_rule_ids": [
+        "analysis-record.validation.source-registry"
+      ]
+    },
+    {
+      "id": "missing-reference-grammar",
+      "mode": "repository-missing-reference-grammar",
+      "expected_rule_ids": [
+        "analysis-record.validation.reference-grammar"
+      ]
+    },
+    {
+      "id": "missing-analysis-record-source",
+      "mode": "repository-missing-record",
+      "expected_rule_ids": [
+        "analysis-record.validation.yaml-source"
+      ]
+    }
+  ]
+}

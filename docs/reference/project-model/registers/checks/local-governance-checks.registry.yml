@@ -231,3 +231,36 @@ checks:
       - MR-0003ADR-0001REQ-0006
       - MR-0003ADR-0001REQ-0006GOV-0001
     description: Validate deterministic Base Analysis DFD projection, semantic contract conformance, canonical traceability, renderer neutrality, case-study expectations and positive and negative verification coverage.
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001CHECK-0001
+    title: Methodology-specific analysis record consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0005/check-methodology-specific-analysis-records.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    description: Validate canonical methodology-specific analysis records, stable identifiers, explicit derivation state, governed subject resolution, source registries, reference grammar and deterministic diagnostics.
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001CHECK-0002
+    title: Methodology-specific analysis record editor schema consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0005/lib/materialize-methodology-specific-analysis-record-schema.mjs
+      - --check
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    description: Verify that the deterministic editor JSON Schema remains a current mechanical projection of the canonical analysis record model and representation profile.
+
+  - id: MR-0005ADR-0001REQ-0004GOV-0001CHECK-0003
+    title: Methodology-specific analysis record verification coverage
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0005/test/methodology-specific-analysis-record.test.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0001REQ-0004GOV-0001
+    description: Verify canonical behavior, immutability, deterministic schema materialization, governed reference resolution and all registered positive and negative fixtures.

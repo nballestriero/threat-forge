@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://threatforge.local/schemas/methodology-specific-analysis-record.schema.json",
+  "title": "Methodology-specific analysis record",
+  "description": "Editor assistance derived from the canonical ThreatForge methodology-specific analysis record model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "method_id",
+    "contributor_id",
+    "scope",
+    "subjects",
+    "derivation_state"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Canonical methodology-specific analysis record schema version."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^ANALYSIS-\\d{4}$",
+      "examples": [
+        "ANALYSIS-0001"
+      ],
+      "description": "Stable canonical methodology-specific analysis record identifier."
+    },
+    "method_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+      "examples": [
+        "stride",
+        "stride-ai"
+      ],
+      "description": "Exactly one selected analysis method identifier."
+    },
+    "contributor_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Recorded contributing analyst identity without identity certification."
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Concrete scope covered by this methodology-specific analysis."
+    },
+    "subjects": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Governed Base Analysis or Functional Requirement subjects.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "id"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "base_analysis_element",
+              "base_analysis_relation",
+              "functional_requirement"
+            ],
+            "description": "Canonical model owning the referenced subject identity."
+          },
+          "id": {
+            "type": "string",
+            "description": "Canonical identity preserved from the owning source model."
+          }
+        }
+      },
+      "x-threatforge-unique-by": [
+        "kind",
+        "id"
+      ]
+    },
+    "derivation_state": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "not_accepted"
+      ],
+      "description": "Explicit eligibility state for deterministic downstream derivation."
+    },
+    "method_payload": {
+      "type": "object",
+      "description": "Optional method-owned payload validated by the selected method, not by the common model.",
+      "additionalProperties": true
+    }
+  },
+  "x-threatforge": {
+    "model_id": "methodology-specific-analysis-record-model",
+    "profile_id": "methodology-specific-analysis-record",
+    "record_domain": "analysis",
+    "file_glob": "**/*.analysis-record.yml",
+    "governed_document_model": false,
+    "authorable_governed_document_type": false,
+    "canonical_source": "tools/MR-0005/lib/methodology-specific-analysis-record-model.mjs"
+  }
+}
