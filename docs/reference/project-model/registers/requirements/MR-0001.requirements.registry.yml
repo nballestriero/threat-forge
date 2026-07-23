@@ -233,3 +233,11 @@ requirements:
     macro_requirement_id: MR-0001
     decision_id: ADR-0009
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0009REQ-0001_body.md
+  - id: MR-0001ADR-0009REQ-0001GOV-0001
+    title: "Deterministic Security Requirement model and cross-model coherence validation"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0009
+    parent_requirement_id: MR-0001ADR-0009REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0009REQ-0001GOV-0001_body.md
