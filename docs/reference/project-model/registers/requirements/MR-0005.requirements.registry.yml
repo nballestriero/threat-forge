@@ -32,3 +32,10 @@ requirements:
     decision_id: ADR-0001
     parent_requirement_id: MR-0005ADR-0001REQ-0003
     body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0001REQ-0003GOV-0001_body.md
+  - id: MR-0005ADR-0002REQ-0001
+    title: "Canonical common analysis finding record and review state"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0005
+    decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0002REQ-0001_body.md

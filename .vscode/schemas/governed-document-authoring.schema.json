@@ -1966,7 +1966,25 @@
               "decision_id"
             ]
           },
-          "then": false
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0002REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical common analysis finding record and review state — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0002REQ-0001",
+                    "description": "Canonical common analysis finding record and review state — status: draft"
+                  }
+                ]
+              }
+            }
+          }
         }
       ]
     }
