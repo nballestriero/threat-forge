@@ -720,15 +720,21 @@
               "decision_id": {
                 "type": "string",
                 "enum": [
-                  "ADR-0001"
+                  "ADR-0001",
+                  "ADR-0002"
                 ],
                 "markdownEnumDescriptions": [
-                  "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft"
+                  "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
+                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
                     "value": "ADR-0001",
                     "description": "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
                   }
                 ]
               }
@@ -1093,15 +1099,21 @@
               "decision_id": {
                 "type": "string",
                 "enum": [
-                  "ADR-0001"
+                  "ADR-0001",
+                  "ADR-0002"
                 ],
                 "markdownEnumDescriptions": [
-                  "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft"
+                  "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
+                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
                     "value": "ADR-0001",
                     "description": "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
                   }
                 ]
               }
@@ -1891,6 +1903,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
         }
       ]
     }
