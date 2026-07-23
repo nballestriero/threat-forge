@@ -1926,12 +1926,14 @@
                 "enum": [
                   "MR-0005ADR-0001REQ-0001",
                   "MR-0005ADR-0001REQ-0002",
-                  "MR-0005ADR-0001REQ-0003"
+                  "MR-0005ADR-0001REQ-0003",
+                  "MR-0005ADR-0001REQ-0004"
                 ],
                 "markdownEnumDescriptions": [
                   "Governed methodology-specific analysis record boundary — status: draft",
                   "Deterministic DFD semantic projection — status: draft",
-                  "Human-viewable DFD materialization — status: draft"
+                  "Human-viewable DFD materialization — status: draft",
+                  "Canonical methodology-specific analysis record model and identity — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1945,6 +1947,10 @@
                   {
                     "value": "MR-0005ADR-0001REQ-0003",
                     "description": "Human-viewable DFD materialization — status: draft"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0004",
+                    "description": "Canonical methodology-specific analysis record model and identity — status: draft"
                   }
                 ]
               }

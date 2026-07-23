@@ -47,3 +47,18 @@ requirements:
     decision_id: ADR-0002
     parent_requirement_id: MR-0005ADR-0002REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0002REQ-0001GOV-0001_body.md
+  - id: MR-0005ADR-0001REQ-0004
+    title: "Canonical methodology-specific analysis record model and identity"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0005
+    decision_id: ADR-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0001REQ-0004_body.md
+  - id: MR-0005ADR-0001REQ-0004GOV-0001
+    title: "Deterministic methodology-specific analysis record model and identity validation"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0005
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0005ADR-0001REQ-0004
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0001REQ-0004GOV-0001_body.md
