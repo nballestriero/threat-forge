@@ -512,7 +512,8 @@
                   "ADR-0004",
                   "ADR-0006",
                   "ADR-0007",
-                  "ADR-0008"
+                  "ADR-0008",
+                  "ADR-0009"
                 ],
                 "markdownEnumDescriptions": [
                   "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
@@ -521,7 +522,8 @@
                   "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
                   "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
                   "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft",
-                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
+                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft",
+                  "Governed Security Requirement specialization and finding derivation — MR-0001/ADR-0009 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -551,6 +553,10 @@
                   {
                     "value": "ADR-0008",
                     "description": "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0009",
+                    "description": "Governed Security Requirement specialization and finding derivation — MR-0001/ADR-0009 — status: draft"
                   }
                 ]
               }
@@ -891,7 +897,8 @@
                   "ADR-0004",
                   "ADR-0006",
                   "ADR-0007",
-                  "ADR-0008"
+                  "ADR-0008",
+                  "ADR-0009"
                 ],
                 "markdownEnumDescriptions": [
                   "Adozione del Diátaxis framework per la classificazione documentale — MR-0001/ADR-0001 — status: draft",
@@ -900,7 +907,8 @@
                   "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
                   "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
                   "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft",
-                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
+                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft",
+                  "Governed Security Requirement specialization and finding derivation — MR-0001/ADR-0009 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -930,6 +938,10 @@
                   {
                     "value": "ADR-0008",
                     "description": "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0009",
+                    "description": "Governed Security Requirement specialization and finding derivation — MR-0001/ADR-0009 — status: draft"
                   }
                 ]
               }
@@ -1358,6 +1370,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0009"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
         },
         {
           "if": {
