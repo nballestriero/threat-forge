@@ -727,11 +727,13 @@
                 "type": "string",
                 "enum": [
                   "ADR-0001",
-                  "ADR-0002"
+                  "ADR-0002",
+                  "ADR-0003"
                 ],
                 "markdownEnumDescriptions": [
                   "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
-                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
+                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft",
+                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -741,6 +743,10 @@
                   {
                     "value": "ADR-0002",
                     "description": "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
                   }
                 ]
               }
@@ -1112,11 +1118,13 @@
                 "type": "string",
                 "enum": [
                   "ADR-0001",
-                  "ADR-0002"
+                  "ADR-0002",
+                  "ADR-0003"
                 ],
                 "markdownEnumDescriptions": [
                   "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
-                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
+                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft",
+                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1126,6 +1134,10 @@
                   {
                     "value": "ADR-0002",
                     "description": "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
                   }
                 ]
               }
@@ -1991,6 +2003,23 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": false
         }
       ]
     }
