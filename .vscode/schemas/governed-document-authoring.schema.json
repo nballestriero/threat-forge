@@ -2019,7 +2019,25 @@
               "decision_id"
             ]
           },
-          "then": false
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0003REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Common methodology plugin contract and governed resolution — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0003REQ-0001",
+                    "description": "Common methodology plugin contract and governed resolution — status: draft"
+                  }
+                ]
+              }
+            }
+          }
         }
       ]
     }
