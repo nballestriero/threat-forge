@@ -1334,9 +1334,9 @@ artifacts:
   - id: MR-0005ADR-0002REQ-0001IMPL-0001
     title: "Canonical common analysis finding model"
     artifact_type: source_module
-    status: scaffolded
+    status: implemented
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001
-    scaffolded_path: tools/MR-0005/lib/common-analysis-finding-model.mjs
-    reason: "Create a governed source scaffold for MR-0005ADR-0002REQ-0001; implementation remains incomplete until explicitly promoted."
+    implemented_path: tools/MR-0005/lib/common-analysis-finding-model.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001IMPL-0001 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0005/lib/common-analysis-finding-model.mjs
