@@ -69,3 +69,11 @@ requirements:
     macro_requirement_id: MR-0005
     decision_id: ADR-0003
     body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0003REQ-0001_body.md
+  - id: MR-0005ADR-0003REQ-0001GOV-0001
+    title: "Deterministic methodology plugin contract and governed resolution validation"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0005
+    decision_id: ADR-0003
+    parent_requirement_id: MR-0005ADR-0003REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0003REQ-0001GOV-0001_body.md
