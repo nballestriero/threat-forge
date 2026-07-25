@@ -1370,3 +1370,13 @@ artifacts:
     implemented_path: tools/MR-0005/fixtures/common-analysis-finding/negative-fixtures.registry.json
     reason: "Provide deterministic invalid Findings proving every stable model and repository-validation diagnostic, including identity, review state, governed references, source registries, reference grammar and YAML sources."
     verification_command: node --test tools/MR-0005/test/common-analysis-finding.test.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0001IMPL-0004
+    title: "Common analysis finding editor schema materializer"
+    artifact_type: source_module
+    status: scaffolded
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0001
+    scaffolded_path: tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+    reason: "Create a governed source scaffold for MR-0005ADR-0002REQ-0001GOV-0001; implementation remains incomplete until explicitly promoted."
+    verification_command: node --check tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
