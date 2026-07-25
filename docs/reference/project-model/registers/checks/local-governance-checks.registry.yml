@@ -264,3 +264,47 @@ checks:
     linked_requirement_ids:
       - MR-0005ADR-0001REQ-0004GOV-0001
     description: Verify canonical behavior, immutability, deterministic schema materialization, governed reference resolution and all registered positive and negative fixtures.
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0001CHECK-0001
+    title: Common analysis finding consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0005/check-common-analysis-findings.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001
+      - MR-0005ADR-0002REQ-0001GOV-0001
+    description: Validate canonical common analysis findings, explicit review state, governed origin and affected-reference resolution, methodology neutrality and deterministic diagnostics.
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0001CHECK-0002
+    title: Common analysis finding verification coverage
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0005/test/common-analysis-finding.test.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0001
+    description: Verify canonical common finding behavior, explicit review-state handling, governed reference resolution, methodology neutrality and complete positive and negative fixture coverage.
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0002CHECK-0001
+    title: Common analysis finding editor schema consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+      - --check
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0002
+    description: Verify that the deterministic Common Finding editor JSON Schema remains a current mechanical projection of the canonical finding model and representation profile.
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0002CHECK-0002
+    title: Common analysis finding editor schema verification coverage
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0005/test/common-analysis-finding-schema.test.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0002
+    description: Verify deterministic Common Finding editor schema materialization, write and check behavior, canonical-source immutability and implementation traceability.
