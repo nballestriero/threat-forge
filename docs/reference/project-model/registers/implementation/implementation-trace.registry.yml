@@ -1374,9 +1374,18 @@ artifacts:
   - id: MR-0005ADR-0002REQ-0001GOV-0001IMPL-0004
     title: "Common analysis finding editor schema materializer"
     artifact_type: source_module
-    status: scaffolded
+    status: deprecated
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0001
+    reason: "Deprecated in favor of MR-0005ADR-0002REQ-0001GOV-0002IMPL-0001 after editor schema materialization received a dedicated Governance Requirement. Historical scaffold path: tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs."
+    verification_command: node --check tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0002IMPL-0001
+    title: "Common analysis finding editor schema materializer"
+    artifact_type: source_module
+    status: scaffolded
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0002
     scaffolded_path: tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
-    reason: "Create a governed source scaffold for MR-0005ADR-0002REQ-0001GOV-0001; implementation remains incomplete until explicitly promoted."
+    reason: "Continue the existing governed source scaffold under MR-0005ADR-0002REQ-0001GOV-0002; implementation remains incomplete until focused behavioral verification and explicit promotion."
     verification_command: node --check tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs

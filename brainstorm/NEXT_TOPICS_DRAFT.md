@@ -1178,3 +1178,28 @@ First work item:
 Inspect MR-0005 decision and requirement registries, then author the methodology
 plugin-boundary ADR. Do not write plugin code yet.
 ```
+
+## 17. Governance debt
+
+### 17.1 Governed implementation trace reassignment
+
+Status: to do.
+
+Create a governed rollback-capable command that reassigns an existing planned or scaffolded implementation path from one Requirement to another without deleting its historical trace.
+
+The command must:
+
+- deprecate the previous implementation trace record;
+- create the successor trace under the new Requirement;
+- update source JSDoc traceability atomically;
+- preserve the historical Requirement and artifact identity;
+- reject duplicate active ownership of one implementation path;
+- run focused syntax and implementation-trace validation;
+- restore every modified file when validation fails.
+
+Motivating case:
+
+- deprecate `MR-0005ADR-0002REQ-0001GOV-0001IMPL-0004`;
+- create its successor under `MR-0005ADR-0002REQ-0001GOV-0002`;
+- preserve `tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs`;
+- replace the current exceptional manual transition with the governed command.
