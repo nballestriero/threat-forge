@@ -1350,3 +1350,13 @@ artifacts:
     implemented_path: tools/MR-0005/check-common-analysis-findings.mjs
     reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0005/check-common-analysis-findings.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0001IMPL-0002
+    title: "Common analysis finding model and validation verification"
+    artifact_type: verification_artifact
+    status: scaffolded
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0001
+    scaffolded_path: tools/MR-0005/test/common-analysis-finding.test.mjs
+    reason: "Create a governed source scaffold for MR-0005ADR-0002REQ-0001GOV-0001; implementation remains incomplete until explicitly promoted."
+    verification_command: node --test tools/MR-0005/test/common-analysis-finding.test.mjs
