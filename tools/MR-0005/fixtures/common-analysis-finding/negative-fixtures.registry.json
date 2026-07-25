@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "common-analysis-finding-negative-fixtures",
+  "base_record": {
+    "schema_version": 1,
+    "id": "FINDING-0001",
+    "analysis_record_id": "ANALYSIS-0001",
+    "affected_subjects": [
+      {
+        "kind": "base_analysis_element",
+        "id": "BAE-0005"
+      },
+      {
+        "kind": "base_analysis_relation",
+        "id": "BAE-REL-0001"
+      },
+      {
+        "kind": "functional_requirement",
+        "id": "MR-0001ADR-0001REQ-0001"
+      }
+    ],
+    "threat_scenario": "An unauthorized actor impersonates a legitimate user.",
+    "expected_consequences": "Protected functionality may be accessed without authorization.",
+    "rationale_or_evidence": "The interaction crosses an authenticated trust boundary.",
+    "review_state": "accepted"
+  },
+  "cases": [
+    {
+      "id": "record-not-mapping",
+      "mode": "model",
+      "candidate": "not-a-finding",
+      "expected_rule_ids": [
+        "common-finding.model.record"
+      ]
+    },
+    {
+      "id": "unknown-root-member",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "title"
+          ],
+          "value": "Unexpected title"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.unknown-member"
+      ]
+    },
+    {
+      "id": "method-specific-member",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "method_payload"
+          ],
+          "value": {
+            "classification": "spoofing"
+          }
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.method-specific-member"
+      ]
+    },
+    {
+      "id": "invalid-schema-version",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "schema_version"
+          ],
+          "value": 2
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.schema-version"
+      ]
+    },
+    {
+      "id": "invalid-identifier",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "id"
+          ],
+          "value": "finding-1"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.identifier"
+      ]
+    },
+    {
+      "id": "duplicate-identifier",
+      "mode": "repository-duplicate-findings",
+      "expected_rule_ids": [
+        "common-finding.model.duplicate-identifier"
+      ]
+    },
+    {
+      "id": "invalid-analysis-record-identifier",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "analysis_record_id"
+          ],
+          "value": "analysis-1"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.analysis-record-id"
+      ]
+    },
+    {
+      "id": "unresolved-analysis-record",
+      "mode": "model",
+      "resolver_options": {
+        "resolve_analysis_record": false
+      },
+      "expected_rule_ids": [
+        "common-finding.model.unresolved-analysis-record"
+      ]
+    },
+    {
+      "id": "empty-affected-subjects",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects"
+          ],
+          "value": []
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.affected-subjects"
+      ]
+    },
+    {
+      "id": "affected-subject-not-mapping",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects"
+          ],
+          "value": [
+            null
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.affected-subject-record"
+      ]
+    },
+    {
+      "id": "unknown-affected-subject-member",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects",
+            0,
+            "title"
+          ],
+          "value": "Unexpected title"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.unknown-affected-subject-member"
+      ]
+    },
+    {
+      "id": "unsupported-affected-subject-kind",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects",
+            0,
+            "kind"
+          ],
+          "value": "asset"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.affected-subject-kind"
+      ]
+    },
+    {
+      "id": "invalid-affected-subject-identifier",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects",
+            0,
+            "id"
+          ],
+          "value": "BAE-5"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.affected-subject-id"
+      ]
+    },
+    {
+      "id": "duplicate-affected-subject",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects"
+          ],
+          "value": [
+            {
+              "kind": "functional_requirement",
+              "id": "MR-0001ADR-0001REQ-0001"
+            },
+            {
+              "kind": "functional_requirement",
+              "id": "MR-0001ADR-0001REQ-0001"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.duplicate-affected-subject"
+      ]
+    },
+    {
+      "id": "unresolved-affected-subject",
+      "mode": "model",
+      "resolver_options": {
+        "resolve_affected_subject": false
+      },
+      "expected_rule_ids": [
+        "common-finding.model.unresolved-affected-subject"
+      ]
+    },
+    {
+      "id": "accepted-without-functional-requirement",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "affected_subjects"
+          ],
+          "value": [
+            {
+              "kind": "base_analysis_element",
+              "id": "BAE-0005"
+            }
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.accepted-functional-requirement"
+      ]
+    },
+    {
+      "id": "missing-threat-scenario",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "threat_scenario"
+          ],
+          "value": ""
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.threat-scenario"
+      ]
+    },
+    {
+      "id": "missing-expected-consequences",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "expected_consequences"
+          ],
+          "value": ""
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.expected-consequences"
+      ]
+    },
+    {
+      "id": "missing-rationale-or-evidence",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "rationale_or_evidence"
+          ],
+          "value": ""
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.rationale-or-evidence"
+      ]
+    },
+    {
+      "id": "invalid-review-state",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "review_state"
+          ],
+          "value": "under_review"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.review-state"
+      ]
+    },
+    {
+      "id": "model-profile-divergence",
+      "mode": "model-boundary",
+      "boundary_mutation": "profile-id-divergence",
+      "expected_rule_ids": [
+        "common-finding.validation.model-profile"
+      ]
+    },
+    {
+      "id": "duplicate-diagnostic-rule-id",
+      "mode": "model-boundary",
+      "boundary_mutation": "duplicate-rule-id",
+      "expected_rule_ids": [
+        "common-finding.validation.model-profile"
+      ]
+    },
+    {
+      "id": "missing-source-registries",
+      "mode": "repository-missing-sources",
+      "expected_rule_ids": [
+        "common-finding.validation.source-registry"
+      ]
+    },
+    {
+      "id": "missing-reference-grammar",
+      "mode": "repository-missing-reference-grammar",
+      "expected_rule_ids": [
+        "common-finding.validation.reference-grammar"
+      ]
+    },
+    {
+      "id": "missing-finding-source",
+      "mode": "repository-missing-finding",
+      "expected_rule_ids": [
+        "common-finding.validation.yaml-source"
+      ]
+    }
+  ]
+}
