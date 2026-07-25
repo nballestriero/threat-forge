@@ -1383,9 +1383,49 @@ artifacts:
   - id: MR-0005ADR-0002REQ-0001GOV-0002IMPL-0001
     title: "Common analysis finding editor schema materializer"
     artifact_type: source_module
-    status: scaffolded
+    status: implemented
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0002
-    scaffolded_path: tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
-    reason: "Continue the existing governed source scaffold under MR-0005ADR-0002REQ-0001GOV-0002; implementation remains incomplete until focused behavioral verification and explicit promotion."
+    implemented_path: tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0002IMPL-0001 after source completeness checks and governed verification succeeded."
     verification_command: node --check tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0002IMPL-0002
+    title: "Common analysis finding editor schema materialization verification"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0002
+    implemented_path: tools/MR-0005/test/common-analysis-finding-schema.test.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0002IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0005/test/common-analysis-finding-schema.test.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0002IMPL-0003
+    title: "Common analysis finding editor schema"
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0002
+    implemented_path: .vscode/schemas/common-analysis-finding.schema.json
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0002IMPL-0003 after materialized artifact verification succeeded without changing artifact bytes."
+    verification_command: node tools/repo-check.mjs
+
+  - id: MR-0002ADR-0003REQ-0003GOV-0001IMPL-0001
+    title: "Governed planned artifact promotion"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0003REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/promote-governed-planned-artifact.mjs
+    reason: "Promoted MR-0002ADR-0003REQ-0003GOV-0001IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0002/promote-governed-planned-artifact.mjs
+
+  - id: MR-0002ADR-0003REQ-0003GOV-0001IMPL-0002
+    title: "Governed planned artifact promotion verification"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0002ADR-0003REQ-0003GOV-0001
+    implemented_path: tools/MR-0002/tests/promote-governed-planned-artifact.test.mjs
+    reason: "Promoted MR-0002ADR-0003REQ-0003GOV-0001IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0002/tests/promote-governed-planned-artifact.test.mjs

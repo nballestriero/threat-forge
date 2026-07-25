@@ -1521,11 +1521,13 @@
                 "type": "string",
                 "enum": [
                   "MR-0002ADR-0003REQ-0001",
-                  "MR-0002ADR-0003REQ-0002"
+                  "MR-0002ADR-0003REQ-0002",
+                  "MR-0002ADR-0003REQ-0003"
                 ],
                 "markdownEnumDescriptions": [
                   "Creazione guidata di uno scaffold implementativo governato — status: draft",
-                  "Promozione governata di uno scaffold implementativo — status: draft"
+                  "Promozione governata di uno scaffold implementativo — status: draft",
+                  "Promozione governata di un artefatto pianificato materializzato — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1535,6 +1537,10 @@
                   {
                     "value": "MR-0002ADR-0003REQ-0002",
                     "description": "Promozione governata di uno scaffold implementativo — status: draft"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0003",
+                    "description": "Promozione governata di un artefatto pianificato materializzato — status: draft"
                   }
                 ]
               }

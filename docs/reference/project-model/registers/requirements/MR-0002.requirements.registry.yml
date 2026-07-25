@@ -369,3 +369,18 @@ requirements:
     decision_id: ADR-0006
     parent_requirement_id: MR-0002ADR-0006REQ-0005
     body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0005GOV-0001_body.md
+  - id: MR-0002ADR-0003REQ-0003
+    title: "Promozione governata di un artefatto pianificato materializzato"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0002
+    decision_id: ADR-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0003REQ-0003_body.md
+  - id: MR-0002ADR-0003REQ-0003GOV-0001
+    title: "Transizione verificata e atomica degli artefatti materializzati pianificati"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0002
+    decision_id: ADR-0003
+    parent_requirement_id: MR-0002ADR-0003REQ-0003
+    body_path: docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0003REQ-0003GOV-0001_body.md
