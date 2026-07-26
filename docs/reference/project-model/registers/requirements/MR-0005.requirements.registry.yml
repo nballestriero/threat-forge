@@ -93,3 +93,11 @@ requirements:
     decision_id: ADR-0002
     parent_requirement_id: MR-0005ADR-0002REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0002REQ-0001GOV-0003_body.md
+  - id: MR-0005ADR-0002REQ-0001GOV-0004
+    title: "Deterministic Common Finding editor schema routing"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0005
+    decision_id: ADR-0002
+    parent_requirement_id: MR-0005ADR-0002REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0005/MR-0005ADR-0002REQ-0001GOV-0004_body.md
