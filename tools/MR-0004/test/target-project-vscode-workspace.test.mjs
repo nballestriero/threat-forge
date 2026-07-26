@@ -22,10 +22,13 @@ import {
  * @implementsRequirement MR-0004ADR-0001REQ-0006
  * @implementsRequirement MR-0002ADR-0006REQ-0005
  * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
+ * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0004
  * @derivedFromDecision MR-0004/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0005/ADR-0002
  * @macroRequirement MR-0004
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0005
  * @implementationStatus implemented
  *
  * Verifies target-local workspace materialization, schema ownership, task
@@ -153,7 +156,15 @@ test("materializes a target-local workspace whose schema and tasks use target ow
       engineRoot,
       targetRoot: workspace.targetRoot,
     });
-    assert.equal(result.files.length, 4);
+    assert.equal(result.files.length, 5);
+    assert.equal(
+      result.commonFindingSchema,
+      "./.vscode/schemas/common-analysis-finding.schema.json",
+    );
+    assert.equal(
+      result.commonFindingGlob,
+      "**/*.analysis-finding.yml",
+    );
     const schema = readJson(
       workspace.targetRoot,
       ".vscode/schemas/governed-document-authoring.schema.json",
@@ -167,6 +178,19 @@ test("materializes a target-local workspace whose schema and tasks use target ow
     assert.deepEqual(
       settings["yaml.schemas"]["./.vscode/schemas/governed-document-authoring.schema.json"],
       ["**/*.governed-document-authoring.yml"],
+    );
+    assert.deepEqual(
+      settings["yaml.schemas"]["./.vscode/schemas/common-analysis-finding.schema.json"],
+      ["**/*.analysis-finding.yml"],
+    );
+
+    const commonFindingSchema = readJson(
+      workspace.targetRoot,
+      ".vscode/schemas/common-analysis-finding.schema.json",
+    );
+    assert.equal(
+      commonFindingSchema["x-threatforge"].file_glob,
+      "**/*.analysis-finding.yml",
     );
 
     const extensions = readJson(workspace.targetRoot, ".vscode/extensions.json");
@@ -263,6 +287,32 @@ test("workspace projection is deterministic and check mode detects stale managed
     const settings = JSON.parse(fs.readFileSync(settingsPath, "utf8"));
     settings["threatforge.engineRoot"] = "C:/stale-engine";
     fs.writeFileSync(settingsPath, `${JSON.stringify(settings, null, 2)}\n`, "utf8");
+    assert.throws(
+      () => materializeTargetProjectVsCodeWorkspace({
+        mode: "check",
+        engineRoot,
+        targetRoot: workspace.targetRoot,
+      }),
+      /stale/u,
+    );
+
+    materializeTargetProjectVsCodeWorkspace({
+      mode: "write",
+      engineRoot,
+      targetRoot: workspace.targetRoot,
+    });
+
+    const commonFindingSchemaPath = path.join(
+      vscodeRoot,
+      "schemas",
+      "common-analysis-finding.schema.json",
+    );
+    fs.appendFileSync(
+      commonFindingSchemaPath,
+      "\n",
+      "utf8",
+    );
+
     assert.throws(
       () => materializeTargetProjectVsCodeWorkspace({
         mode: "check",

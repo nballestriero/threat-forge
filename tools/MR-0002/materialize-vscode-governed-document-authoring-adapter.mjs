@@ -4,6 +4,14 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import {
+  mergeCommonAnalysisFindingEditorRouting,
+  validateCommonAnalysisFindingEditorRouting,
+} from "../MR-0005/lib/common-analysis-finding-editor-routing.mjs";
+import {
+  materializeCommonAnalysisFindingSchema,
+} from "../MR-0005/lib/materialize-common-analysis-finding-schema.mjs";
+
 /**
  * @file VS Code governed document authoring adapter materializer.
  *
@@ -12,8 +20,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
  * @implementsRequirement MR-0002ADR-0005REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
+ * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0004
  * @derivedFromDecision MR-0002/ADR-0005
+ * @derivedFromDecision MR-0005/ADR-0002
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0005
  * @implementationStatus implemented
  *
  * Materializes the thin VS Code adapter for Macro-requirement, Decision,
@@ -280,10 +291,19 @@ export function mergeGovernedDocumentAuthoringTasks(existing) {
 }
 
 function mergeSettings(existing) {
-  const schemas = existing["yaml.schemas"] === undefined ? {} : requireObject(existing["yaml.schemas"], "settings.yaml.schemas");
+  const schemas = existing["yaml.schemas"] === undefined
+    ? {}
+    : requireObject(
+      existing["yaml.schemas"],
+      "settings.yaml.schemas",
+    );
   const mergedSchemas = { ...schemas };
   mergedSchemas[schemaAssociationKey] = [authoringRequestGlob];
-  return { ...existing, "yaml.schemas": mergedSchemas };
+
+  return mergeCommonAnalysisFindingEditorRouting({
+    ...existing,
+    "yaml.schemas": mergedSchemas,
+  });
 }
 function mergeExtensions(existing) {
   const recommendations = existing.recommendations === undefined
@@ -311,6 +331,19 @@ function runSchemaMaterializer(mode) {
   }
 }
 
+/**
+ * Materializes or checks the canonical Common Finding editor schema.
+ *
+ * @param {"write"|"check"} mode - Explicit materialization mode.
+ * @returns {void}
+ */
+function runCommonAnalysisFindingSchemaMaterializer(mode) {
+  materializeCommonAnalysisFindingSchema({
+    rootDir,
+    mode,
+  });
+}
+
 /** @param {Record<string, unknown>} tasks */
 export function validateGovernedDocumentAuthoringTasks(tasks) {
   if (requireString(tasks.version, "tasks.version") !== "2.0.0") throw new Error("VS Code tasks.version must be 2.0.0.");
@@ -330,9 +363,25 @@ export function validateGovernedDocumentAuthoringTasks(tasks) {
 }
 
 function validateSettings(settings) {
-  const schemas = requireObject(settings["yaml.schemas"], "settings.yaml.schemas");
-  const association = requireArray(schemas[schemaAssociationKey], `settings.yaml.schemas[${schemaAssociationKey}]`);
-  if (association.length !== 1 || association[0] !== authoringRequestGlob) throw new Error("Governed document authoring schema association is stale.");
+  const schemas = requireObject(
+    settings["yaml.schemas"],
+    "settings.yaml.schemas",
+  );
+  const association = requireArray(
+    schemas[schemaAssociationKey],
+    `settings.yaml.schemas[${schemaAssociationKey}]`,
+  );
+
+  if (
+    association.length !== 1 ||
+    association[0] !== authoringRequestGlob
+  ) {
+    throw new Error(
+      "Governed document authoring schema association is stale.",
+    );
+  }
+
+  return validateCommonAnalysisFindingEditorRouting(settings);
 }
 function validateExtensions(extensions) {
   const recommendations = requireArray(extensions.recommendations, "extensions.recommendations");
@@ -343,6 +392,7 @@ function validateExtensions(extensions) {
 export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
   if (mode !== "write" && mode !== "check") throw new Error(`Unsupported materialization mode: ${mode}`);
   runSchemaMaterializer(mode);
+  runCommonAnalysisFindingSchemaMaterializer(mode);
   const settings = mergeSettings(readJsoncFile(settingsProjectPath, {}));
   const extensions = mergeExtensions(readJsoncFile(extensionsProjectPath, { recommendations: [] }));
   const tasks = mergeGovernedDocumentAuthoringTasks(readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] }));
@@ -359,7 +409,8 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
   const actualSettings = readJsoncFile(settingsProjectPath, {});
   const actualExtensions = readJsoncFile(extensionsProjectPath, { recommendations: [] });
   const actualTasks = readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] });
-  validateSettings(actualSettings);
+  const commonFindingRouting =
+    validateSettings(actualSettings);
   validateExtensions(actualExtensions);
   validateGovernedDocumentAuthoringTasks(actualTasks);
   if (formatJson(actualSettings) !== expected.settings) throw new Error(`${settingsProjectPath} is stale.`);
@@ -375,6 +426,10 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
     installMarkdownAssistanceTask: installMarkdownAssistanceTaskLabel,
     schema: `./${materializedSchemaProjectPath}`,
     requestGlob: authoringRequestGlob,
+    commonFindingSchema:
+      commonFindingRouting.schemaAssociationKey,
+    commonFindingGlob:
+      commonFindingRouting.fileGlob,
     recommendedExtension: yamlExtensionId,
   };
 }
@@ -397,6 +452,8 @@ function main() {
   console.log(`Install Markdown assistance task: ${result.installMarkdownAssistanceTask}`);
   console.log(`Schema: ${result.schema}`);
   console.log(`Authoring request glob: ${result.requestGlob}`);
+  console.log(`Common Finding schema: ${result.commonFindingSchema}`);
+  console.log(`Common Finding glob: ${result.commonFindingGlob}`);
   console.log(`Recommended extension: ${result.recommendedExtension}`);
 }
 

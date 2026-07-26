@@ -314,6 +314,7 @@ artifacts:
       - MR-0002ADR-0005REQ-0001GOV-0001
       - MR-0002ADR-0006REQ-0002
       - MR-0002ADR-0006REQ-0002GOV-0001
+      - MR-0005ADR-0002REQ-0001GOV-0004
     implemented_path: tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs
     reason: Materialize schema association, YAML extension recommendation, active-file preview/create tasks and the explicit local governed Markdown assistance installation task while preserving unrelated workspace configuration.
     verification_command: node tools/MR-0002/materialize-vscode-governed-document-authoring-adapter.mjs --check
@@ -1148,6 +1149,7 @@ artifacts:
       - MR-0004ADR-0001REQ-0006
       - MR-0002ADR-0006REQ-0005
       - MR-0002ADR-0006REQ-0005GOV-0001
+      - MR-0005ADR-0002REQ-0001GOV-0004
     implemented_path: tools/MR-0004/materialize-target-project-vscode-workspace.mjs
     reason: Materialize target-local settings, tasks, unified extension recommendations and an engine-derived authoring schema with explicit engine and target root separation, portable references and removal of the obsolete extension id.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
@@ -1186,6 +1188,7 @@ artifacts:
       - MR-0004ADR-0001REQ-0006
       - MR-0002ADR-0006REQ-0005
       - MR-0002ADR-0006REQ-0005GOV-0001
+      - MR-0005ADR-0002REQ-0001GOV-0004
     implemented_path: tools/MR-0004/test/target-project-vscode-workspace.test.mjs
     reason: Verify external and repository-contained materialization, portable engine references, target-local semantics, unified extension recommendations, workspace routing, BAE isolation and single-VSIX packaging.
     verification_command: node --test tools/MR-0004/test/target-project-vscode-workspace.test.mjs
@@ -1449,3 +1452,23 @@ artifacts:
     implemented_path: tools/MR-0005/test/common-finding-case-study.test.mjs
     reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0003IMPL-0002 after source completeness checks and governed verification succeeded."
     verification_command: node --test tools/MR-0005/test/common-finding-case-study.test.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0004IMPL-0001
+    title: "Common Finding editor routing projection"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0004
+    implemented_path: tools/MR-0005/lib/common-analysis-finding-editor-routing.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0004IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/lib/common-analysis-finding-editor-routing.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0004IMPL-0002
+    title: "Common Finding editor routing verification"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0004
+    implemented_path: tools/MR-0005/test/common-analysis-finding-editor-routing.test.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0004IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0005/test/common-analysis-finding-editor-routing.test.mjs

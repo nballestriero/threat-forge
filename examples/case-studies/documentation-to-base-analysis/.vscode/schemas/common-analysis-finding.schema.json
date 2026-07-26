@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://threatforge.local/schemas/common-analysis-finding.schema.json",
+  "title": "Common analysis Finding",
+  "description": "Editor assistance derived from the canonical ThreatForge common analysis Finding model.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "analysis_record_id",
+    "affected_subjects",
+    "threat_scenario",
+    "expected_consequences",
+    "rationale_or_evidence",
+    "review_state"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Canonical common analysis Finding schema version."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^FINDING-\\d{4}$",
+      "examples": [
+        "FINDING-0001"
+      ],
+      "description": "Stable canonical common analysis Finding identifier."
+    },
+    "analysis_record_id": {
+      "type": "string",
+      "pattern": "^ANALYSIS-\\d{4}$",
+      "examples": [
+        "ANALYSIS-0001"
+      ],
+      "description": "Exactly one originating governed methodology-specific Analysis Record identifier."
+    },
+    "affected_subjects": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Governed Base Analysis or Functional Requirement subjects affected by the Finding.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "id"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "base_analysis_element",
+              "base_analysis_relation",
+              "functional_requirement"
+            ],
+            "description": "Canonical model owning the affected subject identity."
+          },
+          "id": {
+            "type": "string",
+            "description": "Canonical identity preserved from the owning source model."
+          }
+        }
+      },
+      "x-threatforge-unique-by": [
+        "kind",
+        "id"
+      ]
+    },
+    "threat_scenario": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Concrete threat scenario represented by the Finding."
+    },
+    "expected_consequences": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Expected consequences of the threat scenario."
+    },
+    "rationale_or_evidence": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Supporting rationale or evidence preserved by the common Finding."
+    },
+    "review_state": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "accepted",
+        "rejected"
+      ],
+      "description": "Explicitly recorded review state that is never inferred from Finding content."
+    }
+  },
+  "x-threatforge": {
+    "model_id": "common-analysis-finding-model",
+    "profile_id": "common-analysis-finding",
+    "record_domain": "analysis",
+    "file_glob": "**/*.analysis-finding.yml",
+    "governed_document_model": false,
+    "authorable_governed_document_type": false,
+    "canonical_source": "tools/MR-0005/lib/common-analysis-finding-model.mjs"
+  }
+}

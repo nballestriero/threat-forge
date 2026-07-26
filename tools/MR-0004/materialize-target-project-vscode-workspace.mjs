@@ -4,6 +4,10 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { buildGovernedDocumentAuthoringSchema } from "../MR-0002/build-governed-document-authoring-schema.mjs";
+import {
+  buildCommonAnalysisFindingEditorRoutingProjection,
+  mergeCommonAnalysisFindingEditorRouting,
+} from "../MR-0005/lib/common-analysis-finding-editor-routing.mjs";
 import { loadTargetProjectAuthoringCatalog } from "./lib/target-project-authoring.mjs";
 
 /**
@@ -13,10 +17,13 @@ import { loadTargetProjectAuthoringCatalog } from "./lib/target-project-authorin
  * @implementsRequirement MR-0004ADR-0001REQ-0006
  * @implementsRequirement MR-0002ADR-0006REQ-0005
  * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
+ * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0004
  * @derivedFromDecision MR-0004/ADR-0001
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0005/ADR-0002
  * @macroRequirement MR-0004
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0005
  * @implementationStatus implemented
  *
  * Materializes target-local VS Code settings, tasks, extension recommendations
@@ -351,15 +358,19 @@ function mergeTasks(existing, roots) {
 function mergeSettings(existing, engineReference) {
   const schemas = existing["yaml.schemas"] === undefined
     ? {}
-    : requireObject(existing["yaml.schemas"], "settings.yaml.schemas");
-  return {
+    : requireObject(
+      existing["yaml.schemas"],
+      "settings.yaml.schemas",
+    );
+
+  return mergeCommonAnalysisFindingEditorRouting({
     ...existing,
     "threatforge.engineRoot": engineReference,
     "yaml.schemas": {
       ...schemas,
       [schemaAssociationKey]: [requestGlob],
     },
-  };
+  });
 }
 
 function mergeExtensions(existing) {
@@ -381,6 +392,8 @@ function mergeExtensions(existing) {
 }
 
 function expectedWorkspaceProjection(roots) {
+  const commonFindingRouting =
+    buildCommonAnalysisFindingEditorRoutingProjection();
   const catalog = loadTargetProjectAuthoringCatalog(roots);
   const schema = buildGovernedDocumentAuthoringSchema(catalog);
   schema.title = "ThreatForge Target Project governed document authoring request";
@@ -406,6 +419,8 @@ function expectedWorkspaceProjection(roots) {
   );
   return {
     [schemaProjectPath]: formatJson(schema),
+    [commonFindingRouting.schemaProjectPath]:
+      commonFindingRouting.schemaText,
     [settingsProjectPath]: formatJson(settings),
     [extensionsProjectPath]: formatJson(extensions),
     [tasksProjectPath]: formatTasks(tasks),
@@ -432,6 +447,8 @@ export function materializeTargetProjectVsCodeWorkspace(options = {}) {
     throw new Error("mode must be write or check.");
   }
   const roots = resolveRoots(options);
+  const commonFindingRouting =
+    buildCommonAnalysisFindingEditorRoutingProjection();
   const projection = expectedWorkspaceProjection(roots);
   if (mode === "write") {
     for (const [projectPath, text] of Object.entries(projection)) {
@@ -449,6 +466,10 @@ export function materializeTargetProjectVsCodeWorkspace(options = {}) {
     taskLabels: { ...targetProjectWorkspaceTaskLabels },
     schema: schemaAssociationKey,
     requestGlob,
+    commonFindingSchema:
+      commonFindingRouting.schemaAssociationKey,
+    commonFindingGlob:
+      commonFindingRouting.fileGlob,
     recommendedExtensions: [yamlExtensionId, unifiedAssistanceExtensionId],
   };
 }
@@ -508,6 +529,8 @@ function main() {
   console.log(`Validation task: ${result.taskLabels.validate}`);
   console.log(`Markdown assistance task: ${result.taskLabels.installAssistance}`);
   console.log(`Schema: ${result.schema}`);
+  console.log(`Common Finding schema: ${result.commonFindingSchema}`);
+  console.log(`Common Finding glob: ${result.commonFindingGlob}`);
 }
 
 const directExecutionUrl = process.argv[1]

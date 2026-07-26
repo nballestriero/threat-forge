@@ -1,5 +1,8 @@
 {
   "yaml.schemas": {
+    "./.vscode/schemas/common-analysis-finding.schema.json": [
+      "**/*.analysis-finding.yml"
+    ],
     "./.vscode/schemas/governed-document-authoring.schema.json": [
       "**/*.governed-document-authoring.yml"
     ],
