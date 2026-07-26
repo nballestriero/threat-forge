@@ -1,0 +1,30 @@
+schema_version: 1
+id: ANALYSIS-0001
+method_id: stride
+contributor_id: case-study-analyst
+scope: Demonstration request flow across the service domain boundary
+subjects:
+  - kind: base_analysis_element
+    id: BAE-0001
+  - kind: base_analysis_element
+    id: BAE-0002
+  - kind: base_analysis_element
+    id: BAE-0003
+  - kind: base_analysis_element
+    id: BAE-0004
+  - kind: base_analysis_element
+    id: BAE-0005
+  - kind: base_analysis_relation
+    id: BAE-REL-0001
+  - kind: base_analysis_relation
+    id: BAE-REL-0002
+  - kind: base_analysis_relation
+    id: BAE-REL-0003
+  - kind: functional_requirement
+    id: MR-0001ADR-0001REQ-0001
+derivation_state: not_accepted
+method_payload:
+  simulation_only: true
+  implementation_status: not_implemented
+  category: spoofing
+  observation: The documented request crosses the service domain boundary without specifying identity-verification behavior.

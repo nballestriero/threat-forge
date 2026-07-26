@@ -1,0 +1,20 @@
+schema_version: 1
+id: FINDING-0002
+analysis_record_id: ANALYSIS-0001
+affected_subjects:
+  - kind: base_analysis_element
+    id: BAE-0001
+  - kind: base_analysis_element
+    id: BAE-0002
+  - kind: base_analysis_element
+    id: BAE-0004
+  - kind: base_analysis_element
+    id: BAE-0005
+  - kind: base_analysis_relation
+    id: BAE-REL-0003
+  - kind: functional_requirement
+    id: MR-0001ADR-0001REQ-0001
+threat_scenario: An actor may submit a request while presenting as the demonstration user without documented identity verification.
+expected_consequences: The demonstration service may process a request under an unverified identity, weakening accountability and future access decisions.
+rationale_or_evidence: The documented interaction crosses the service domain boundary, while the governing Functional Requirement does not specify identity-verification behavior.
+review_state: accepted

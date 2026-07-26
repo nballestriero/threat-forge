@@ -308,3 +308,24 @@ checks:
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0002
     description: Verify deterministic Common Finding editor schema materialization, write and check behavior, canonical-source immutability and implementation traceability.
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0003CHECK-0001
+    title: Repository-contained Common Finding case-study consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0005/check-common-finding-case-study.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0003
+    description: Validate exactly one simulated STRIDE-labelled Analysis Record and one proposed one accepted and one rejected methodology-neutral Common Finding against engine-owned canonical rules and target-owned governed sources without implying an implemented STRIDE plugin automatic Finding derivation or a Security Requirement.
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0003CHECK-0002
+    title: Repository-contained Common Finding case-study verification coverage
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0005/test/common-finding-case-study.test.mjs
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0003
+    description: Verify deterministic case-study evidence and isolated failures for implemented plugin claims automatic Finding derivation method-specific fields in Common Findings omitted review state unresolved governed subjects accepted Findings without Functional Requirements and implied Security Requirements.

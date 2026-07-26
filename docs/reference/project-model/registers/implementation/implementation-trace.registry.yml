@@ -1429,3 +1429,23 @@ artifacts:
     implemented_path: tools/MR-0002/tests/promote-governed-planned-artifact.test.mjs
     reason: "Promoted MR-0002ADR-0003REQ-0003GOV-0001IMPL-0002 after source completeness checks and governed verification succeeded."
     verification_command: node --test tools/MR-0002/tests/promote-governed-planned-artifact.test.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0003IMPL-0001
+    title: "Repository-contained Common Finding case-study verifier"
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0003
+    implemented_path: tools/MR-0005/check-common-finding-case-study.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0003IMPL-0001 after source completeness checks and governed verification succeeded."
+    verification_command: node --check tools/MR-0005/check-common-finding-case-study.mjs
+
+  - id: MR-0005ADR-0002REQ-0001GOV-0003IMPL-0002
+    title: "Repository-contained Common Finding case-study verification suite"
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0003
+    implemented_path: tools/MR-0005/test/common-finding-case-study.test.mjs
+    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0003IMPL-0002 after source completeness checks and governed verification succeeded."
+    verification_command: node --test tools/MR-0005/test/common-finding-case-study.test.mjs

@@ -1,0 +1,14 @@
+schema_version: 1
+id: FINDING-0003
+analysis_record_id: ANALYSIS-0001
+affected_subjects:
+  - kind: base_analysis_element
+    id: BAE-0002
+  - kind: base_analysis_element
+    id: BAE-0005
+  - kind: base_analysis_relation
+    id: BAE-REL-0002
+threat_scenario: The demonstration service may impersonate the demonstration user when communicating with an external downstream system.
+expected_consequences: An external downstream system could attribute service-originated activity to the demonstration user.
+rationale_or_evidence: The case-study model contains no external downstream system or outbound interaction, so the available governed evidence does not support this candidate.
+review_state: rejected

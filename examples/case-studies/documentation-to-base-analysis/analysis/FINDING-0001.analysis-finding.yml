@@ -1,0 +1,14 @@
+schema_version: 1
+id: FINDING-0001
+analysis_record_id: ANALYSIS-0001
+affected_subjects:
+  - kind: base_analysis_element
+    id: BAE-0001
+  - kind: base_analysis_element
+    id: BAE-0005
+  - kind: base_analysis_relation
+    id: BAE-REL-0001
+threat_scenario: A second actor could reuse an observed request representation and appear to be the original demonstration user.
+expected_consequences: The demonstration service could process a repeated or unauthorized request without distinguishing its actual initiator.
+rationale_or_evidence: The case-study documentation defines the initiating actor and request flow but does not define request uniqueness or replay resistance.
+review_state: proposed
