@@ -29,7 +29,9 @@ import {
  * @file Deterministic common analysis finding validator.
  *
  * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0001
+ * @implementsRequirement MR-0005ADR-0004REQ-0001GOV-0001
  * @derivedFromDecision MR-0005/ADR-0002
+ * @derivedFromDecision MR-0005/ADR-0004
  * @macroRequirement MR-0005
  * @implementationStatus implemented
  *
@@ -287,6 +289,7 @@ export function validateCommonAnalysisFindingModelBoundary(input = {}) {
   for (const requiredField of [
     "schema_version",
     "id",
+    "title",
     "analysis_record_id",
     "affected_subjects",
     "threat_scenario",
@@ -303,6 +306,20 @@ export function validateCommonAnalysisFindingModelBoundary(input = {}) {
         ),
       );
     }
+  }
+
+  if (
+    profile.fields?.title?.type !== "string" ||
+    profile.fields?.title?.min_length !== 1 ||
+    profile.fields?.title?.pattern !== model.title_pattern
+  ) {
+    errors.push(
+      problem(
+        ruleId,
+        "Canonical Common Finding title constraints are inconsistent.",
+        "title",
+      ),
+    );
   }
 
   if (

@@ -26,13 +26,15 @@ import {
  * @file Common analysis finding model and validation verification.
  *
  * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0001
+ * @implementsRequirement MR-0005ADR-0004REQ-0001GOV-0001
  * @derivedFromDecision MR-0005/ADR-0002
+ * @derivedFromDecision MR-0005/ADR-0004
  * @macroRequirement MR-0005
  * @implementationStatus implemented
  *
- * Verifies canonical Finding identity, explicit review state, immutable source
- * handling, governed Analysis Record and affected-subject resolution,
- * deterministic diagnostics and complete negative fixture coverage.
+ * Verifies canonical Finding identity, explicit title and review state,
+ * immutable source handling, governed Analysis Record and affected-subject
+ * resolution, deterministic diagnostics and complete negative fixture coverage.
  *
  * Side effects: creates and removes isolated operating-system temporary
  * directories. It never modifies repository Findings, Analysis Records,
@@ -53,6 +55,7 @@ function validFinding(overrides = {}) {
   return {
     schema_version: 1,
     id: "FINDING-0001",
+    title: "Unverified requester identity",
     analysis_record_id: "ANALYSIS-0001",
     affected_subjects: [
       {
@@ -178,7 +181,6 @@ function renderYamlArrayItem(value, indent) {
   }
 
   const entries = Object.entries(value);
-
   if (entries.length === 0) {
     return [`${padding}- {}`];
   }
@@ -613,6 +615,14 @@ test("publishes one canonical non-document common Finding model", () => {
     commonAnalysisFindingProfile.file_glob,
     "**/*.analysis-finding.yml",
   );
+  assert.ok(
+    commonAnalysisFindingProfile.required_fields
+      .includes("title"),
+  );
+  assert.equal(
+    commonAnalysisFindingProfile.fields.title.pattern,
+    commonAnalysisFindingModel.title_pattern,
+  );
 });
 
 test("publishes unique stable diagnostic rule identifiers", () => {
@@ -690,8 +700,33 @@ test("never infers an accepted review state from Finding content", () => {
   assert.equal(result.value, null);
 });
 
+test("never infers a canonical title from Finding content", () => {
+  const finding = validFinding();
+  delete finding.title;
+
+  const canonical = canonicalizeCommonAnalysisFinding(finding);
+  const result = validateCommonAnalysisFinding(
+    finding,
+    {
+      resolveAnalysisRecord: () => true,
+      resolveAffectedSubject: () => true,
+    },
+  );
+
+  assert.equal(Object.hasOwn(canonical, "title"), false);
+  assert.equal(result.valid, false);
+  assert.ok(
+    result.errors.some(
+      ({ rule_id: ruleId }) =>
+        ruleId === commonAnalysisFindingRuleIds.title,
+    ),
+  );
+  assert.equal(result.value, null);
+});
+
 test("canonicalization is deterministic and leaves authored input unchanged", () => {
   const finding = validFinding({
+    title: "  Unverified requester identity  ",
     affected_subjects: [
       {
         kind: "functional_requirement",
@@ -710,6 +745,7 @@ test("canonicalization is deterministic and leaves authored input unchanged", ()
 
   assert.deepEqual(first, second);
   assert.deepEqual(finding, before);
+  assert.equal(first.title, "  Unverified requester identity  ");
   assert.deepEqual(
     first.affected_subjects.map(({ kind }) => kind),
     [
@@ -719,10 +755,36 @@ test("canonicalization is deterministic and leaves authored input unchanged", ()
   );
 });
 
+test("rejects empty multiline and threat-scenario titles", () => {
+  for (const title of [
+    "",
+    "   ",
+    "Unverified requester\nidentity",
+    validFinding().threat_scenario,
+  ]) {
+    const result = validateCommonAnalysisFinding(
+      validFinding({ title }),
+      {
+        resolveAnalysisRecord: () => true,
+        resolveAffectedSubject: () => true,
+      },
+    );
+
+    assert.equal(result.valid, false);
+    assert.ok(
+      result.errors.some(
+        ({ rule_id: ruleId }) =>
+          ruleId === commonAnalysisFindingRuleIds.title,
+      ),
+    );
+  }
+});
+
 test("canonical identity index resolves unique Findings only", () => {
   const first = validFinding();
   const second = validFinding({
     id: "FINDING-0002",
+    title: "Second independent Finding",
   });
 
   const uniqueIndex =
@@ -762,6 +824,7 @@ test("shared references never merge independent Finding identities", () => {
   const first = validFinding();
   const second = validFinding({
     id: "FINDING-0002",
+    title: "Second independent Finding",
   });
 
   const index = indexCommonAnalysisFindings([
@@ -785,6 +848,21 @@ test("canonical model boundary accepts the registered model", () => {
   assert.deepEqual(
     validateCommonAnalysisFindingModelBoundary(),
     [],
+  );
+});
+
+test("canonical model boundary rejects divergent title constraints", () => {
+  const profile = structuredClone(commonAnalysisFindingProfile);
+  profile.fields.title.pattern = "^.*$";
+
+  const errors = validateCommonAnalysisFindingModelBoundary({ profile });
+
+  assert.ok(
+    errors.some(
+      ({ rule_id: ruleId, context }) =>
+        ruleId === commonAnalysisFindingValidatorRuleIds.modelProfile &&
+        context === "title",
+    ),
   );
 });
 

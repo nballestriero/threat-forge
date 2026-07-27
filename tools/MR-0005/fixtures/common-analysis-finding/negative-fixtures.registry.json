@@ -4,6 +4,7 @@
   "base_record": {
     "schema_version": 1,
     "id": "FINDING-0001",
+    "title": "Unverified requester identity",
     "analysis_record_id": "ANALYSIS-0001",
     "affected_subjects": [
       {
@@ -40,9 +41,9 @@
         {
           "operation": "set",
           "path": [
-            "title"
+            "unexpected_member"
           ],
-          "value": "Unexpected title"
+          "value": "Unexpected value"
         }
       ],
       "expected_rule_ids": [
@@ -97,6 +98,85 @@
       ],
       "expected_rule_ids": [
         "common-finding.model.identifier"
+      ]
+    },
+    {
+      "id": "missing-title",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "delete",
+          "path": [
+            "title"
+          ]
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.title"
+      ]
+    },
+    {
+      "id": "empty-title",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "title"
+          ],
+          "value": ""
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.title"
+      ]
+    },
+    {
+      "id": "whitespace-title",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "title"
+          ],
+          "value": "   "
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.title"
+      ]
+    },
+    {
+      "id": "multiline-title",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "title"
+          ],
+          "value": "Unverified requester\nidentity"
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.title"
+      ]
+    },
+    {
+      "id": "title-equals-threat-scenario",
+      "mode": "model",
+      "operations": [
+        {
+          "operation": "set",
+          "path": [
+            "title"
+          ],
+          "value": "An unauthorized actor impersonates a legitimate user."
+        }
+      ],
+      "expected_rule_ids": [
+        "common-finding.model.title"
       ]
     },
     {

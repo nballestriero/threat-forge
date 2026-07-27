@@ -2,7 +2,9 @@
  * @file Canonical common analysis finding model.
  *
  * @implementsRequirement MR-0005ADR-0002REQ-0001
+ * @implementsRequirement MR-0005ADR-0004REQ-0001GOV-0001
  * @derivedFromDecision MR-0005/ADR-0002
+ * @derivedFromDecision MR-0005/ADR-0004
  * @macroRequirement MR-0005
  * @implementationStatus implemented
  *
@@ -15,6 +17,7 @@
 
 const findingIdPatternSource = "^FINDING-\\d{4}$";
 const analysisRecordIdPatternSource = "^ANALYSIS-\\d{4}$";
+const titlePatternSource = "^(?=.*\\S)[^\\r\\n]+$";
 
 const affectedSubjectIdPatternSources = Object.freeze({
   base_analysis_element: "^BAE-\\d{4}$",
@@ -34,6 +37,7 @@ const affectedSubjectIdPatterns = Object.freeze(
 const allowedRootMembers = new Set([
   "schema_version",
   "id",
+  "title",
   "analysis_record_id",
   "affected_subjects",
   "threat_scenario",
@@ -136,6 +140,7 @@ export const commonAnalysisFindingRuleIds = Object.freeze({
   schemaVersion: "common-finding.model.schema-version",
   identifier: "common-finding.model.identifier",
   duplicateIdentifier: "common-finding.model.duplicate-identifier",
+  title: "common-finding.model.title",
   analysisRecordId: "common-finding.model.analysis-record-id",
   unresolvedAnalysisRecord: "common-finding.model.unresolved-analysis-record",
   affectedSubjects: "common-finding.model.affected-subjects",
@@ -198,6 +203,7 @@ export const commonAnalysisFindingProfile = deepFreeze({
   required_fields: [
     "schema_version",
     "id",
+    "title",
     "analysis_record_id",
     "affected_subjects",
     "threat_scenario",
@@ -216,6 +222,14 @@ export const commonAnalysisFindingProfile = deepFreeze({
       pattern: findingIdPatternSource,
       description: "Stable canonical common analysis Finding identifier.",
       examples: ["FINDING-0001"],
+    },
+    title: {
+      type: "string",
+      min_length: 1,
+      pattern: titlePatternSource,
+      description:
+        "Canonical human-readable single-line title distinct from the threat scenario.",
+      examples: ["Unverified requester identity"],
     },
     analysis_record_id: {
       type: "string",
@@ -284,6 +298,7 @@ export const commonAnalysisFindingModel = deepFreeze({
   schema_version: 1,
   identifier_field: "id",
   identifier_pattern: findingIdPatternSource,
+  title_pattern: titlePatternSource,
   analysis_record_identifier_pattern: analysisRecordIdPatternSource,
   profile_id: commonAnalysisFindingProfile.profile_id,
   record_domain: "analysis",
@@ -321,6 +336,9 @@ export function canonicalizeCommonAnalysisFinding(finding) {
   return {
     schema_version: finding?.schema_version,
     id: text(finding?.id),
+    ...(Object.hasOwn(finding ?? {}, "title")
+      ? { title: finding.title }
+      : {}),
     analysis_record_id: text(finding?.analysis_record_id),
     affected_subjects: affectedSubjects,
     threat_scenario: text(finding?.threat_scenario),
@@ -406,6 +424,26 @@ export function validateCommonAnalysisFinding(candidate, options = {}) {
         commonAnalysisFindingRuleIds.identifier,
         `Common analysis Finding identifier is invalid: ${id || "<empty>"}.`,
         "id",
+      ),
+    );
+  }
+
+  const authoredTitle =
+    typeof candidate.title === "string"
+      ? candidate.title
+      : "";
+  const title = authoredTitle.trim();
+  if (
+    typeof candidate.title !== "string" ||
+    !title ||
+    /[\r\n]/u.test(authoredTitle) ||
+    title === text(candidate.threat_scenario)
+  ) {
+    errors.push(
+      problem(
+        commonAnalysisFindingRuleIds.title,
+        "Common analysis Finding title must be non-empty, single-line and distinct from threat_scenario.",
+        "title",
       ),
     );
   }

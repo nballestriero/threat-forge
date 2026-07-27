@@ -8,6 +8,7 @@
   "required": [
     "schema_version",
     "id",
+    "title",
     "analysis_record_id",
     "affected_subjects",
     "threat_scenario",
@@ -28,6 +29,15 @@
         "FINDING-0001"
       ],
       "description": "Stable canonical common analysis Finding identifier."
+    },
+    "title": {
+      "type": "string",
+      "pattern": "^(?=.*\\S)[^\\r\\n]+$",
+      "minLength": 1,
+      "examples": [
+        "Unverified requester identity"
+      ],
+      "description": "Canonical human-readable single-line title distinct from the threat scenario."
     },
     "analysis_record_id": {
       "type": "string",
