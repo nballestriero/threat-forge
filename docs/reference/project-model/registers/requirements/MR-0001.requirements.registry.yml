@@ -241,3 +241,18 @@ requirements:
     decision_id: ADR-0009
     parent_requirement_id: MR-0001ADR-0009REQ-0001
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0009REQ-0001GOV-0001_body.md
+  - id: MR-0001ADR-0010REQ-0001
+    title: "Extensible canonical governed document model catalog"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0010
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0010REQ-0001_body.md
+  - id: MR-0001ADR-0010REQ-0001GOV-0001
+    title: "Governed activation of document model extensions"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0010
+    parent_requirement_id: MR-0001ADR-0010REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0010REQ-0001GOV-0001_body.md
