@@ -734,12 +734,14 @@
                 "enum": [
                   "ADR-0001",
                   "ADR-0002",
-                  "ADR-0003"
+                  "ADR-0003",
+                  "ADR-0004"
                 ],
                 "markdownEnumDescriptions": [
                   "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
                   "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft",
-                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
+                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft",
+                  "Common Finding canonical title and governed reference projection — MR-0005/ADR-0004 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -753,6 +755,10 @@
                   {
                     "value": "ADR-0003",
                     "description": "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Common Finding canonical title and governed reference projection — MR-0005/ADR-0004 — status: draft"
                   }
                 ]
               }
@@ -1131,12 +1137,14 @@
                 "enum": [
                   "ADR-0001",
                   "ADR-0002",
-                  "ADR-0003"
+                  "ADR-0003",
+                  "ADR-0004"
                 ],
                 "markdownEnumDescriptions": [
                   "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
                   "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft",
-                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
+                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft",
+                  "Common Finding canonical title and governed reference projection — MR-0005/ADR-0004 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
@@ -1150,6 +1158,10 @@
                   {
                     "value": "ADR-0003",
                     "description": "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Common Finding canonical title and governed reference projection — MR-0005/ADR-0004 — status: draft"
                   }
                 ]
               }
@@ -2086,6 +2098,41 @@
                   {
                     "value": "MR-0005ADR-0003REQ-0001",
                     "description": "Common methodology plugin contract and governed resolution — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0004REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Referenceable Common Finding identity and eligibility — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0004REQ-0001",
+                    "description": "Referenceable Common Finding identity and eligibility — status: draft"
                   }
                 ]
               }
