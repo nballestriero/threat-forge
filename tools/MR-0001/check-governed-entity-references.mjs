@@ -12,6 +12,12 @@ import { loadAndValidateBaseAnalysisRegistry } from "../MR-0003/lib/base-analysi
 import {
   evaluateBaseAnalysisReferenceEligibility,
 } from "../MR-0003/lib/base-analysis-reference-eligibility.mjs";
+import {
+  loadValidatedCommonAnalysisFindingReferenceProjection,
+} from "../MR-0005/check-common-analysis-findings.mjs";
+import {
+  createCommonAnalysisFindingReferenceProviders,
+} from "../MR-0005/lib/common-analysis-finding-reference-eligibility.mjs";
 
 /**
  * @file Canonical governed entity reference consistency checker.
@@ -94,11 +100,18 @@ try {
         .join(" | ")}`,
     );
   }
+  const commonFindingProviders =
+    createCommonAnalysisFindingReferenceProviders({
+      rootDir,
+      loadProjection:
+        loadValidatedCommonAnalysisFindingReferenceProjection,
+    });
   const registry = loadGovernedEntityResolverRegistry({ rootDir });
   const service = createGovernedEntityReferenceService({
     registry,
     sourceProjectionProviders: new Map([
       ["base-analysis-registry-reference-source", () => bae.projection],
+      ...commonFindingProviders.sourceProjectionProviders,
     ]),
     eligibilityProviders: new Map([
       [
@@ -110,6 +123,7 @@ try {
             documentsByPath: new Map(),
           }),
       ],
+      ...commonFindingProviders.eligibilityProviders,
     ]),
   });
   const activeEntityTypes = new Set(
