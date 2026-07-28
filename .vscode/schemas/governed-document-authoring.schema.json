@@ -1462,15 +1462,21 @@
               "parent_requirement_id": {
                 "type": "string",
                 "enum": [
-                  "MR-0001ADR-0010REQ-0001"
+                  "MR-0001ADR-0010REQ-0001",
+                  "MR-0001ADR-0010REQ-0002"
                 ],
                 "markdownEnumDescriptions": [
-                  "Extensible canonical governed document model catalog — status: draft"
+                  "Extensible canonical governed document model catalog — status: draft",
+                  "Registry-derived governed document model consumer coverage — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
                     "value": "MR-0001ADR-0010REQ-0001",
                     "description": "Extensible canonical governed document model catalog — status: draft"
+                  },
+                  {
+                    "value": "MR-0001ADR-0010REQ-0002",
+                    "description": "Registry-derived governed document model consumer coverage — status: draft"
                   }
                 ]
               }
