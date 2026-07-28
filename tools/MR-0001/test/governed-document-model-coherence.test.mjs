@@ -148,7 +148,7 @@ function applyFixture(root, fixture) {
   }
 }
 
-test("accepts a canonical governed-document relation graph", () => {
+test("accepts canonical governed-document cross-model coherence", () => {
   const root = makeRoot();
   try {
     const result = validateGovernedDocumentModelCoherence({ rootDir: root });

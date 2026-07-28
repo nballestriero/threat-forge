@@ -757,7 +757,7 @@ artifacts:
       - MR-0001ADR-0007REQ-0002GOV-0002
       - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/test/governed-document-model-coherence.test.mjs
-    reason: Verify canonical graph acceptance, unique stable cross-model rule identifiers and deterministic relation and ownership failure coverage.
+    reason: Verify canonical cross-model coherence acceptance, unique stable rule identifiers and deterministic relation and ownership failure coverage.
     verification_command: node --test tools/MR-0001/test/governed-document-model-coherence.test.mjs
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0011

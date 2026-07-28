@@ -148,7 +148,7 @@ function parseGovernanceIdentity(value) {
 }
 
 /**
- * Validates the active governed-document corpus as one relation graph.
+ * Validates cross-model coherence across the active governed-document corpus.
  *
  * @param {{rootDir: string}} input - Repository root.
  * @returns {{
