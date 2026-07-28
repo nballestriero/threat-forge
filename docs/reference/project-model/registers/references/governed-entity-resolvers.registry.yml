@@ -9,3 +9,10 @@ resolvers:
     identifier_pattern: "^BAE-[0-9]{4}$"
     source_projection_provider: base-analysis-registry-reference-source
     eligibility_provider: base-analysis-documentary-precedence
+
+  - id: common-analysis-finding-reference-resolver
+    entity_type: common_analysis_finding
+    status: inactive
+    identifier_pattern: '^FINDING-\d{4}$'
+    source_projection_provider: common-analysis-finding-reference-source
+    eligibility_provider: common-analysis-finding-accepted-state
