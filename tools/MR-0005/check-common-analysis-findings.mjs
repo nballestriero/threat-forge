@@ -898,6 +898,56 @@ export function validateCommonAnalysisFindingRepository(input = {}) {
 }
 
 /**
+ * Loads the validated Common Finding reference-source projection.
+ *
+ * @implementsRequirement MR-0005ADR-0004REQ-0001GOV-0001
+ * @derivedFromDecision MR-0005/ADR-0004
+ * @macroRequirement MR-0005
+ * @implementationStatus implemented
+ *
+ * The operational reference provider fails closed when any repository-level
+ * Common Finding diagnostic exists. The lower-level validator continues to
+ * expose valid individual records for deterministic diagnostics, but consumers
+ * cannot resolve references from a repository whose complete Finding boundary
+ * is invalid.
+ *
+ * @param {{
+ *   rootDir?: string,
+ *   findingPaths?: string[]
+ * }} [input] - Repository validation context.
+ * @returns {Array<{
+ *   id: string,
+ *   title: string,
+ *   review_state: string,
+ *   source_path: string
+ * }>} Detached validated reference-source projection.
+ * @throws {Error} When the canonical Common Finding repository is invalid.
+ */
+export function loadValidatedCommonAnalysisFindingReferenceProjection(
+  input = {},
+) {
+  const result = validateCommonAnalysisFindingRepository(input);
+
+  if (!result.valid) {
+    const diagnostics = result.errors
+      .map((entry) => {
+        const context = entry.context
+          ? ` [${entry.context}]`
+          : "";
+
+        return `${entry.rule_id}${context}: ${entry.message}`;
+      })
+      .join(" | ");
+
+    throw new Error(
+      `Canonical Common Finding repository is invalid: ${diagnostics}`,
+    );
+  }
+
+  return structuredClone(result.reference_projection);
+}
+
+/**
  * Runs the repository validator command.
  *
  * @returns {void}

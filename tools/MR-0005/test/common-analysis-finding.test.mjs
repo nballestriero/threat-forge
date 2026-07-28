@@ -21,6 +21,7 @@ import {
 } from "../lib/common-analysis-finding-reference-eligibility.mjs";
 import {
   commonAnalysisFindingValidatorRuleIds,
+  loadValidatedCommonAnalysisFindingReferenceProjection,
   validateCommonAnalysisFindingModelBoundary,
   validateCommonAnalysisFindingRepository,
 } from "../check-common-analysis-findings.mjs";
@@ -37,8 +38,9 @@ import {
  *
  * Verifies canonical Finding identity, explicit title and review state,
  * immutable source handling, governed Analysis Record and affected-subject
- * resolution, repository-derived reference projection, accepted-state reference
- * eligibility, deterministic diagnostics and complete negative fixture coverage.
+ * resolution, repository-derived reference projection, fail-closed operational
+ * projection loading, accepted-state eligibility, deterministic diagnostics and
+ * complete negative fixture coverage.
  *
  * Side effects: creates and removes isolated operating-system temporary
  * directories. It never modifies repository Findings, Analysis Records,
@@ -1044,6 +1046,90 @@ test("repository reference projection excludes invalid and undiscovered Findings
           sourcePath === undiscoveredPath,
       ),
       false,
+    );
+  });
+});
+
+test("operational reference projection loads only from a completely valid repository", () => {
+  withTemporaryProject((rootDir) => {
+    createCanonicalSources(rootDir);
+
+    const findingPath =
+      "analysis/FINDING-0001.analysis-finding.yml";
+
+    writeProjectFile(
+      rootDir,
+      findingPath,
+      validFinding(),
+    );
+
+    const first =
+      loadValidatedCommonAnalysisFindingReferenceProjection({
+        rootDir,
+        findingPaths: [findingPath],
+      });
+
+    assert.deepEqual(
+      first,
+      [
+        {
+          id: "FINDING-0001",
+          title: "Unverified requester identity",
+          review_state: "accepted",
+          source_path: findingPath,
+        },
+      ],
+    );
+
+    first[0].title = "Locally mutated projection";
+
+    const second =
+      loadValidatedCommonAnalysisFindingReferenceProjection({
+        rootDir,
+        findingPaths: [findingPath],
+      });
+
+    assert.equal(
+      second[0].title,
+      "Unverified requester identity",
+    );
+  });
+});
+
+test("operational reference projection fails closed for an invalid repository", () => {
+  withTemporaryProject((rootDir) => {
+    createCanonicalSources(rootDir);
+
+    const invalidPath =
+      "analysis/invalid.analysis-finding.yml";
+
+    writeProjectFile(
+      rootDir,
+      invalidPath,
+      validFinding({
+        title: "",
+      }),
+    );
+
+    assert.throws(
+      () =>
+        loadValidatedCommonAnalysisFindingReferenceProjection({
+          rootDir,
+          findingPaths: [invalidPath],
+        }),
+      (error) => {
+        assert.match(
+          error.message,
+          /^Canonical Common Finding repository is invalid:/u,
+        );
+        assert.ok(
+          error.message.includes(
+            commonAnalysisFindingRuleIds.title,
+          ),
+        );
+
+        return true;
+      },
     );
   });
 });
