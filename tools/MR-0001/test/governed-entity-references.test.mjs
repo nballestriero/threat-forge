@@ -11,6 +11,10 @@ import {
   serializeGovernedReferencePayload,
   validateGovernedEntityResolverRegistry,
 } from "../lib/governed-entity-references.mjs";
+import {
+  commonAnalysisFindingReferenceProviderIds,
+  createCommonAnalysisFindingReferenceProviders,
+} from "../../MR-0005/lib/common-analysis-finding-reference-eligibility.mjs";
 
 /**
  * @file Governed entity reference grammar and resolver verification suite.
@@ -67,6 +71,43 @@ function serviceForFixture(fixture) {
     ]),
   });
 }
+function commonFindingService(projection) {
+  const providers = createCommonAnalysisFindingReferenceProviders({
+    rootDir: "synthetic-common-finding-root",
+    loadProjection: () => projection,
+  });
+  return createGovernedEntityReferenceService({
+    registry: registry({
+      resolvers: [
+        {
+          id: "common-analysis-finding-reference-resolver",
+          entity_type: "common_analysis_finding",
+          status: "active",
+          identifier_pattern: "^FINDING-\\d{4}$",
+          source_projection_provider:
+            commonAnalysisFindingReferenceProviderIds.sourceProjection,
+          eligibility_provider:
+            commonAnalysisFindingReferenceProviderIds.eligibility,
+        },
+      ],
+    }),
+    sourceProjectionProviders: providers.sourceProjectionProviders,
+    eligibilityProviders: providers.eligibilityProviders,
+  });
+}
+
+function finding(id, title, reviewState, sourcePath = `analysis/${id}.analysis-finding.yml`) {
+  return { id, title, review_state: reviewState, source_path: sourcePath };
+}
+
+function findingRequest() {
+  return {
+    allowedEntityTypes: ["common_analysis_finding"],
+    currentDocument: { id: "MR-0001ADR-0009REQ-0001" },
+    positionId: "finding-derivation",
+  };
+}
+
 
 test("publishes unique stable governed reference rule identifiers", () => {
   const values = Object.values(governedEntityReferenceRuleIds);
@@ -159,4 +200,93 @@ test("reference resolution leaves source projections unchanged", () => {
     positionId: "fixture-position",
   });
   assert.deepEqual(fixture.projection, before);
+});
+
+test("active Common Finding resolver enforces lifecycle and canonical title", () => {
+  const service = commonFindingService([
+    finding("FINDING-0001", "Accepted authentication gap", "accepted"),
+    finding("FINDING-0002", "Proposed logging gap", "proposed"),
+    finding("FINDING-0003", "Rejected transport concern", "rejected"),
+  ]);
+  const request = findingRequest();
+
+  const accepted = service.analyzePayload({
+    ...request,
+    payload: "[FINDING-0001] Accepted authentication gap",
+  });
+  assert.equal(accepted.valid, true);
+  assert.equal(accepted.entity_type, "common_analysis_finding");
+  assert.equal(accepted.eligibility.review_state, "accepted");
+
+  for (const [id, title, reviewState] of [
+    ["FINDING-0002", "Proposed logging gap", "proposed"],
+    ["FINDING-0003", "Rejected transport concern", "rejected"],
+  ]) {
+    const result = service.analyzePayload({
+      ...request,
+      payload: `[${id}] ${title}`,
+    });
+    assert.equal(result.eligibility.review_state, reviewState);
+    assert.deepEqual(
+      result.diagnostics.map(({ rule_id: ruleId }) => ruleId),
+      [governedEntityReferenceRuleIds.ineligibleEntity],
+    );
+  }
+
+  const divergent = service.analyzePayload({
+    ...request,
+    payload: "[FINDING-0001] Outdated title",
+  });
+  assert.equal(
+    divergent.canonical_payload,
+    "[FINDING-0001] Accepted authentication gap",
+  );
+  assert.deepEqual(
+    divergent.diagnostics.map(({ rule_id: ruleId }) => ruleId),
+    [governedEntityReferenceRuleIds.titleDivergence],
+  );
+  assert.deepEqual(
+    service.listEligibleCandidates(request).map(({ id }) => id),
+    ["FINDING-0001"],
+  );
+});
+
+test("active Common Finding resolver preserves ambiguity and immutability", () => {
+  const projection = [
+    finding(
+      "FINDING-0001",
+      "First duplicate title",
+      "accepted",
+      "analysis/a/FINDING-0001.analysis-finding.yml",
+    ),
+    finding(
+      "FINDING-0001",
+      "Second duplicate title",
+      "accepted",
+      "analysis/b/FINDING-0001.analysis-finding.yml",
+    ),
+    finding("FINDING-0002", "Unique accepted finding", "accepted"),
+  ];
+  const before = structuredClone(projection);
+  const service = commonFindingService(projection);
+  const request = findingRequest();
+
+  const ambiguous = service.analyzePayload({
+    ...request,
+    payload: "[FINDING-0001] First duplicate title",
+  });
+  assert.deepEqual(
+    ambiguous.diagnostics.map(({ rule_id: ruleId }) => ruleId),
+    [governedEntityReferenceRuleIds.ambiguousIdentifier],
+  );
+
+  const first = service.listEligibleCandidates(request);
+  assert.deepEqual(first.map(({ id }) => id), ["FINDING-0002"]);
+  first[0].entity.title = "Consumer mutation";
+
+  assert.equal(
+    service.listEligibleCandidates(request)[0].entity.title,
+    "Unique accepted finding",
+  );
+  assert.deepEqual(projection, before);
 });

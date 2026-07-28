@@ -160,7 +160,7 @@ try {
   const testCount = parseTestCount(
     `${testResult.stdout ?? ""}\n${testResult.stderr ?? ""}`,
   );
-  if (testCount < 21) {
+  if (testCount < 23) {
     throw new Error(
       `Governed entity reference verification count is incomplete: ${testCount}.`,
     );
