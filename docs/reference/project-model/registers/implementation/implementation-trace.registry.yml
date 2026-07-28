@@ -1477,3 +1477,13 @@ artifacts:
     implemented_path: tools/MR-0005/test/common-analysis-finding-editor-routing.test.mjs
     reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0004IMPL-0002 after source completeness checks and governed verification succeeded."
     verification_command: node --test tools/MR-0005/test/common-analysis-finding-editor-routing.test.mjs
+
+  - id: MR-0005ADR-0004REQ-0001GOV-0001IMPL-0001
+    title: "Common Finding accepted-state reference eligibility provider"
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0005ADR-0004REQ-0001GOV-0001
+    implemented_path: tools/MR-0005/lib/common-analysis-finding-reference-eligibility.mjs
+    reason: "Provide a pure methodology-neutral accepted-state eligibility decision while leaving entity-type and reference-position authorization to the governed reference service."
+    verification_command: node --check tools/MR-0005/lib/common-analysis-finding-reference-eligibility.mjs

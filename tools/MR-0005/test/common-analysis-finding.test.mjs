@@ -17,6 +17,9 @@ import {
   validateCommonAnalysisFinding,
 } from "../lib/common-analysis-finding-model.mjs";
 import {
+  evaluateCommonAnalysisFindingReferenceEligibility,
+} from "../lib/common-analysis-finding-reference-eligibility.mjs";
+import {
   commonAnalysisFindingValidatorRuleIds,
   validateCommonAnalysisFindingModelBoundary,
   validateCommonAnalysisFindingRepository,
@@ -34,8 +37,8 @@ import {
  *
  * Verifies canonical Finding identity, explicit title and review state,
  * immutable source handling, governed Analysis Record and affected-subject
- * resolution, repository-derived reference projection, deterministic diagnostics
- * and complete negative fixture coverage.
+ * resolution, repository-derived reference projection, accepted-state reference
+ * eligibility, deterministic diagnostics and complete negative fixture coverage.
  *
  * Side effects: creates and removes isolated operating-system temporary
  * directories. It never modifies repository Findings, Analysis Records,
@@ -1043,6 +1046,111 @@ test("repository reference projection excludes invalid and undiscovered Findings
       false,
     );
   });
+});
+
+test("reference eligibility depends only on explicit Common Finding review state", () => {
+  const cases = [
+    {
+      review_state: "accepted",
+      eligible: true,
+      reason: "The Common Finding is explicitly accepted.",
+    },
+    {
+      review_state: "proposed",
+      eligible: false,
+      reason:
+        "Common Finding FINDING-0001 is not accepted " +
+        "(review_state: proposed).",
+    },
+    {
+      review_state: "rejected",
+      eligible: false,
+      reason:
+        "Common Finding FINDING-0001 is not accepted " +
+        "(review_state: rejected).",
+    },
+  ];
+
+  for (const caseRecord of cases) {
+    const entity = {
+      id: "FINDING-0001",
+      title: "Unverified requester identity",
+      review_state: caseRecord.review_state,
+      source_path:
+        "analysis/FINDING-0001.analysis-finding.yml",
+    };
+
+    const before = structuredClone(entity);
+
+    const first =
+      evaluateCommonAnalysisFindingReferenceEligibility({
+        entity,
+        currentDocument: {
+          modelId: "first-caller",
+        },
+        positionId: "first-caller.position",
+      });
+
+    const second =
+      evaluateCommonAnalysisFindingReferenceEligibility({
+        entity,
+        currentDocument: {
+          modelId: "second-caller",
+        },
+        positionId: "second-caller.position",
+      });
+
+    assert.deepEqual(first, second);
+    assert.deepEqual(entity, before);
+    assert.equal(first.eligible, caseRecord.eligible);
+    assert.equal(
+      first.review_state,
+      caseRecord.review_state,
+    );
+    assert.equal(first.reason, caseRecord.reason);
+  }
+});
+
+test("reference eligibility fails closed for missing malformed and unknown review states", () => {
+  for (const reviewState of [
+    undefined,
+    "",
+    " accepted ",
+    "approved",
+  ]) {
+    const entity = {
+      id: "FINDING-0001",
+      title: "Unverified requester identity",
+      source_path:
+        "analysis/FINDING-0001.analysis-finding.yml",
+    };
+
+    if (reviewState !== undefined) {
+      entity.review_state = reviewState;
+    }
+
+    const before = structuredClone(entity);
+
+    const result =
+      evaluateCommonAnalysisFindingReferenceEligibility({
+        entity,
+      });
+
+    const exactState =
+      String(reviewState ?? "");
+
+    assert.equal(result.eligible, false);
+    assert.equal(
+      result.review_state,
+      exactState,
+    );
+    assert.equal(
+      result.reason,
+      `Common Finding FINDING-0001 is not accepted ` +
+        `(review_state: ${exactState || "<empty>"}).`,
+    );
+    assert.deepEqual(entity, before);
+  }
 });
 
 test("negative fixture registry is complete and uniquely identified", () => {
