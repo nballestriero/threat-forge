@@ -34,7 +34,8 @@ import {
  *
  * Verifies canonical Finding identity, explicit title and review state,
  * immutable source handling, governed Analysis Record and affected-subject
- * resolution, deterministic diagnostics and complete negative fixture coverage.
+ * resolution, repository-derived reference projection, deterministic diagnostics
+ * and complete negative fixture coverage.
  *
  * Side effects: creates and removes isolated operating-system temporary
  * directories. It never modifies repository Findings, Analysis Records,
@@ -916,6 +917,17 @@ test("repository validation resolves every supported governed subject", () => {
       result.finding_paths,
       [findingPath],
     );
+    assert.deepEqual(
+      result.reference_projection,
+      [
+        {
+          id: "FINDING-0001",
+          title: "Unverified requester identity",
+          review_state: "accepted",
+          source_path: findingPath,
+        },
+      ],
+    );
 
     for (const [projectPath, snapshot] of
       Object.entries(snapshots)) {
@@ -930,6 +942,106 @@ test("repository validation resolves every supported governed subject", () => {
         snapshot,
       );
     }
+  });
+});
+
+test("repository reference projection excludes invalid and undiscovered Findings while preserving duplicate identities", () => {
+  withTemporaryProject((rootDir) => {
+    createCanonicalSources(rootDir);
+
+    const firstPath =
+      "analysis/first.analysis-finding.yml";
+    const secondPath =
+      "analysis/second.analysis-finding.yml";
+    const invalidPath =
+      "analysis/invalid.analysis-finding.yml";
+    const undiscoveredPath =
+      "analysis/undiscovered.analysis-finding.yml";
+
+    writeProjectFile(
+      rootDir,
+      firstPath,
+      validFinding({
+        title: "First duplicate Finding",
+      }),
+    );
+    writeProjectFile(
+      rootDir,
+      secondPath,
+      validFinding({
+        title: "Second duplicate Finding",
+        threat_scenario:
+          "A second independently authored scenario uses the same identity.",
+      }),
+    );
+    writeProjectFile(
+      rootDir,
+      invalidPath,
+      validFinding({
+        id: "FINDING-0002",
+        title: "",
+      }),
+    );
+    writeProjectFile(
+      rootDir,
+      undiscoveredPath,
+      validFinding({
+        id: "FINDING-0003",
+        title: "Undiscovered Finding",
+      }),
+    );
+
+    const result =
+      validateCommonAnalysisFindingRepository({
+        rootDir,
+        findingPaths: [
+          invalidPath,
+          secondPath,
+          firstPath,
+        ],
+      });
+
+    assert.equal(result.valid, false);
+    assert.equal(result.finding_count, 3);
+    assert.ok(
+      result.errors.some(
+        ({ rule_id: ruleId }) =>
+          ruleId ===
+          commonAnalysisFindingRuleIds.duplicateIdentifier,
+      ),
+    );
+    assert.ok(
+      result.errors.some(
+        ({ rule_id: ruleId, context }) =>
+          ruleId === commonAnalysisFindingRuleIds.title &&
+          context === `${invalidPath}:title`,
+      ),
+    );
+    assert.deepEqual(
+      result.reference_projection,
+      [
+        {
+          id: "FINDING-0001",
+          title: "First duplicate Finding",
+          review_state: "accepted",
+          source_path: firstPath,
+        },
+        {
+          id: "FINDING-0001",
+          title: "Second duplicate Finding",
+          review_state: "accepted",
+          source_path: secondPath,
+        },
+      ],
+    );
+    assert.equal(
+      result.reference_projection.some(
+        ({ source_path: sourcePath }) =>
+          sourcePath === invalidPath ||
+          sourcePath === undiscoveredPath,
+      ),
+      false,
+    );
   });
 });
 

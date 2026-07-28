@@ -36,8 +36,9 @@ import {
  * @implementationStatus implemented
  *
  * Validates the canonical methodology-neutral Finding model boundary, discovers
- * authored common analysis Findings and resolves their originating Analysis
- * Record and affected governed subjects through the owning canonical models.
+ * authored common analysis Findings, resolves their originating Analysis Record
+ * and affected governed subjects through the owning canonical models and derives
+ * the deterministic read-only reference-source projection.
  *
  * Side effects: reads governed repository files and writes diagnostics only to
  * stdout or stderr. It never modifies Findings, Analysis Records, Base Analysis
@@ -766,6 +767,12 @@ function loadFindingResolutionContext(rootDir) {
  *   valid: boolean,
  *   finding_count: number,
  *   finding_paths: string[],
+ *   reference_projection: Array<{
+ *     id: string,
+ *     title: string,
+ *     review_state: string,
+ *     source_path: string
+ *   }>,
  *   errors: Array<Record<string, string>>
  * }} Deterministic validation result.
  */
@@ -867,10 +874,25 @@ export function validateCommonAnalysisFindingRepository(input = {}) {
     );
   }
 
+  const referenceProjection = validFindings
+    .map(({ path: sourcePath, value }) => ({
+      id: String(value.id),
+      title: String(value.title),
+      review_state: String(value.review_state),
+      source_path: sourcePath,
+    }))
+    .sort((left, right) =>
+      compare(
+        `${left.id}|${left.source_path}`,
+        `${right.id}|${right.source_path}`,
+      ),
+    );
+
   return {
     valid: errors.length === 0,
     finding_count: findingPaths.length,
     finding_paths: findingPaths,
+    reference_projection: referenceProjection,
     errors: stableProblems(errors),
   };
 }
