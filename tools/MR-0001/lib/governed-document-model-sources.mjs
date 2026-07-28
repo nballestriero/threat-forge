@@ -9,13 +9,19 @@ import { readGovernedYamlFile } from "./governed-yaml.mjs";
  * @implementsRequirement MR-0001ADR-0007REQ-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Loads the governed source schema, model index, four model definitions, seven
- * representation profiles and controlled value-set identities. Validation is
- * side-effect free and returns deterministic diagnostics with stable rule ids.
+ * Loads the governed source schema, canonical model index, the model and
+ * representation-profile definitions referenced by that index, and controlled
+ * value-set identities. Validation is side-effect free and returns deterministic
+ * diagnostics with stable rule ids without imposing consumer-local cardinalities.
  */
 
 const modulePath = fileURLToPath(import.meta.url);
@@ -26,7 +32,6 @@ export const documentationFieldValuesProjectPath = "docs/reference/project-model
 
 const RULE = Object.freeze({
   schema: "document-model.source.schema.structure",
-  count: "document-model.source.index.canonical-count",
   unique: "document-model.source.identifier.unique",
   path: "document-model.source.path.resolution",
   modelProfile: "document-model.source.model.profile-reference",
@@ -39,12 +44,91 @@ const RULE = Object.freeze({
 });
 export const governedDocumentModelSourceRuleIds = Object.freeze(Object.values(RULE));
 
+const CONSUMER_COVERAGE_RULE = Object.freeze({
+  duplicate: "document-model.consumer.provider.duplicate",
+  missing: "document-model.consumer.provider.missing",
+  unregistered: "document-model.consumer.provider.unregistered",
+});
+export const governedDocumentModelConsumerCoverageRuleIds = Object.freeze(
+  Object.values(CONSUMER_COVERAGE_RULE),
+);
+
 function clone(value) { return structuredClone(value); }
 function object(value) { return value && typeof value === "object" && !Array.isArray(value); }
 function text(value) { return typeof value === "string" && value.trim() ? value.trim() : ""; }
 function pointer(parent, key) { return `${parent}/${String(key).replaceAll("~", "~0").replaceAll("/", "~1")}`; }
 function diagnostic(ruleId, sourcePath, location, message) { return { rule_id: ruleId, source_path: sourcePath, location, message }; }
 function sortDiagnostics(values) { return values.sort((a,b)=>`${a.source_path}|${a.location}|${a.rule_id}|${a.message}`.localeCompare(`${b.source_path}|${b.location}|${b.rule_id}|${b.message}`,"en",{numeric:true})); }
+
+
+export function canonicalGovernedDocumentModelIds(sourceSet) {
+  return (sourceSet?.index?.value?.models ?? [])
+    .map((entry) => text(entry?.id))
+    .filter(Boolean);
+}
+
+export function validateGovernedDocumentModelConsumerCoverage(input) {
+  const consumerId = text(input?.consumerId) || "<unknown-consumer>";
+  const sourceSet = input?.sourceSet;
+  const sourcePath = sourceSet?.index?.path ?? documentModelIndexProjectPath;
+  const canonicalIds = canonicalGovernedDocumentModelIds(sourceSet);
+  const providerIds = Array.isArray(input?.providerModelIds)
+    ? input.providerModelIds.map((value) => text(value)).filter(Boolean)
+    : [];
+  const diagnostics = [];
+  const canonicalSet = new Set(canonicalIds);
+  const providerSet = new Set();
+
+  for (const modelId of providerIds) {
+    if (providerSet.has(modelId)) {
+      diagnostics.push(
+        diagnostic(
+          CONSUMER_COVERAGE_RULE.duplicate,
+          sourcePath,
+          "$/models",
+          `Consumer ${consumerId} declares duplicate provider model id ${modelId}.`,
+        ),
+      );
+    }
+    providerSet.add(modelId);
+  }
+  for (const modelId of canonicalIds) {
+    if (!providerSet.has(modelId)) {
+      diagnostics.push(
+        diagnostic(
+          CONSUMER_COVERAGE_RULE.missing,
+          sourcePath,
+          "$/models",
+          `Consumer ${consumerId} has no provider for canonical model ${modelId}.`,
+        ),
+      );
+    }
+  }
+  for (const modelId of providerSet) {
+    if (!canonicalSet.has(modelId)) {
+      diagnostics.push(
+        diagnostic(
+          CONSUMER_COVERAGE_RULE.unregistered,
+          sourcePath,
+          "$/models",
+          `Consumer ${consumerId} declares provider for unregistered model ${modelId}.`,
+        ),
+      );
+    }
+  }
+  return sortDiagnostics(diagnostics);
+}
+
+export function assertGovernedDocumentModelConsumerCoverage(input) {
+  const diagnostics = validateGovernedDocumentModelConsumerCoverage(input);
+  if (diagnostics.length > 0) {
+    throw new Error(
+      diagnostics
+        .map((entry) => `${entry.rule_id}: ${entry.message}`)
+        .join(" | "),
+    );
+  }
+}
 
 function normalizeProjectPath(value) { return String(value ?? "").replaceAll("\\", "/").replace(/^\.\//u, "").trim(); }
 function resolveSafeProjectPath(rootDir, projectPath) {
@@ -118,7 +202,6 @@ export function validateGovernedDocumentModelSourceSet(sourceSet) {
   const documents=[sourceSet.index,...sourceSet.models,...sourceSet.profiles];
   for (const document of documents) for (const message of schemaErrors(document.value,schema,schema)) diagnostics.push(diagnostic(RULE.schema,document.path,"$",message));
   const index=sourceSet.index.value;
-  if ((index.models ?? []).length!==4 || (index.representation_profiles ?? []).length!==7) diagnostics.push(diagnostic(RULE.count,sourceSet.index.path,"$",`Canonical source set must declare exactly four models and seven representation profiles.`));
   const modelIds=new Set(); const profileIds=new Set(); const globalIds=new Map();
   for (const entry of index.models ?? []) { if (modelIds.has(entry.id)) diagnostics.push(diagnostic(RULE.unique,sourceSet.index.path,"$/models",`Duplicate model id: ${entry.id}`)); modelIds.add(entry.id); }
   for (const entry of index.representation_profiles ?? []) { if (profileIds.has(entry.id)) diagnostics.push(diagnostic(RULE.unique,sourceSet.index.path,"$/representation_profiles",`Duplicate profile id: ${entry.id}`)); profileIds.add(entry.id); }

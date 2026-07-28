@@ -33,7 +33,23 @@ checks:
       - MR-0001ADR-0007REQ-0001
       - MR-0001ADR-0007REQ-0001GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0001
-    description: Validate the canonical four-model and seven-profile source definitions, stable identifiers, controlled value-set references and deterministic negative fixtures without validating the active corpus.
+      - MR-0001ADR-0010REQ-0001
+      - MR-0001ADR-0010REQ-0001GOV-0001
+    description: Validate registry-derived canonical model and representation-profile source definitions, stable identifiers, controlled value-set references and deterministic negative fixtures without imposing a fixed model or profile cardinality.
+
+  - id: MR-0001ADR-0010REQ-0002GOV-0001CHECK-0001
+    title: Governed document model extension and consumer coverage verification
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0001/test/governed-document-model-sources.test.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0010REQ-0001
+      - MR-0001ADR-0010REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    description: Verify coherent canonical source extension and deterministic rejection of missing unregistered or duplicate consumer providers without changing the active model inventory.
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0001
     title: Macro-requirement model consistency
@@ -164,7 +180,9 @@ checks:
       - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
-    description: Validate deterministic MR, Decision, Functional Requirement and Governance Requirement catalog, schema, relation, transaction, runner and negative-fixture coherence.
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    description: Validate registry-derived governed document model coverage across the authoring catalog and schema together with relation transaction runner and negative-fixture coherence.
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001CHECK-0001
     title: VS Code governed document authoring adapter consistency
@@ -191,7 +209,9 @@ checks:
       - MR-0002ADR-0006REQ-0002GOV-0001
       - MR-0002ADR-0006REQ-0004
       - MR-0002ADR-0006REQ-0004GOV-0001
-    description: Validate editor-independent analysis for all four governed body models, thin VS Code delegation, live diagnostic and completion semantics, quick fixes and deterministic local VSIX packaging.
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    description: Validate registry-derived active governed body model coverage, thin VS Code delegation, live diagnostic and completion semantics, quick fixes and deterministic local VSIX packaging.
 
   - id: MR-0003ADR-0001REQ-0005GOV-0001CHECK-0001
     title: Base Analysis registry consistency

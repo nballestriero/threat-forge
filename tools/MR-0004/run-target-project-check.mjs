@@ -8,6 +8,11 @@ import { validateDecisionModel } from "../MR-0001/lib/decision-model-validation.
 import { validateFunctionalRequirementModel } from "../MR-0001/lib/functional-requirement-model-validation.mjs";
 import { validateGovernanceRequirementModel } from "../MR-0001/lib/governance-requirement-model-validation.mjs";
 import { validateGovernedDocumentModelCoherence } from "../MR-0001/lib/governed-document-model-coherence-validation.mjs";
+import {
+  assertGovernedDocumentModelConsumerCoverage,
+  canonicalGovernedDocumentModelIds,
+  loadGovernedDocumentModelSourceSet,
+} from "../MR-0001/lib/governed-document-model-sources.mjs";
 import { validateMacroRequirementModel } from "../MR-0001/lib/macro-requirement-model-validation.mjs";
 import { loadAndValidateBaseAnalysisRegistry } from "../MR-0003/lib/base-analysis-registry.mjs";
 
@@ -15,7 +20,10 @@ import { loadAndValidateBaseAnalysisRegistry } from "../MR-0003/lib/base-analysi
  * @file Target Project governed-document validation runner.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0003
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
@@ -49,28 +57,55 @@ export const targetOwnedProjectPaths = Object.freeze([
   "docs/reference/project-model/body",
 ]);
 
-const modelChecks = Object.freeze([
-  {
-    id: "macro-requirement-model",
-    run: (rootDir) => validateMacroRequirementModel({ rootDir }),
-  },
-  {
-    id: "decision-model",
-    run: (rootDir) => validateDecisionModel({ rootDir }),
-  },
-  {
-    id: "functional-requirement-model",
-    run: (rootDir) => validateFunctionalRequirementModel({ rootDir }),
-  },
-  {
-    id: "governance-requirement-model",
-    run: (rootDir) => validateGovernanceRequirementModel({ rootDir }),
-  },
-  {
-    id: "governed-document-model-coherence",
-    run: (rootDir) => validateGovernedDocumentModelCoherence({ rootDir }),
-  },
+const modelCheckProviders = new Map([
+  [
+    "macro-requirement",
+    {
+      id: "macro-requirement-model",
+      run: (rootDir) => validateMacroRequirementModel({ rootDir }),
+    },
+  ],
+  [
+    "decision",
+    {
+      id: "decision-model",
+      run: (rootDir) => validateDecisionModel({ rootDir }),
+    },
+  ],
+  [
+    "functional-requirement",
+    {
+      id: "functional-requirement-model",
+      run: (rootDir) => validateFunctionalRequirementModel({ rootDir }),
+    },
+  ],
+  [
+    "governance-requirement",
+    {
+      id: "governance-requirement-model",
+      run: (rootDir) => validateGovernanceRequirementModel({ rootDir }),
+    },
+  ],
 ]);
+const crossModelCheck = Object.freeze({
+  id: "governed-document-model-coherence",
+  run: (rootDir) => validateGovernedDocumentModelCoherence({ rootDir }),
+});
+
+function resolveModelChecks(rootDir) {
+  const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir });
+  assertGovernedDocumentModelConsumerCoverage({
+    consumerId: "target-project-model-validation",
+    sourceSet,
+    providerModelIds: [...modelCheckProviders.keys()],
+  });
+  return [
+    ...canonicalGovernedDocumentModelIds(sourceSet).map((modelId) =>
+      modelCheckProviders.get(modelId),
+    ),
+    crossModelCheck,
+  ];
+}
 
 function normalizeProjectPath(value) {
   return String(value ?? "")
@@ -351,7 +386,7 @@ export function runTargetProjectCheck(options) {
   try {
     overlayRoot = buildValidationOverlay(engineRoot, targetRoot);
     const checks = [];
-    for (const check of modelChecks) {
+    for (const check of resolveModelChecks(overlayRoot)) {
       try {
         const result = check.run(overlayRoot);
         const diagnostics = normalizeModelDiagnostics(check.id, result);

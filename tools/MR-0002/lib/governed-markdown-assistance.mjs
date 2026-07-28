@@ -2,7 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { readGovernedYamlFile } from "../../MR-0001/lib/governed-yaml.mjs";
-import { loadGovernedDocumentModelSourceSet } from "../../MR-0001/lib/governed-document-model-sources.mjs";
+import {
+  assertGovernedDocumentModelConsumerCoverage,
+  loadGovernedDocumentModelSourceSet,
+} from "../../MR-0001/lib/governed-document-model-sources.mjs";
 import {
   normalizeProjectPath,
   parseMarkdownDocument,
@@ -40,7 +43,10 @@ import {
  * @implementsRequirement MR-0002ADR-0006REQ-0001GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0004
  * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
@@ -189,8 +195,33 @@ function addBodyRecord(recordsByPath, record) {
   recordsByPath.set(bodyPath, { ...record, bodyPath });
 }
 
-function loadBodyRecords(rootDir) {
+function requirementModelByDiscriminator(sourceSet) {
+  const models = new Map();
+  for (const profileEntry of sourceSet.profiles) {
+    const profile = profileEntry.value;
+    if (profile.representation_kind !== "yaml_registry") continue;
+    for (const variant of profile.record_variants ?? []) {
+      const discriminatorField = String(variant.discriminator_field ?? "").trim();
+      const discriminatorValue = String(variant.discriminator_value ?? "").trim();
+      const modelId = String(variant.model_id ?? "").trim();
+      if (discriminatorField !== "requirement_type" || !discriminatorValue || !modelId) {
+        continue;
+      }
+      const previous = models.get(discriminatorValue);
+      if (previous && previous !== modelId) {
+        throw new Error(
+          `Requirement discriminator ${discriminatorValue} maps to both ${previous} and ${modelId}.`,
+        );
+      }
+      models.set(discriminatorValue, modelId);
+    }
+  }
+  return models;
+}
+
+function loadBodyRecords(rootDir, sourceSet) {
   const recordsByPath = new Map();
+  const requirementModels = requirementModelByDiscriminator(sourceSet);
   const macroRegistry = readGovernedYamlFile(
     resolveSafeProjectPath(rootDir, macroRegistryPath).absolute,
   );
@@ -238,14 +269,10 @@ function loadBodyRecords(rootDir) {
     );
     for (const record of registry.requirements ?? []) {
       const requirementType = String(record.requirement_type ?? "").trim();
-      if (requirementType !== "functional" && requirementType !== "governance") {
-        continue;
-      }
+      const modelId = requirementModels.get(requirementType);
+      if (!modelId) continue;
       addBodyRecord(recordsByPath, {
-        modelId:
-          requirementType === "functional"
-            ? "functional-requirement"
-            : "governance-requirement",
+        modelId,
         id: String(record.id ?? "").trim(),
         title: String(record.title ?? "").trim(),
         status: String(record.status ?? "").trim(),
@@ -982,7 +1009,12 @@ export function createGovernedMarkdownAssistanceService({
 }) {
   const absoluteRoot = path.resolve(rootDir);
   const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir: absoluteRoot });
-  const recordsByPath = loadBodyRecords(absoluteRoot);
+  assertGovernedDocumentModelConsumerCoverage({
+    consumerId: "governed-markdown-assistance-rule-sets",
+    sourceSet,
+    providerModelIds: Object.keys(modelRuleSets),
+  });
+  const recordsByPath = loadBodyRecords(absoluteRoot, sourceSet);
   const valueSets = loadValueSets(absoluteRoot);
   const governedEntityReferenceService =
     referenceService ??

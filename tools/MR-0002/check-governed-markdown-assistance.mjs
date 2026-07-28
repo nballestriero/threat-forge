@@ -6,6 +6,11 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 import {
+  assertGovernedDocumentModelConsumerCoverage,
+  canonicalGovernedDocumentModelIds,
+  loadGovernedDocumentModelSourceSet,
+} from "../MR-0001/lib/governed-document-model-sources.mjs";
+import {
   createGovernedMarkdownAssistanceService,
 } from "./lib/governed-markdown-assistance.mjs";
 import {
@@ -23,12 +28,15 @@ import {
  * @implementsRequirement MR-0002ADR-0006REQ-0004GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0005
  * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * Verifies canonical profile derivation, valid-body coverage for all four
- * logical models, deterministic core and adapter tests, thin-adapter source
+ * Verifies canonical profile derivation, valid-body coverage for every active
+ * logical model, deterministic core and adapter tests, thin-adapter source
  * boundaries and deterministic local VSIX packaging without modifying the
  * repository.
  */
@@ -48,12 +56,24 @@ const testProjectPaths = [
   "tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs",
   "tools/MR-0002/tests/governed-markdown-bae-references.test.mjs",
 ];
-const modelBodyPaths = [
-  "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
-  "docs/reference/project-model/body/decisions/MR-0002/ADR-0006_body.md",
-  "docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001_body.md",
-  "docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001GOV-0001_body.md",
-];
+const modelBodyPathProviders = new Map([
+  [
+    "macro-requirement",
+    "docs/reference/project-model/body/macro-requirements/MR-0001_body.md",
+  ],
+  [
+    "decision",
+    "docs/reference/project-model/body/decisions/MR-0002/ADR-0006_body.md",
+  ],
+  [
+    "functional-requirement",
+    "docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001_body.md",
+  ],
+  [
+    "governance-requirement",
+    "docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001GOV-0001_body.md",
+  ],
+]);
 const forbiddenAdapterFragments = [
   '"Status"',
   '"Context"',
@@ -119,9 +139,17 @@ function runTests() {
 }
 
 function verifyModels() {
+  const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir });
+  const canonicalModelIds = canonicalGovernedDocumentModelIds(sourceSet);
+  assertGovernedDocumentModelConsumerCoverage({
+    consumerId: "governed-markdown-assistance-body-samples",
+    sourceSet,
+    providerModelIds: [...modelBodyPathProviders.keys()],
+  });
   const service = createGovernedMarkdownAssistanceService({ rootDir });
   const models = new Set();
-  for (const projectPath of modelBodyPaths) {
+  for (const modelId of canonicalModelIds) {
+    const projectPath = modelBodyPathProviders.get(modelId);
     const text = fs.readFileSync(resolveProjectPath(projectPath), "utf8");
     const result = service.analyze({
       projectPath,
@@ -131,26 +159,17 @@ function verifyModels() {
     if (!result.supported) {
       throw new Error(`Assistance does not support governed body: ${projectPath}`);
     }
+    if (result.document.model_id !== modelId) {
+      throw new Error(
+        `Assistance body sample ${projectPath} resolved ${result.document.model_id} instead of ${modelId}.`,
+      );
+    }
     if (result.diagnostics.length > 0) {
       throw new Error(
         `Valid governed body ${projectPath} produced diagnostics: ${result.diagnostics.map((item) => `${item.rule_id}: ${item.message}`).join(" | ")}`,
       );
     }
     models.add(result.document.model_id);
-  }
-  const expected = new Set([
-    "macro-requirement",
-    "decision",
-    "functional-requirement",
-    "governance-requirement",
-  ]);
-  if (
-    models.size !== expected.size ||
-    [...models].some((modelId) => !expected.has(modelId))
-  ) {
-    throw new Error(
-      `Assistance model coverage is incomplete: ${[...models].sort().join(", ")}.`,
-    );
   }
   return models.size;
 }

@@ -34,10 +34,13 @@ artifacts:
       - MR-0001ADR-0003REQ-0001GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
+      - MR-0001ADR-0010REQ-0001
+      - MR-0001ADR-0010REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: docs/reference/project-model/registers/checks/local-governance-checks.registry.yml
-    reason: Declare the active local checks and complete-model verification suites consumed by the local check orchestrator.
+    reason: Declare the active local checks and registry-derived model extension and consumer coverage verification suites consumed by the local check orchestrator.
     verification_command: node tools/repo-check.mjs
-
   - id: MR-0001ADR-0004REQ-0001GOV-0001IMPL-0001
     title: Documentation field value taxonomy checker
     artifact_type: tool
@@ -288,10 +291,11 @@ artifacts:
       - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/check-governed-document-authoring-contract.mjs
-    reason: Validate deterministic catalog, schema, transaction core, request runner, thin VS Code adapter, governed negative fixtures and all authoring verification suites.
+    reason: Validate registry-derived model coverage across the governed document authoring catalog and schema together with transaction runner adapter fixtures and verification suites.
     verification_command: node tools/MR-0002/check-governed-document-authoring-contract.mjs
-
   - id: MR-0002ADR-0004REQ-0003IMPL-0002
     title: Governed document authoring schema materializer
     artifact_type: tool
@@ -485,10 +489,13 @@ artifacts:
       - MR-0001ADR-0007REQ-0001
       - MR-0001ADR-0007REQ-0001GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0010REQ-0001
+      - MR-0001ADR-0010REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0001/lib/governed-document-model-sources.mjs
-    reason: Load and validate the canonical four-model and seven-profile source set with stable identifiers, deterministic ordering and controlled value-set references.
+    reason: Load and validate the registry-derived canonical model and representation-profile source set without fixed cardinalities and provide deterministic consumer provider coverage validation.
     verification_command: node --test tools/MR-0001/test/governed-document-model-sources.test.mjs
-
   - id: MR-0001ADR-0007REQ-0001GOV-0001IMPL-0001
     title: Governed document model source consistency checker
     artifact_type: tool
@@ -518,10 +525,13 @@ artifacts:
     linked_requirement_ids:
       - MR-0001ADR-0007REQ-0001GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0010REQ-0001
+      - MR-0001ADR-0010REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0001/test/governed-document-model-sources.test.mjs
-    reason: Prove canonical source acceptance and deterministic rejection of invalid model, profile, member, order and controlled-value references.
+    reason: Prove current source acceptance, coherent synthetic model extension, registry-derived canonical ordering, exact consumer provider coverage and deterministic negative fixture rejection.
     verification_command: node --test tools/MR-0001/test/governed-document-model-sources.test.mjs
-
   - id: MR-0001ADR-0007REQ-0002IMPL-0001
     title: Shared governed document complete-model validation primitives
     artifact_type: source_module
@@ -771,10 +781,11 @@ artifacts:
       - MR-0002ADR-0006REQ-0001GOV-0001
       - MR-0002ADR-0006REQ-0004
       - MR-0002ADR-0006REQ-0004GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/lib/governed-markdown-assistance.mjs
-    reason: Analyze current unsaved governed Markdown through canonical body profiles and controlled value sets, returning deterministic completions, diagnostics, hover and quick fixes without repository mutation.
+    reason: Analyze current unsaved governed Markdown through registry-derived canonical body model dispatch, controlled value sets and explicit providers without repository mutation.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-assistance.test.mjs
-
   - id: MR-0002ADR-0006REQ-0001GOV-0001IMPL-0001
     title: Governed Markdown assistance core verification
     artifact_type: verification_artifact
@@ -842,10 +853,11 @@ artifacts:
       - MR-0002ADR-0006REQ-0004GOV-0001
       - MR-0002ADR-0006REQ-0005
       - MR-0002ADR-0006REQ-0005GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/check-governed-markdown-assistance.mjs
-    reason: Enforce four-model coverage, thin-adapter boundaries, deterministic tests and reproducible local VSIX packaging as one blocking repository check.
+    reason: Enforce registry-derived governed body model provider coverage, thin-adapter boundaries, deterministic tests and reproducible local VSIX packaging as one blocking repository check.
     verification_command: node tools/MR-0002/check-governed-markdown-assistance.mjs
-
   - id: MR-0003ADR-0001REQ-0005IMPL-0001
     title: Canonical BAE registry validation and projection core
     artifact_type: source_module
@@ -1053,10 +1065,11 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0003
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0004/run-target-project-check.mjs
-    reason: Validate target-owned governed documents and local Base Analysis data against engine-owned canonical definitions through an isolated overlay and write deterministic target-local reports without mutating governed sources.
+    reason: Validate target-owned governed documents and local Base Analysis data through registry-derived complete-model validator coverage in an isolated overlay with deterministic target-local reports.
     verification_command: node --test tools/MR-0004/test/target-project-check.test.mjs
-
   - id: MR-0004ADR-0001REQ-0003IMPL-0002
     title: Target Project governed-document validation verification
     artifact_type: verification_artifact
