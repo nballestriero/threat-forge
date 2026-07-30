@@ -61,8 +61,10 @@ artifacts:
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0004REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/create-governed-document.mjs
-    reason: Plan and atomically apply canonical Macro-requirement, Decision, Functional Requirement and Governance Requirement transactions, including derived identifiers, paths, child registries and rollback.
+    reason: Validate, plan and atomically apply governed-document transactions through explicit model-specific runtime authoring providers whose exact coverage is checked against the canonical authoring catalog.
     verification_command: node --test tools/MR-0002/tests/create-governed-document-core.test.mjs
 
   - id: MR-0001ADR-0004REQ-0001GOV-0002IMPL-0001
@@ -280,8 +282,10 @@ artifacts:
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/build-governed-document-authoring-schema.mjs
-    reason: Derive one context-sensitive authoring-request schema for Macro-requirement, Decision, Functional Requirement and Governance Requirement from the canonical catalog.
+    reason: Derive the context-sensitive authoring-request schema through explicit model-specific schema providers whose exact coverage is checked against the canonical authoring catalog.
     verification_command: node --check tools/MR-0002/build-governed-document-authoring-schema.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0001
@@ -296,7 +300,7 @@ artifacts:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/check-governed-document-authoring-contract.mjs
-    reason: Validate registry-derived model coverage across the governed document authoring catalog and schema together with transaction runner adapter fixtures and verification suites.
+    reason: Validate registry-derived model coverage and exact runtime and schema authoring-provider coverage together with transaction, runner, adapter, negative and extension verification suites.
     verification_command: node tools/MR-0002/check-governed-document-authoring-contract.mjs
   - id: MR-0002ADR-0004REQ-0003IMPL-0002
     title: Governed document authoring schema materializer
@@ -306,6 +310,8 @@ artifacts:
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/materialize-governed-document-authoring-schema.mjs
     reason: Materialize and verify the canonical generated governed-document authoring schema at its stable workspace path.
     verification_command: node tools/MR-0002/materialize-governed-document-authoring-schema.mjs --check
@@ -387,7 +393,7 @@ artifacts:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/tests/build-governed-document-authoring-catalog-shared-consumers.test.mjs
-    reason: Verify active-model projection, canonical Requirement variant dispatch, controlled fields, body sections, current relation scopes and deterministic output without hard-coded model ownership.
+    reason: Verify active-model projection, canonical Requirement dispatch, exact runtime and schema provider coverage, fail-closed additional-model behavior and deterministic diagnostics without consumer-local canonical inventories.
     verification_command: node --test tools/MR-0002/tests/build-governed-document-authoring-catalog-shared-consumers.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0002
@@ -397,8 +403,10 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0004REQ-0004GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/tests/create-governed-document-core.test.mjs
-    reason: Verify deterministic plans for all four document types, complete Macro-requirement child-registry creation, canonical body output and rollback of multi-file transactions.
+    reason: Verify deterministic provider-dispatched plans, complete transactions, canonical output, rollback and fail-closed behavior when runtime provider coverage is incomplete.
     verification_command: node --test tools/MR-0002/tests/create-governed-document-core.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003IMPL-0003
@@ -410,8 +418,10 @@ artifacts:
       - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/run-governed-document-authoring.mjs
-    reason: Read one canonical governed-document request, print a deterministic preview, require exact confirmation, apply the atomic transaction and roll back when the complete repository gate fails.
+    reason: Delegate request validation and planning to the provider-covered shared core, print a deterministic preview, require exact confirmation and roll back when verification fails.
     verification_command: node --test tools/MR-0002/tests/run-governed-document-authoring.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0003
@@ -422,8 +432,10 @@ artifacts:
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0004REQ-0004GOV-0001
       - MR-0002ADR-0005REQ-0003
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/tests/run-governed-document-authoring.test.mjs
-    reason: Verify type-specific request validation, generated-field rejection, read-only preview, explicit confirmation, successful checked application and transactional rollback.
+    reason: Verify provider-delegated request validation, generated-field rejection, read-only preview, explicit confirmation, successful checked application and transactional rollback.
     verification_command: node --test tools/MR-0002/tests/run-governed-document-authoring.test.mjs
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001IMPL-0002

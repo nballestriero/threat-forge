@@ -20,9 +20,13 @@ import {
  * @implementsRequirement MR-0002ADR-0004REQ-0004
  * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
  * @implementsRequirement MR-0002ADR-0005REQ-0003
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @derivedFromDecision MR-0002/ADR-0005
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  */
 

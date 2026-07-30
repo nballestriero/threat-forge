@@ -9,6 +9,17 @@ import {
   resolveGovernedRequirementVariant,
 } from "../../MR-0001/lib/governed-document-model-sources.mjs";
 import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-document-authoring-catalog.mjs";
+import {
+  governedDocumentAuthoringProviders,
+  governedDocumentAuthoringProviderModelIds,
+  validateGovernedDocumentAuthoringProviderCoverage,
+} from "../create-governed-document.mjs";
+import {
+  buildGovernedDocumentAuthoringSchema,
+  governedDocumentAuthoringSchemaProviders,
+  governedDocumentAuthoringSchemaProviderModelIds,
+  validateGovernedDocumentAuthoringSchemaProviderCoverage,
+} from "../build-governed-document-authoring-schema.mjs";
 
 /**
  * @file Verification of the shared governed-document authoring catalog.
@@ -97,5 +108,90 @@ test("catalog generation is deterministic", () => {
   assert.deepEqual(
     buildGovernedDocumentAuthoringCatalog(),
     buildGovernedDocumentAuthoringCatalog(),
+  );
+});
+
+test("runtime and schema authoring providers cover the canonical catalog exactly", () => {
+  const catalog = buildGovernedDocumentAuthoringCatalog();
+  const canonicalIds = catalog.document_types.map((entry) => entry.id).sort();
+  assert.deepEqual(
+    [...governedDocumentAuthoringProviderModelIds].sort(),
+    canonicalIds,
+  );
+  assert.deepEqual(
+    [...governedDocumentAuthoringSchemaProviderModelIds].sort(),
+    canonicalIds,
+  );
+  assert.deepEqual(
+    validateGovernedDocumentAuthoringProviderCoverage(catalog),
+    [],
+  );
+  assert.deepEqual(
+    validateGovernedDocumentAuthoringSchemaProviderCoverage(catalog),
+    [],
+  );
+  assert.equal(buildGovernedDocumentAuthoringSchema(catalog).oneOf.length, canonicalIds.length);
+});
+
+test("additional canonical models fail closed until runtime and schema providers exist", () => {
+  const catalog = buildGovernedDocumentAuthoringCatalog();
+  const extended = structuredClone(catalog);
+  extended.document_types.push({
+    ...structuredClone(extended.document_types[0]),
+    id: "synthetic-authoring-model",
+    title: "Synthetic authoring model",
+  });
+  const runtimeDiagnostics = validateGovernedDocumentAuthoringProviderCoverage(extended);
+  const schemaDiagnostics = validateGovernedDocumentAuthoringSchemaProviderCoverage(extended);
+  assert.deepEqual(
+    runtimeDiagnostics.map((entry) => entry.rule_id),
+    ["document-model.consumer.provider.missing"],
+  );
+  assert.deepEqual(
+    schemaDiagnostics.map((entry) => entry.rule_id),
+    ["document-model.consumer.provider.missing"],
+  );
+  assert.throws(
+    () => buildGovernedDocumentAuthoringSchema(extended),
+    /document-model\.consumer\.provider\.missing/u,
+  );
+});
+
+test("duplicate and unregistered authoring providers are rejected deterministically", () => {
+  const catalog = buildGovernedDocumentAuthoringCatalog();
+  const duplicateRuntime = [
+    ...governedDocumentAuthoringProviders,
+    governedDocumentAuthoringProviders[0],
+  ];
+  const unregisteredSchema = [
+    ...governedDocumentAuthoringSchemaProviders,
+    {
+      ...governedDocumentAuthoringSchemaProviders[0],
+      model_id: "unregistered-authoring-model",
+    },
+  ];
+  const duplicateDiagnostics = validateGovernedDocumentAuthoringProviderCoverage(
+    catalog,
+    duplicateRuntime,
+  );
+  const duplicateReversed = validateGovernedDocumentAuthoringProviderCoverage(
+    catalog,
+    [...duplicateRuntime].reverse(),
+  );
+  assert.deepEqual(duplicateDiagnostics, duplicateReversed);
+  assert.ok(
+    duplicateDiagnostics.some(
+      (entry) => entry.rule_id === "document-model.consumer.provider.duplicate",
+    ),
+  );
+  const unregisteredDiagnostics =
+    validateGovernedDocumentAuthoringSchemaProviderCoverage(
+      catalog,
+      unregisteredSchema,
+    );
+  assert.ok(
+    unregisteredDiagnostics.some(
+      (entry) => entry.rule_id === "document-model.consumer.provider.unregistered",
+    ),
   );
 });

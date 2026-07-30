@@ -3,21 +3,29 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import {
+  validateGovernedDocumentModelConsumerCoverage,
+} from "../MR-0001/lib/governed-document-model-sources.mjs";
+
 /**
  * @file Governed document authoring JSON Schema builder.
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0004
  * @implementsRequirement MR-0002ADR-0005REQ-0003
  * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @derivedFromDecision MR-0002/ADR-0005
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Builds one deterministic JSON Schema for Macro-requirement, Decision,
- * Functional Requirement and Governance Requirement request documents. Every
- * enum, relation candidate, body section and description is projected from the
- * canonical governed-document authoring catalog.
+ * Builds one deterministic JSON Schema through explicit model-specific schema
+ * providers whose coverage is checked against the canonical authoring catalog.
+ * Every enum, relation candidate, body section and description is projected from
+ * canonical sources; no model is routed through an implicit fallback branch.
  *
  * Side effects: executes the catalog builder and writes JSON or diagnostics to
  * stdout/stderr only. It modifies no repository file.
@@ -170,94 +178,228 @@ function bodySchema(documentType) {
   };
 }
 
-/** @param {Record<string, unknown>} documentType @param {Record<string, unknown>} common @param {Record<string, unknown>[]} macros */
-function branchSchema(documentType, common, macros) {
+function addMacroOwner(properties, required, common) {
+  properties.macro_requirement_id = common.macroRequirement;
+  required.push("macro_requirement_id");
+}
+
+function addDecisionOwner(documentType, properties, required, allOf, macros) {
+  const decisionField = fieldByName(documentType, "decision_id");
+  properties.decision_id = {
+    type: "string",
+    pattern: requireString(decisionField.pattern, `${documentType.id}.decision_id.pattern`),
+    description: requireString(
+      decisionField.description,
+      `${documentType.id}.decision_id.description`,
+    ),
+  };
+  required.push("decision_id");
+  for (const macro of macros) {
+    const decisions = requireArray(macro.decisions, `${macro.id}.decisions`)
+      .map((value) => requireObject(value, `${macro.id} Decision`));
+    allOf.push({
+      if: {
+        properties: { macro_requirement_id: { const: macro.id } },
+        required: ["macro_requirement_id"],
+      },
+      then: {
+        properties: {
+          decision_id: enumProjection(
+            decisions,
+            (entry) => requireString(entry.id, "Decision id"),
+            (entry) =>
+              `${entry.title} — ${macro.id}/${entry.id} — status: ${entry.status}`,
+          ),
+        },
+      },
+    });
+  }
+}
+
+function addParentRequirement(
+  documentType,
+  properties,
+  required,
+  allOf,
+  macros,
+) {
+  const parentField = fieldByName(documentType, "parent_requirement_id");
+  const parentModelId = requireString(
+    parentField.parent_model_id,
+    `${documentType.id}.parent_requirement_id.parent_model_id`,
+  );
+  properties.parent_requirement_id = {
+    type: "string",
+    pattern: requireString(
+      parentField.pattern,
+      `${documentType.id}.parent_requirement_id.pattern`,
+    ),
+    description: requireString(
+      parentField.description,
+      `${documentType.id}.parent_requirement_id.description`,
+    ),
+  };
+  required.push("parent_requirement_id");
+  for (const macro of macros) {
+    for (const decisionValue of requireArray(
+      macro.decisions,
+      `${macro.id}.decisions`,
+    )) {
+      const decision = requireObject(decisionValue, `${macro.id} Decision`);
+      const candidates = requireArray(
+        decision.requirements,
+        `${macro.id}/${decision.id}.requirements`,
+      )
+        .map((value) => requireObject(
+          value,
+          `${macro.id}/${decision.id} Requirement`,
+        ))
+        .filter((entry) => entry.model_id === parentModelId);
+      allOf.push({
+        if: {
+          properties: {
+            macro_requirement_id: { const: macro.id },
+            decision_id: { const: decision.id },
+          },
+          required: ["macro_requirement_id", "decision_id"],
+        },
+        then: candidates.length > 0
+          ? {
+              properties: {
+                parent_requirement_id: enumProjection(
+                  candidates,
+                  (entry) => requireString(entry.id, `${parentModelId} id`),
+                  (entry) => `${entry.title} — status: ${entry.status}`,
+                ),
+              },
+            }
+          : false,
+      });
+    }
+  }
+}
+
+const defaultGovernedDocumentAuthoringSchemaProviders = Object.freeze([
+  Object.freeze({
+    model_id: "macro-requirement",
+    project({ documentType, properties, required }) {
+      properties.macro_requirement_type = controlledFieldSchema(
+        fieldByName(documentType, "macro_requirement_type"),
+      );
+      required.push("macro_requirement_type");
+    },
+  }),
+  Object.freeze({
+    model_id: "decision",
+    project({ documentType, properties, required, common }) {
+      addMacroOwner(properties, required, common);
+      properties.decision_type = controlledFieldSchema(
+        fieldByName(documentType, "decision_type"),
+      );
+      const authorField = fieldByName(documentType, "author");
+      properties.author = {
+        type: "string",
+        minLength: 1,
+        pattern: "^[^\\r\\n]+$",
+        description: requireString(
+          authorField.description,
+          `${documentType.id}.author.description`,
+        ),
+      };
+      required.push("decision_type", "author");
+    },
+  }),
+  Object.freeze({
+    model_id: "functional-requirement",
+    project({ documentType, properties, required, allOf, common, macros }) {
+      addMacroOwner(properties, required, common);
+      addDecisionOwner(documentType, properties, required, allOf, macros);
+    },
+  }),
+  Object.freeze({
+    model_id: "governance-requirement",
+    project({ documentType, properties, required, allOf, common, macros }) {
+      addMacroOwner(properties, required, common);
+      addDecisionOwner(documentType, properties, required, allOf, macros);
+      addParentRequirement(
+        documentType,
+        properties,
+        required,
+        allOf,
+        macros,
+      );
+    },
+  }),
+]);
+
+export const governedDocumentAuthoringSchemaProviders =
+  defaultGovernedDocumentAuthoringSchemaProviders;
+
+export const governedDocumentAuthoringSchemaProviderModelIds = Object.freeze(
+  defaultGovernedDocumentAuthoringSchemaProviders
+    .map((provider) => provider.model_id),
+);
+
+/**
+ * Validates exact schema-provider coverage for the canonical authoring catalog.
+ *
+ * @param {Record<string, unknown>} catalog - Canonical authoring catalog.
+ * @param {Array<Record<string, unknown>>} [providers] - Explicit schema providers.
+ * @returns {Array<Record<string, unknown>>} Deterministic coverage diagnostics.
+ */
+export function validateGovernedDocumentAuthoringSchemaProviderCoverage(
+  catalog,
+  providers = defaultGovernedDocumentAuthoringSchemaProviders,
+) {
+  const canonicalModelIds = requireArray(
+    catalog.document_types,
+    "catalog.document_types",
+  ).map((entry) => requireString(entry?.id, "catalog document type id"));
+  const providerModelIds = requireArray(providers, "schema providers")
+    .map((provider) => requireString(provider?.model_id, "schema provider model_id"));
+  return validateGovernedDocumentModelConsumerCoverage({
+    consumerId: "governed-document-authoring-schema",
+    canonicalModelIds,
+    providerModelIds,
+    sourcePath: "governed-document-authoring-catalog",
+  });
+}
+
+function resolveSchemaProviders(catalog, providers) {
+  const diagnostics = validateGovernedDocumentAuthoringSchemaProviderCoverage(
+    catalog,
+    providers,
+  );
+  if (diagnostics.length > 0) {
+    throw new Error(
+      diagnostics
+        .map((entry) => `${entry.rule_id}: ${entry.message}`)
+        .join(" | "),
+    );
+  }
+  return providers;
+}
+
+function branchSchema(documentType, common, macros, provider) {
   const id = requireString(documentType.id, "document type id");
   const properties = {
-    document_type: { const: id, description: requireString(documentType.description, `${id}.description`) },
+    document_type: {
+      const: id,
+      description: requireString(documentType.description, `${id}.description`),
+    },
     title: common.title,
     body: bodySchema(documentType),
   };
   const required = ["document_type", "title", "body"];
   const allOf = [];
-
-  if (id === "macro-requirement") {
-    properties.macro_requirement_type = controlledFieldSchema(fieldByName(documentType, "macro_requirement_type"));
-    required.push("macro_requirement_type");
-  } else {
-    properties.macro_requirement_id = common.macroRequirement;
-    required.push("macro_requirement_id");
-    if (id === "decision") {
-      properties.decision_type = controlledFieldSchema(fieldByName(documentType, "decision_type"));
-      properties.author = {
-        type: "string",
-        minLength: 1,
-        pattern: "^[^\\r\\n]+$",
-        description: requireString(fieldByName(documentType, "author").description, `${id}.author.description`),
-      };
-      required.push("decision_type", "author");
-    } else {
-      properties.decision_id = {
-        type: "string",
-        pattern: "^ADR-\\d{4}$",
-        description: "Existing Decision belonging to macro_requirement_id.",
-      };
-      required.push("decision_id");
-      for (const macro of macros) {
-        const decisions = requireArray(macro.decisions, `${macro.id}.decisions`)
-          .map((value) => requireObject(value, `${macro.id} Decision`));
-        allOf.push({
-          if: { properties: { macro_requirement_id: { const: macro.id } }, required: ["macro_requirement_id"] },
-          then: {
-            properties: {
-              decision_id: enumProjection(
-                decisions,
-                (entry) => requireString(entry.id, "Decision id"),
-                (entry) => `${entry.title} — ${macro.id}/${entry.id} — status: ${entry.status}`,
-              ),
-            },
-          },
-        });
-      }
-      if (id === "governance-requirement") {
-        properties.parent_requirement_id = {
-          type: "string",
-          pattern: "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
-          description: "Existing Functional Requirement under the selected Macro-requirement and Decision.",
-        };
-        required.push("parent_requirement_id");
-        for (const macro of macros) {
-          for (const decisionValue of requireArray(macro.decisions, `${macro.id}.decisions`)) {
-            const decision = requireObject(decisionValue, `${macro.id} Decision`);
-            const candidates = requireArray(decision.requirements, `${macro.id}/${decision.id}.requirements`)
-              .map((value) => requireObject(value, `${macro.id}/${decision.id} Requirement`))
-              .filter((entry) => entry.requirement_type === "functional");
-            allOf.push({
-              if: {
-                properties: {
-                  macro_requirement_id: { const: macro.id },
-                  decision_id: { const: decision.id },
-                },
-                required: ["macro_requirement_id", "decision_id"],
-              },
-              then: candidates.length > 0
-                ? {
-                    properties: {
-                      parent_requirement_id: enumProjection(
-                        candidates,
-                        (entry) => requireString(entry.id, "Functional Requirement id"),
-                        (entry) => `${entry.title} — status: ${entry.status}`,
-                      ),
-                    },
-                  }
-                : false,
-            });
-          }
-        }
-      }
-    }
-  }
-
+  provider.project({
+    documentType,
+    properties,
+    required,
+    allOf,
+    common,
+    macros,
+  });
   const branch = {
     title: documentType.title,
     type: "object",
@@ -275,24 +417,35 @@ function branchSchema(documentType, common, macros) {
  * @param {Record<string, unknown>} catalog
  * @returns {Record<string, unknown>}
  */
-export function buildGovernedDocumentAuthoringSchema(catalog) {
-  if (requireString(catalog.catalog_id, "catalog.catalog_id") !== "governed-document-authoring-catalog") {
+export function buildGovernedDocumentAuthoringSchema(catalog, options = {}) {
+  if (
+    requireString(catalog.catalog_id, "catalog.catalog_id") !==
+    "governed-document-authoring-catalog"
+  ) {
     throw new Error(`Unsupported catalog_id: ${catalog.catalog_id}`);
   }
-  const documentTypes = requireArray(catalog.document_types, "catalog.document_types")
-    .map((value) => requireObject(value, "catalog document type"));
-  const expected = ["macro-requirement", "decision", "functional-requirement", "governance-requirement"];
-  if (JSON.stringify(documentTypes.map((entry) => entry.id).sort(compareIds)) !== JSON.stringify([...expected].sort(compareIds))) {
-    throw new Error("Catalog must expose exactly the four canonical governed document types.");
-  }
-  const macros = requireArray(catalog.macro_requirements, "catalog.macro_requirements")
-    .map((value) => requireObject(value, "catalog Macro-requirement"));
+  const documentTypes = requireArray(
+    catalog.document_types,
+    "catalog.document_types",
+  ).map((value) => requireObject(value, "catalog document type"));
+  const documentTypeById = new Map(
+    documentTypes.map((documentType) => [documentType.id, documentType]),
+  );
+  const providers = resolveSchemaProviders(
+    catalog,
+    options.providers ?? defaultGovernedDocumentAuthoringSchemaProviders,
+  );
+  const macros = requireArray(
+    catalog.macro_requirements,
+    "catalog.macro_requirements",
+  ).map((value) => requireObject(value, "catalog Macro-requirement"));
   const common = {
     title: {
       type: "string",
       minLength: 1,
       pattern: "^[^\\r\\n]+$",
-      description: "Single-line title mirrored by the canonical registry record and Markdown H1.",
+      description:
+        "Single-line title mirrored by the canonical registry record and Markdown H1.",
     },
     macroRequirement: {
       ...enumProjection(
@@ -300,22 +453,33 @@ export function buildGovernedDocumentAuthoringSchema(catalog) {
         (entry) => requireString(entry.id, "Macro-requirement id"),
         (entry) => `${entry.title} — status: ${entry.status}`,
       ),
-      description: "Existing canonical Macro-requirement that owns the new document.",
+      description:
+        "Existing canonical Macro-requirement that owns the new document.",
     },
   };
 
   const sources = requireArray(catalog.sources, "catalog.sources")
     .map((value) => requireObject(value, "catalog source"))
-    .sort((left, right) => compareIds(String(left.path), String(right.path)));
+    .sort((left, right) =>
+      compareIds(String(left.path), String(right.path)),
+    );
+  const providerModelIds = providers.map((provider) => provider.model_id);
   return {
     $schema: "http://json-schema.org/draft-07/schema#",
     $id: "urn:threatforge:schema:governed-document-authoring-request:1",
     title: "ThreatForge governed document authoring request",
     description:
-      "IDE-independent request for previewing and creating one Macro-requirement, Decision, Functional Requirement or Governance Requirement. Generated identifiers, lifecycle status, dates, paths and derived relations are omitted from the request.",
-    oneOf: documentTypes
-      .sort((left, right) => expected.indexOf(left.id) - expected.indexOf(right.id))
-      .map((documentType) => branchSchema(documentType, common, macros)),
+      "IDE-independent request for previewing and creating one governed document through an explicit canonical-model authoring provider. Generated identifiers, lifecycle status, dates, paths and derived relations are omitted from the request.",
+    oneOf: providers.map((provider) =>
+      branchSchema(
+        requireObject(
+          documentTypeById.get(provider.model_id),
+          `${provider.model_id} catalog document type`,
+        ),
+        common,
+        macros,
+        provider,
+      )),
     "x-threatforge": {
       schema_id: "governed-document-authoring-request-schema",
       schema_version: 1,
@@ -332,7 +496,7 @@ export function buildGovernedDocumentAuthoringSchema(catalog) {
         "requirements_registry_path",
         "requirement_type",
       ],
-      supported_document_types: expected,
+      supported_document_types: providerModelIds,
     },
   };
 }

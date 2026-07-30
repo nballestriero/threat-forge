@@ -85,8 +85,12 @@ export function canonicalGovernedDocumentModelIds(sourceSet) {
 export function validateGovernedDocumentModelConsumerCoverage(input) {
   const consumerId = text(input?.consumerId) || "<unknown-consumer>";
   const sourceSet = input?.sourceSet;
-  const sourcePath = sourceSet?.index?.path ?? documentModelIndexProjectPath;
-  const canonicalIds = canonicalGovernedDocumentModelIds(sourceSet);
+  const sourcePath = text(input?.sourcePath) ||
+    sourceSet?.index?.path ||
+    documentModelIndexProjectPath;
+  const canonicalIds = Array.isArray(input?.canonicalModelIds)
+    ? input.canonicalModelIds.map((value) => text(value)).filter(Boolean)
+    : canonicalGovernedDocumentModelIds(sourceSet);
   const providerIds = Array.isArray(input?.providerModelIds)
     ? input.providerModelIds.map((value) => text(value)).filter(Boolean)
     : [];

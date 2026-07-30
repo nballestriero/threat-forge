@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-document-authoring-catalog.mjs";
 import {
   applyGeneratedDocument,
+  governedDocumentAuthoringProviders,
   planGeneratedDocument,
 } from "../create-governed-document.mjs";
 
@@ -17,8 +18,12 @@ import {
  *
  * @implementsRequirement MR-0002ADR-0004REQ-0004
  * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  */
 
@@ -152,7 +157,7 @@ const requests = {
   },
 };
 
-test("plans all four governed document types deterministically", () => {
+test("plans every active authoring-provider model deterministically", () => {
   const macro = planGeneratedDocument(requests.macro, catalog, { today: "2026-07-15" });
   const decision = planGeneratedDocument(requests.decision, catalog, { today: "2026-07-15" });
   const functional = planGeneratedDocument(requests.functional, catalog, { today: "2026-07-15" });
@@ -267,4 +272,38 @@ test("rolls back every artifact when post-install verification fails", () => {
   } finally {
     fs.rmSync(fixtureRoot, { recursive: true, force: true });
   }
+});
+
+test("planning fails closed when canonical authoring provider coverage is incomplete", () => {
+  const incompleteProviders = governedDocumentAuthoringProviders.filter(
+    (provider) => provider.model_id !== "functional-requirement",
+  );
+  assert.throws(
+    () => planGeneratedDocument(
+      requests.functional,
+      catalog,
+      {
+        today: "2026-07-15",
+        providers: incompleteProviders,
+      },
+    ),
+    /document-model\.consumer\.provider\.missing/u,
+  );
+  const extendedCatalog = structuredClone(catalog);
+  extendedCatalog.document_types.push({
+    ...structuredClone(extendedCatalog.document_types[0]),
+    id: "synthetic-authoring-model",
+  });
+  assert.throws(
+    () => planGeneratedDocument(
+      {
+        document_type: "synthetic-authoring-model",
+        title: "Synthetic",
+        body: {},
+      },
+      extendedCatalog,
+      { today: "2026-07-15" },
+    ),
+    /document-model\.consumer\.provider\.missing/u,
+  );
 });

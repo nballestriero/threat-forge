@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "urn:threatforge:schema:governed-document-authoring-request:1",
   "title": "ThreatForge governed document authoring request",
-  "description": "IDE-independent request for previewing and creating one Macro-requirement, Decision, Functional Requirement or Governance Requirement. Generated identifiers, lifecycle status, dates, paths and derived relations are omitted from the request.",
+  "description": "IDE-independent request for previewing and creating one governed document through an explicit canonical-model authoring provider. Generated identifiers, lifecycle status, dates, paths and derived relations are omitted from the request.",
   "oneOf": [
     {
       "title": "Macro-requirement",
@@ -486,7 +486,7 @@
         "decision_id": {
           "type": "string",
           "pattern": "^ADR-\\d{4}$",
-          "description": "Existing Decision belonging to macro_requirement_id."
+          "description": "decision_id is a canonical_identifier field whose canonical source kind is derived."
         }
       },
       "allOf": [
@@ -884,12 +884,12 @@
         "decision_id": {
           "type": "string",
           "pattern": "^ADR-\\d{4}$",
-          "description": "Existing Decision belonging to macro_requirement_id."
+          "description": "decision_id is a canonical_identifier field whose canonical source kind is derived."
         },
         "parent_requirement_id": {
           "type": "string",
           "pattern": "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
-          "description": "Existing Functional Requirement under the selected Macro-requirement and Decision."
+          "description": "parent_requirement_id is a canonical_identifier field whose canonical source kind is authored_relation."
         }
       },
       "allOf": [

@@ -4,6 +4,9 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
+import {
+  validateGovernedDocumentModelConsumerCoverage,
+} from "../MR-0001/lib/governed-document-model-sources.mjs";
 
 /**
  * @file Governed document authoring transaction core.
@@ -11,15 +14,19 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
  * @implementsRequirement MR-0002ADR-0004REQ-0004
  * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
  * @implementsRequirement MR-0002ADR-0004REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Plans and atomically creates one Macro-requirement, Decision, Functional
- * Requirement or Governance Requirement from the canonical authoring catalog.
- * The same plan and transaction are consumed by CLI, VS Code and future
- * adapters. Generated identifiers, paths, relations and lifecycle values never
- * come from an editor-owned rule set.
+ * Plans and atomically creates governed documents through explicit model-specific
+ * authoring providers whose coverage is checked against the canonical catalog.
+ * The same plan and transaction are consumed by CLI, VS Code and future adapters.
+ * Generated identifiers, paths, relations and lifecycle values never come from
+ * an editor-owned rule set or an implicit fallback provider.
  *
  * Side effects:
  * - planGeneratedDocument reads canonical registries only;
@@ -37,6 +44,18 @@ const configuredRootDir = process.env.TF_AUTHORING_ROOT
 
 const macroRegistryProjectPath =
   "docs/reference/project-model/registers/macro-requirements.registry.yml";
+const generatedRequestFields = new Set([
+  "id",
+  "status",
+  "date",
+  "body_path",
+  "decisions_registry_path",
+  "requirements_registry_path",
+  "requirement_type",
+]);
+const commonRequestFields = Object.freeze(["document_type", "title", "body"]);
+const authoringProviderConsumerId = "governed-document-authoring-runtime";
+const authoringCatalogSourcePath = "governed-document-authoring-catalog";
 
 /** @param {unknown} value @param {string} label @returns {Record<string, unknown>} */
 function requireObject(value, label) {
@@ -148,6 +167,41 @@ function getMacro(catalog, macroId) {
     .find((entry) => entry.id === macroId);
   if (!macro) throw new Error(`Unknown canonical Macro-requirement: ${macroId}`);
   return macro;
+}
+
+/** @param {Record<string, unknown>} macro @param {string} decisionId */
+function getDecision(macro, decisionId) {
+  const decision = requireArray(macro.decisions, `${macro.id}.decisions`)
+    .map((value) => requireObject(value, `${macro.id} Decision`))
+    .find((entry) => entry.id === decisionId);
+  if (!decision) throw new Error(`Decision ${decisionId} does not belong to ${macro.id}.`);
+  return decision;
+}
+
+/** @param {Record<string, unknown>} documentType @param {Record<string, unknown>} body */
+function validateBodyShape(documentType, body) {
+  const sections = requireArray(documentType.body_sections, `${documentType.id}.body_sections`)
+    .map((entry) => requireObject(entry, `${documentType.id} body section`))
+    .filter((entry) => entry.content_kind !== "controlled_scalar_label");
+  const allowed = new Set(sections.map((entry) => entry.input_name));
+  for (const key of Object.keys(body)) {
+    if (!allowed.has(key)) {
+      throw new Error(`${documentType.id} body contains unsupported field ${key}.`);
+    }
+  }
+  for (const section of sections) {
+    if (section.required && !Object.prototype.hasOwnProperty.call(body, section.input_name)) {
+      throw new Error(`${documentType.id} body is missing required field ${section.input_name}.`);
+    }
+  }
+}
+
+/** @param {Record<string, unknown>} documentType @param {string} fieldName @param {unknown} value */
+function validateControlledField(documentType, fieldName, value) {
+  return resolveControlledValue(
+    getField(documentType, fieldName),
+    requireString(value, fieldName),
+  );
 }
 
 /** @param {string} value @param {string} label */
@@ -301,130 +355,460 @@ function childRequirementRegistryText(macroId) {
   return `schema_version: 1\nregistry_id: ${macroId}-requirements-registry\nmacro_requirement_id: ${macroId}\n\nrequirements: []\n`;
 }
 
-/**
- * Creates a deterministic governed document plan without writing.
- *
- * @param {Record<string, unknown>} request - Validated authoring request.
- * @param {Record<string, unknown>} catalog - Canonical authoring catalog.
- * @param {{rootDir?: string, today?: string}} [options]
- * @returns {Record<string, unknown>}
- */
-export function planGeneratedDocument(request, catalog, options = {}) {
-  const input = requireObject(request, "Governed document authoring request");
-  const canonicalCatalog = requireObject(catalog, "Governed document authoring catalog");
-  if (canonicalCatalog.catalog_id !== "governed-document-authoring-catalog") {
-    throw new Error(`Unsupported authoring catalog: ${canonicalCatalog.catalog_id}`);
-  }
-  const documentTypeId = requireString(input.document_type, "document_type");
-  const documentType = getDocumentType(canonicalCatalog, documentTypeId);
-  const title = requireSingleLine(input.title, "title");
-  const body = requireObject(input.body, "body");
-  const operationRoot = resolveRootDir(options);
-  const today = options.today ?? new Date().toISOString().slice(0, 10);
-  if (!/^\d{4}-\d{2}-\d{2}$/u.test(today)) throw new Error("today must use YYYY-MM-DD.");
 
-  const statusField = getField(documentType, "status");
-  const statusEntry = resolveControlledValue(statusField, "draft");
-  const recordValues = { title, status: statusEntry.value };
-  let id;
-  let registryPath;
-  let collectionName;
-  const extraChanges = [];
+function providerRecordContext(input, catalog) {
+  const macroId = requireString(input.macro_requirement_id, "macro_requirement_id");
+  const macro = getMacro(catalog, macroId);
+  const decisionId = requireString(input.decision_id, "decision_id");
+  const decision = getDecision(macro, decisionId);
+  const requirements = requireArray(macro.requirements, `${macroId}.requirements`)
+    .map((value) => requireObject(value, `${macroId} Requirement`));
+  return { macroId, macro, decisionId, decision, requirements };
+}
 
-  const macroRegistryAbsolute = resolveProjectPath(macroRegistryProjectPath, operationRoot);
-  const macroRegistry = requireObject(readGovernedYamlFile(macroRegistryAbsolute), macroRegistryProjectPath);
-  const macroRecords = requireArray(macroRegistry.macro_requirements, "macro_requirements")
-    .map((value) => requireObject(value, "Macro-requirement record"));
+function parentModelId(documentType) {
+  const parentField = getField(documentType, "parent_requirement_id");
+  return requireString(
+    parentField.parent_model_id,
+    `${documentType.id}.parent_requirement_id.parent_model_id`,
+  );
+}
 
-  if (documentTypeId === "macro-requirement") {
-    const prefix = "MR-";
-    id = `${prefix}${nextFourDigitSuffix(macroRecords, prefix)}`;
-    registryPath = macroRegistryProjectPath;
-    collectionName = "macro_requirements";
-    const typeField = getField(documentType, "macro_requirement_type");
-    const typeEntry = resolveControlledValue(typeField, requireString(input.macro_requirement_type, "macro_requirement_type"));
-    const bodyPath = `docs/reference/project-model/body/macro-requirements/${id}_body.md`;
-    const decisionsPath = `docs/reference/project-model/registers/decisions/${id}.decisions.registry.yml`;
-    const requirementsPath = `docs/reference/project-model/registers/requirements/${id}.requirements.registry.yml`;
-    Object.assign(recordValues, {
-      id,
-      macro_requirement_type: typeEntry.value,
-      body_path: bodyPath,
-      decisions_registry_path: decisionsPath,
-      requirements_registry_path: requirementsPath,
-    });
-    extraChanges.push(
-      { projectPath: decisionsPath, mode: "create", text: childDecisionRegistryText(id) },
-      { projectPath: requirementsPath, mode: "create", text: childRequirementRegistryText(id) },
-    );
-  } else {
-    const macroId = requireString(input.macro_requirement_id, "macro_requirement_id");
-    const macro = getMacro(canonicalCatalog, macroId);
-    recordValues.macro_requirement_id = macroId;
-    if (documentTypeId === "decision") {
+const defaultGovernedDocumentAuthoringProviders = Object.freeze([
+  Object.freeze({
+    model_id: "macro-requirement",
+    required_request_fields: Object.freeze(["macro_requirement_type"]),
+    validate_request({ input, documentType }) {
+      const entry = validateControlledField(
+        documentType,
+        "macro_requirement_type",
+        input.macro_requirement_type,
+      );
+      return { macro_requirement_type: entry.value };
+    },
+    plan({ input, documentType, macroRecords, recordValues }) {
+      const prefix = "MR-";
+      const id = `${prefix}${nextFourDigitSuffix(macroRecords, prefix)}`;
+      const bodyPath = `docs/reference/project-model/body/macro-requirements/${id}_body.md`;
+      const decisionsPath = `docs/reference/project-model/registers/decisions/${id}.decisions.registry.yml`;
+      const requirementsPath = `docs/reference/project-model/registers/requirements/${id}.requirements.registry.yml`;
+      Object.assign(recordValues, {
+        id,
+        macro_requirement_type: resolveControlledValue(
+          getField(documentType, "macro_requirement_type"),
+          input.macro_requirement_type,
+        ).value,
+        body_path: bodyPath,
+        decisions_registry_path: decisionsPath,
+        requirements_registry_path: requirementsPath,
+      });
+      return {
+        id,
+        registryPath: macroRegistryProjectPath,
+        collectionName: "macro_requirements",
+        extraChanges: [
+          { projectPath: decisionsPath, mode: "create", text: childDecisionRegistryText(id) },
+          { projectPath: requirementsPath, mode: "create", text: childRequirementRegistryText(id) },
+        ],
+      };
+    },
+  }),
+  Object.freeze({
+    model_id: "decision",
+    required_request_fields: Object.freeze([
+      "macro_requirement_id",
+      "decision_type",
+      "author",
+    ]),
+    validate_request({ input, catalog, documentType }) {
+      const macroId = requireString(input.macro_requirement_id, "macro_requirement_id");
+      getMacro(catalog, macroId);
+      const decisionType = validateControlledField(
+        documentType,
+        "decision_type",
+        input.decision_type,
+      ).value;
+      return {
+        macro_requirement_id: macroId,
+        decision_type: decisionType,
+        author: requireSingleLine(input.author, "author"),
+      };
+    },
+    plan({ input, catalog, documentType, today, recordValues }) {
+      const macroId = requireString(input.macro_requirement_id, "macro_requirement_id");
+      const macro = getMacro(catalog, macroId);
       const decisions = requireArray(macro.decisions, `${macroId}.decisions`)
         .map((value) => requireObject(value, `${macroId} Decision`));
       const prefix = "ADR-";
-      id = `${prefix}${nextFourDigitSuffix(decisions, prefix)}`;
-      registryPath = requireString(macro.decisions_registry_path, `${macroId}.decisions_registry_path`);
-      collectionName = "decisions";
-      const decisionTypeField = getField(documentType, "decision_type");
-      const decisionTypeEntry = resolveControlledValue(
-        decisionTypeField,
-        requireString(input.decision_type, "decision_type"),
-      );
+      const id = `${prefix}${nextFourDigitSuffix(decisions, prefix)}`;
       Object.assign(recordValues, {
         id,
-        decision_type: decisionTypeEntry.value,
+        macro_requirement_id: macroId,
+        decision_type: resolveControlledValue(
+          getField(documentType, "decision_type"),
+          input.decision_type,
+        ).value,
         author: requireSingleLine(input.author, "author"),
         date: today,
         body_path: `docs/reference/project-model/body/decisions/${macroId}/${id}_body.md`,
       });
-    } else {
-      const decisionId = requireString(input.decision_id, "decision_id");
-      const decision = requireArray(macro.decisions, `${macroId}.decisions`)
-        .map((value) => requireObject(value, `${macroId} Decision`))
-        .find((entry) => entry.id === decisionId);
-      if (!decision) throw new Error(`Decision ${decisionId} does not belong to ${macroId}.`);
-      registryPath = requireString(macro.requirements_registry_path, `${macroId}.requirements_registry_path`);
-      collectionName = "requirements";
-      const allRequirements = requireArray(macro.requirements, `${macroId}.requirements`)
-        .map((value) => requireObject(value, `${macroId} Requirement`));
-      recordValues.decision_id = decisionId;
-      if (documentTypeId === "functional-requirement") {
-        const prefix = `${macroId}${decisionId}REQ-`;
-        id = `${prefix}${nextFourDigitSuffix(allRequirements, prefix)}`;
-        recordValues.requirement_type = resolveControlledValue(getField(documentType, "requirement_type"), "functional").value;
-      } else if (documentTypeId === "governance-requirement") {
-        const parentId = requireString(input.parent_requirement_id, "parent_requirement_id");
-        const parent = allRequirements.find((entry) => entry.id === parentId);
-        if (!parent || parent.requirement_type !== "functional") {
-          throw new Error(`Parent Functional Requirement not found in ${macroId}: ${parentId}`);
-        }
-        if (!parentId.startsWith(`${macroId}${decisionId}REQ-`)) {
-          throw new Error(`${parentId} does not belong to ${macroId}/${decisionId}.`);
-        }
-        const prefix = `${parentId}GOV-`;
-        id = `${prefix}${nextFourDigitSuffix(allRequirements, prefix)}`;
-        recordValues.requirement_type = resolveControlledValue(getField(documentType, "requirement_type"), "governance").value;
-        recordValues.parent_requirement_id = parentId;
-      } else {
-        throw new Error(`Unsupported Requirement document type: ${documentTypeId}`);
+      return {
+        id,
+        registryPath: requireString(
+          macro.decisions_registry_path,
+          `${macroId}.decisions_registry_path`,
+        ),
+        collectionName: "decisions",
+        extraChanges: [],
+      };
+    },
+  }),
+  Object.freeze({
+    model_id: "functional-requirement",
+    required_request_fields: Object.freeze([
+      "macro_requirement_id",
+      "decision_id",
+    ]),
+    validate_request({ input, catalog }) {
+      const context = providerRecordContext(input, catalog);
+      return {
+        macro_requirement_id: context.macroId,
+        decision_id: context.decisionId,
+      };
+    },
+    plan({ input, catalog, documentType, recordValues }) {
+      const context = providerRecordContext(input, catalog);
+      const prefix = `${context.macroId}${context.decisionId}REQ-`;
+      const id = `${prefix}${nextFourDigitSuffix(context.requirements, prefix)}`;
+      Object.assign(recordValues, {
+        id,
+        macro_requirement_id: context.macroId,
+        decision_id: context.decisionId,
+        requirement_type: resolveControlledValue(
+          getField(documentType, "requirement_type"),
+          "",
+        ).value,
+        body_path: `docs/reference/project-model/body/requirements/${context.macroId}/${id}_body.md`,
+      });
+      return {
+        id,
+        registryPath: requireString(
+          context.macro.requirements_registry_path,
+          `${context.macroId}.requirements_registry_path`,
+        ),
+        collectionName: "requirements",
+        extraChanges: [],
+      };
+    },
+  }),
+  Object.freeze({
+    model_id: "governance-requirement",
+    required_request_fields: Object.freeze([
+      "macro_requirement_id",
+      "decision_id",
+      "parent_requirement_id",
+    ]),
+    validate_request({ input, catalog, documentType }) {
+      const context = providerRecordContext(input, catalog);
+      const parentId = requireString(
+        input.parent_requirement_id,
+        "parent_requirement_id",
+      );
+      const expectedParentModelId = parentModelId(documentType);
+      const parent = requireArray(
+        context.decision.requirements,
+        `${context.macroId}/${context.decisionId}.requirements`,
+      )
+        .map((value) => requireObject(
+          value,
+          `${context.macroId}/${context.decisionId} Requirement`,
+        ))
+        .find(
+          (entry) =>
+            entry.id === parentId &&
+            entry.model_id === expectedParentModelId,
+        );
+      if (!parent) {
+        throw new Error(
+          `${expectedParentModelId} parent ${parentId} does not belong to ${context.macroId}/${context.decisionId}.`,
+        );
       }
-      recordValues.body_path = `docs/reference/project-model/body/requirements/${macroId}/${id}_body.md`;
+      return {
+        macro_requirement_id: context.macroId,
+        decision_id: context.decisionId,
+        parent_requirement_id: parentId,
+      };
+    },
+    plan({ input, catalog, documentType, recordValues }) {
+      const context = providerRecordContext(input, catalog);
+      const parentId = requireString(
+        input.parent_requirement_id,
+        "parent_requirement_id",
+      );
+      const expectedParentModelId = parentModelId(documentType);
+      const parent = context.requirements.find(
+        (entry) =>
+          entry.id === parentId &&
+          entry.model_id === expectedParentModelId,
+      );
+      if (!parent) {
+        throw new Error(
+          `${expectedParentModelId} parent ${parentId} does not belong to ${context.macroId}/${context.decisionId}.`,
+        );
+      }
+      const prefix = `${parentId}GOV-`;
+      const id = `${prefix}${nextFourDigitSuffix(context.requirements, prefix)}`;
+      Object.assign(recordValues, {
+        id,
+        macro_requirement_id: context.macroId,
+        decision_id: context.decisionId,
+        requirement_type: resolveControlledValue(
+          getField(documentType, "requirement_type"),
+          "",
+        ).value,
+        parent_requirement_id: parentId,
+        body_path: `docs/reference/project-model/body/requirements/${context.macroId}/${id}_body.md`,
+      });
+      return {
+        id,
+        registryPath: requireString(
+          context.macro.requirements_registry_path,
+          `${context.macroId}.requirements_registry_path`,
+        ),
+        collectionName: "requirements",
+        extraChanges: [],
+      };
+    },
+  }),
+]);
+
+export const governedDocumentAuthoringProviders =
+  defaultGovernedDocumentAuthoringProviders;
+
+export const governedDocumentAuthoringProviderModelIds = Object.freeze(
+  defaultGovernedDocumentAuthoringProviders.map((provider) => provider.model_id),
+);
+
+/**
+ * Validates exact runtime authoring provider coverage for a canonical catalog.
+ *
+ * @param {Record<string, unknown>} catalog - Canonical authoring catalog.
+ * @param {Array<Record<string, unknown>>} [providers] - Explicit provider catalog.
+ * @returns {Array<Record<string, unknown>>} Deterministic coverage diagnostics.
+ */
+export function validateGovernedDocumentAuthoringProviderCoverage(
+  catalog,
+  providers = defaultGovernedDocumentAuthoringProviders,
+) {
+  const canonicalModelIds = requireArray(
+    catalog.document_types,
+    "catalog.document_types",
+  ).map((entry) => requireString(entry?.id, "catalog document type id"));
+  const providerModelIds = requireArray(providers, "authoring providers")
+    .map((provider) => requireString(provider?.model_id, "authoring provider model_id"));
+  return validateGovernedDocumentModelConsumerCoverage({
+    consumerId: authoringProviderConsumerId,
+    canonicalModelIds,
+    providerModelIds,
+    sourcePath: authoringCatalogSourcePath,
+  });
+}
+
+function assertGovernedDocumentAuthoringProviderCoverage(catalog, providers) {
+  const diagnostics = validateGovernedDocumentAuthoringProviderCoverage(
+    catalog,
+    providers,
+  );
+  if (diagnostics.length > 0) {
+    throw new Error(
+      diagnostics
+        .map((entry) => `${entry.rule_id}: ${entry.message}`)
+        .join(" | "),
+    );
+  }
+}
+
+function resolveGovernedDocumentAuthoringProvider(
+  catalog,
+  documentTypeId,
+  providers = defaultGovernedDocumentAuthoringProviders,
+) {
+  assertGovernedDocumentAuthoringProviderCoverage(catalog, providers);
+  const matches = providers.filter(
+    (provider) => provider.model_id === documentTypeId,
+  );
+  if (matches.length !== 1) {
+    throw new Error(
+      `Authoring provider resolution requires exactly one provider for ${documentTypeId}; found ${matches.length}.`,
+    );
+  }
+  return matches[0];
+}
+
+/**
+ * Validates one request through the explicit provider for its canonical model.
+ *
+ * @param {Record<string, unknown>} request - Authoring request.
+ * @param {Record<string, unknown>} catalog - Canonical authoring catalog.
+ * @param {{providers?: Array<Record<string, unknown>>}} [options] - Testable provider override.
+ * @returns {Record<string, unknown>} Canonical validated request.
+ */
+export function validateGovernedDocumentAuthoringRequest(
+  request,
+  catalog,
+  options = {},
+) {
+  const input = requireObject(request, "Governed document authoring request");
+  const canonicalCatalog = requireObject(
+    catalog,
+    "Governed document authoring catalog",
+  );
+  if (canonicalCatalog.catalog_id !== "governed-document-authoring-catalog") {
+    throw new Error(`Unsupported catalog_id: ${canonicalCatalog.catalog_id}`);
+  }
+  for (const key of Object.keys(input)) {
+    if (generatedRequestFields.has(key)) {
+      throw new Error(`Authoring request must not declare generated field ${key}.`);
     }
   }
+  const documentTypeId = requireString(input.document_type, "document_type");
+  const providers = options.providers ?? defaultGovernedDocumentAuthoringProviders;
+  const provider = resolveGovernedDocumentAuthoringProvider(
+    canonicalCatalog,
+    documentTypeId,
+    providers,
+  );
+  const documentType = getDocumentType(canonicalCatalog, documentTypeId);
+  const requiredFields = [
+    ...commonRequestFields,
+    ...provider.required_request_fields,
+  ];
+  const allowedFields = new Set(requiredFields);
+  for (const key of Object.keys(input)) {
+    if (!allowedFields.has(key)) {
+      throw new Error(`${documentTypeId} request contains unsupported field ${key}.`);
+    }
+  }
+  for (const key of requiredFields) {
+    if (!Object.prototype.hasOwnProperty.call(input, key)) {
+      throw new Error(`${documentTypeId} request is missing ${key}.`);
+    }
+  }
+  const title = requireSingleLine(input.title, "title");
+  const body = requireObject(input.body, "body");
+  validateBodyShape(documentType, body);
+  const providerValues = requireObject(
+    provider.validate_request({
+      input,
+      catalog: canonicalCatalog,
+      documentType,
+    }),
+    `${documentTypeId} provider validation result`,
+  );
+  return {
+    document_type: documentTypeId,
+    title,
+    body,
+    ...providerValues,
+  };
+}
+
+/**
+ * Creates a deterministic governed document plan without writing.
+ *
+ * @param {Record<string, unknown>} request - Authoring request.
+ * @param {Record<string, unknown>} catalog - Canonical authoring catalog.
+ * @param {{rootDir?: string, today?: string, providers?: Array<Record<string, unknown>>}} [options]
+ * @returns {Record<string, unknown>}
+ */
+export function planGeneratedDocument(request, catalog, options = {}) {
+  const canonicalCatalog = requireObject(
+    catalog,
+    "Governed document authoring catalog",
+  );
+  const providers = options.providers ?? defaultGovernedDocumentAuthoringProviders;
+  const input = validateGovernedDocumentAuthoringRequest(
+    request,
+    canonicalCatalog,
+    { providers },
+  );
+  const documentTypeId = requireString(input.document_type, "document_type");
+  const documentType = getDocumentType(canonicalCatalog, documentTypeId);
+  const provider = resolveGovernedDocumentAuthoringProvider(
+    canonicalCatalog,
+    documentTypeId,
+    providers,
+  );
+  const title = requireSingleLine(input.title, "title");
+  const body = requireObject(input.body, "body");
+  const operationRoot = resolveRootDir(options);
+  const today = options.today ?? new Date().toISOString().slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(today)) {
+    throw new Error("today must use YYYY-MM-DD.");
+  }
+
+  const statusField = getField(documentType, "status");
+  const statusEntry = resolveControlledValue(statusField, "draft");
+  const recordValues = { title, status: statusEntry.value };
+  const macroRegistryAbsolute = resolveProjectPath(
+    macroRegistryProjectPath,
+    operationRoot,
+  );
+  const macroRegistry = requireObject(
+    readGovernedYamlFile(macroRegistryAbsolute),
+    macroRegistryProjectPath,
+  );
+  const macroRecords = requireArray(
+    macroRegistry.macro_requirements,
+    "macro_requirements",
+  ).map((value) => requireObject(value, "Macro-requirement record"));
+
+  const providerPlan = requireObject(
+    provider.plan({
+      input,
+      catalog: canonicalCatalog,
+      documentType,
+      macroRecords,
+      recordValues,
+      today,
+    }),
+    `${documentTypeId} authoring provider plan`,
+  );
+  const id = requireString(providerPlan.id, `${documentTypeId} provider id`);
+  const registryPath = requireString(
+    providerPlan.registryPath,
+    `${documentTypeId} provider registryPath`,
+  );
+  const collectionName = requireString(
+    providerPlan.collectionName,
+    `${documentTypeId} provider collectionName`,
+  );
+  const extraChanges = requireArray(
+    providerPlan.extraChanges ?? [],
+    `${documentTypeId} provider extraChanges`,
+  );
 
   recordValues.id = id;
-  const recordFields = requireArray(documentType.record_fields, `${documentTypeId}.record_fields`)
-    .map((value) => requireObject(value, `${documentTypeId} record field`));
+  const recordFields = requireArray(
+    documentType.record_fields,
+    `${documentTypeId}.record_fields`,
+  ).map((value) => requireObject(value, `${documentTypeId} record field`));
   const bodyPath = requireString(recordValues.body_path, "generated body_path");
-  const bodyText = buildBodyText(documentType, body, { id, title, statusEntry });
+  const bodyText = buildBodyText(documentType, body, {
+    id,
+    title,
+    statusEntry,
+  });
   const recordBlock = buildRecordBlock(recordFields, recordValues);
   const registryAbsolute = resolveProjectPath(registryPath, operationRoot);
-  if (!fs.existsSync(registryAbsolute)) throw new Error(`Registry not found: ${registryPath}`);
+  if (!fs.existsSync(registryAbsolute)) {
+    throw new Error(`Registry not found: ${registryPath}`);
+  }
   const registryText = readText(fs, registryAbsolute);
-  if (new RegExp(`^\\s*-?\\s*id:\\s*${escapeRegExp(id)}\\s*$`, "mu").test(registryText)) {
+  if (
+    new RegExp(`^\\s*-?\\s*id:\\s*${escapeRegExp(id)}\\s*$`, "mu")
+      .test(registryText)
+  ) {
     throw new Error(`Generated id already exists in registry: ${id}`);
   }
 

@@ -9,7 +9,9 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
 import {
   applyGeneratedDocument,
   planGeneratedDocument,
+  validateGovernedDocumentAuthoringRequest,
 } from "./create-governed-document.mjs";
+export { validateGovernedDocumentAuthoringRequest };
 import {
   createRepositoryProjectionMaterializationSession,
 } from "./lib/repository-projection-materialization.mjs";
@@ -21,6 +23,8 @@ import {
  * @implementsRequirement MR-0002ADR-0004REQ-0004GOV-0001
  * @implementsRequirement MR-0002ADR-0005REQ-0003
  * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @derivedFromDecision MR-0002/ADR-0005
  * @macroRequirement MR-0002
@@ -49,26 +53,6 @@ const requestSuffix = ".governed-document-authoring.yml";
 const catalogBuilderProjectPath =
   "tools/MR-0002/build-governed-document-authoring-catalog.mjs";
 const repoCheckProjectPath = "tools/repo-check.mjs";
-const generatedRequestFields = new Set([
-  "id",
-  "status",
-  "date",
-  "body_path",
-  "decisions_registry_path",
-  "requirements_registry_path",
-  "requirement_type",
-]);
-const commonRequestFields = new Set(["document_type", "title", "body"]);
-const typeSpecificFields = Object.freeze({
-  "macro-requirement": new Set(["macro_requirement_type"]),
-  decision: new Set(["macro_requirement_id", "decision_type", "author"]),
-  "functional-requirement": new Set(["macro_requirement_id", "decision_id"]),
-  "governance-requirement": new Set([
-    "macro_requirement_id",
-    "decision_id",
-    "parent_requirement_id",
-  ]),
-});
 
 /** @param {unknown} value @param {string} label @returns {Record<string, unknown>} */
 function requireObject(value, label) {
@@ -164,115 +148,6 @@ export function loadGovernedDocumentAuthoringCatalog(options = {}) {
     throw new Error(`Governed document authoring catalog builder failed${diagnostics ? `: ${diagnostics}` : "."}`);
   }
   return requireObject(JSON.parse(result.stdout), "Governed document authoring catalog");
-}
-
-/** @param {Record<string, unknown>} catalog @param {string} documentTypeId */
-function documentTypeById(catalog, documentTypeId) {
-  const type = requireArray(catalog.document_types, "catalog.document_types")
-    .map((value) => requireObject(value, "catalog document type"))
-    .find((entry) => entry.id === documentTypeId);
-  if (!type) throw new Error(`Unknown governed document_type: ${documentTypeId}`);
-  return type;
-}
-
-/** @param {Record<string, unknown>} documentType @param {string} fieldName @param {string} value */
-function validateControlledField(documentType, fieldName, value) {
-  const field = requireArray(documentType.record_fields, `${documentType.id}.record_fields`)
-    .map((entry) => requireObject(entry, `${documentType.id} field`))
-    .find((entry) => entry.name === fieldName);
-  if (!field) throw new Error(`${documentType.id} has no canonical field ${fieldName}.`);
-  const values = requireArray(field.controlled_values, `${fieldName}.controlled_values`)
-    .map((entry) => requireObject(entry, `${fieldName} controlled value`))
-    .map((entry) => entry.value);
-  if (!values.includes(value)) throw new Error(`${fieldName} must be one of: ${values.join(", ")}.`);
-}
-
-/** @param {Record<string, unknown>} documentType @param {Record<string, unknown>} body */
-function validateBodyShape(documentType, body) {
-  const sections = requireArray(documentType.body_sections, `${documentType.id}.body_sections`)
-    .map((entry) => requireObject(entry, `${documentType.id} body section`))
-    .filter((entry) => entry.content_kind !== "controlled_scalar_label");
-  const allowed = new Set(sections.map((entry) => entry.input_name));
-  for (const key of Object.keys(body)) {
-    if (!allowed.has(key)) throw new Error(`${documentType.id} body contains unsupported field ${key}.`);
-  }
-  for (const section of sections) {
-    if (section.required && !Object.prototype.hasOwnProperty.call(body, section.input_name)) {
-      throw new Error(`${documentType.id} body is missing required field ${section.input_name}.`);
-    }
-  }
-}
-
-/**
- * Validates one request against the current canonical catalog.
- *
- * @param {Record<string, unknown>} request
- * @param {Record<string, unknown>} catalog
- * @returns {Record<string, unknown>}
- */
-export function validateGovernedDocumentAuthoringRequest(request, catalog) {
-  const input = requireObject(request, "Governed document authoring request");
-  for (const key of Object.keys(input)) {
-    if (generatedRequestFields.has(key)) throw new Error(`Authoring request must not declare generated field ${key}.`);
-  }
-  const documentTypeId = requireString(input.document_type, "document_type");
-  const specific = typeSpecificFields[documentTypeId];
-  if (!specific) throw new Error(`Unknown governed document_type: ${documentTypeId}`);
-  const allowed = new Set([...commonRequestFields, ...specific]);
-  for (const key of Object.keys(input)) {
-    if (!allowed.has(key)) throw new Error(`${documentTypeId} request contains unsupported field ${key}.`);
-  }
-  for (const key of allowed) {
-    if (!Object.prototype.hasOwnProperty.call(input, key)) throw new Error(`${documentTypeId} request is missing ${key}.`);
-  }
-  const title = requireString(input.title, "title");
-  if (/\r|\n/u.test(title)) throw new Error("title must be a single line.");
-  const canonicalCatalog = requireObject(catalog, "Governed document authoring catalog");
-  if (canonicalCatalog.catalog_id !== "governed-document-authoring-catalog") {
-    throw new Error(`Unsupported catalog_id: ${canonicalCatalog.catalog_id}`);
-  }
-  const documentType = documentTypeById(canonicalCatalog, documentTypeId);
-  const body = requireObject(input.body, "body");
-  validateBodyShape(documentType, body);
-
-  const canonical = { document_type: documentTypeId, title, body };
-  if (documentTypeId === "macro-requirement") {
-    canonical.macro_requirement_type = requireString(input.macro_requirement_type, "macro_requirement_type");
-    validateControlledField(documentType, "macro_requirement_type", canonical.macro_requirement_type);
-    return canonical;
-  }
-
-  const macroRequirementId = requireString(input.macro_requirement_id, "macro_requirement_id");
-  const macro = requireArray(canonicalCatalog.macro_requirements, "catalog.macro_requirements")
-    .map((value) => requireObject(value, "catalog Macro-requirement"))
-    .find((entry) => entry.id === macroRequirementId);
-  if (!macro) throw new Error(`Unknown canonical Macro-requirement: ${macroRequirementId}`);
-  canonical.macro_requirement_id = macroRequirementId;
-
-  if (documentTypeId === "decision") {
-    canonical.decision_type = requireString(input.decision_type, "decision_type");
-    canonical.author = requireString(input.author, "author");
-    if (/\r|\n/u.test(canonical.author)) throw new Error("author must be a single line.");
-    validateControlledField(documentType, "decision_type", canonical.decision_type);
-    return canonical;
-  }
-
-  const decisionId = requireString(input.decision_id, "decision_id");
-  const decision = requireArray(macro.decisions, `${macroRequirementId}.decisions`)
-    .map((value) => requireObject(value, `${macroRequirementId} Decision`))
-    .find((entry) => entry.id === decisionId);
-  if (!decision) throw new Error(`Decision ${decisionId} does not belong to ${macroRequirementId}.`);
-  canonical.decision_id = decisionId;
-
-  if (documentTypeId === "governance-requirement") {
-    const parentId = requireString(input.parent_requirement_id, "parent_requirement_id");
-    const parent = requireArray(decision.requirements, `${macroRequirementId}/${decisionId}.requirements`)
-      .map((value) => requireObject(value, `${macroRequirementId}/${decisionId} Requirement`))
-      .find((entry) => entry.id === parentId && entry.requirement_type === "functional");
-    if (!parent) throw new Error(`Functional parent ${parentId} does not belong to ${macroRequirementId}/${decisionId}.`);
-    canonical.parent_requirement_id = parentId;
-  }
-  return canonical;
 }
 
 /** @param {string} requestProjectPath @param {{rootDir?: string}} [options] */

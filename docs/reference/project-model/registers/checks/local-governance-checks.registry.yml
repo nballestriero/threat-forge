@@ -182,7 +182,7 @@ checks:
       - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
-    description: Validate registry-derived governed document model coverage across the authoring catalog and schema together with relation transaction runner and negative-fixture coherence.
+    description: Validate registry-derived authoring catalog and schema coverage, exact runtime and schema provider coverage, relation projections, transactions, adapters and deterministic negative extension evidence.
 
   - id: MR-0002ADR-0005REQ-0002GOV-0001CHECK-0001
     title: VS Code governed document authoring adapter consistency

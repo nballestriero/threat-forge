@@ -8,6 +8,14 @@ import {
   assertGovernedDocumentModelConsumerCoverage,
   loadGovernedDocumentModelSourceSet,
 } from "../MR-0001/lib/governed-document-model-sources.mjs";
+import {
+  governedDocumentAuthoringProviderModelIds,
+  validateGovernedDocumentAuthoringProviderCoverage,
+} from "./create-governed-document.mjs";
+import {
+  governedDocumentAuthoringSchemaProviderModelIds,
+  validateGovernedDocumentAuthoringSchemaProviderCoverage,
+} from "./build-governed-document-authoring-schema.mjs";
 
 /**
  * @file Governed document authoring contract checker.
@@ -24,9 +32,9 @@ import {
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * Validates deterministic catalog and schema generation, every active document
- * branch, scoped MR/ADR/parent choices, generated-field ownership, negative
- * fixtures and the shared core/runner/adapter verification suites.
+ * Validates deterministic catalog and schema generation, exact runtime and schema
+ * authoring-provider coverage, scoped MR/ADR/parent choices, generated-field
+ * ownership, negative fixtures and the shared core/runner/adapter suites.
  *
  * Side effects: reads canonical and generated sources, executes read-only
  * builders and tests, writes no repository file and fails on working-tree drift.
@@ -190,6 +198,25 @@ export function validateGovernedDocumentAuthoringContract(catalog, schema) {
     errors.push(`schema document types diverge from the canonical model index: ${schemaCoverage}`);
   }
 
+  const runtimeProviderDiagnostics =
+    validateGovernedDocumentAuthoringProviderCoverage(catalog);
+  const schemaProviderDiagnostics =
+    validateGovernedDocumentAuthoringSchemaProviderCoverage(catalog);
+  if (runtimeProviderDiagnostics.length > 0) {
+    errors.push(
+      `runtime authoring providers diverge from the canonical catalog: ${runtimeProviderDiagnostics
+        .map((entry) => `${entry.rule_id}: ${entry.message}`)
+        .join(" | ")}`,
+    );
+  }
+  if (schemaProviderDiagnostics.length > 0) {
+    errors.push(
+      `schema authoring providers diverge from the canonical catalog: ${schemaProviderDiagnostics
+        .map((entry) => `${entry.rule_id}: ${entry.message}`)
+        .join(" | ")}`,
+    );
+  }
+
   for (const documentType of requireArray(catalog.document_types, "catalog.document_types")) {
     const branch = branchByType(schema, documentType.id);
     if (!branch) continue;
@@ -258,6 +285,12 @@ export function validateGovernedDocumentAuthoringContract(catalog, schema) {
   }
   if (metadata.request_suffix !== ".governed-document-authoring.yml") {
     errors.push("schema request_suffix diverges from the governed authoring request suffix.");
+  }
+  if (
+    JSON.stringify([...metadata.supported_document_types].sort(compare)) !==
+    JSON.stringify([...governedDocumentAuthoringSchemaProviderModelIds].sort(compare))
+  ) {
+    errors.push("schema supported_document_types diverge from its provider catalog.");
   }
   const catalogSources = requireArray(catalog.sources, "catalog.sources")
     .map((entry) => entry.path)
@@ -411,6 +444,8 @@ function main() {
   console.log("Implemented requirement: MR-0002ADR-0005REQ-0003GOV-0001");
   console.log(`Catalog sources checked: ${firstCatalog.value.sources.length}`);
   console.log(`Document types checked: ${firstCatalog.value.document_types.length}`);
+  console.log(`Runtime authoring providers checked: ${governedDocumentAuthoringProviderModelIds.length}`);
+  console.log(`Schema authoring providers checked: ${governedDocumentAuthoringSchemaProviderModelIds.length}`);
   console.log(`Macro-requirements checked: ${firstCatalog.value.macro_requirements.length}`);
   console.log(`Negative fixtures checked: ${fixtures.length}`);
   const match = testOutput.match(/(?:#|ℹ)\s*tests\s+(\d+)/u);
