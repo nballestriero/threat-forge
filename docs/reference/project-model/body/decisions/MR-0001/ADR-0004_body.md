@@ -54,7 +54,7 @@ Lo stato di un Requirement resta distinto dallo stato di implementazione. Il lif
 
 Il campo `requirement_type` contiene esclusivamente tipi concreti registrati nel proprio value set contestuale. `specialized` rappresenta una categoria astratta e non compare come valore del campo né come alias di un tipo concreto.
 
-Ogni tipo concreto dichiara, oltre a `value` e `meaning`, l'eventuale appartenenza alla categoria specializzata, la presenza di un Requirement padre e i tipi concreti ammessi come padre. Il primo insieme supportato comprende `functional` e `governance`; valori futuri come `security`, `performance`, `privacy` o `compliance` entrano come tipi concreti governati con regole applicabili proprie.
+Ogni tipo concreto dichiara, oltre a `value` e `meaning`, l'eventuale appartenenza alla categoria specializzata, la presenza di un Requirement padre e i tipi concreti ammessi come padre. I tipi concreti disponibili sono esclusivamente quelli registrati nel value set contestuale `requirement_type` e associati alle rispettive varianti e regole canoniche. Ogni nuovo tipo entra attraverso un'estensione governata esplicita e non attraverso una lista locale o un alias implicito.
 
 La decisione comprende la sostituzione di `allowed_labels`, la distinzione dei ruoli delle label, i value set contestuali, la scomposizione di `status` e l'esclusione dei nomi temporanei dai concetti canonici. Gli incrementi derivati aggiornano il registro del vocabolario, definiscono i primi value set, introducono il Governance Requirement di coerenza e aggiungono il controllo sulle label e sui valori fuori contesto.
 

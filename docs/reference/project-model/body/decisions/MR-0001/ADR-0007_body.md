@@ -12,7 +12,7 @@ The governed corpus also contains inconsistent headings, languages, punctuation 
 
 ## Decision
 
-ThreatForge defines four logical governed document models: Macro-requirement, Decision, Functional Requirement and Governance Requirement. The models reference seven representation profiles: four Markdown body profiles and three YAML registry profiles.
+ThreatForge defines governed document models through the canonical document model index. Each active model entry references exactly one YAML registry profile and exactly one Markdown body profile, and the profiles referenced by active model entries form the active representation-profile inventory. This Decision does not impose a fixed number of models or profiles.
 
 Canonical model definitions are organized by model and representation. A shared validation engine consumes those definitions, while one entrypoint validates each complete logical model and one cross-model entrypoint validates relationships among models.
 
@@ -34,4 +34,4 @@ New model checks are introduced as non-blocking planned checks. They become acti
 
 - Immediate implementation of the validation engine
 - Immediate activation of new blocking checks
-- Governance of ordinary Diátaxis documentation in the first profile set
+- Governance of ordinary Diátaxis documentation as governed document models

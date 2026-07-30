@@ -1,4 +1,4 @@
-﻿# MR-0004 — Ciclo di vita governato dei progetti target
+# MR-0004 — Ciclo di vita governato dei progetti target
 
 ## Intent
 
@@ -16,7 +16,7 @@ ThreatForge needs one small and reproducible path from project creation to gover
 - Internal and external Target Projects must originate from the same governed template and application behavior.
 - Every Target Project must own its project-local documentation, registries, reports and materialized projections.
 - A Target Project must remain structurally valid without executable source code, a running backend, a frontend or a database instance.
-- Every Target Project must support project-local Macro-requirement, Decision, Functional Requirement and Base Analysis records.
+- Every Target Project must support the governed document models required by the active engine-owned target template and project-local Base Analysis records.
 - Target Project documentation must provide project-local sources for actors, logical components, data resources, trust boundaries and information flows.
 - Target Project records must preserve stable project-local identifiers and source paths.
 - Base Analysis Element provenance must resolve to governed sources owned by the analyzed Target Project or to explicit reviewed analytical additions.

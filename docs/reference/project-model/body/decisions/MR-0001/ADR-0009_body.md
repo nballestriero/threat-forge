@@ -6,7 +6,7 @@ Draft
 
 ## Context
 
-ThreatForge currently defines four governed document models: Macro-requirement, Decision, Functional Requirement and Governance Requirement. The common analysis model establishes Common Findings as methodology-neutral and traceable results originating from methodology-specific Analysis Records, but the governed corpus has no document model capable of representing the security obligations introduced to address accepted Findings.
+ThreatForge governs its document corpus through an extensible canonical model catalog. The common analysis model establishes Common Findings as methodology-neutral and traceable results originating from methodology-specific Analysis Records, but the governed corpus has no document model capable of representing the security obligations introduced to address accepted Findings.
 
 Treating those obligations as Governance Requirements would confuse required product security behavior with repository governance, validation and verification controls. Treating them as ordinary independent Functional Requirements would lose their child relationship with the function they protect. Binding them directly to methodology plugins or method-specific classifications would instead couple product obligations to one analytical vocabulary and would obscure the common Finding boundary between analysis and governed product requirements.
 
@@ -14,7 +14,7 @@ The project also needs a complete documentary trace from the methodology-specifi
 
 ## Decision
 
-ThreatForge introduces Security Requirement as a fifth logical governed document model. A Security Requirement expresses an independently testable security obligation and is a child specialization of exactly one governed Functional Requirement. It remains owned by the same Macro-requirement and Decision as its Functional Requirement parent because the security obligation belongs to the governed definition of the protected product behavior.
+ThreatForge introduces Security Requirement as a logical governed document model extension. A Security Requirement expresses an independently testable security obligation and is a child specialization of exactly one governed Functional Requirement. It remains owned by the same Macro-requirement and Decision as its Functional Requirement parent because the security obligation belongs to the governed definition of the protected product behavior.
 
 A Security Requirement is authored only after one or more Common Findings have been produced and explicitly reviewed as accepted. The author selects the accepted Common Findings used to justify the obligation and declares each selected Finding exactly once in the governed Finding derivation section of the Security Requirement Markdown body. Each referenced Common Finding includes the Security Requirement parent Functional Requirement among its affected governed Functional Requirements. A Finding can affect multiple Functional Requirements and can contribute to distinct Security Requirements under each affected parent. A Security Requirement can also consolidate one obligation supported by multiple accepted Findings. These relationships do not impose one-to-one cardinality and no automatic discovery, consolidation or requirement generation is implied.
 
@@ -36,7 +36,7 @@ A Security Requirement is distinct from a Governance Requirement. The former con
 - Benefit: Findings from different methods can support independent or consolidated Security Requirements without being merged automatically.
 - Benefit: A complete consultable trace can be derived without creating a duplicate Common Finding registry.
 - Benefit: Governance Requirements retain a meaning distinct from product security behavior.
-- Cost: The canonical document model set expands from four models to five.
+- Cost: The active canonical document model catalog must add and govern the Security Requirement model.
 - Cost: The requirement registry body profiles authoring consumers and cross-model validation require coordinated extension.
 - Cost: Authors must select and explain the accepted Findings used to derive each Security Requirement.
 - Risk: Poorly scoped Security Requirements could duplicate their Functional Requirement parent.
@@ -64,4 +64,4 @@ A Security Requirement is distinct from a Governance Requirement. The former con
 - Define the complete Common Finding review workflow transition authorization or remediation lifecycle
 - Require Security Requirement validation to execute or interpret methodology plugins
 - Activate Governance Requirement children of Security Requirements
-- Implement the fifth document model in this Decision
+- Implement the Security Requirement model in this Decision
