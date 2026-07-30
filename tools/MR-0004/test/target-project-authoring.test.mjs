@@ -7,6 +7,12 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
+import {
+  buildGovernedRequirementVariantDispatch,
+  loadGovernedDocumentModelSourceSet,
+  matchesGovernedRequirementVariantIdentity,
+  resolveGovernedRequirementVariant,
+} from "../../MR-0001/lib/governed-document-model-sources.mjs";
 import { createTargetProject } from "../lib/target-project-generator.mjs";
 import {
   applyTargetProjectAuthoring,
@@ -20,13 +26,18 @@ import { parseTargetProjectAuthoringArguments } from "../run-target-project-auth
  * @file Target Project governed-document authoring verification.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0004
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0004
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Verifies target-local catalog ownership, deterministic preview, all four
- * governed document types, local identifier allocation, path confinement,
- * rollback, canonical engine immutability and command-line delegation.
+ * Verifies target-local catalog ownership, canonical Requirement dispatch,
+ * deterministic preview, active governed document types, local identifier
+ * allocation, path confinement, rollback, canonical engine immutability and
+ * command-line delegation.
  */
 
 const testPath = fileURLToPath(import.meta.url);
@@ -188,6 +199,33 @@ test("target catalog uses engine rules and only target-local ownership records",
     assert.ok(catalog.document_types.some((entry) => entry.id === "governance-requirement"));
     assert.ok(catalog.sources.some((entry) => entry.ownership === "threatforge_engine"));
     assert.ok(catalog.sources.some((entry) => entry.ownership === "target_project"));
+  } finally {
+    removeWorkspace(workspace);
+  }
+});
+
+test("target Requirement records use canonical variant dispatch", () => {
+  const workspace = createWorkspace();
+  try {
+    const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir: engineRoot });
+    const dispatch = buildGovernedRequirementVariantDispatch(sourceSet);
+    const catalog = loadTargetProjectAuthoringCatalog({
+      engineRoot,
+      targetRoot: workspace.targetRoot,
+    });
+    for (const macro of catalog.macro_requirements) {
+      for (const requirement of macro.requirements) {
+        const variant = resolveGovernedRequirementVariant(
+          dispatch,
+          requirement.requirement_type,
+        );
+        assert.equal(requirement.model_id, variant.model_id);
+        assert.equal(
+          matchesGovernedRequirementVariantIdentity(variant, requirement.id),
+          true,
+        );
+      }
+    }
   } finally {
     removeWorkspace(workspace);
   }

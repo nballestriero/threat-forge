@@ -20,8 +20,10 @@ import { readGovernedYamlFile } from "./governed-yaml.mjs";
  *
  * Loads the governed source schema, canonical model index, the model and
  * representation-profile definitions referenced by that index, and controlled
- * value-set identities. Validation is side-effect free and returns deterministic
- * diagnostics with stable rule ids without imposing consumer-local cardinalities.
+ * value-set identities. It also derives the canonical Requirement discriminator,
+ * model, identity and parent metadata used by generic consumers. Validation is
+ * side-effect free and returns deterministic diagnostics with stable rule ids
+ * without imposing consumer-local cardinalities.
  */
 
 const modulePath = fileURLToPath(import.meta.url);
@@ -51,6 +53,19 @@ const CONSUMER_COVERAGE_RULE = Object.freeze({
 });
 export const governedDocumentModelConsumerCoverageRuleIds = Object.freeze(
   Object.values(CONSUMER_COVERAGE_RULE),
+);
+
+const REQUIREMENT_VARIANT_DISPATCH_RULE = Object.freeze({
+  variantMissing: "document-model.requirement-variant.variant.missing",
+  variantDuplicate: "document-model.requirement-variant.variant.duplicate",
+  discriminatorInvalid: "document-model.requirement-variant.discriminator.invalid",
+  discriminatorDuplicate: "document-model.requirement-variant.discriminator.duplicate",
+  identityPatternInvalid: "document-model.requirement-variant.identity-pattern.invalid",
+  parentModelUnregistered: "document-model.requirement-variant.parent-model.unregistered",
+  unknownType: "document-model.requirement-variant.type.unknown",
+});
+export const governedRequirementVariantDispatchRuleIds = Object.freeze(
+  Object.values(REQUIREMENT_VARIANT_DISPATCH_RULE),
 );
 
 function clone(value) { return structuredClone(value); }
@@ -128,6 +143,170 @@ export function assertGovernedDocumentModelConsumerCoverage(input) {
         .join(" | "),
     );
   }
+}
+
+function requirementVariantDispatchError(ruleId, message) {
+  const error = new Error(`${ruleId}: ${message}`);
+  error.code = ruleId;
+  return error;
+}
+
+/**
+ * Builds the canonical dispatch for governed Requirement record variants.
+ *
+ * @param {Record<string, unknown>} sourceSet - Valid canonical model source set.
+ * @returns {{variants: ReadonlyArray<Record<string, unknown>>, by_requirement_type: Readonly<Record<string, Record<string, unknown>>>, by_model_id: Readonly<Record<string, Record<string, unknown>>>}}
+ */
+export function buildGovernedRequirementVariantDispatch(sourceSet) {
+  const activeModelIds = canonicalGovernedDocumentModelIds(sourceSet);
+  const activeModelIdSet = new Set(activeModelIds);
+  const profileById = new Map(
+    (sourceSet?.profiles ?? []).map((entry) => [text(entry?.value?.profile_id), entry]),
+  );
+  const variants = [];
+  const byRequirementType = {};
+  const byModelId = {};
+
+  for (const modelEntry of sourceSet?.index?.value?.models ?? []) {
+    const modelId = text(modelEntry?.id);
+    const registryProfileId = text(modelEntry?.registry_profile_id);
+    const profileEntry = profileById.get(registryProfileId);
+    const recordVariants = profileEntry?.value?.record_variants;
+    if (!Array.isArray(recordVariants)) continue;
+
+    const requirementVariants = recordVariants.filter(
+      (variant) => text(variant?.discriminator_field) === "requirement_type",
+    );
+    if (requirementVariants.length === 0) continue;
+
+    const matchingVariants = requirementVariants.filter(
+      (variant) => text(variant?.model_id) === modelId,
+    );
+    if (matchingVariants.length === 0) {
+      throw requirementVariantDispatchError(
+        REQUIREMENT_VARIANT_DISPATCH_RULE.variantMissing,
+        `Canonical Requirement model ${modelId} has no requirement_type record variant in ${registryProfileId}.`,
+      );
+    }
+    if (matchingVariants.length > 1) {
+      throw requirementVariantDispatchError(
+        REQUIREMENT_VARIANT_DISPATCH_RULE.variantDuplicate,
+        `Canonical Requirement model ${modelId} has multiple requirement_type record variants in ${registryProfileId}.`,
+      );
+    }
+
+    const variant = matchingVariants[0];
+    const requirementType = text(variant?.discriminator_value);
+    const fields = Array.isArray(variant?.fields) ? variant.fields : [];
+    const discriminatorField = fields.find(
+      (field) => text(field?.name) === "requirement_type",
+    );
+    if (
+      !requirementType ||
+      text(discriminatorField?.required_value) !== requirementType
+    ) {
+      throw requirementVariantDispatchError(
+        REQUIREMENT_VARIANT_DISPATCH_RULE.discriminatorInvalid,
+        `Requirement variant ${text(variant?.id) || modelId} must declare one requirement_type field whose required_value equals its discriminator_value.`,
+      );
+    }
+    if (Object.prototype.hasOwnProperty.call(byRequirementType, requirementType)) {
+      throw requirementVariantDispatchError(
+        REQUIREMENT_VARIANT_DISPATCH_RULE.discriminatorDuplicate,
+        `Requirement discriminator ${requirementType} maps to both ${byRequirementType[requirementType].model_id} and ${modelId}.`,
+      );
+    }
+
+    const identityField = fields.find((field) => text(field?.name) === "id");
+    const identityPattern = text(identityField?.pattern);
+    try {
+      if (!identityPattern) throw new Error("missing pattern");
+      new RegExp(identityPattern, "u");
+    } catch {
+      throw requirementVariantDispatchError(
+        REQUIREMENT_VARIANT_DISPATCH_RULE.identityPatternInvalid,
+        `Requirement variant ${text(variant?.id) || modelId} must declare a valid canonical id pattern.`,
+      );
+    }
+
+    const parentField = fields.find(
+      (field) => text(field?.name) === "parent_requirement_id",
+    );
+    const parentModelId = text(parentField?.parent_model_id);
+    if (parentModelId && !activeModelIdSet.has(parentModelId)) {
+      throw requirementVariantDispatchError(
+        REQUIREMENT_VARIANT_DISPATCH_RULE.parentModelUnregistered,
+        `Requirement variant ${text(variant?.id) || modelId} references unregistered parent model ${parentModelId}.`,
+      );
+    }
+
+    const projected = Object.freeze({
+      variant_id: text(variant?.id),
+      model_id: modelId,
+      registry_profile_id: registryProfileId,
+      discriminator_field: "requirement_type",
+      discriminator_value: requirementType,
+      identity_pattern: identityPattern,
+      field_names: Object.freeze(
+        [...fields]
+          .sort((left, right) => Number(left?.order ?? 0) - Number(right?.order ?? 0))
+          .map((field) => text(field?.name))
+          .filter(Boolean),
+      ),
+      parent_requirement: parentField
+        ? Object.freeze({
+            field_name: "parent_requirement_id",
+            pattern: text(parentField?.pattern),
+            parent_model_id: parentModelId,
+            cardinality: text(parentField?.cardinality),
+            identity_prefix_required: parentField?.identity_prefix_required === true,
+            same_macro_requirement: parentField?.same_macro_requirement === true,
+            same_decision: parentField?.same_decision === true,
+          })
+        : null,
+    });
+    variants.push(projected);
+    byRequirementType[requirementType] = projected;
+    byModelId[modelId] = projected;
+  }
+
+  return Object.freeze({
+    variants: Object.freeze(variants),
+    by_requirement_type: Object.freeze(byRequirementType),
+    by_model_id: Object.freeze(byModelId),
+  });
+}
+
+/**
+ * Resolves one canonical Requirement variant and fails closed for unknown types.
+ *
+ * @param {ReturnType<typeof buildGovernedRequirementVariantDispatch>} dispatch - Canonical dispatch.
+ * @param {unknown} requirementType - Authored requirement_type value.
+ * @returns {Record<string, unknown>} Canonical variant metadata.
+ */
+export function resolveGovernedRequirementVariant(dispatch, requirementType) {
+  const normalized = text(requirementType);
+  const variant = dispatch?.by_requirement_type?.[normalized];
+  if (!variant) {
+    throw requirementVariantDispatchError(
+      REQUIREMENT_VARIANT_DISPATCH_RULE.unknownType,
+      `Unknown canonical requirement_type ${normalized || "<empty>"}.`,
+    );
+  }
+  return variant;
+}
+
+/**
+ * Tests one Requirement identifier against its canonical variant pattern.
+ *
+ * @param {Record<string, unknown>} variant - Canonical Requirement variant.
+ * @param {unknown} identifier - Requirement identifier.
+ * @returns {boolean} Whether the identifier matches the canonical pattern.
+ */
+export function matchesGovernedRequirementVariantIdentity(variant, identifier) {
+  return new RegExp(String(variant?.identity_pattern ?? ""), "u").test(
+    String(identifier ?? ""),
+  );
 }
 
 function normalizeProjectPath(value) { return String(value ?? "").replaceAll("\\", "/").replace(/^\.\//u, "").trim(); }

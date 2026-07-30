@@ -16,7 +16,10 @@ import {
  *
  * @implementsRequirement MR-0002ADR-0006REQ-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0006
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  */
@@ -48,7 +51,7 @@ function hash(projectPath) {
   return createHash("sha256").update(read(projectPath)).digest("hex");
 }
 
-test("accepts valid governed bodies for all four logical models", () => {
+test("accepts valid governed bodies for every active logical model", () => {
   for (const [modelId, projectPath] of Object.entries(bodyPaths)) {
     const result = analyze(projectPath, read(projectPath));
     assert.equal(result.contract_version, governedMarkdownAssistanceContractVersion);

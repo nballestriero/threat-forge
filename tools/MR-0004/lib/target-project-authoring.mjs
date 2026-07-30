@@ -5,6 +5,12 @@ import { fileURLToPath } from "node:url";
 
 import { readGovernedYamlFile } from "../../MR-0001/lib/governed-yaml.mjs";
 import {
+  buildGovernedRequirementVariantDispatch,
+  loadGovernedDocumentModelSourceSet,
+  matchesGovernedRequirementVariantIdentity,
+  resolveGovernedRequirementVariant,
+} from "../../MR-0001/lib/governed-document-model-sources.mjs";
+import {
   applyGeneratedDocument,
   planGeneratedDocument,
 } from "../../MR-0002/create-governed-document.mjs";
@@ -18,8 +24,12 @@ import { runTargetProjectCheck } from "../run-target-project-check.mjs";
  * @file Target Project governed-document authoring application service.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0004
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0004
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
  * Reuses ThreatForge-owned authoring catalogs, document models, body profiles,
@@ -51,9 +61,6 @@ const targetOwnedCatalogSourceKinds = new Set([
 ]);
 const macroRequirementIdPattern = /^MR-\d{4}$/u;
 const decisionIdPattern = /^ADR-\d{4}$/u;
-const functionalRequirementIdPattern = /^MR-\d{4}ADR-\d{4}REQ-\d{4}$/u;
-const governanceRequirementIdPattern =
-  /^MR-\d{4}ADR-\d{4}REQ-\d{4}GOV-\d{4}$/u;
 
 export const targetProjectAuthoringRequirementId =
   "MR-0004ADR-0001REQ-0004";
@@ -220,7 +227,7 @@ function loadEngineAuthoringCatalog(engineRoot) {
   return catalog;
 }
 
-function projectTargetOwnership(targetRoot) {
+function projectTargetOwnership(targetRoot, requirementVariantDispatch) {
   const macroRegistry = readTargetRegistry(targetRoot, macroRegistryProjectPath);
   const sources = [sourceRecord(macroRegistry, macroRegistryProjectPath, "macro_requirements")];
   const macros = [];
@@ -278,12 +285,21 @@ function projectTargetOwnership(targetRoot) {
     )) {
       const requirement = requireObject(requirementValue, `${macroId} Requirement`);
       const id = requireString(requirement.id, `${macroId} Requirement id`);
+      const requirementType = requireString(
+        requirement.requirement_type,
+        `${id}.requirement_type`,
+      );
+      const requirementVariant = resolveGovernedRequirementVariant(
+        requirementVariantDispatch,
+        requirementType,
+      );
       if (
-        (!functionalRequirementIdPattern.test(id) &&
-          !governanceRequirementIdPattern.test(id)) ||
+        !matchesGovernedRequirementVariantIdentity(requirementVariant, id) ||
         seenRequirementIds.has(id)
       ) {
-        throw new Error(`Invalid or duplicate Target Project Requirement id: ${id}`);
+        throw new Error(
+          `Invalid or duplicate Target Project ${requirementType} Requirement id: ${id}`,
+        );
       }
       seenRequirementIds.add(id);
       const decisionId = requireString(requirement.decision_id, `${id}.decision_id`);
@@ -295,7 +311,8 @@ function projectTargetOwnership(targetRoot) {
         id,
         title: requireString(requirement.title, `${id}.title`),
         status: requireString(requirement.status, `${id}.status`),
-        requirement_type: requireString(requirement.requirement_type, `${id}.requirement_type`),
+        requirement_type: requirementType,
+        model_id: requirementVariant.model_id,
         parent_requirement_id: requirement.parent_requirement_id
           ? requireString(requirement.parent_requirement_id, `${id}.parent_requirement_id`)
           : null,
@@ -356,7 +373,15 @@ export function loadTargetProjectAuthoringCatalog(options = {}) {
   const roots = validateRoots(options);
   assertValidTargetProject(roots.engineRoot, roots.targetRoot);
   const engineCatalog = loadEngineAuthoringCatalog(roots.engineRoot);
-  const ownership = projectTargetOwnership(roots.targetRoot);
+  const sourceSet = loadGovernedDocumentModelSourceSet({
+    rootDir: roots.engineRoot,
+  });
+  const requirementVariantDispatch =
+    buildGovernedRequirementVariantDispatch(sourceSet);
+  const ownership = projectTargetOwnership(
+    roots.targetRoot,
+    requirementVariantDispatch,
+  );
   const engineSources = requireArray(engineCatalog.sources, "engine catalog sources")
     .filter((entry) => !targetOwnedCatalogSourceKinds.has(String(entry?.kind ?? "")))
     .map((entry) => ({ ...entry, ownership: "threatforge_engine" }));

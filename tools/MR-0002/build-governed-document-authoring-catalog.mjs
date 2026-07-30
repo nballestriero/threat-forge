@@ -3,9 +3,12 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
+  buildGovernedRequirementVariantDispatch,
   documentModelIndexProjectPath,
   documentationFieldValuesProjectPath,
   loadGovernedDocumentModelSourceSet,
+  matchesGovernedRequirementVariantIdentity,
+  resolveGovernedRequirementVariant,
   validateGovernedDocumentModelSourceSet,
 } from "../MR-0001/lib/governed-document-model-sources.mjs";
 import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
@@ -18,16 +21,19 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
  * @implementsRequirement MR-0002ADR-0004REQ-0003GOV-0001
  * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Builds one deterministic, read-only authoring catalog for Macro-requirements,
- * Decisions, Functional Requirements and Governance Requirements. Applicable
- * fields, controlled values, body sections, paths and relations are projected
- * from the canonical document-model profiles, taxonomy and current registries.
+ * Builds one deterministic, read-only authoring catalog for every active
+ * governed document model. Applicable fields, controlled values, body sections,
+ * paths, Requirement variants and relations are projected from the canonical
+ * document-model profiles, taxonomy and current registries.
  *
  * Side effects: reads canonical governed sources and writes JSON or diagnostics
  * only to stdout/stderr. It never modifies the repository.
@@ -42,8 +48,6 @@ const rootDir = process.env.TF_GOVERNED_DOCUMENT_AUTHORING_CATALOG_ROOT
 
 const macroRequirementIdPattern = /^MR-\d{4}$/u;
 const decisionIdPattern = /^ADR-\d{4}$/u;
-const functionalRequirementIdPattern = /^MR-\d{4}ADR-\d{4}REQ-\d{4}$/u;
-const governanceRequirementIdPattern = /^MR-\d{4}ADR-\d{4}REQ-\d{4}GOV-\d{4}$/u;
 
 /** @param {unknown} value @returns {string} */
 function normalizeProjectPath(value) {
@@ -245,6 +249,8 @@ export function buildGovernedDocumentAuthoringCatalog() {
   const profileById = new Map(sourceSet.profiles.map((entry) => [entry.value.profile_id, entry.value]));
   const modelById = new Map(sourceSet.models.map((entry) => [entry.value.model_id, entry.value]));
   const indexModels = requireArray(sourceSet.index.value.models, "document model index models");
+  const requirementVariantDispatch =
+    buildGovernedRequirementVariantDispatch(sourceSet);
 
   const documentTypes = indexModels.map((indexValue) => {
     const indexEntry = requireObject(indexValue, "document model index entry");
@@ -320,9 +326,19 @@ export function buildGovernedDocumentAuthoringCatalog() {
     for (const requirementValue of requireArray(requirementsRegistry.requirements, `${macroId}.requirements`)) {
       const requirement = requireObject(requirementValue, `${macroId} Requirement`);
       const id = requireString(requirement.id, `${macroId} Requirement id`);
-      const isFunctional = functionalRequirementIdPattern.test(id);
-      const isGovernance = governanceRequirementIdPattern.test(id);
-      if (!isFunctional && !isGovernance) throw new Error(`Invalid Requirement id: ${id}`);
+      const requirementType = requireString(
+        requirement.requirement_type,
+        `${id}.requirement_type`,
+      );
+      const requirementVariant = resolveGovernedRequirementVariant(
+        requirementVariantDispatch,
+        requirementType,
+      );
+      if (!matchesGovernedRequirementVariantIdentity(requirementVariant, id)) {
+        throw new Error(
+          `Invalid ${requirementType} Requirement id ${id}; expected ${requirementVariant.identity_pattern}.`,
+        );
+      }
       const decisionId = requireString(requirement.decision_id, `${id}.decision_id`);
       const decision = decisionById.get(decisionId);
       if (!decision) throw new Error(`${id} references unknown Decision ${macroId}/${decisionId}.`);
@@ -330,7 +346,8 @@ export function buildGovernedDocumentAuthoringCatalog() {
         id,
         title: requireString(requirement.title, `${id}.title`),
         status: requireString(requirement.status, `${id}.status`),
-        requirement_type: requireString(requirement.requirement_type, `${id}.requirement_type`),
+        requirement_type: requirementType,
+        model_id: requirementVariant.model_id,
         parent_requirement_id: requirement.parent_requirement_id
           ? requireString(requirement.parent_requirement_id, `${id}.parent_requirement_id`)
           : null,

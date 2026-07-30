@@ -5,9 +5,13 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   applyGovernedDocumentModelFixture,
+  buildGovernedRequirementVariantDispatch,
   canonicalGovernedDocumentModelIds,
   governedDocumentModelConsumerCoverageRuleIds,
   governedDocumentModelSourceRuleIds,
+  governedRequirementVariantDispatchRuleIds,
+  matchesGovernedRequirementVariantIdentity,
+  resolveGovernedRequirementVariant,
   validateGovernedDocumentModelConsumerCoverage,
   validateGovernedDocumentModelSourceSet,
 } from "../lib/governed-document-model-sources.mjs";
@@ -38,7 +42,7 @@ function validSet() {
   {path:"docs/reference/project-model/registers/document-models/profiles/macro-requirement-body.profile.yml",value:bodyProfile("macro-requirement-body",modelIds[0],[{id:"macro-requirement.body.section.intent",heading:"Intent",order:1,cardinality:"exactly_one",content_kind:"prose"}])},
   {path:"docs/reference/project-model/registers/document-models/profiles/decision-registry.profile.yml",value:registryProfile("decision-registry",[modelIds[1]],[field("decision.registry.root.schema-version",1)],[field("decision.registry.record.id",1),field("decision.registry.record.title",2),field("decision.registry.record.status",3,{value_kind:"controlled_scalar",source_kind:"controlled",value_set_id:"FIELD-VALUE-SET-0007"})])},
   {path:"docs/reference/project-model/registers/document-models/profiles/decision-body.profile.yml",value:bodyProfile("decision-body",modelIds[1],[{id:"decision.body.section.status",heading:"Status",order:1,cardinality:"exactly_one",content_kind:"controlled_scalar_label",value_set_id:"FIELD-VALUE-SET-0007"},{id:"decision.body.section.context",heading:"Context",order:2,cardinality:"exactly_one",content_kind:"prose"}])},
-  {path:"docs/reference/project-model/registers/document-models/profiles/requirement-registry.profile.yml",value:registryProfile("requirement-registry",modelIds.slice(2),[field("requirement.registry.root.schema-version",1)],undefined,[{id:modelIds[2],model_id:modelIds[2],discriminator_field:"requirement_type",discriminator_value:"functional",fields:[field("functional-requirement.registry.record.id",1),field("functional-requirement.registry.record.title",2)]},{id:modelIds[3],model_id:modelIds[3],discriminator_field:"requirement_type",discriminator_value:"governance",fields:[field("governance-requirement.registry.record.id",1),field("governance-requirement.registry.record.title",2)]}])},
+  {path:"docs/reference/project-model/registers/document-models/profiles/requirement-registry.profile.yml",value:registryProfile("requirement-registry",modelIds.slice(2),[field("requirement.registry.root.schema-version",1)],undefined,[{id:modelIds[2],model_id:modelIds[2],discriminator_field:"requirement_type",discriminator_value:"functional",fields:[field("functional-requirement.registry.record.id",1,{pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$"}),field("functional-requirement.registry.record.title",2),field("functional-requirement.registry.record.requirement-type",3,{name:"requirement_type",required_value:"functional"})]},{id:modelIds[3],model_id:modelIds[3],discriminator_field:"requirement_type",discriminator_value:"governance",fields:[field("governance-requirement.registry.record.id",1,{pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}GOV-\\d{4}$"}),field("governance-requirement.registry.record.title",2),field("governance-requirement.registry.record.requirement-type",3,{name:"requirement_type",required_value:"governance"}),field("governance-requirement.registry.record.parent-requirement-id",4,{name:"parent_requirement_id",pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",parent_model_id:"functional-requirement",identity_prefix_required:true,same_macro_requirement:true,same_decision:true})]}])},
   {path:"docs/reference/project-model/registers/document-models/profiles/functional-requirement-body.profile.yml",value:bodyProfile("functional-requirement-body",modelIds[2],[{id:"functional-requirement.body.section.intent",heading:"Intent",order:1,cardinality:"exactly_one",content_kind:"prose"}])},
   {path:"docs/reference/project-model/registers/document-models/profiles/governance-requirement-body.profile.yml",value:bodyProfile("governance-requirement-body",modelIds[3],[{id:"governance-requirement.body.section.intent",heading:"Intent",order:1,cardinality:"exactly_one",content_kind:"prose"}])},
  ];
@@ -106,10 +110,40 @@ function extendedSet() {
  });
  return sourceSet;
 }
+function extendedRequirementSet() {
+ const sourceSet=validSet();
+ const modelId="synthetic-requirement";
+ const requirementProfile=sourceSet.profiles.find((entry)=>entry.value.profile_id==="requirement-registry");
+ requirementProfile.value.applies_to_model_ids.push(modelId);
+ requirementProfile.value.record_variants.push({
+  id:modelId,
+  model_id:modelId,
+  discriminator_field:"requirement_type",
+  discriminator_value:"synthetic",
+  fields:[
+   field("synthetic-requirement.registry.record.id",1,{pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}SYN-\\d{4}$"}),
+   field("synthetic-requirement.registry.record.title",2),
+   field("synthetic-requirement.registry.record.requirement-type",3,{name:"requirement_type",required_value:"synthetic"}),
+   field("synthetic-requirement.registry.record.parent-requirement-id",4,{name:"parent_requirement_id",pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",parent_model_id:"functional-requirement",identity_prefix_required:true,same_macro_requirement:true,same_decision:true}),
+  ],
+ });
+ const bodyPath="docs/reference/project-model/registers/document-models/profiles/synthetic-requirement-body.profile.yml";
+ const body=bodyProfile("synthetic-requirement-body",modelId,[{id:"synthetic-requirement.body.section.intent",heading:"Intent",order:1,cardinality:"exactly_one",content_kind:"prose"}]);
+ sourceSet.profiles.push({path:bodyPath,value:body});
+ sourceSet.index.value.representation_profiles.push({id:body.profile_id,title:body.title,representation_kind:body.representation_kind,profile_path:bodyPath,applies_to_model_ids:body.applies_to_model_ids});
+ const definitionPath="docs/reference/project-model/registers/document-models/models/synthetic-requirement.model.yml";
+ sourceSet.index.value.models.push({id:modelId,title:modelId,definition_path:definitionPath,registry_profile_id:"requirement-registry",body_profile_id:body.profile_id});
+ sourceSet.models.push({path:definitionPath,value:{schema_version:1,model_id:modelId,title:modelId,description:modelId,registry_profile_id:"requirement-registry",body_profile_id:body.profile_id,identity:{registry_id_member_id:"synthetic-requirement.registry.record.id",body_id_member_id:"synthetic-requirement.body.header.id",registry_title_member_id:"synthetic-requirement.registry.record.title",body_title_member_id:"synthetic-requirement.body.header.title"},coherence_rules:[{id:"synthetic-requirement.model.header.identity",kind:"mirrored_identity",source_member_id:"synthetic-requirement.registry.record.id",target_member_id:"synthetic-requirement.body.header.id"}]}});
+ return sourceSet;
+}
+
 test("accepts the current canonical source set",()=>assert.deepEqual(validateGovernedDocumentModelSourceSet(validSet()),[]));
-test("accepts a coherent fifth model without fixed cardinalities",()=>assert.deepEqual(validateGovernedDocumentModelSourceSet(extendedSet()),[]));
+test("accepts a coherent additional model without fixed cardinalities",()=>assert.deepEqual(validateGovernedDocumentModelSourceSet(extendedSet()),[]));
 test("derives canonical model ids from the index in authored order",()=>assert.deepEqual(canonicalGovernedDocumentModelIds(extendedSet()),["macro-requirement","decision","functional-requirement","governance-requirement","synthetic-extension"]));
-test("publishes unique stable rule identifiers",()=>assert.equal(new Set([...governedDocumentModelSourceRuleIds,...governedDocumentModelConsumerCoverageRuleIds]).size,governedDocumentModelSourceRuleIds.length+governedDocumentModelConsumerCoverageRuleIds.length));
+test("publishes unique stable rule identifiers",()=>{const rules=[...governedDocumentModelSourceRuleIds,...governedDocumentModelConsumerCoverageRuleIds,...governedRequirementVariantDispatchRuleIds];assert.equal(new Set(rules).size,rules.length);});
+test("derives Requirement type model identity fields and parent metadata from canonical variants",()=>{const dispatch=buildGovernedRequirementVariantDispatch(validSet());assert.deepEqual(dispatch.variants.map((variant)=>variant.discriminator_value),["functional","governance"]);const governance=resolveGovernedRequirementVariant(dispatch,"governance");assert.equal(governance.model_id,"governance-requirement");assert.equal(governance.parent_requirement.parent_model_id,"functional-requirement");assert.ok(governance.field_names.includes("parent_requirement_id"));assert.equal(matchesGovernedRequirementVariantIdentity(governance,"MR-0001ADR-0001REQ-0001GOV-0001"),true);});
+test("dispatches a synthetic additional Requirement variant without consumer-local changes",()=>{const sourceSet=extendedRequirementSet();assert.deepEqual(validateGovernedDocumentModelSourceSet(sourceSet),[]);const dispatch=buildGovernedRequirementVariantDispatch(sourceSet);const synthetic=resolveGovernedRequirementVariant(dispatch,"synthetic");assert.equal(synthetic.model_id,"synthetic-requirement");assert.equal(synthetic.parent_requirement.parent_model_id,"functional-requirement");assert.equal(matchesGovernedRequirementVariantIdentity(synthetic,"MR-0001ADR-0001REQ-0001SYN-0001"),true);});
+test("rejects duplicate and unknown Requirement discriminators deterministically",()=>{const sourceSet=extendedRequirementSet();const profile=sourceSet.profiles.find((entry)=>entry.value.profile_id==="requirement-registry");profile.value.record_variants.at(-1).discriminator_value="functional";profile.value.record_variants.at(-1).fields.find((field)=>field.name==="requirement_type").required_value="functional";assert.throws(()=>buildGovernedRequirementVariantDispatch(sourceSet),(error)=>error.code==="document-model.requirement-variant.discriminator.duplicate");const dispatch=buildGovernedRequirementVariantDispatch(validSet());assert.throws(()=>resolveGovernedRequirementVariant(dispatch,"unknown"),(error)=>error.code==="document-model.requirement-variant.type.unknown");});
 test("accepts exact registry-derived consumer coverage",()=>{const sourceSet=extendedSet();assert.deepEqual(validateGovernedDocumentModelConsumerCoverage({consumerId:"test-consumer",sourceSet,providerModelIds:canonicalGovernedDocumentModelIds(sourceSet)}),[]);});
 test("detects missing unregistered and duplicate consumer providers deterministically",()=>{
  const sourceSet=extendedSet();

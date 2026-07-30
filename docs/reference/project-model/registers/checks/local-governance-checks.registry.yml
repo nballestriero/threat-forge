@@ -38,7 +38,7 @@ checks:
     description: Validate registry-derived canonical model and representation-profile source definitions, stable identifiers, controlled value-set references and deterministic negative fixtures without imposing a fixed model or profile cardinality.
 
   - id: MR-0001ADR-0010REQ-0002GOV-0001CHECK-0001
-    title: Governed document model extension and consumer coverage verification
+    title: Governed document model extension, Requirement dispatch and consumer coverage verification
     status: active
     command: node
     args:
@@ -49,7 +49,7 @@ checks:
       - MR-0001ADR-0010REQ-0001GOV-0001
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
-    description: Verify coherent canonical source extension and deterministic rejection of missing unregistered or duplicate consumer providers without changing the active model inventory.
+    description: Verify coherent canonical source and Requirement-variant extension, registry-derived Requirement dispatch and deterministic rejection of missing unregistered or duplicate consumer providers without changing the active model inventory.
 
   - id: MR-0001ADR-0007REQ-0002CHECK-0001
     title: Macro-requirement model consistency

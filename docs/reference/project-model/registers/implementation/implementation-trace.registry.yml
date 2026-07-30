@@ -266,8 +266,10 @@ artifacts:
       - MR-0002ADR-0004REQ-0003GOV-0001
       - MR-0001ADR-0004REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/build-governed-document-authoring-catalog.mjs
-    reason: Project four persistable document types, controlled values, body sections, paths and current relations exclusively from canonical governed sources.
+    reason: Project every active document type and dispatch Requirement records through discriminator, model and identity metadata derived from canonical governed sources.
     verification_command: node --check tools/MR-0002/build-governed-document-authoring-catalog.mjs
 
   - id: MR-0002ADR-0004REQ-0003IMPL-0001
@@ -382,8 +384,10 @@ artifacts:
       - MR-0002ADR-0005REQ-0003GOV-0001
       - MR-0001ADR-0004REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/tests/build-governed-document-authoring-catalog-shared-consumers.test.mjs
-    reason: Verify four-type projection, canonical controlled fields and body sections, current relation scopes and deterministic output without hard-coded model ownership.
+    reason: Verify active-model projection, canonical Requirement variant dispatch, controlled fields, body sections, current relation scopes and deterministic output without hard-coded model ownership.
     verification_command: node --test tools/MR-0002/tests/build-governed-document-authoring-catalog-shared-consumers.test.mjs
 
   - id: MR-0002ADR-0004REQ-0003GOV-0002IMPL-0002
@@ -494,7 +498,7 @@ artifacts:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0001/lib/governed-document-model-sources.mjs
-    reason: Load and validate the registry-derived canonical model and representation-profile source set without fixed cardinalities and provide deterministic consumer provider coverage validation.
+    reason: Load and validate the registry-derived canonical model and representation-profile source set without fixed cardinalities, derive canonical Requirement variant dispatch and provide deterministic consumer provider coverage validation.
     verification_command: node --test tools/MR-0001/test/governed-document-model-sources.test.mjs
   - id: MR-0001ADR-0007REQ-0001GOV-0001IMPL-0001
     title: Governed document model source consistency checker
@@ -530,7 +534,7 @@ artifacts:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0001/test/governed-document-model-sources.test.mjs
-    reason: Prove current source acceptance, coherent synthetic model extension, registry-derived canonical ordering, exact consumer provider coverage and deterministic negative fixture rejection.
+    reason: Prove current source acceptance, coherent synthetic model and Requirement-variant extension, registry-derived canonical dispatch, exact consumer provider coverage and deterministic negative fixture rejection.
     verification_command: node --test tools/MR-0001/test/governed-document-model-sources.test.mjs
   - id: MR-0001ADR-0007REQ-0002IMPL-0001
     title: Shared governed document complete-model validation primitives
@@ -793,8 +797,10 @@ artifacts:
     linked_requirement_ids:
       - MR-0002ADR-0006REQ-0001
       - MR-0002ADR-0006REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0002/tests/governed-markdown-assistance.test.mjs
-    reason: Verify all four models, missing and duplicate sections, canonical ordering, controlled values, deterministic output, hover, quick fixes and side-effect-free analysis.
+    reason: Verify every active model, canonical Requirement variant dispatch, missing and duplicate sections, canonical ordering, controlled values, deterministic output, hover, quick fixes and side-effect-free analysis.
     verification_command: node --test tools/MR-0002/tests/governed-markdown-assistance.test.mjs
 
   - id: MR-0002ADR-0006REQ-0002IMPL-0001
@@ -1119,8 +1125,10 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0004
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0004/lib/target-project-authoring.mjs
-    reason: Reuse ThreatForge-owned authoring contracts and transaction primitives with target-local ownership projection, identifier allocation, path confinement, deterministic preview, canonical target validation and rollback.
+    reason: Reuse ThreatForge-owned authoring contracts and transaction primitives with canonical Requirement variant dispatch, target-local ownership projection, identifier allocation, path confinement, deterministic preview, canonical target validation and rollback.
     verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
 
   - id: MR-0004ADR-0001REQ-0004IMPL-0002
@@ -1139,8 +1147,10 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0004
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0004/test/target-project-authoring.test.mjs
-    reason: Verify engine-rule and target-ownership separation, deterministic preview, all governed document types, target-local identifier allocation, path confinement, rollback, engine immutability and command-line delegation.
+    reason: Verify engine-rule and target-ownership separation, canonical Requirement variant dispatch, deterministic preview, active governed document types, target-local identifier allocation, path confinement, rollback, engine immutability and command-line delegation.
     verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
 
   - id: MR-0004ADR-0001REQ-0005IMPL-0001

@@ -4,7 +4,9 @@ import path from "node:path";
 import { readGovernedYamlFile } from "../../MR-0001/lib/governed-yaml.mjs";
 import {
   assertGovernedDocumentModelConsumerCoverage,
+  buildGovernedRequirementVariantDispatch,
   loadGovernedDocumentModelSourceSet,
+  resolveGovernedRequirementVariant,
 } from "../../MR-0001/lib/governed-document-model-sources.mjs";
 import {
   normalizeProjectPath,
@@ -48,6 +50,7 @@ import {
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
+ * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
  * Resolves an existing governed Markdown body through canonical registries and
@@ -195,33 +198,10 @@ function addBodyRecord(recordsByPath, record) {
   recordsByPath.set(bodyPath, { ...record, bodyPath });
 }
 
-function requirementModelByDiscriminator(sourceSet) {
-  const models = new Map();
-  for (const profileEntry of sourceSet.profiles) {
-    const profile = profileEntry.value;
-    if (profile.representation_kind !== "yaml_registry") continue;
-    for (const variant of profile.record_variants ?? []) {
-      const discriminatorField = String(variant.discriminator_field ?? "").trim();
-      const discriminatorValue = String(variant.discriminator_value ?? "").trim();
-      const modelId = String(variant.model_id ?? "").trim();
-      if (discriminatorField !== "requirement_type" || !discriminatorValue || !modelId) {
-        continue;
-      }
-      const previous = models.get(discriminatorValue);
-      if (previous && previous !== modelId) {
-        throw new Error(
-          `Requirement discriminator ${discriminatorValue} maps to both ${previous} and ${modelId}.`,
-        );
-      }
-      models.set(discriminatorValue, modelId);
-    }
-  }
-  return models;
-}
-
 function loadBodyRecords(rootDir, sourceSet) {
   const recordsByPath = new Map();
-  const requirementModels = requirementModelByDiscriminator(sourceSet);
+  const requirementVariantDispatch =
+    buildGovernedRequirementVariantDispatch(sourceSet);
   const macroRegistry = readGovernedYamlFile(
     resolveSafeProjectPath(rootDir, macroRegistryPath).absolute,
   );
@@ -269,10 +249,12 @@ function loadBodyRecords(rootDir, sourceSet) {
     );
     for (const record of registry.requirements ?? []) {
       const requirementType = String(record.requirement_type ?? "").trim();
-      const modelId = requirementModels.get(requirementType);
-      if (!modelId) continue;
+      const requirementVariant = resolveGovernedRequirementVariant(
+        requirementVariantDispatch,
+        requirementType,
+      );
       addBodyRecord(recordsByPath, {
-        modelId,
+        modelId: requirementVariant.model_id,
         id: String(record.id ?? "").trim(),
         title: String(record.title ?? "").trim(),
         status: String(record.status ?? "").trim(),

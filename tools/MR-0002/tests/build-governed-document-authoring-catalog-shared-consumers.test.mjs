@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import {
+  buildGovernedRequirementVariantDispatch,
+  canonicalGovernedDocumentModelIds,
+  loadGovernedDocumentModelSourceSet,
+  matchesGovernedRequirementVariantIdentity,
+  resolveGovernedRequirementVariant,
+} from "../../MR-0001/lib/governed-document-model-sources.mjs";
 import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-document-authoring-catalog.mjs";
 
 /**
@@ -10,19 +17,23 @@ import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-documen
  * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
  * @implementsRequirement MR-0001ADR-0004REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0001GOV-0001
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0002/ADR-0004
  * @derivedFromDecision MR-0002/ADR-0005
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0002
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  */
 
-test("projects all four canonical governed document types", () => {
+test("projects every active canonical governed document type", () => {
+  const sourceSet = loadGovernedDocumentModelSourceSet();
   const catalog = buildGovernedDocumentAuthoringCatalog();
   assert.equal(catalog.catalog_id, "governed-document-authoring-catalog");
   assert.deepEqual(
     catalog.document_types.map((entry) => entry.id).sort(),
-    ["decision", "functional-requirement", "governance-requirement", "macro-requirement"],
+    canonicalGovernedDocumentModelIds(sourceSet).sort(),
   );
 });
 
@@ -59,6 +70,25 @@ test("projects current scoped relations without ambiguity", () => {
       for (const requirement of decision.requirements) {
         assert.ok(requirement.id.startsWith(`${macro.id}${decision.id}REQ-`));
       }
+    }
+  }
+});
+
+test("dispatches catalog Requirement records through canonical variants", () => {
+  const sourceSet = loadGovernedDocumentModelSourceSet();
+  const dispatch = buildGovernedRequirementVariantDispatch(sourceSet);
+  const catalog = buildGovernedDocumentAuthoringCatalog();
+  for (const macro of catalog.macro_requirements) {
+    for (const requirement of macro.requirements) {
+      const variant = resolveGovernedRequirementVariant(
+        dispatch,
+        requirement.requirement_type,
+      );
+      assert.equal(requirement.model_id, variant.model_id);
+      assert.equal(
+        matchesGovernedRequirementVariantIdentity(variant, requirement.id),
+        true,
+      );
     }
   }
 });
