@@ -8,6 +8,14 @@ import {
   resolveSafeProjectPath,
   sortDiagnostics,
 } from "./governed-document-model-validation.mjs";
+import {
+  loadGovernedDocumentModelSourceSet,
+  resolveGovernedRequirementVariant,
+} from "./governed-document-model-sources.mjs";
+import {
+  buildGovernedDocumentCrossModelProviderCatalog,
+  governedDocumentCrossModelProviders,
+} from "./governed-document-cross-model-providers.mjs";
 
 /**
  * @file Cross-model relational coherence validation for governed documents.
@@ -15,14 +23,16 @@ import {
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Validates inverse registry ownership, the complete MR-to-Decision-to-
- * Functional-to-Governance relation chain, unique body ownership and orphan
- * governed representations. Side effects: reads governed YAML and Markdown
- * paths under the supplied repository root.
+ * Coordinates registry topology, exclusive body ownership and explicit
+ * model-specific relation providers derived from the canonical model inventory.
+ * Side effects: reads governed YAML and Markdown paths under the supplied root.
  */
 
 export const governedDocumentModelCoherenceRuleIds = Object.freeze({
@@ -32,6 +42,7 @@ export const governedDocumentModelCoherenceRuleIds = Object.freeze({
   decisionOwner: "governed-document.cross-model.decision.owner",
   functionalDecision: "governed-document.cross-model.functional.decision",
   governanceParent: "governed-document.cross-model.governance.parent",
+  requirementType: "governed-document.cross-model.requirement.type",
   bodyPathUniqueness: "governed-document.cross-model.body.path-uniqueness",
   orphanBody: "governed-document.cross-model.body.orphan",
 });
@@ -124,44 +135,43 @@ function readYaml(rootDir, projectPath) {
   );
 }
 
-function parseFunctionalIdentity(value) {
-  const match = String(value ?? "").match(
-    /^(MR-\d{4})(ADR-\d{4})(REQ-\d{4})$/u,
-  );
-  return match
-    ? { macroRequirementId: match[1], decisionId: match[2], id: match[0] }
-    : null;
+function text(value) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
-function parseGovernanceIdentity(value) {
-  const match = String(value ?? "").match(
-    /^(MR-\d{4})(ADR-\d{4})(REQ-\d{4})(GOV-\d{4})$/u,
-  );
-  return match
-    ? {
-        macroRequirementId: match[1],
-        decisionId: match[2],
-        parentRequirementId: `${match[1]}${match[2]}${match[3]}`,
-        id: match[0],
-      }
-    : null;
+function addRecord(context, entry) {
+  const byId = context.recordsByModelId.get(entry.modelId);
+  if (!byId) {
+    throw new Error(
+      `Cross-model provider catalog has no record index for ${entry.modelId}.`,
+    );
+  }
+  if (entry.id) byId.set(entry.id, entry);
+  context.modelCounts[entry.modelId] += 1;
+  addOwner(context.bodyOwners, entry.record?.body_path, {
+    modelId: entry.modelId,
+    id: entry.id,
+    sourcePath: entry.sourcePath,
+    location: `${entry.sourceLocation}/body_path`,
+  });
+  context.providerCatalog.by_model_id.get(entry.modelId).collect(context, entry);
 }
 
 /**
  * Validates cross-model coherence across the active governed-document corpus.
  *
- * @param {{rootDir: string}} input - Repository root.
- * @returns {{
- *   macro_requirements_checked: number,
- *   decisions_checked: number,
- *   functional_requirements_checked: number,
- *   governance_requirements_checked: number,
- *   child_registries_checked: number,
- *   bodies_checked: number,
- *   diagnostics: Array<Record<string, unknown>>
- * }} Deterministic validation result.
+ * @param {{rootDir: string, sourceSet?: Record<string, unknown>, providers?: ReadonlyArray<Record<string, unknown>>}} input - Repository root and optional synthetic sources/providers.
+ * @returns {{model_counts: Record<string, number>, provider_model_ids: string[], child_registries_checked: number, bodies_checked: number, diagnostics: Array<Record<string, unknown>>}} Deterministic validation result.
  */
-export function validateGovernedDocumentModelCoherence({ rootDir }) {
+export function validateGovernedDocumentModelCoherence({
+  rootDir,
+  sourceSet = loadGovernedDocumentModelSourceSet({ rootDir }),
+  providers = governedDocumentCrossModelProviders,
+}) {
+  const providerCatalog = buildGovernedDocumentCrossModelProviderCatalog(
+    sourceSet,
+    providers,
+  );
   const diagnostics = [];
   const macroRegistry = readYaml(rootDir, macroRegistryPath);
   const macroRequirements = Array.isArray(macroRegistry.macro_requirements)
@@ -170,27 +180,46 @@ export function validateGovernedDocumentModelCoherence({ rootDir }) {
   const macroById = new Map();
   const childRegistryOwners = new Map();
   const bodyOwners = new Map();
+  const recordsByModelId = new Map(
+    providerCatalog.canonical_model_ids.map((modelId) => [modelId, new Map()]),
+  );
+  const modelCounts = Object.fromEntries(
+    providerCatalog.canonical_model_ids.map((modelId) => [modelId, 0]),
+  );
+
+  const context = {
+    rootDir,
+    ruleIds: governedDocumentModelCoherenceRuleIds,
+    providerCatalog,
+    macroById,
+    childRegistryOwners,
+    bodyOwners,
+    recordsByModelId,
+    modelCounts,
+    decisionByKey: new Map(),
+    addChildRegistryOwner(projectPath, owner) {
+      addOwner(childRegistryOwners, projectPath, owner);
+    },
+    pushDiagnostic(ruleId, representation, sourcePath, location, message) {
+      diagnostics.push(
+        diagnostic(ruleId, representation, sourcePath, location, message),
+      );
+    },
+  };
 
   macroRequirements.forEach((record, index) => {
-    const id = String(record?.id ?? "").trim();
+    const id = text(record?.id);
     if (id) macroById.set(id, record);
-    addOwner(bodyOwners, record?.body_path, {
+    addRecord(context, {
       modelId: "macro-requirement",
       id,
+      record,
       sourcePath: macroRegistryPath,
-      location: `$/macro_requirements/${index}/body_path`,
+      sourceLocation: `$/macro_requirements/${index}`,
+      rootMacroRequirementId: id,
+      declaredOwnerId: id,
+      variant: null,
     });
-    for (const [field, kind] of [
-      ["decisions_registry_path", "decision"],
-      ["requirements_registry_path", "requirement"],
-    ]) {
-      addOwner(childRegistryOwners, record?.[field], {
-        macroRequirementId: id,
-        kind,
-        sourcePath: macroRegistryPath,
-        location: `$/macro_requirements/${index}/${field}`,
-      });
-    }
   });
 
   for (const [registryPath, owners] of childRegistryOwners) {
@@ -245,13 +274,9 @@ export function validateGovernedDocumentModelCoherence({ rootDir }) {
     }
   }
 
-  const decisionByKey = new Map();
-  let decisionsChecked = 0;
   for (const registryPath of actualDecisionRegistryPaths) {
     const registry = readYaml(rootDir, registryPath);
-    const rootMacroRequirementId = String(
-      registry.macro_requirement_id ?? "",
-    ).trim();
+    const rootMacroRequirementId = text(registry.macro_requirement_id);
     const declaredOwners = childRegistryOwners.get(registryPath) ?? [];
     const declaredOwnerId = declaredOwners.length === 1
       ? declaredOwners[0].macroRequirementId
@@ -261,45 +286,22 @@ export function validateGovernedDocumentModelCoherence({ rootDir }) {
       : [];
 
     decisions.forEach((record, index) => {
-      decisionsChecked += 1;
-      const id = String(record?.id ?? "").trim();
-      const recordMacroRequirementId = String(
-        record?.macro_requirement_id ?? "",
-      ).trim();
-      const key = `${recordMacroRequirementId}/${id}`;
-      if (key !== "/") decisionByKey.set(key, record);
-      if (
-        !macroById.has(recordMacroRequirementId) ||
-        recordMacroRequirementId !== rootMacroRequirementId ||
-        recordMacroRequirementId !== declaredOwnerId
-      ) {
-        diagnostics.push(diagnostic(
-          governedDocumentModelCoherenceRuleIds.decisionOwner,
-          "logical_model",
-          registryPath,
-          `$/decisions/${index}`,
-          `Decision ${id || "<unknown>"} must resolve through exactly one owning Macro-requirement and its declared Decision registry.`,
-        ));
-      }
-      addOwner(bodyOwners, record?.body_path, {
+      addRecord(context, {
         modelId: "decision",
-        id,
+        id: text(record?.id),
+        record,
         sourcePath: registryPath,
-        location: `$/decisions/${index}/body_path`,
+        sourceLocation: `$/decisions/${index}`,
+        rootMacroRequirementId,
+        declaredOwnerId,
+        variant: null,
       });
     });
   }
 
-  const functionalById = new Map();
-  const governanceRecords = [];
-  let functionalRequirementsChecked = 0;
-  let governanceRequirementsChecked = 0;
-
   for (const registryPath of actualRequirementRegistryPaths) {
     const registry = readYaml(rootDir, registryPath);
-    const rootMacroRequirementId = String(
-      registry.macro_requirement_id ?? "",
-    ).trim();
+    const rootMacroRequirementId = text(registry.macro_requirement_id);
     const declaredOwners = childRegistryOwners.get(registryPath) ?? [];
     const declaredOwnerId = declaredOwners.length === 1
       ? declaredOwners[0].macroRequirementId
@@ -309,88 +311,41 @@ export function validateGovernedDocumentModelCoherence({ rootDir }) {
       : [];
 
     requirements.forEach((record, index) => {
-      const type = String(record?.requirement_type ?? "").trim();
-      const id = String(record?.id ?? "").trim();
-      const recordMacroRequirementId = String(
-        record?.macro_requirement_id ?? "",
-      ).trim();
-      const decisionId = String(record?.decision_id ?? "").trim();
+      const requirementType = text(record?.requirement_type);
       const sourceLocation = `$/requirements/${index}`;
-
-      addOwner(bodyOwners, record?.body_path, {
-        modelId: type === "governance"
-          ? "governance-requirement"
-          : "functional-requirement",
-        id,
-        sourcePath: registryPath,
-        location: `${sourceLocation}/body_path`,
-      });
-
-      if (type === "functional") {
-        functionalRequirementsChecked += 1;
-        const identity = parseFunctionalIdentity(id);
-        const decision = decisionByKey.get(
-          `${recordMacroRequirementId}/${decisionId}`,
+      let variant;
+      try {
+        variant = resolveGovernedRequirementVariant(
+          providerCatalog.requirement_dispatch,
+          requirementType,
         );
-        if (id) functionalById.set(id, record);
-        if (
-          !identity ||
-          !decision ||
-          recordMacroRequirementId !== rootMacroRequirementId ||
-          recordMacroRequirementId !== declaredOwnerId ||
-          identity.macroRequirementId !== recordMacroRequirementId ||
-          identity.decisionId !== decisionId
-        ) {
-          diagnostics.push(diagnostic(
-            governedDocumentModelCoherenceRuleIds.functionalDecision,
-            "logical_model",
-            registryPath,
-            sourceLocation,
-            `Functional Requirement ${id || "<unknown>"} must resolve to the Decision encoded by its identity inside the same Macro-requirement registry topology.`,
-          ));
-        }
-      } else if (type === "governance") {
-        governanceRequirementsChecked += 1;
-        governanceRecords.push({
-          record,
+      } catch (error) {
+        diagnostics.push(diagnostic(
+          governedDocumentModelCoherenceRuleIds.requirementType,
+          "logical_model",
           registryPath,
-          sourceLocation,
-          rootMacroRequirementId,
-          declaredOwnerId,
-        });
+          `${sourceLocation}/requirement_type`,
+          error.message,
+        ));
+        return;
       }
+
+      addRecord(context, {
+        modelId: variant.model_id,
+        id: text(record?.id),
+        record,
+        sourcePath: registryPath,
+        sourceLocation,
+        rootMacroRequirementId,
+        declaredOwnerId,
+        variant,
+      });
     });
   }
 
-  for (const entry of governanceRecords) {
-    const record = entry.record;
-    const id = String(record?.id ?? "").trim();
-    const recordMacroRequirementId = String(
-      record?.macro_requirement_id ?? "",
-    ).trim();
-    const decisionId = String(record?.decision_id ?? "").trim();
-    const parentId = String(record?.parent_requirement_id ?? "").trim();
-    const identity = parseGovernanceIdentity(id);
-    const parent = functionalById.get(parentId);
-    if (
-      !identity ||
-      !parent ||
-      recordMacroRequirementId !== entry.rootMacroRequirementId ||
-      recordMacroRequirementId !== entry.declaredOwnerId ||
-      identity.macroRequirementId !== recordMacroRequirementId ||
-      identity.decisionId !== decisionId ||
-      identity.parentRequirementId !== parentId ||
-      String(parent?.macro_requirement_id ?? "").trim() !==
-        recordMacroRequirementId ||
-      String(parent?.decision_id ?? "").trim() !== decisionId
-    ) {
-      diagnostics.push(diagnostic(
-        governedDocumentModelCoherenceRuleIds.governanceParent,
-        "logical_model",
-        entry.registryPath,
-        entry.sourceLocation,
-        `Governance Requirement ${id || "<unknown>"} must resolve to the Functional Requirement encoded by its identity and preserve the same Macro-requirement and Decision chain.`,
-      ));
+  for (const provider of providerCatalog.providers) {
+    for (const entry of recordsByModelId.get(provider.model_id).values()) {
+      provider.validate(context, entry);
     }
   }
 
@@ -423,10 +378,8 @@ export function validateGovernedDocumentModelCoherence({ rootDir }) {
   }
 
   return {
-    macro_requirements_checked: macroRequirements.length,
-    decisions_checked: decisionsChecked,
-    functional_requirements_checked: functionalRequirementsChecked,
-    governance_requirements_checked: governanceRequirementsChecked,
+    model_counts: modelCounts,
+    provider_model_ids: [...providerCatalog.provider_model_ids],
     child_registries_checked: actualRegistryPaths.length,
     bodies_checked: actualBodyPaths.length,
     diagnostics: sortDiagnostics(diagnostics),

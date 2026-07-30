@@ -9,6 +9,7 @@ import {
   governedDocumentModelCoherenceRuleIds,
   validateGovernedDocumentModelCoherence,
 } from "../lib/governed-document-model-coherence-validation.mjs";
+import { loadGovernedDocumentModelSourceSet } from "../lib/governed-document-model-sources.mjs";
 
 /**
  * @file Deterministic verification of governed document cross-model coherence.
@@ -16,8 +17,11 @@ import {
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0004REQ-0002GOV-0002
  * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  */
@@ -28,6 +32,9 @@ const repositoryRoot = path.resolve(
   "..",
   "..",
 );
+const canonicalSourceSet = loadGovernedDocumentModelSourceSet({
+  rootDir: repositoryRoot,
+});
 const fixtureRegistry = JSON.parse(
   fs.readFileSync(
     path.join(
@@ -148,17 +155,55 @@ function applyFixture(root, fixture) {
   }
 }
 
+function validate(root) {
+  return validateGovernedDocumentModelCoherence({
+    rootDir: root,
+    sourceSet: canonicalSourceSet,
+  });
+}
+
 test("accepts canonical governed-document cross-model coherence", () => {
   const root = makeRoot();
   try {
-    const result = validateGovernedDocumentModelCoherence({ rootDir: root });
+    const result = validate(root);
     assert.deepEqual(result.diagnostics, []);
-    assert.equal(result.macro_requirements_checked, 1);
-    assert.equal(result.decisions_checked, 1);
-    assert.equal(result.functional_requirements_checked, 1);
-    assert.equal(result.governance_requirements_checked, 1);
+    assert.deepEqual(result.model_counts, {
+      "macro-requirement": 1,
+      decision: 1,
+      "functional-requirement": 1,
+      "governance-requirement": 1,
+    });
+    assert.deepEqual(result.provider_model_ids, Object.keys(result.model_counts));
     assert.equal(result.child_registries_checked, 2);
     assert.equal(result.bodies_checked, 4);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("fails closed for an unknown Requirement discriminator", () => {
+  const root = makeRoot();
+  try {
+    const registryPath =
+      "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml";
+    const absolute = path.join(root, ...registryPath.split("/"));
+    fs.writeFileSync(
+      absolute,
+      fs.readFileSync(absolute, "utf8").replace(
+        "requirement_type: functional",
+        "requirement_type: experimental",
+      ),
+      "utf8",
+    );
+    const result = validate(root);
+    assert.ok(
+      result.diagnostics.some(
+        (item) =>
+          item.rule_id ===
+          governedDocumentModelCoherenceRuleIds.requirementType,
+      ),
+    );
+    assert.equal(result.model_counts["functional-requirement"], 0);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
@@ -167,7 +212,9 @@ test("accepts canonical governed-document cross-model coherence", () => {
 test("publishes unique stable cross-model rule identifiers", () => {
   const values = Object.values(governedDocumentModelCoherenceRuleIds);
   assert.equal(new Set(values).size, values.length);
-  assert.ok(values.every((value) => value.startsWith("governed-document.cross-model.")));
+  assert.ok(
+    values.every((value) => value.startsWith("governed-document.cross-model.")),
+  );
 });
 
 for (const fixtureReference of fixtureRegistry.fixtures) {
@@ -181,9 +228,7 @@ for (const fixtureReference of fixtureRegistry.fixtures) {
         ),
       );
       applyFixture(root, fixture);
-      const diagnostics = validateGovernedDocumentModelCoherence({
-        rootDir: root,
-      }).diagnostics;
+      const diagnostics = validate(root).diagnostics;
       const observed = new Set(diagnostics.map((item) => item.rule_id));
       assert.ok(diagnostics.length > 0, "negative fixture unexpectedly passed");
       for (const expected of fixtureReference.expected_rule_ids) {
@@ -194,7 +239,9 @@ for (const fixtureReference of fixtureRegistry.fixtures) {
       }
       assert.ok(
         diagnostics.every((item) =>
-          Object.values(governedDocumentModelCoherenceRuleIds).includes(item.rule_id),
+          Object.values(governedDocumentModelCoherenceRuleIds).includes(
+            item.rule_id,
+          ),
         ),
       );
     } finally {

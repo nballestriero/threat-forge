@@ -11,12 +11,15 @@ import { validateGovernedDocumentModelCoherence } from "./lib/governed-document-
  * @implementsRequirement MR-0001ADR-0007REQ-0002
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0001
  * @implementsRequirement MR-0001ADR-0007REQ-0002GOV-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002
+ * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0001/ADR-0007
+ * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Validates registry topology, MR-to-Decision-to-Functional-to-Governance
- * relations and exclusive body ownership in blocking enforcement mode.
+ * Validates registry topology, provider-derived cross-model relations and
+ * exclusive body ownership in blocking enforcement mode.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -54,6 +57,8 @@ const report = {
     "MR-0001ADR-0007REQ-0002",
     "MR-0001ADR-0007REQ-0002GOV-0001",
     "MR-0001ADR-0007REQ-0002GOV-0002",
+    "MR-0001ADR-0010REQ-0002",
+    "MR-0001ADR-0010REQ-0002GOV-0001",
   ],
   ...result,
   error_count: errorCount,
@@ -65,14 +70,16 @@ fs.writeFileSync(
   `${JSON.stringify(report, null, 2)}\n`,
   "utf8",
 );
+const modelCountLines = Object.entries(report.model_counts).map(
+  ([modelId, count]) => `- ${modelId}: ${count}`,
+);
 const markdown = [
   "# Governed document cross-model coherence report",
   "",
   `Mode: ${report.mode}`,
-  `Macro-requirements checked: ${report.macro_requirements_checked}`,
-  `Decisions checked: ${report.decisions_checked}`,
-  `Functional Requirements checked: ${report.functional_requirements_checked}`,
-  `Governance Requirements checked: ${report.governance_requirements_checked}`,
+  `Providers checked: ${report.provider_model_ids.length}`,
+  "Models checked:",
+  ...modelCountLines,
   `Child registries checked: ${report.child_registries_checked}`,
   `Bodies checked: ${report.bodies_checked}`,
   `Warnings: ${report.warning_count}`,
@@ -99,18 +106,14 @@ if (errorCount > 0) {
 } else {
   console.log("Governed document cross-model coherence check passed.");
 }
-console.log("Implemented requirement: MR-0001ADR-0007REQ-0002");
-console.log("Implemented requirement: MR-0001ADR-0007REQ-0002GOV-0001");
-console.log("Implemented requirement: MR-0001ADR-0007REQ-0002GOV-0002");
+for (const requirementId of report.implemented_requirements) {
+  console.log(`Implemented requirement: ${requirementId}`);
+}
 console.log("Mode: enforce");
-console.log(`Macro-requirements checked: ${report.macro_requirements_checked}`);
-console.log(`Decisions checked: ${report.decisions_checked}`);
-console.log(
-  `Functional Requirements checked: ${report.functional_requirements_checked}`,
-);
-console.log(
-  `Governance Requirements checked: ${report.governance_requirements_checked}`,
-);
+console.log(`Providers checked: ${report.provider_model_ids.length}`);
+for (const [modelId, count] of Object.entries(report.model_counts)) {
+  console.log(`Model ${modelId} records checked: ${count}`);
+}
 console.log(`Child registries checked: ${report.child_registries_checked}`);
 console.log(`Bodies checked: ${report.bodies_checked}`);
 console.log(`Warnings: ${warningCount}`);

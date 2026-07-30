@@ -739,6 +739,34 @@ artifacts:
     reason: Provide deterministic invalid examples for registry fields, controlled values, identity and owner relations, required Functional Requirement parents, derived paths, body sections, body content and title coherence.
     verification_command: node --test tools/MR-0001/test/governance-requirement-model.test.mjs
 
+  - id: MR-0001ADR-0010REQ-0002IMPL-0001
+    title: Governed document cross-model relation provider catalog
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/lib/governed-document-cross-model-providers.mjs
+    reason: Provide explicit model-specific cross-model relation providers whose exact coverage is checked against the canonical document model inventory and whose Requirement semantics consume registry-derived dispatch metadata.
+    verification_command: node --test tools/MR-0001/test/governed-document-cross-model-providers.test.mjs
+
+  - id: MR-0001ADR-0010REQ-0002GOV-0001IMPL-0001
+    title: Governed document cross-model provider extension verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0007REQ-0002
+      - MR-0001ADR-0007REQ-0002GOV-0001
+      - MR-0001ADR-0010REQ-0001
+      - MR-0001ADR-0010REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/governed-document-cross-model-providers.test.mjs
+    reason: Prove current exact provider coverage, coherent synthetic model extension, deterministic missing duplicate and unregistered provider failure, explicit provider completion and input immutability.
+    verification_command: node --test tools/MR-0001/test/governed-document-cross-model-providers.test.mjs
+
   - id: MR-0001ADR-0007REQ-0002IMPL-0009
     title: Governed document cross-model coherence validation core
     artifact_type: source_module
@@ -747,8 +775,10 @@ artifacts:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0001/lib/governed-document-model-coherence-validation.mjs
-    reason: Validate inverse child-registry ownership, the complete MR-to-Decision-to-Functional-to-Governance relation chain, exclusive body-path ownership and orphan governed representations.
+    reason: Coordinate inverse child-registry ownership, exclusive body-path ownership and provider-derived cross-model relations through the registry-derived canonical model and Requirement inventories.
     verification_command: node --test tools/MR-0001/test/governed-document-model-coherence.test.mjs
 
   - id: MR-0001ADR-0007REQ-0002IMPL-0010
@@ -759,8 +789,10 @@ artifacts:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0001/check-governed-document-model-coherence.mjs
-    reason: Enforce cross-model registry topology, relation-chain and body ownership coherence and publish deterministic evidence reports.
+    reason: Enforce provider-derived cross-model registry topology and body ownership coherence and publish registry-derived per-model evidence without fixed model projections.
     verification_command: node tools/MR-0001/check-governed-document-model-coherence.mjs
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0010
@@ -771,9 +803,11 @@ artifacts:
       - MR-0001ADR-0007REQ-0002
       - MR-0001ADR-0007REQ-0002GOV-0001
       - MR-0001ADR-0007REQ-0002GOV-0002
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
     implemented_path: tools/MR-0001/test/governed-document-model-coherence.test.mjs
-    reason: Verify canonical cross-model coherence acceptance, unique stable rule identifiers and deterministic relation and ownership failure coverage.
+    reason: Verify provider-derived cross-model coherence acceptance, registry-derived model projections, unknown Requirement fail-closed behavior, stable rule identifiers and deterministic relation and ownership failures.
     verification_command: node --test tools/MR-0001/test/governed-document-model-coherence.test.mjs
 
   - id: MR-0001ADR-0007REQ-0002GOV-0001IMPL-0011
