@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "security-requirement-authoring-editor-negative-fixtures",
+  "scope": "security_requirement_activation_candidate_editor_assistance",
+  "cases": [
+    {
+      "id": "unexpected-schema-id",
+      "failure_kind": "schema_identity",
+      "expected_rule_ids": ["security-requirement.authoring.editor.schema"]
+    },
+    {
+      "id": "duplicate-parent-id",
+      "failure_kind": "parent_projection",
+      "expected_rule_ids": ["security-requirement.authoring.editor.parent"]
+    },
+    {
+      "id": "duplicate-finding-id",
+      "failure_kind": "finding_projection",
+      "expected_rule_ids": ["security-requirement.authoring.editor.finding"]
+    },
+    {
+      "id": "nonaccepted-finding-provider",
+      "failure_kind": "finding_eligibility",
+      "expected_rule_ids": ["security-requirement.authoring.editor.finding"]
+    },
+    {
+      "id": "inactive-create-advertised",
+      "failure_kind": "activation_boundary",
+      "expected_rule_ids": ["security-requirement.authoring.editor.activation"]
+    },
+    {
+      "id": "missing-schema-association",
+      "failure_kind": "editor_routing",
+      "expected_rule_ids": ["security-requirement.authoring.editor.routing"]
+    },
+    {
+      "id": "stale-preview-task",
+      "failure_kind": "editor_routing",
+      "expected_rule_ids": ["security-requirement.authoring.editor.routing"]
+    },
+    {
+      "id": "premature-create-task",
+      "failure_kind": "activation_boundary",
+      "expected_rule_ids": ["security-requirement.authoring.editor.activation"]
+    }
+  ]
+}

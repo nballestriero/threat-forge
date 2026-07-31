@@ -11,6 +11,15 @@ import {
 import {
   materializeCommonAnalysisFindingSchema,
 } from "../MR-0005/lib/materialize-common-analysis-finding-schema.mjs";
+import {
+  buildSecurityRequirementAuthoringPreviewTask,
+  mergeSecurityRequirementAuthoringEditorSettings,
+  securityRequirementAuthoringPreviewTaskLabel,
+  validateSecurityRequirementAuthoringEditorSettings,
+} from "../MR-0001/lib/security-requirement-authoring-editor-assistance.mjs";
+import {
+  materializeSecurityRequirementAuthoringSchema,
+} from "../MR-0001/materialize-security-requirement-authoring-schema.mjs";
 
 /**
  * @file VS Code governed document authoring adapter materializer.
@@ -69,6 +78,7 @@ const installMarkdownAssistanceTaskLabel =
 const managedTaskLabels = new Set([
   previewTaskLabel,
   createTaskLabel,
+  securityRequirementAuthoringPreviewTaskLabel,
   installMarkdownAssistanceTaskLabel,
 ]);
 const implementationTraceTag = ["@implements", "Requirement"].join("");
@@ -233,6 +243,9 @@ function writeAtomically(projectPath, text) {
 }
 
 function buildManagedTask(mode) {
+  if (mode === "preview-security-requirement") {
+    return buildSecurityRequirementAuthoringPreviewTask();
+  }
   if (mode === "install-markdown-assistance") {
     return {
       label: installMarkdownAssistanceTaskLabel,
@@ -284,6 +297,7 @@ export function mergeGovernedDocumentAuthoringTasks(existing) {
     0,
     buildManagedTask("preview"),
     buildManagedTask("create"),
+    buildManagedTask("preview-security-requirement"),
     buildManagedTask("install-markdown-assistance"),
   );
   inputs.forEach((value, index) => requireObject(value, `tasks.inputs[${index}]`));
@@ -300,10 +314,12 @@ function mergeSettings(existing) {
   const mergedSchemas = { ...schemas };
   mergedSchemas[schemaAssociationKey] = [authoringRequestGlob];
 
-  return mergeCommonAnalysisFindingEditorRouting({
-    ...existing,
-    "yaml.schemas": mergedSchemas,
-  });
+  return mergeSecurityRequirementAuthoringEditorSettings(
+    mergeCommonAnalysisFindingEditorRouting({
+      ...existing,
+      "yaml.schemas": mergedSchemas,
+    }),
+  );
 }
 function mergeExtensions(existing) {
   const recommendations = existing.recommendations === undefined
@@ -354,7 +370,12 @@ export function validateGovernedDocumentAuthoringTasks(tasks) {
     if (byLabel.has(label)) throw new Error(`Duplicate VS Code task label: ${label}`);
     byLabel.set(label, task);
   }
-  for (const mode of ["preview", "create", "install-markdown-assistance"]) {
+  for (const mode of [
+    "preview",
+    "create",
+    "preview-security-requirement",
+    "install-markdown-assistance",
+  ]) {
     const expected = buildManagedTask(mode);
     const task = byLabel.get(expected.label);
     if (!task) throw new Error(`Missing managed VS Code task: ${expected.label}`);
@@ -381,7 +402,11 @@ function validateSettings(settings) {
     );
   }
 
-  return validateCommonAnalysisFindingEditorRouting(settings);
+  return {
+    commonFinding: validateCommonAnalysisFindingEditorRouting(settings),
+    securityRequirement:
+      validateSecurityRequirementAuthoringEditorSettings(settings),
+  };
 }
 function validateExtensions(extensions) {
   const recommendations = requireArray(extensions.recommendations, "extensions.recommendations");
@@ -393,6 +418,8 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
   if (mode !== "write" && mode !== "check") throw new Error(`Unsupported materialization mode: ${mode}`);
   runSchemaMaterializer(mode);
   runCommonAnalysisFindingSchemaMaterializer(mode);
+  const securityRequirementSchema =
+    materializeSecurityRequirementAuthoringSchema({ rootDir, mode });
   const settings = mergeSettings(readJsoncFile(settingsProjectPath, {}));
   const extensions = mergeExtensions(readJsoncFile(extensionsProjectPath, { recommendations: [] }));
   const tasks = mergeGovernedDocumentAuthoringTasks(readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] }));
@@ -409,8 +436,7 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
   const actualSettings = readJsoncFile(settingsProjectPath, {});
   const actualExtensions = readJsoncFile(extensionsProjectPath, { recommendations: [] });
   const actualTasks = readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] });
-  const commonFindingRouting =
-    validateSettings(actualSettings);
+  const editorRouting = validateSettings(actualSettings);
   validateExtensions(actualExtensions);
   validateGovernedDocumentAuthoringTasks(actualTasks);
   if (formatJson(actualSettings) !== expected.settings) throw new Error(`${settingsProjectPath} is stale.`);
@@ -427,9 +453,17 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
     schema: `./${materializedSchemaProjectPath}`,
     requestGlob: authoringRequestGlob,
     commonFindingSchema:
-      commonFindingRouting.schemaAssociationKey,
+      editorRouting.commonFinding.schemaAssociationKey,
     commonFindingGlob:
-      commonFindingRouting.fileGlob,
+      editorRouting.commonFinding.fileGlob,
+    securityRequirementSchema:
+      `./${securityRequirementSchema.path}`,
+    securityRequirementGlob:
+      editorRouting.securityRequirement.fileGlob,
+    securityRequirementPreviewTask:
+      securityRequirementAuthoringPreviewTaskLabel,
+    securityRequirementActivationState:
+      securityRequirementSchema.activationState,
     recommendedExtension: yamlExtensionId,
   };
 }
@@ -454,6 +488,10 @@ function main() {
   console.log(`Authoring request glob: ${result.requestGlob}`);
   console.log(`Common Finding schema: ${result.commonFindingSchema}`);
   console.log(`Common Finding glob: ${result.commonFindingGlob}`);
+  console.log(`Security Requirement schema: ${result.securityRequirementSchema}`);
+  console.log(`Security Requirement glob: ${result.securityRequirementGlob}`);
+  console.log(`Security Requirement preview task: ${result.securityRequirementPreviewTask}`);
+  console.log(`Security Requirement activation state: ${result.securityRequirementActivationState}`);
   console.log(`Recommended extension: ${result.recommendedExtension}`);
 }
 

@@ -1701,3 +1701,66 @@ artifacts:
     implemented_path: tools/MR-0001/fixtures/security-requirement-authoring/negative-fixtures.registry.json
     reason: Register deterministic invalid request parent Finding provenance catalog and activation-boundary cases against every stable Security Requirement authoring rule identifier.
     verification_command: node --test tools/MR-0001/test/security-requirement-authoring.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0012
+    title: Security Requirement authoring editor projection core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0001/lib/security-requirement-authoring-editor-assistance.mjs
+    reason: Derive one activation-candidate YAML schema, Functional parent and accepted Finding completion metadata, schema routing and a preview-only task from canonical authoring and governed reference providers without activating Security Requirement.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring-editor.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0013
+    title: Security Requirement authoring schema materializer
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0001/materialize-security-requirement-authoring-schema.mjs
+    reason: Materialize and check the dedicated Security Requirement request schema deterministically while leaving canonical registries, profiles, taxonomy and bodies unchanged.
+    verification_command: node tools/MR-0001/materialize-security-requirement-authoring-schema.mjs --check
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0014
+    title: Security Requirement authoring editor checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0001/check-security-requirement-authoring-editor.mjs
+    reason: Enforce current schema materialization, workspace routing, preview-only task exposure, stable verification counts and inactive create absence in the governed repository gate.
+    verification_command: node tools/MR-0001/check-security-requirement-authoring-editor.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0015
+    title: Security Requirement authoring editor verification suite
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0001/test/security-requirement-authoring-editor.test.mjs
+    reason: Prove dedicated schema isolation, MR and ADR filtered Functional parent proposals, accepted affected Finding proposals with provenance, descriptive hover metadata, materialization idempotence, routing and activation failure boundaries.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring-editor.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0016
+    title: Security Requirement authoring editor negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    implemented_path: tools/MR-0001/fixtures/security-requirement-authoring-editor/negative-fixtures.registry.json
+    reason: Register deterministic schema identity, parent, Finding, routing and premature create failures against stable Security Requirement editor rule identifiers.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring-editor.test.mjs

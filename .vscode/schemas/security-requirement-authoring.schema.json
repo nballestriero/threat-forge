@@ -1,0 +1,4565 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:threatforge:schema:security-requirement-authoring-request:1",
+  "title": "ThreatForge Security Requirement authoring request",
+  "description": "Activation-candidate request for previewing one methodology-neutral Security Requirement. Create remains unavailable until atomic canonical activation.",
+  "oneOf": [
+    {
+      "title": "Security Requirement",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_id",
+        "parent_requirement_id",
+        "finding_ids"
+      ],
+      "properties": {
+        "document_type": {
+          "const": "security-requirement",
+          "description": "Methodology-independent security obligation derived from one or more accepted Common Findings, attached to exactly one Functional Requirement and represented by one shared Requirement registry record and one Markdown body."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1."
+        },
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "intent",
+            "security_obligation",
+            "scope",
+            "acceptance"
+          ],
+          "properties": {
+            "intent": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Intent uses canonical content kind prose."
+            },
+            "security_obligation": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Security obligation uses canonical content kind normative_list."
+            },
+            "scope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "includes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Includes:"
+                },
+                "excludes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$"
+                  },
+                  "description": "Items rendered with canonical prefix Excludes:"
+                }
+              },
+              "anyOf": [
+                {
+                  "required": [
+                    "includes"
+                  ]
+                },
+                {
+                  "required": [
+                    "excludes"
+                  ]
+                }
+              ],
+              "description": "Scope uses canonical content kind classified_label_list."
+            },
+            "acceptance": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$"
+              },
+              "description": "Acceptance uses canonical content kind acceptance_condition_list. The core adds the canonical prefix \"The requirement is accepted when \"."
+            }
+          },
+          "description": "Authored Security Requirement body inputs. Parent and Finding sections are generated from canonical relation selections."
+        },
+        "macro_requirement_id": {
+          "type": "string",
+          "enum": [
+            "MR-0001",
+            "MR-0002",
+            "MR-0003",
+            "MR-0004",
+            "MR-0005"
+          ],
+          "markdownEnumDescriptions": [
+            "Gestione documentale governata — status: draft",
+            "Authoring e implementazione governata — status: draft",
+            "Modello di Analisi Base derivato dalla documentazione — status: draft",
+            "Ciclo di vita governato dei progetti target — status: draft",
+            "Common governed analysis model — status: draft"
+          ],
+          "x-threatforge-enum-metadata": [
+            {
+              "value": "MR-0001",
+              "description": "Gestione documentale governata — status: draft"
+            },
+            {
+              "value": "MR-0002",
+              "description": "Authoring e implementazione governata — status: draft"
+            },
+            {
+              "value": "MR-0003",
+              "description": "Modello di Analisi Base derivato dalla documentazione — status: draft"
+            },
+            {
+              "value": "MR-0004",
+              "description": "Ciclo di vita governato dei progetti target — status: draft"
+            },
+            {
+              "value": "MR-0005",
+              "description": "Common governed analysis model — status: draft"
+            }
+          ],
+          "description": "Canonical Macro-requirement that owns the selected Functional Requirement parent."
+        },
+        "decision_id": {
+          "type": "string",
+          "pattern": "^ADR-\\d{4}$",
+          "description": "Canonical Decision that owns the selected Functional Requirement parent."
+        },
+        "parent_requirement_id": {
+          "type": "string",
+          "pattern": "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
+          "description": "Exactly one Functional Requirement parent in the selected Macro-requirement and Decision chain."
+        },
+        "finding_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^FINDING-\\d{4}$"
+          },
+          "description": "One or more accepted Common Findings that affect the selected Functional Requirement and preserve Analysis Record provenance."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0003",
+                  "ADR-0004",
+                  "ADR-0006",
+                  "ADR-0007",
+                  "ADR-0008",
+                  "ADR-0009",
+                  "ADR-0010"
+                ],
+                "markdownEnumDescriptions": [
+                  "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft",
+                  "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft",
+                  "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft",
+                  "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft",
+                  "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft",
+                  "Governed Security Requirement specialization and finding derivation — MR-0001/ADR-0009 — status: draft",
+                  "Registry-derived extensibility of governed document models — MR-0001/ADR-0010 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0003",
+                    "description": "Tracciabilità degli artefatti implementativi previsti e realizzati — MR-0001/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Modello di label controllate e valori tassonomici documentali — MR-0001/ADR-0004 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0006",
+                    "description": "Handoff locale come artefatto governato di continuità operativa — MR-0001/ADR-0006 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0007",
+                    "description": "Canonical document models and model-oriented validation — MR-0001/ADR-0007 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0008",
+                    "description": "Canonical governed entity references in Markdown bodies — MR-0001/ADR-0008 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0009",
+                    "description": "Governed Security Requirement specialization and finding derivation — MR-0001/ADR-0009 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0010",
+                    "description": "Registry-derived extensibility of governed document models — MR-0001/ADR-0010 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002",
+                  "ADR-0003",
+                  "ADR-0004",
+                  "ADR-0005",
+                  "ADR-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft",
+                  "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft",
+                  "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft",
+                  "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft",
+                  "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft",
+                  "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Separazione tra core ThreatForge, app e adapter VS Code — MR-0002/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Operazione governata di commit e push nella root canonica — MR-0002/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Materializzazione governata di scaffold implementativi — MR-0002/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Authoring guidato della documentazione governata — MR-0002/ADR-0004 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0005",
+                    "description": "Integrazione locale di VS Code tramite task governati — MR-0002/ADR-0005 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0006",
+                    "description": "Shared Markdown assistance core and thin editor adapters — MR-0002/ADR-0006 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft",
+                  "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Canonical Base Analysis Element model and documentary provenance — MR-0003/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Historical BAE origin and authoritative source continuity — MR-0003/ADR-0002 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "type": "string",
+                "enum": [
+                  "ADR-0001",
+                  "ADR-0002",
+                  "ADR-0003",
+                  "ADR-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft",
+                  "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft",
+                  "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft",
+                  "Common Finding canonical title and governed reference projection — MR-0005/ADR-0004 — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "ADR-0001",
+                    "description": "Expert analysis records and deterministic DFD derivation — MR-0005/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Common analysis findings, documentation feedback and functional traceability — MR-0005/ADR-0002 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0003",
+                    "description": "Methodology plugin contract, discovery and deterministic derivation boundary — MR-0005/ADR-0003 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0004",
+                    "description": "Common Finding canonical title and governed reference projection — MR-0005/ADR-0004 — status: draft"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0003REQ-0001",
+                  "MR-0001ADR-0003REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Registro di tracciabilita implementativa — status: draft — MR-0001/ADR-0003",
+                  "Copertura implementativa dei requisiti governati — status: draft — MR-0001/ADR-0003"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0003REQ-0001",
+                    "description": "Registro di tracciabilita implementativa — status: draft — MR-0001/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0001ADR-0003REQ-0002",
+                    "description": "Copertura implementativa dei requisiti governati — status: draft — MR-0001/ADR-0003"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0003REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0003REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0003REQ-0001",
+                  "MR-0001ADR-0003REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Registro di tracciabilita implementativa — status: draft — MR-0001/ADR-0003",
+                  "Copertura implementativa dei requisiti governati — status: draft — MR-0001/ADR-0003"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0003REQ-0001",
+                    "description": "Registro di tracciabilita implementativa — status: draft — MR-0001/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0001ADR-0003REQ-0002",
+                    "description": "Copertura implementativa dei requisiti governati — status: draft — MR-0001/ADR-0003"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0003REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0003REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0004REQ-0001",
+                  "MR-0001ADR-0004REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Registro dei valori controllati dei campi documentali — status: draft — MR-0001/ADR-0004",
+                  "Catalogo canonico dei campi controllati e dei metadati di presentazione — status: draft — MR-0001/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0004REQ-0001",
+                    "description": "Registro dei valori controllati dei campi documentali — status: draft — MR-0001/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0001ADR-0004REQ-0002",
+                    "description": "Catalogo canonico dei campi controllati e dei metadati di presentazione — status: draft — MR-0001/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0004REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0004REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0004REQ-0001",
+                  "MR-0001ADR-0004REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Registro dei valori controllati dei campi documentali — status: draft — MR-0001/ADR-0004",
+                  "Catalogo canonico dei campi controllati e dei metadati di presentazione — status: draft — MR-0001/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0004REQ-0001",
+                    "description": "Registro dei valori controllati dei campi documentali — status: draft — MR-0001/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0001ADR-0004REQ-0002",
+                    "description": "Catalogo canonico dei campi controllati e dei metadati di presentazione — status: draft — MR-0001/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0004REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0004REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0006REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore locale di handoff archive — status: draft — MR-0001/ADR-0006"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0006REQ-0001",
+                    "description": "Generatore locale di handoff archive — status: draft — MR-0001/ADR-0006"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0006REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0006REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0007"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0007REQ-0001",
+                  "MR-0001ADR-0007REQ-0002",
+                  "MR-0001ADR-0007REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical profiles for governed document models — status: draft — MR-0001/ADR-0007",
+                  "Model-oriented validation of governed documents — status: draft — MR-0001/ADR-0007",
+                  "Governed migration of the active document corpus — status: draft — MR-0001/ADR-0007"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0007REQ-0001",
+                    "description": "Canonical profiles for governed document models — status: draft — MR-0001/ADR-0007"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0002",
+                    "description": "Model-oriented validation of governed documents — status: draft — MR-0001/ADR-0007"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0003",
+                    "description": "Governed migration of the active document corpus — status: draft — MR-0001/ADR-0007"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0007REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0007REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0007"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0007REQ-0001",
+                  "MR-0001ADR-0007REQ-0002",
+                  "MR-0001ADR-0007REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical profiles for governed document models — status: draft — MR-0001/ADR-0007",
+                  "Model-oriented validation of governed documents — status: draft — MR-0001/ADR-0007",
+                  "Governed migration of the active document corpus — status: draft — MR-0001/ADR-0007"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0007REQ-0001",
+                    "description": "Canonical profiles for governed document models — status: draft — MR-0001/ADR-0007"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0002",
+                    "description": "Model-oriented validation of governed documents — status: draft — MR-0001/ADR-0007"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0003",
+                    "description": "Governed migration of the active document corpus — status: draft — MR-0001/ADR-0007"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0007REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0007REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0007"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0007REQ-0001",
+                  "MR-0001ADR-0007REQ-0002",
+                  "MR-0001ADR-0007REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical profiles for governed document models — status: draft — MR-0001/ADR-0007",
+                  "Model-oriented validation of governed documents — status: draft — MR-0001/ADR-0007",
+                  "Governed migration of the active document corpus — status: draft — MR-0001/ADR-0007"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0007REQ-0001",
+                    "description": "Canonical profiles for governed document models — status: draft — MR-0001/ADR-0007"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0002",
+                    "description": "Model-oriented validation of governed documents — status: draft — MR-0001/ADR-0007"
+                  },
+                  {
+                    "value": "MR-0001ADR-0007REQ-0003",
+                    "description": "Governed migration of the active document corpus — status: draft — MR-0001/ADR-0007"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0007REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0007REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0008"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0008REQ-0001",
+                  "MR-0001ADR-0008REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Markdown representation of governed entity references — status: draft — MR-0001/ADR-0008",
+                  "Deterministic governed entity reference resolution — status: draft — MR-0001/ADR-0008"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0008REQ-0001",
+                    "description": "Canonical Markdown representation of governed entity references — status: draft — MR-0001/ADR-0008"
+                  },
+                  {
+                    "value": "MR-0001ADR-0008REQ-0002",
+                    "description": "Deterministic governed entity reference resolution — status: draft — MR-0001/ADR-0008"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0008REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0008REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0008"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0008REQ-0001",
+                  "MR-0001ADR-0008REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Markdown representation of governed entity references — status: draft — MR-0001/ADR-0008",
+                  "Deterministic governed entity reference resolution — status: draft — MR-0001/ADR-0008"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0008REQ-0001",
+                    "description": "Canonical Markdown representation of governed entity references — status: draft — MR-0001/ADR-0008"
+                  },
+                  {
+                    "value": "MR-0001ADR-0008REQ-0002",
+                    "description": "Deterministic governed entity reference resolution — status: draft — MR-0001/ADR-0008"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0008REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0008REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0009"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0009REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Security Requirement logical model and governed representations — status: draft — MR-0001/ADR-0009"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0009REQ-0001",
+                    "description": "Canonical Security Requirement logical model and governed representations — status: draft — MR-0001/ADR-0009"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0009REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0009REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0010"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0010REQ-0001",
+                  "MR-0001ADR-0010REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Extensible canonical governed document model catalog — status: draft — MR-0001/ADR-0010",
+                  "Registry-derived governed document model consumer coverage — status: draft — MR-0001/ADR-0010"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0010REQ-0001",
+                    "description": "Extensible canonical governed document model catalog — status: draft — MR-0001/ADR-0010"
+                  },
+                  {
+                    "value": "MR-0001ADR-0010REQ-0002",
+                    "description": "Registry-derived governed document model consumer coverage — status: draft — MR-0001/ADR-0010"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0010REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0010REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              },
+              "decision_id": {
+                "const": "ADR-0010"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0001ADR-0010REQ-0001",
+                  "MR-0001ADR-0010REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Extensible canonical governed document model catalog — status: draft — MR-0001/ADR-0010",
+                  "Registry-derived governed document model consumer coverage — status: draft — MR-0001/ADR-0010"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0001ADR-0010REQ-0001",
+                    "description": "Extensible canonical governed document model catalog — status: draft — MR-0001/ADR-0010"
+                  },
+                  {
+                    "value": "MR-0001ADR-0010REQ-0002",
+                    "description": "Registry-derived governed document model consumer coverage — status: draft — MR-0001/ADR-0010"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0010REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0001ADR-0010REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0001REQ-0001",
+                  "MR-0002ADR-0001REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Pianificazione guidata di un artefatto implementativo da requisito governato — status: draft — MR-0002/ADR-0001",
+                  "Presentazione web dei campi documentali controllati — status: draft — MR-0002/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0001REQ-0001",
+                    "description": "Pianificazione guidata di un artefatto implementativo da requisito governato — status: draft — MR-0002/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0002ADR-0001REQ-0002",
+                    "description": "Presentazione web dei campi documentali controllati — status: draft — MR-0002/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0001REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0001REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0001REQ-0001",
+                  "MR-0002ADR-0001REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Pianificazione guidata di un artefatto implementativo da requisito governato — status: draft — MR-0002/ADR-0001",
+                  "Presentazione web dei campi documentali controllati — status: draft — MR-0002/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0001REQ-0001",
+                    "description": "Pianificazione guidata di un artefatto implementativo da requisito governato — status: draft — MR-0002/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0002ADR-0001REQ-0002",
+                    "description": "Presentazione web dei campi documentali controllati — status: draft — MR-0002/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0001REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0001REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0002REQ-0001",
+                  "MR-0002ADR-0002REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Commit e push governati dalla root canonica — status: draft — MR-0002/ADR-0002",
+                  "Deterministic materialization before governed repository gates — status: draft — MR-0002/ADR-0002"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0002REQ-0001",
+                    "description": "Commit e push governati dalla root canonica — status: draft — MR-0002/ADR-0002"
+                  },
+                  {
+                    "value": "MR-0002ADR-0002REQ-0002",
+                    "description": "Deterministic materialization before governed repository gates — status: draft — MR-0002/ADR-0002"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0002REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0002REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0002REQ-0001",
+                  "MR-0002ADR-0002REQ-0002"
+                ],
+                "markdownEnumDescriptions": [
+                  "Commit e push governati dalla root canonica — status: draft — MR-0002/ADR-0002",
+                  "Deterministic materialization before governed repository gates — status: draft — MR-0002/ADR-0002"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0002REQ-0001",
+                    "description": "Commit e push governati dalla root canonica — status: draft — MR-0002/ADR-0002"
+                  },
+                  {
+                    "value": "MR-0002ADR-0002REQ-0002",
+                    "description": "Deterministic materialization before governed repository gates — status: draft — MR-0002/ADR-0002"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0002REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0002REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0003REQ-0001",
+                  "MR-0002ADR-0003REQ-0002",
+                  "MR-0002ADR-0003REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione guidata di uno scaffold implementativo governato — status: draft — MR-0002/ADR-0003",
+                  "Promozione governata di uno scaffold implementativo — status: draft — MR-0002/ADR-0003",
+                  "Promozione governata di un artefatto pianificato materializzato — status: draft — MR-0002/ADR-0003"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0003REQ-0001",
+                    "description": "Creazione guidata di uno scaffold implementativo governato — status: draft — MR-0002/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0002",
+                    "description": "Promozione governata di uno scaffold implementativo — status: draft — MR-0002/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0003",
+                    "description": "Promozione governata di un artefatto pianificato materializzato — status: draft — MR-0002/ADR-0003"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0003REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0003REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0003REQ-0001",
+                  "MR-0002ADR-0003REQ-0002",
+                  "MR-0002ADR-0003REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione guidata di uno scaffold implementativo governato — status: draft — MR-0002/ADR-0003",
+                  "Promozione governata di uno scaffold implementativo — status: draft — MR-0002/ADR-0003",
+                  "Promozione governata di un artefatto pianificato materializzato — status: draft — MR-0002/ADR-0003"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0003REQ-0001",
+                    "description": "Creazione guidata di uno scaffold implementativo governato — status: draft — MR-0002/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0002",
+                    "description": "Promozione governata di uno scaffold implementativo — status: draft — MR-0002/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0003",
+                    "description": "Promozione governata di un artefatto pianificato materializzato — status: draft — MR-0002/ADR-0003"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0003REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0003REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0003REQ-0001",
+                  "MR-0002ADR-0003REQ-0002",
+                  "MR-0002ADR-0003REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione guidata di uno scaffold implementativo governato — status: draft — MR-0002/ADR-0003",
+                  "Promozione governata di uno scaffold implementativo — status: draft — MR-0002/ADR-0003",
+                  "Promozione governata di un artefatto pianificato materializzato — status: draft — MR-0002/ADR-0003"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0003REQ-0001",
+                    "description": "Creazione guidata di uno scaffold implementativo governato — status: draft — MR-0002/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0002",
+                    "description": "Promozione governata di uno scaffold implementativo — status: draft — MR-0002/ADR-0003"
+                  },
+                  {
+                    "value": "MR-0002ADR-0003REQ-0003",
+                    "description": "Promozione governata di un artefatto pianificato materializzato — status: draft — MR-0002/ADR-0003"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0003REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0003REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0004REQ-0001",
+                  "MR-0002ADR-0004REQ-0002",
+                  "MR-0002ADR-0004REQ-0003",
+                  "MR-0002ADR-0004REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004",
+                  "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0004REQ-0001",
+                    "description": "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0002",
+                    "description": "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0003",
+                    "description": "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0004",
+                    "description": "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0004REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0004REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0004REQ-0001",
+                  "MR-0002ADR-0004REQ-0002",
+                  "MR-0002ADR-0004REQ-0003",
+                  "MR-0002ADR-0004REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004",
+                  "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0004REQ-0001",
+                    "description": "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0002",
+                    "description": "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0003",
+                    "description": "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0004",
+                    "description": "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0004REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0004REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0004REQ-0001",
+                  "MR-0002ADR-0004REQ-0002",
+                  "MR-0002ADR-0004REQ-0003",
+                  "MR-0002ADR-0004REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004",
+                  "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0004REQ-0001",
+                    "description": "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0002",
+                    "description": "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0003",
+                    "description": "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0004",
+                    "description": "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0004REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0004REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0004REQ-0001",
+                  "MR-0002ADR-0004REQ-0002",
+                  "MR-0002ADR-0004REQ-0003",
+                  "MR-0002ADR-0004REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004",
+                  "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004",
+                  "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0004REQ-0001",
+                    "description": "Generatore deterministico di documenti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0002",
+                    "description": "Controllo degli header dei body governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0003",
+                    "description": "Contratto di authoring guidato dei requisiti governati — status: draft — MR-0002/ADR-0004"
+                  },
+                  {
+                    "value": "MR-0002ADR-0004REQ-0004",
+                    "description": "Contratto condiviso di authoring documentale per MR, ADR e REQ — status: draft — MR-0002/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0004REQ-0004"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0004REQ-0004 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0005"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0005REQ-0001",
+                  "MR-0002ADR-0005REQ-0002",
+                  "MR-0002ADR-0005REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Catalogo locale di task VS Code ThreatForge — status: draft — MR-0002/ADR-0005",
+                  "Authoring guidato dei requisiti tramite VS Code — status: draft — MR-0002/ADR-0005",
+                  "Editor VS Code guidato per MR, ADR e REQ — status: draft — MR-0002/ADR-0005"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0005REQ-0001",
+                    "description": "Catalogo locale di task VS Code ThreatForge — status: draft — MR-0002/ADR-0005"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0002",
+                    "description": "Authoring guidato dei requisiti tramite VS Code — status: draft — MR-0002/ADR-0005"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0003",
+                    "description": "Editor VS Code guidato per MR, ADR e REQ — status: draft — MR-0002/ADR-0005"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0005REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0005REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0005"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0005REQ-0001",
+                  "MR-0002ADR-0005REQ-0002",
+                  "MR-0002ADR-0005REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Catalogo locale di task VS Code ThreatForge — status: draft — MR-0002/ADR-0005",
+                  "Authoring guidato dei requisiti tramite VS Code — status: draft — MR-0002/ADR-0005",
+                  "Editor VS Code guidato per MR, ADR e REQ — status: draft — MR-0002/ADR-0005"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0005REQ-0001",
+                    "description": "Catalogo locale di task VS Code ThreatForge — status: draft — MR-0002/ADR-0005"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0002",
+                    "description": "Authoring guidato dei requisiti tramite VS Code — status: draft — MR-0002/ADR-0005"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0003",
+                    "description": "Editor VS Code guidato per MR, ADR e REQ — status: draft — MR-0002/ADR-0005"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0005REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0005REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0005"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0005REQ-0001",
+                  "MR-0002ADR-0005REQ-0002",
+                  "MR-0002ADR-0005REQ-0003"
+                ],
+                "markdownEnumDescriptions": [
+                  "Catalogo locale di task VS Code ThreatForge — status: draft — MR-0002/ADR-0005",
+                  "Authoring guidato dei requisiti tramite VS Code — status: draft — MR-0002/ADR-0005",
+                  "Editor VS Code guidato per MR, ADR e REQ — status: draft — MR-0002/ADR-0005"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0005REQ-0001",
+                    "description": "Catalogo locale di task VS Code ThreatForge — status: draft — MR-0002/ADR-0005"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0002",
+                    "description": "Authoring guidato dei requisiti tramite VS Code — status: draft — MR-0002/ADR-0005"
+                  },
+                  {
+                    "value": "MR-0002ADR-0005REQ-0003",
+                    "description": "Editor VS Code guidato per MR, ADR e REQ — status: draft — MR-0002/ADR-0005"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0005REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0005REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0006REQ-0001",
+                  "MR-0002ADR-0006REQ-0002",
+                  "MR-0002ADR-0006REQ-0003",
+                  "MR-0002ADR-0006REQ-0004",
+                  "MR-0002ADR-0006REQ-0005"
+                ],
+                "markdownEnumDescriptions": [
+                  "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006",
+                  "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0006REQ-0001",
+                    "description": "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0002",
+                    "description": "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0003",
+                    "description": "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0004",
+                    "description": "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0005",
+                    "description": "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0006REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0006REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0006REQ-0001",
+                  "MR-0002ADR-0006REQ-0002",
+                  "MR-0002ADR-0006REQ-0003",
+                  "MR-0002ADR-0006REQ-0004",
+                  "MR-0002ADR-0006REQ-0005"
+                ],
+                "markdownEnumDescriptions": [
+                  "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006",
+                  "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0006REQ-0001",
+                    "description": "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0002",
+                    "description": "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0003",
+                    "description": "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0004",
+                    "description": "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0005",
+                    "description": "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0006REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0006REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0006REQ-0001",
+                  "MR-0002ADR-0006REQ-0002",
+                  "MR-0002ADR-0006REQ-0003",
+                  "MR-0002ADR-0006REQ-0004",
+                  "MR-0002ADR-0006REQ-0005"
+                ],
+                "markdownEnumDescriptions": [
+                  "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006",
+                  "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0006REQ-0001",
+                    "description": "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0002",
+                    "description": "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0003",
+                    "description": "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0004",
+                    "description": "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0005",
+                    "description": "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0006REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0006REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0006REQ-0001",
+                  "MR-0002ADR-0006REQ-0002",
+                  "MR-0002ADR-0006REQ-0003",
+                  "MR-0002ADR-0006REQ-0004",
+                  "MR-0002ADR-0006REQ-0005"
+                ],
+                "markdownEnumDescriptions": [
+                  "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006",
+                  "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0006REQ-0001",
+                    "description": "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0002",
+                    "description": "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0003",
+                    "description": "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0004",
+                    "description": "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0005",
+                    "description": "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0006REQ-0004"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0006REQ-0004 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0002"
+              },
+              "decision_id": {
+                "const": "ADR-0006"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0002ADR-0006REQ-0001",
+                  "MR-0002ADR-0006REQ-0002",
+                  "MR-0002ADR-0006REQ-0003",
+                  "MR-0002ADR-0006REQ-0004",
+                  "MR-0002ADR-0006REQ-0005"
+                ],
+                "markdownEnumDescriptions": [
+                  "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006",
+                  "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006",
+                  "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0002ADR-0006REQ-0001",
+                    "description": "Contextual analysis of governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0002",
+                    "description": "Live VS Code assistance for governed Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0003",
+                    "description": "Web editor reuse of governed Markdown assistance — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0004",
+                    "description": "Governed entity reference assistance in Markdown bodies — status: draft — MR-0002/ADR-0006"
+                  },
+                  {
+                    "value": "MR-0002ADR-0006REQ-0005",
+                    "description": "Unified VS Code assistance extension for engine and Target Project workspaces — status: draft — MR-0002/ADR-0006"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0002ADR-0006REQ-0005"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0002ADR-0006REQ-0005 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004",
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001",
+                  "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001",
+                  "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001",
+                  "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0005",
+                    "description": "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0001REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0001REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004",
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001",
+                  "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001",
+                  "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001",
+                  "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0005",
+                    "description": "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0001REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0001REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004",
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001",
+                  "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001",
+                  "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001",
+                  "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0005",
+                    "description": "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0001REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0001REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004",
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001",
+                  "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001",
+                  "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001",
+                  "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0005",
+                    "description": "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0001REQ-0004"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0001REQ-0004 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004",
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001",
+                  "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001",
+                  "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001",
+                  "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0005",
+                    "description": "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0001REQ-0005"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0001REQ-0005 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0001REQ-0001",
+                  "MR-0003ADR-0001REQ-0002",
+                  "MR-0003ADR-0001REQ-0003",
+                  "MR-0003ADR-0001REQ-0004",
+                  "MR-0003ADR-0001REQ-0005",
+                  "MR-0003ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001",
+                  "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001",
+                  "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001",
+                  "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001",
+                  "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0001REQ-0001",
+                    "description": "Canonical Base Analysis Element inventory — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0002",
+                    "description": "Governed BAE origin and documentary provenance — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0003",
+                    "description": "Canonical BAE relations and system topology — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0004",
+                    "description": "BAE lifecycle change impact and analysis staleness — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0005",
+                    "description": "Canonical BAE registry and reference-source projection — status: draft — MR-0003/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0003ADR-0001REQ-0006",
+                    "description": "Deterministic Base Analysis DFD projection — status: draft — MR-0003/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0001REQ-0006"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0001REQ-0006 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0003"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0003ADR-0002REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "BAE source continuity and reference occurrence projection — status: draft — MR-0003/ADR-0002"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0003ADR-0002REQ-0001",
+                    "description": "BAE source continuity and reference occurrence projection — status: draft — MR-0003/ADR-0002"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0003ADR-0002REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0003ADR-0002REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0001REQ-0001",
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003",
+                  "MR-0004ADR-0001REQ-0004",
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001",
+                  "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0001REQ-0001",
+                    "description": "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0002",
+                    "description": "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0004",
+                    "description": "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0005",
+                    "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0001REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0001REQ-0001",
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003",
+                  "MR-0004ADR-0001REQ-0004",
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001",
+                  "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0001REQ-0001",
+                    "description": "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0002",
+                    "description": "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0004",
+                    "description": "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0005",
+                    "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0001REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0001REQ-0001",
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003",
+                  "MR-0004ADR-0001REQ-0004",
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001",
+                  "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0001REQ-0001",
+                    "description": "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0002",
+                    "description": "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0004",
+                    "description": "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0005",
+                    "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0001REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0001REQ-0001",
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003",
+                  "MR-0004ADR-0001REQ-0004",
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001",
+                  "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0001REQ-0001",
+                    "description": "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0002",
+                    "description": "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0004",
+                    "description": "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0005",
+                    "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0001REQ-0004"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0004 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0001REQ-0001",
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003",
+                  "MR-0004ADR-0001REQ-0004",
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001",
+                  "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0001REQ-0001",
+                    "description": "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0002",
+                    "description": "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0004",
+                    "description": "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0005",
+                    "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0001REQ-0005"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0005 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0001REQ-0001",
+                  "MR-0004ADR-0001REQ-0002",
+                  "MR-0004ADR-0001REQ-0003",
+                  "MR-0004ADR-0001REQ-0004",
+                  "MR-0004ADR-0001REQ-0005",
+                  "MR-0004ADR-0001REQ-0006"
+                ],
+                "markdownEnumDescriptions": [
+                  "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001",
+                  "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001",
+                  "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001",
+                  "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0001REQ-0001",
+                    "description": "Creazione del progetto target in una destinazione esplicita — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0002",
+                    "description": "Struttura documentale analizzabile del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0003",
+                    "description": "Verifica documentale del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0004",
+                    "description": "Authoring governato del progetto target tramite target_root — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0005",
+                    "description": "Workspace VS Code governato e assistenza BAE del progetto target — status: draft — MR-0004/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0004ADR-0001REQ-0006",
+                    "description": "Caso di studio didattico interno e riproducibile — status: draft — MR-0004/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0001REQ-0006"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0006 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0001REQ-0001",
+                  "MR-0005ADR-0001REQ-0002",
+                  "MR-0005ADR-0001REQ-0003",
+                  "MR-0005ADR-0001REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001",
+                  "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001",
+                  "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001",
+                  "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0001REQ-0001",
+                    "description": "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0002",
+                    "description": "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0003",
+                    "description": "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0004",
+                    "description": "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0001REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0001REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0001REQ-0001",
+                  "MR-0005ADR-0001REQ-0002",
+                  "MR-0005ADR-0001REQ-0003",
+                  "MR-0005ADR-0001REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001",
+                  "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001",
+                  "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001",
+                  "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0001REQ-0001",
+                    "description": "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0002",
+                    "description": "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0003",
+                    "description": "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0004",
+                    "description": "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0001REQ-0002"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0001REQ-0002 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0001REQ-0001",
+                  "MR-0005ADR-0001REQ-0002",
+                  "MR-0005ADR-0001REQ-0003",
+                  "MR-0005ADR-0001REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001",
+                  "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001",
+                  "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001",
+                  "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0001REQ-0001",
+                    "description": "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0002",
+                    "description": "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0003",
+                    "description": "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0004",
+                    "description": "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0001REQ-0003"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0001REQ-0003 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0001REQ-0001",
+                  "MR-0005ADR-0001REQ-0002",
+                  "MR-0005ADR-0001REQ-0003",
+                  "MR-0005ADR-0001REQ-0004"
+                ],
+                "markdownEnumDescriptions": [
+                  "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001",
+                  "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001",
+                  "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001",
+                  "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0001REQ-0001",
+                    "description": "Governed methodology-specific analysis record boundary — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0002",
+                    "description": "Deterministic DFD semantic projection — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0003",
+                    "description": "Human-viewable DFD materialization — status: draft — MR-0005/ADR-0001"
+                  },
+                  {
+                    "value": "MR-0005ADR-0001REQ-0004",
+                    "description": "Canonical methodology-specific analysis record model and identity — status: draft — MR-0005/ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0001REQ-0004"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0001REQ-0004 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0002REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Canonical common analysis finding record and review state — status: draft — MR-0005/ADR-0002"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0002REQ-0001",
+                    "description": "Canonical common analysis finding record and review state — status: draft — MR-0005/ADR-0002"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0002REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0002REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0003"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0003REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Common methodology plugin contract and governed resolution — status: draft — MR-0005/ADR-0003"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0003REQ-0001",
+                    "description": "Common methodology plugin contract and governed resolution — status: draft — MR-0005/ADR-0003"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0003REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0003REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0005"
+              },
+              "decision_id": {
+                "const": "ADR-0004"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0005ADR-0004REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Referenceable Common Finding identity and eligibility — status: draft — MR-0005/ADR-0004"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0005ADR-0004REQ-0001",
+                    "description": "Referenceable Common Finding identity and eligibility — status: draft — MR-0005/ADR-0004"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0005ADR-0004REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0005ADR-0004REQ-0001 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "x-threatforge": {
+    "schema_id": "security-requirement-authoring-request-schema",
+    "schema_version": 1,
+    "catalog_id": "governed-document-authoring-catalog",
+    "catalog_schema_version": 2,
+    "sources": [
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0001.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0001-decisions-registry"
+      },
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0002.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0002-decisions-registry"
+      },
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0003.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0003-decisions-registry"
+      },
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0004.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0004-decisions-registry"
+      },
+      {
+        "kind": "decisions",
+        "path": "docs/reference/project-model/registers/decisions/MR-0005.decisions.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0005-decisions-registry"
+      },
+      {
+        "kind": "document_model_index",
+        "path": "docs/reference/project-model/registers/document-models/document-models.registry.yml",
+        "schema_version": 1,
+        "registry_id": "governed-document-models-registry"
+      },
+      {
+        "kind": "macro_requirements",
+        "path": "docs/reference/project-model/registers/macro-requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "governed-documentation-macro-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0001-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0002.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0002-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0003.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0003-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0004.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0004-requirements-registry"
+      },
+      {
+        "kind": "requirements",
+        "path": "docs/reference/project-model/registers/requirements/MR-0005.requirements.registry.yml",
+        "schema_version": 1,
+        "registry_id": "MR-0005-requirements-registry"
+      },
+      {
+        "kind": "documentation_field_values",
+        "path": "docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml",
+        "schema_version": 2,
+        "registry_id": "documentation-field-values-taxonomy"
+      }
+    ],
+    "request_suffix": ".security-requirement-authoring.yml",
+    "generated_fields": [
+      "id",
+      "status",
+      "date",
+      "body_path",
+      "decisions_registry_path",
+      "requirements_registry_path",
+      "requirement_type"
+    ],
+    "supported_document_types": [
+      "security-requirement"
+    ],
+    "model_id": "security-requirement",
+    "activation_state": "inactive",
+    "create_available": false,
+    "preview_available": true,
+    "scaffold_sources_checked": [
+      "docs/reference/project-model/registers/document-models/models/security-requirement.model.yml",
+      "docs/reference/project-model/registers/document-models/profiles/security-requirement-body.profile.yml"
+    ],
+    "functional_parent_candidates": 52,
+    "accepted_finding_candidates": 0,
+    "completion_sources": [
+      "governed-document-authoring-catalog",
+      "functional-requirement-registry-reference-source",
+      "common-analysis-finding-reference-source",
+      "common-analysis-finding-accepted-state"
+    ]
+  }
+}

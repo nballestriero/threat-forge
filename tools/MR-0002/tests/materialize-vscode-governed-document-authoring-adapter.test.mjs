@@ -43,6 +43,7 @@ test("adds managed tasks and preserves unrelated workspace configuration", () =>
     [
       "ThreatForge: preview governed document authoring",
       "ThreatForge: create governed document authoring",
+      "ThreatForge: preview Security Requirement authoring",
       "ThreatForge: install governed Markdown assistance",
     ],
   );
@@ -63,6 +64,21 @@ test("managed tasks delegate the active request file without automatic confirmat
     assert.equal(task.args[3], "${relativeFile}");
     assert.equal(task.args.includes("create"), false);
   }
+  const securityPreviewTask = merged.tasks.find((task) =>
+    task.label === "ThreatForge: preview Security Requirement authoring",
+  );
+  assert.deepEqual(securityPreviewTask.args, [
+    "tools/MR-0002/run-security-requirement-authoring.mjs",
+    "--preview",
+    "--request",
+    "${relativeFile}",
+  ]);
+  assert.equal(
+    merged.tasks.some(
+      (task) => task.label === "ThreatForge: create Security Requirement authoring",
+    ),
+    false,
+  );
   const installTask = merged.tasks.find((task) =>
     task.label.includes("install governed Markdown assistance"),
   );

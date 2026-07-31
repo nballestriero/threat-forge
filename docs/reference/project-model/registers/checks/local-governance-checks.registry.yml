@@ -404,3 +404,16 @@ checks:
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0004REQ-0004GOV-0001
     description: Verify the inactive Security Requirement activation-candidate authoring catalog, exact provider coverage, Functional parent and accepted Common Finding selection, deterministic SEC registry and body planning, preview immutability, negative fixtures and create failure before canonical activation.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0005
+    title: Security Requirement authoring editor assistance consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-security-requirement-authoring-editor.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+    description: Verify the dedicated inactive Security Requirement authoring schema, contextual Functional parent and accepted Common Finding completion metadata, deterministic schema materialization, VS Code schema routing, preview-only task exposure, stable negative fixtures and absence of a Security create task before canonical activation.

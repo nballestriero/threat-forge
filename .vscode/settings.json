@@ -8,6 +8,9 @@
     ],
     "./.vscode/schemas/methodology-specific-analysis-record.schema.json": [
       "**/*.analysis-record.yml"
+    ],
+    "./.vscode/schemas/security-requirement-authoring.schema.json": [
+      "**/*.security-requirement-authoring.yml"
     ]
   }
 }
