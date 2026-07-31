@@ -1,0 +1,108 @@
+schema_version: 1
+profile_id: security-requirement-body
+title: Security Requirement Markdown body
+representation_kind: markdown_body
+applies_to_model_ids:
+  - security-requirement
+source_path_pattern: docs/reference/project-model/body/requirements/MR-*/MR-*ADR-*REQ-*SEC-*_body.md
+unknown_sections: forbidden
+
+reference_positions:
+  - id: security-requirement.body.reference.parent-functional-requirement
+    section_id: security-requirement.body.section.parent-functional-requirement
+    container_kind: classified_list_item
+    allowed_prefixes:
+      - "Parent:"
+    terminal_punctuation: forbidden
+    allowed_entity_types:
+      - functional_requirement
+
+  - id: security-requirement.body.reference.finding-derivation
+    section_id: security-requirement.body.section.finding-derivation
+    container_kind: classified_list_item
+    allowed_prefixes:
+      - "Finding:"
+    terminal_punctuation: forbidden
+    allowed_entity_types:
+      - common_analysis_finding
+
+header:
+  id: security-requirement.body.header
+  level: 1
+  order: 1
+  cardinality: exactly_one
+  content_kind: governed_identity_heading
+  template: "# {id} — {title}"
+  members:
+    - id: security-requirement.body.header.id
+      source_member_id: security-requirement.registry.record.id
+    - id: security-requirement.body.header.title
+      source_member_id: security-requirement.registry.record.title
+
+sections:
+  - id: security-requirement.body.section.intent
+    heading: Intent
+    order: 1
+    cardinality: exactly_one
+    content_kind: prose
+    minimum_paragraphs: 1
+    normative_keywords: forbidden
+
+  - id: security-requirement.body.section.parent-functional-requirement
+    heading: Parent Functional Requirement
+    order: 2
+    cardinality: exactly_one
+    content_kind: classified_label_list
+    minimum_items: 1
+    maximum_items: 1
+    allowed_prefixes:
+      - "Parent:"
+    terminal_punctuation: forbidden
+    duplicate_items: forbidden
+
+  - id: security-requirement.body.section.finding-derivation
+    heading: Finding derivation
+    order: 3
+    cardinality: exactly_one
+    content_kind: classified_label_list
+    minimum_items: 1
+    allowed_prefixes:
+      - "Finding:"
+    terminal_punctuation: forbidden
+    duplicate_items: forbidden
+    explanatory_prose: allowed
+
+  - id: security-requirement.body.section.security-obligation
+    heading: Security obligation
+    order: 4
+    cardinality: exactly_one
+    content_kind: normative_list
+    minimum_items: 1
+    item_subject: explicit
+    normative_keywords:
+      - must
+      - must not
+    obligations_per_item: exactly_one
+    terminal_punctuation: period
+
+  - id: security-requirement.body.section.scope
+    heading: Scope
+    order: 5
+    cardinality: exactly_one
+    content_kind: classified_label_list
+    minimum_items: 1
+    allowed_prefixes:
+      - "Includes:"
+      - "Excludes:"
+    terminal_punctuation: forbidden
+    duplicate_items: forbidden
+
+  - id: security-requirement.body.section.acceptance
+    heading: Acceptance
+    order: 6
+    cardinality: exactly_one
+    content_kind: acceptance_condition_list
+    minimum_items: 1
+    required_item_prefix: "The requirement is accepted when "
+    terminal_punctuation: period
+    duplicate_items: forbidden

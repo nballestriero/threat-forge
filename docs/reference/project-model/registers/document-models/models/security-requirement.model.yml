@@ -1,0 +1,60 @@
+schema_version: 1
+model_id: security-requirement
+title: Security Requirement
+description: Methodology-independent security obligation derived from one or more accepted Common Findings, attached to exactly one Functional Requirement and represented by one shared Requirement registry record and one Markdown body.
+registry_profile_id: requirement-registry
+body_profile_id: security-requirement-body
+
+identity:
+  registry_id_member_id: security-requirement.registry.record.id
+  body_id_member_id: security-requirement.body.header.id
+  registry_title_member_id: security-requirement.registry.record.title
+  body_title_member_id: security-requirement.body.header.title
+
+coherence_rules:
+  - id: security-requirement.model.header.identity
+    kind: mirrored_identity
+    source_member_id: security-requirement.registry.record.id
+    target_member_id: security-requirement.body.header.id
+
+  - id: security-requirement.model.header.title
+    kind: mirrored_value
+    source_member_id: security-requirement.registry.record.title
+    target_member_id: security-requirement.body.header.title
+
+  - id: security-requirement.model.macro-requirement
+    kind: composite_identity_relation
+    source_member_id: security-requirement.registry.record.macro-requirement-id
+    owner_model_id: macro-requirement
+
+  - id: security-requirement.model.decision
+    kind: composite_identity_relation
+    source_member_id: security-requirement.registry.record.decision-id
+    owner_model_id: decision
+
+  - id: security-requirement.model.parent
+    kind: required_parent_relation
+    source_member_id: security-requirement.registry.record.parent-requirement-id
+    parent_model_id: functional-requirement
+    same_macro_requirement: true
+    same_decision: true
+    identity_prefix_required: true
+
+  - id: security-requirement.model.parent-body-mirror
+    kind: mirrored_governed_reference
+    source_member_id: security-requirement.registry.record.parent-requirement-id
+    target_member_id: security-requirement.body.section.parent-functional-requirement
+    target_entity_type: functional_requirement
+    cardinality: exactly_one
+
+  - id: security-requirement.model.finding-derivation
+    kind: governed_reference_relation
+    source_member_id: security-requirement.body.section.finding-derivation
+    target_entity_type: common_analysis_finding
+    minimum_references: 1
+    duplicate_references: forbidden
+
+  - id: security-requirement.model.body-path
+    kind: derived_path
+    source_member_id: security-requirement.registry.record.body-path
+    target_profile_id: security-requirement-body

@@ -10,11 +10,13 @@ import {
   governedDocumentModelConsumerCoverageRuleIds,
   governedDocumentModelSourceRuleIds,
   governedRequirementVariantDispatchRuleIds,
+  loadGovernedDocumentModelSourceSet,
   matchesGovernedRequirementVariantIdentity,
   resolveGovernedRequirementVariant,
   validateGovernedDocumentModelConsumerCoverage,
   validateGovernedDocumentModelSourceSet,
 } from "../lib/governed-document-model-sources.mjs";
+import { readGovernedYamlFile } from "../lib/governed-yaml.mjs";
 
 /**
  * @file Verification of governed document model source validation.
@@ -32,6 +34,9 @@ import {
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..","..","..");
 const fixtureRegistry=JSON.parse(fs.readFileSync(path.join(root,"tools/MR-0001/fixtures/governed-document-model-sources/negative-fixtures.registry.json"),"utf8"));
 const schema=JSON.parse(fs.readFileSync(path.join(root,"docs/reference/project-model/contracts/governed-document-model-source.schema.json"),"utf8"));
+const securityRequirementModelPath="docs/reference/project-model/registers/document-models/models/security-requirement.model.yml";
+const securityRequirementBodyProfilePath="docs/reference/project-model/registers/document-models/profiles/security-requirement-body.profile.yml";
+const documentationFieldValuesPath="docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml";
 function field(id,order,extra={}) { return {id,name:id.split(".").at(-1),order,cardinality:"exactly_one",value_kind:"single_line_text",source_kind:"authored",...extra}; }
 function registryProfile(id,models,rootFields,recordFields,variants=undefined) { const value={schema_version:1,profile_id:id,title:id,representation_kind:"yaml_registry",applies_to_model_ids:models,source_path_pattern:`docs/${id}.yml`,unknown_root_fields:"forbidden",unknown_record_fields:"forbidden",root_fields:rootFields}; if(recordFields)value.record_fields=recordFields;if(variants)value.record_variants=variants;return value; }
 function bodyProfile(id,model,sections) { return {schema_version:1,profile_id:id,title:id,representation_kind:"markdown_body",applies_to_model_ids:[model],source_path_pattern:`docs/${id}.md`,unknown_sections:"forbidden",header:{id:`${model}.body.header`,level:1,order:1,cardinality:"exactly_one",content_kind:"governed_identity_heading",template:"# {id} — {title}",members:[{id:`${model}.body.header.id`},{id:`${model}.body.header.title`}]},sections}; }
@@ -137,12 +142,90 @@ function extendedRequirementSet() {
  return sourceSet;
 }
 
+function readCanonicalYaml(projectPath) {
+ return readGovernedYamlFile(path.join(root,...projectPath.split("/")));
+}
+function securityRequirementActivationCandidate() {
+ return {
+  requirementTypeValue:{
+   value:"security",
+   meaning:"Concrete specialized requirement type that defines one methodology-independent security obligation derived from accepted Common Findings for an existing Functional Requirement.",
+   is_specialized:true,
+   requires_parent_requirement:true,
+   allowed_parent_requirement_types:["functional"],
+  },
+  recordVariant:{
+   id:"security-requirement",
+   model_id:"security-requirement",
+   discriminator_field:"requirement_type",
+   discriminator_value:"security",
+   fields:[
+    {id:"security-requirement.registry.record.id",name:"id",order:1,cardinality:"exactly_one",value_kind:"canonical_identifier",source_kind:"generated",pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}SEC-\\d{4}$",mutable:false},
+    {id:"security-requirement.registry.record.title",name:"title",order:2,cardinality:"exactly_one",value_kind:"single_line_text",source_kind:"authored",terminal_punctuation:"forbidden",mirrors_member_id:"security-requirement.body.header.title"},
+    {id:"security-requirement.registry.record.status",name:"status",order:3,cardinality:"exactly_one",value_kind:"controlled_scalar",source_kind:"controlled",value_set_id:"FIELD-VALUE-SET-0008"},
+    {id:"security-requirement.registry.record.requirement-type",name:"requirement_type",order:4,cardinality:"exactly_one",value_kind:"controlled_scalar",source_kind:"controlled",value_set_id:"FIELD-VALUE-SET-0010",required_value:"security"},
+    {id:"security-requirement.registry.record.macro-requirement-id",name:"macro_requirement_id",order:5,cardinality:"exactly_one",value_kind:"canonical_identifier",source_kind:"derived",pattern:"^MR-\\d{4}$",mutable:false},
+    {id:"security-requirement.registry.record.decision-id",name:"decision_id",order:6,cardinality:"exactly_one",value_kind:"canonical_identifier",source_kind:"derived",pattern:"^ADR-\\d{4}$",mutable:false},
+    {id:"security-requirement.registry.record.parent-requirement-id",name:"parent_requirement_id",order:7,cardinality:"exactly_one",value_kind:"canonical_identifier",source_kind:"authored_relation",pattern:"^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",parent_model_id:"functional-requirement",same_macro_requirement:true,same_decision:true,identity_prefix_required:true},
+    {id:"security-requirement.registry.record.body-path",name:"body_path",order:8,cardinality:"exactly_one",value_kind:"repository_relative_path",source_kind:"generated",template:"docs/reference/project-model/body/requirements/{macro_requirement_id}/{id}_body.md",mutable:false},
+   ],
+  },
+ };
+}
+function inactiveSecurityRequirementSet() {
+ const activeSourceSet=loadGovernedDocumentModelSourceSet({rootDir:root});
+ const sourceSet=structuredClone(activeSourceSet);
+ const model=readCanonicalYaml(securityRequirementModelPath);
+ const bodyProfile=readCanonicalYaml(securityRequirementBodyProfilePath);
+ const candidate=securityRequirementActivationCandidate();
+ const requirementProfile=sourceSet.profiles.find((entry)=>entry.value.profile_id==="requirement-registry");
+ const requirementProfileIndex=sourceSet.index.value.representation_profiles.find((entry)=>entry.id==="requirement-registry");
+ if(!requirementProfile || !requirementProfileIndex) throw new Error("Canonical Requirement registry profile is missing.");
+ requirementProfile.value.applies_to_model_ids.push(model.model_id);
+ requirementProfile.value.record_variants.push(candidate.recordVariant);
+ requirementProfileIndex.applies_to_model_ids.push(model.model_id);
+ sourceSet.models.push({path:securityRequirementModelPath,value:model});
+ sourceSet.profiles.push({path:securityRequirementBodyProfilePath,value:bodyProfile});
+ sourceSet.index.value.models.push({id:model.model_id,title:model.title,definition_path:securityRequirementModelPath,registry_profile_id:model.registry_profile_id,body_profile_id:model.body_profile_id});
+ sourceSet.index.value.representation_profiles.push({id:bodyProfile.profile_id,title:bodyProfile.title,representation_kind:bodyProfile.representation_kind,profile_path:securityRequirementBodyProfilePath,applies_to_model_ids:bodyProfile.applies_to_model_ids});
+ return {activeSourceSet,sourceSet,model,bodyProfile,candidate};
+}
+
 test("accepts the current canonical source set",()=>assert.deepEqual(validateGovernedDocumentModelSourceSet(validSet()),[]));
 test("accepts a coherent additional model without fixed cardinalities",()=>assert.deepEqual(validateGovernedDocumentModelSourceSet(extendedSet()),[]));
 test("derives canonical model ids from the index in authored order",()=>assert.deepEqual(canonicalGovernedDocumentModelIds(extendedSet()),["macro-requirement","decision","functional-requirement","governance-requirement","synthetic-extension"]));
 test("publishes unique stable rule identifiers",()=>{const rules=[...governedDocumentModelSourceRuleIds,...governedDocumentModelConsumerCoverageRuleIds,...governedRequirementVariantDispatchRuleIds];assert.equal(new Set(rules).size,rules.length);});
 test("derives Requirement type model identity fields and parent metadata from canonical variants",()=>{const dispatch=buildGovernedRequirementVariantDispatch(validSet());assert.deepEqual(dispatch.variants.map((variant)=>variant.discriminator_value),["functional","governance"]);const governance=resolveGovernedRequirementVariant(dispatch,"governance");assert.equal(governance.model_id,"governance-requirement");assert.equal(governance.parent_requirement.parent_model_id,"functional-requirement");assert.ok(governance.field_names.includes("parent_requirement_id"));assert.equal(matchesGovernedRequirementVariantIdentity(governance,"MR-0001ADR-0001REQ-0001GOV-0001"),true);});
 test("dispatches a synthetic additional Requirement variant without consumer-local changes",()=>{const sourceSet=extendedRequirementSet();assert.deepEqual(validateGovernedDocumentModelSourceSet(sourceSet),[]);const dispatch=buildGovernedRequirementVariantDispatch(sourceSet);const synthetic=resolveGovernedRequirementVariant(dispatch,"synthetic");assert.equal(synthetic.model_id,"synthetic-requirement");assert.equal(synthetic.parent_requirement.parent_model_id,"functional-requirement");assert.equal(matchesGovernedRequirementVariantIdentity(synthetic,"MR-0001ADR-0001REQ-0001SYN-0001"),true);});
+test("validates the inactive Security Requirement source scaffold without activating the canonical index",()=>{
+ const {activeSourceSet,sourceSet,model,bodyProfile,candidate}=inactiveSecurityRequirementSet();
+ const activeOriginal=structuredClone(activeSourceSet);
+ assert.deepEqual(canonicalGovernedDocumentModelIds(activeSourceSet),["macro-requirement","decision","functional-requirement","governance-requirement"]);
+ assert.equal(activeSourceSet.index.value.models.some((entry)=>entry.id==="security-requirement"),false);
+ assert.equal(activeSourceSet.index.value.representation_profiles.some((entry)=>entry.id==="security-requirement-body"),false);
+ assert.deepEqual(validateGovernedDocumentModelSourceSet(sourceSet),[]);
+ const dispatch=buildGovernedRequirementVariantDispatch(sourceSet);
+ const security=resolveGovernedRequirementVariant(dispatch,"security");
+ assert.equal(security.model_id,"security-requirement");
+ assert.equal(security.parent_requirement.parent_model_id,"functional-requirement");
+ assert.equal(security.parent_requirement.identity_prefix_required,true);
+ assert.equal(security.parent_requirement.same_macro_requirement,true);
+ assert.equal(security.parent_requirement.same_decision,true);
+ assert.deepEqual(security.field_names,["id","title","status","requirement_type","macro_requirement_id","decision_id","parent_requirement_id","body_path"]);
+ assert.equal(matchesGovernedRequirementVariantIdentity(security,"MR-0001ADR-0001REQ-0001SEC-0001"),true);
+ assert.equal(matchesGovernedRequirementVariantIdentity(security,"MR-0001ADR-0001REQ-0001GOV-0001"),false);
+ assert.equal(model.registry_profile_id,"requirement-registry");
+ assert.equal(model.body_profile_id,"security-requirement-body");
+ assert.deepEqual(bodyProfile.sections.map((section)=>section.heading),["Intent","Parent Functional Requirement","Finding derivation","Security obligation","Scope","Acceptance"]);
+ assert.deepEqual(bodyProfile.reference_positions.map((position)=>position.allowed_entity_types),[["functional_requirement"],["common_analysis_finding"]]);
+ const taxonomy=readCanonicalYaml(documentationFieldValuesPath);
+ const activeRequirementTypes=taxonomy.field_value_sets.find((entry)=>entry.id==="FIELD-VALUE-SET-0010").values.map((entry)=>entry.value);
+ assert.deepEqual(activeRequirementTypes,["functional","governance"]);
+ assert.equal(candidate.requirementTypeValue.value,"security");
+ assert.deepEqual(candidate.requirementTypeValue.allowed_parent_requirement_types,["functional"]);
+ assert.equal(candidate.recordVariant.fields.some((field)=>field.name.includes("finding")),false);
+ assert.deepEqual(activeSourceSet,activeOriginal);
+});
 test("rejects duplicate and unknown Requirement discriminators deterministically",()=>{const sourceSet=extendedRequirementSet();const profile=sourceSet.profiles.find((entry)=>entry.value.profile_id==="requirement-registry");profile.value.record_variants.at(-1).discriminator_value="functional";profile.value.record_variants.at(-1).fields.find((field)=>field.name==="requirement_type").required_value="functional";assert.throws(()=>buildGovernedRequirementVariantDispatch(sourceSet),(error)=>error.code==="document-model.requirement-variant.discriminator.duplicate");const dispatch=buildGovernedRequirementVariantDispatch(validSet());assert.throws(()=>resolveGovernedRequirementVariant(dispatch,"unknown"),(error)=>error.code==="document-model.requirement-variant.type.unknown");});
 test("accepts exact registry-derived consumer coverage",()=>{const sourceSet=extendedSet();assert.deepEqual(validateGovernedDocumentModelConsumerCoverage({consumerId:"test-consumer",sourceSet,providerModelIds:canonicalGovernedDocumentModelIds(sourceSet)}),[]);});
 test("accepts a canonical model id projection without reconstructing a source set",()=>{const canonicalModelIds=["model-a","model-b"];assert.deepEqual(validateGovernedDocumentModelConsumerCoverage({consumerId:"projected-consumer",canonicalModelIds,providerModelIds:[...canonicalModelIds],sourcePath:"projected-catalog"}),[]);});
