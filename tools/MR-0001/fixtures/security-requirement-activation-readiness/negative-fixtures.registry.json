@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "registry_id": "security-requirement-activation-readiness-negative-fixtures",
+  "fixtures": [
+    {
+      "id": "missing-complete-model-validator",
+      "mutation": {
+        "remove_provider_id": "security-complete-model-validator"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "missing-cross-model-provider",
+      "mutation": {
+        "remove_provider_id": "security-cross-model-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "missing-governed-reference-service",
+      "mutation": {
+        "remove_provider_id": "security-governed-reference-service"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "missing-runtime-authoring-provider",
+      "mutation": {
+        "remove_provider_id": "security-runtime-authoring-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "missing-editor-schema-provider",
+      "mutation": {
+        "remove_provider_id": "security-editor-schema-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "missing-target-project-validator-provider",
+      "mutation": {
+        "remove_provider_id": "security-target-project-validator-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "missing-target-project-authoring-provider",
+      "mutation": {
+        "remove_provider_id": "security-target-project-authoring-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.missing"
+      ]
+    },
+    {
+      "id": "duplicate-runtime-authoring-provider",
+      "mutation": {
+        "duplicate_provider_id": "security-runtime-authoring-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.duplicate"
+      ]
+    },
+    {
+      "id": "unknown-provider",
+      "mutation": {
+        "add_unknown_provider_id": "security-unknown-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.unknown"
+      ]
+    },
+    {
+      "id": "active-model-leakage",
+      "mutation": {
+        "add_active_model_id": "security-requirement"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.active-isolation",
+        "security-requirement.activation-readiness.candidate-inventory"
+      ]
+    },
+    {
+      "id": "candidate-inventory-missing-security",
+      "mutation": {
+        "remove_candidate_model_id": "security-requirement"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.candidate-inventory"
+      ]
+    },
+    {
+      "id": "activation-state-active",
+      "mutation": {
+        "activation_state": "active"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.state"
+      ]
+    },
+    {
+      "id": "provider-not-ready",
+      "mutation": {
+        "not_ready_provider_id": "security-editor-schema-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.not-ready"
+      ]
+    },
+    {
+      "id": "provider-identity-divergence",
+      "mutation": {
+        "wrong_model_provider_id": "security-target-project-validator-provider"
+      },
+      "expected_rule_ids": [
+        "security-requirement.activation-readiness.provider.identity"
+      ]
+    }
+  ]
+}

@@ -432,3 +432,16 @@ checks:
       - MR-0004ADR-0001REQ-0003
       - MR-0004ADR-0001REQ-0004
     description: Verify exact active and activation-candidate Target Project validator coverage, dormant Security provider selection, target-local deterministic Security preview through the shared authoring provider boundary, engine and target immutability, missing and duplicate provider rejection and create blocking while Security Requirement remains inactive.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0007
+    title: Security Requirement integrated pre-activation readiness
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-security-requirement-activation-readiness.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    description: Verify one detached integrated Security Requirement activation-candidate snapshot across complete-model validation, cross-model coherence, governed references, runtime authoring, editor schema and Target Project validation and authoring; require exact coordinated provider coverage, prove deterministic failure when any provider is missing, duplicated, unknown, divergent or not ready, preserve the active model inventory and perform no atomic activation.

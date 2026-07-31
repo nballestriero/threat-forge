@@ -1794,3 +1794,53 @@ artifacts:
     implemented_path: tools/MR-0004/test/security-requirement-target-project-consumers.test.mjs
     reason: Prove four-model active isolation, exact five-model candidate validator coverage, target-local deterministic SEC preview, provider failure boundaries, engine and target immutability and rejection of inactive Security creation.
     verification_command: node --test tools/MR-0004/test/security-requirement-target-project-consumers.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0019
+    title: Security Requirement pre-activation readiness core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/lib/security-requirement-activation-readiness.mjs
+    reason: Build and validate one detached integrated readiness snapshot from the real Security complete-model, cross-model, governed-reference, authoring, editor and Target Project provider boundaries without fixed active-model cardinality or canonical activation.
+    verification_command: node --test tools/MR-0001/test/security-requirement-activation-readiness.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0020
+    title: Security Requirement pre-activation readiness checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/check-security-requirement-activation-readiness.mjs
+    reason: Enforce exact integrated provider coverage, seven missing-provider proofs, stable negative fixtures, active-source isolation and absence of an atomic activation side effect in the governed repository gate.
+    verification_command: node tools/MR-0001/check-security-requirement-activation-readiness.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0021
+    title: Security Requirement pre-activation readiness verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/security-requirement-activation-readiness.test.mjs
+    reason: Prove repository-integrated readiness, canonical source immutability, active inventory isolation, candidate inventory extensibility and deterministic rejection of every incomplete or incoherent coordinated provider set.
+    verification_command: node --test tools/MR-0001/test/security-requirement-activation-readiness.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0022
+    title: Security Requirement pre-activation readiness negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/fixtures/security-requirement-activation-readiness/negative-fixtures.registry.json
+    reason: Register one omission proof for every coordinated provider plus duplicate, unknown, active leakage, candidate inventory, activation state, provider readiness and provider identity failures against stable readiness rule identifiers.
+    verification_command: node --test tools/MR-0001/test/security-requirement-activation-readiness.test.mjs
