@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "operations": [
+    {
+      "file": "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+      "find": "    requirement_type: security\n",
+      "replace": "    requirement_type: governance\n"
+    }
+  ]
+}

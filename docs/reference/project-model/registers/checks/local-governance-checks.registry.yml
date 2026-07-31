@@ -354,3 +354,26 @@ checks:
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0003
     description: Verify deterministic case-study evidence and isolated failures for implemented plugin claims automatic Finding derivation method-specific fields in Common Findings omitted review state unresolved governed subjects accepted Findings without Functional Requirements and implied Security Requirements.
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0001
+    title: Security Requirement model consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-security-requirement-model.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+    description: Validate the inactive Security Requirement source scaffold, SEC identity, canonical registry and body structure, syntactic parent mirror, governed Finding reference placement and methodology neutrality without activating the canonical model index.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0002
+    title: Security Requirement complete-model verification coverage
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0001/test/security-requirement-model.test.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
+    description: Verify inactive scaffold loading, canonical Security Requirement structure, unique stable diagnostics and every registered negative fixture while parent and Finding resolution remain deferred to the cross-model provider boundary.

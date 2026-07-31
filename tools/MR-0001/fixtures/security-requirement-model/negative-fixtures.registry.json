@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "registry_id": "security-requirement-model-negative-fixtures",
+  "scope": "security_requirement_complete_model_checker",
+  "fixtures": [
+    {"id":"missing-record-field","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/registry-fields/missing-record-field.json","expected_rule_ids":["security-requirement.registry.record.fields"]},
+    {"id":"unknown-finding-registry-field","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/registry-fields/unknown-finding-field.json","expected_rule_ids":["security-requirement.registry.record.fields"]},
+    {"id":"record-field-order","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/registry-fields/record-field-order.json","expected_rule_ids":["security-requirement.registry.record.order"]},
+    {"id":"invalid-controlled-value","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/controlled-values/invalid-controlled-value.json","expected_rule_ids":["security-requirement.registry.record.controlled-value"]},
+    {"id":"invalid-identity","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/model-coherence/invalid-identity.json","expected_rule_ids":["security-requirement.registry.record.identity"]},
+    {"id":"owner-mismatch","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/model-coherence/owner-mismatch.json","expected_rule_ids":["security-requirement.registry.record.owner"]},
+    {"id":"parent-mismatch","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/model-coherence/parent-mismatch.json","expected_rule_ids":["security-requirement.registry.record.parent"]},
+    {"id":"derived-path-mismatch","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/model-coherence/derived-path-mismatch.json","expected_rule_ids":["security-requirement.registry.record.derived-path"]},
+    {"id":"title-mismatch","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/model-coherence/title-mismatch.json","expected_rule_ids":["security-requirement.body.header.identity","security-requirement.model.title.mirror"]},
+    {"id":"body-section-structure","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/body-sections/body-section-structure.json","expected_rule_ids":["security-requirement.body.section.structure"]},
+    {"id":"body-content","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/body-content/invalid-content.json","expected_rule_ids":["security-requirement.body.section.content"]},
+    {"id":"methodology-leakage","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/body-content/methodology-leakage.json","expected_rule_ids":["security-requirement.body.methodology-neutrality"]},
+    {"id":"parent-reference-mismatch","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/references/parent-reference-mismatch.json","expected_rule_ids":["security-requirement.body.reference.parent"]},
+    {"id":"missing-finding-reference","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/references/missing-finding-reference.json","expected_rule_ids":["security-requirement.body.reference.finding"]},
+    {"id":"duplicate-finding-reference","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/references/duplicate-finding-reference.json","expected_rule_ids":["security-requirement.body.reference.finding"]},
+    {"id":"malformed-finding-reference","fixture_path":"tools/MR-0001/fixtures/security-requirement-model/references/malformed-finding-reference.json","expected_rule_ids":["security-requirement.body.reference.finding"]}
+  ]
+}

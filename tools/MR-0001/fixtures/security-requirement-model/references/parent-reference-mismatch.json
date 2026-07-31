@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "operations": [
+    {
+      "file": "docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001SEC-0001_body.md",
+      "find": "- Parent: [MR-0001ADR-0001REQ-0001] Canonical functional requirement\n",
+      "replace": "- Parent: [MR-0001ADR-0001REQ-0002] Another functional requirement\n"
+    }
+  ]
+}

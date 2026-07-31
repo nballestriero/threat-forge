@@ -1556,3 +1556,48 @@ artifacts:
     implemented_path: tools/MR-0005/lib/common-analysis-finding-reference-eligibility.mjs
     reason: "Provide a pure methodology-neutral accepted-state eligibility decision while leaving entity-type and reference-position authorization to the governed reference service."
     verification_command: node --check tools/MR-0005/lib/common-analysis-finding-reference-eligibility.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0001
+    title: Security Requirement complete-model validation core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+    implemented_path: tools/MR-0001/lib/security-requirement-model-validation.mjs
+    reason: Validate the inactive Security Requirement scaffold and authored Security Requirement registry and body structure through stable deterministic rules while deferring real parent and Finding eligibility to the governed cross-model provider boundary.
+    verification_command: node --test tools/MR-0001/test/security-requirement-model.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0002
+    title: Security Requirement complete-model checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/check-security-requirement-model.mjs
+    reason: Execute blocking Security Requirement scaffold and corpus validation and write deterministic JSON and Markdown evidence without activating the model.
+    verification_command: node tools/MR-0001/check-security-requirement-model.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0003
+    title: Security Requirement complete-model verification suite
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0002GOV-0002
+    implemented_path: tools/MR-0001/test/security-requirement-model.test.mjs
+    reason: Prove inactive scaffold loading, canonical positive behavior, unique stable diagnostics and every registered negative Security Requirement fixture.
+    verification_command: node --test tools/MR-0001/test/security-requirement-model.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0004
+    title: Security Requirement complete-model negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001GOV-0001
+    implemented_path: tools/MR-0001/fixtures/security-requirement-model
+    reason: Provide deterministic invalid registry, identity, parent, body, reference and methodology-neutrality examples with declared stable rule identifiers.
+    verification_command: node --test tools/MR-0001/test/security-requirement-model.test.mjs
