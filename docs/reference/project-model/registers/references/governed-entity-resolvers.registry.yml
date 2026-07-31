@@ -16,3 +16,10 @@ resolvers:
     identifier_pattern: '^FINDING-\d{4}$'
     source_projection_provider: common-analysis-finding-reference-source
     eligibility_provider: common-analysis-finding-accepted-state
+
+  - id: functional-requirement-reference-resolver
+    entity_type: functional_requirement
+    status: active
+    identifier_pattern: '^MR-\d{4}ADR-\d{4}REQ-\d{4}$'
+    source_projection_provider: functional-requirement-registry-reference-source
+    eligibility_provider: functional-requirement-parent-context

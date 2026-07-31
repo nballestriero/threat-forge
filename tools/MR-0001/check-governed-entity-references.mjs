@@ -8,6 +8,9 @@ import {
   createGovernedEntityReferenceService,
   loadGovernedEntityResolverRegistry,
 } from "./lib/governed-entity-references.mjs";
+import {
+  createFunctionalRequirementReferenceProviders,
+} from "./lib/governed-document-reference-providers.mjs";
 import { loadAndValidateBaseAnalysisRegistry } from "../MR-0003/lib/base-analysis-registry.mjs";
 import {
   evaluateBaseAnalysisReferenceEligibility,
@@ -106,12 +109,15 @@ try {
       loadProjection:
         loadValidatedCommonAnalysisFindingReferenceProjection,
     });
+  const functionalRequirementProviders =
+    createFunctionalRequirementReferenceProviders({ rootDir });
   const registry = loadGovernedEntityResolverRegistry({ rootDir });
   const service = createGovernedEntityReferenceService({
     registry,
     sourceProjectionProviders: new Map([
       ["base-analysis-registry-reference-source", () => bae.projection],
       ...commonFindingProviders.sourceProjectionProviders,
+      ...functionalRequirementProviders.sourceProjectionProviders,
     ]),
     eligibilityProviders: new Map([
       [
@@ -124,6 +130,7 @@ try {
           }),
       ],
       ...commonFindingProviders.eligibilityProviders,
+      ...functionalRequirementProviders.eligibilityProviders,
     ]),
   });
   const activeEntityTypes = new Set(
@@ -160,7 +167,7 @@ try {
   const testCount = parseTestCount(
     `${testResult.stdout ?? ""}\n${testResult.stderr ?? ""}`,
   );
-  if (testCount < 23) {
+  if (testCount < 26) {
     throw new Error(
       `Governed entity reference verification count is incomplete: ${testCount}.`,
     );

@@ -887,12 +887,28 @@ export function validateCommonAnalysisFindingRepository(input = {}) {
         `${right.id}|${right.source_path}`,
       ),
     );
+  const relationProjection = validFindings
+    .map(({ path: sourcePath, value }) => ({
+      id: String(value.id),
+      title: String(value.title),
+      analysis_record_id: String(value.analysis_record_id),
+      affected_subjects: structuredClone(value.affected_subjects),
+      review_state: String(value.review_state),
+      source_path: sourcePath,
+    }))
+    .sort((left, right) =>
+      compare(
+        `${left.id}|${left.source_path}`,
+        `${right.id}|${right.source_path}`,
+      ),
+    );
 
   return {
     valid: errors.length === 0,
     finding_count: findingPaths.length,
     finding_paths: findingPaths,
     reference_projection: referenceProjection,
+    relation_projection: relationProjection,
     errors: stableProblems(errors),
   };
 }
@@ -945,6 +961,42 @@ export function loadValidatedCommonAnalysisFindingReferenceProjection(
   }
 
   return structuredClone(result.reference_projection);
+}
+
+/**
+ * Loads the validated Common Finding relation projection used by cross-model checks.
+ *
+ * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0001
+ * @derivedFromDecision MR-0005/ADR-0002
+ * @macroRequirement MR-0005
+ * @implementationStatus implemented
+ *
+ * @param {{rootDir?: string, findingPaths?: string[]}} [input] Repository context.
+ * @returns {Array<Record<string, unknown>>} Detached provenance projection.
+ * @throws {Error} When the canonical Common Finding repository is invalid.
+ */
+export function loadValidatedCommonAnalysisFindingRelationProjection(
+  input = {},
+) {
+  const result = validateCommonAnalysisFindingRepository(input);
+
+  if (!result.valid) {
+    const diagnostics = result.errors
+      .map((entry) => {
+        const context = entry.context
+          ? ` [${entry.context}]`
+          : "";
+
+        return `${entry.rule_id}${context}: ${entry.message}`;
+      })
+      .join(" | ");
+
+    throw new Error(
+      `Canonical Common Finding repository is invalid: ${diagnostics}`,
+    );
+  }
+
+  return structuredClone(result.relation_projection);
 }
 
 /**

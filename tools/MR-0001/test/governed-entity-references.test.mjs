@@ -15,6 +15,11 @@ import {
   commonAnalysisFindingReferenceProviderIds,
   createCommonAnalysisFindingReferenceProviders,
 } from "../../MR-0005/lib/common-analysis-finding-reference-eligibility.mjs";
+import {
+  createFunctionalRequirementReferenceProviders,
+  evaluateFunctionalRequirementParentEligibility,
+  governedDocumentReferenceProviderIds,
+} from "../lib/governed-document-reference-providers.mjs";
 
 /**
  * @file Governed entity reference grammar and resolver verification suite.
@@ -289,4 +294,118 @@ test("active Common Finding resolver preserves ambiguity and immutability", () =
     "Unique accepted finding",
   );
   assert.deepEqual(projection, before);
+});
+
+test("Functional Requirement provider filters parent candidates by MR and Decision", () => {
+  const projection = [
+    {
+      id: "MR-0001ADR-0001REQ-0001",
+      title: "Matching parent",
+      requirement_type: "functional",
+      macro_requirement_id: "MR-0001",
+      decision_id: "ADR-0001",
+    },
+    {
+      id: "MR-0001ADR-0002REQ-0001",
+      title: "Different Decision",
+      requirement_type: "functional",
+      macro_requirement_id: "MR-0001",
+      decision_id: "ADR-0002",
+    },
+  ];
+  const providers = createFunctionalRequirementReferenceProviders({
+    rootDir: "synthetic-functional-root",
+    loadProjection: () => projection,
+  });
+  const service = createGovernedEntityReferenceService({
+    registry: registry({
+      resolvers: [
+        {
+          id: "functional-requirement-reference-resolver",
+          entity_type: "functional_requirement",
+          status: "active",
+          identifier_pattern: "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
+          source_projection_provider:
+            governedDocumentReferenceProviderIds.functionalRequirementSource,
+          eligibility_provider:
+            governedDocumentReferenceProviderIds.functionalRequirementEligibility,
+        },
+      ],
+    }),
+    sourceProjectionProviders: providers.sourceProjectionProviders,
+    eligibilityProviders: providers.eligibilityProviders,
+  });
+  const request = {
+    allowedEntityTypes: ["functional_requirement"],
+    currentDocument: {
+      macro_requirement_id: "MR-0001",
+      decision_id: "ADR-0001",
+    },
+    positionId:
+      "security-requirement.body.reference.parent-functional-requirement",
+  };
+  assert.deepEqual(
+    service.listEligibleCandidates(request).map(({ id }) => id),
+    ["MR-0001ADR-0001REQ-0001"],
+  );
+  assert.equal(
+    service.analyzePayload({
+      ...request,
+      payload: "[MR-0001ADR-0001REQ-0001] Matching parent",
+    }).valid,
+    true,
+  );
+  assert.deepEqual(projection[0].title, "Matching parent");
+});
+
+test("Functional Requirement eligibility is deterministic and fail-closed", () => {
+  const entity = {
+    id: "MR-0001ADR-0001REQ-0001",
+    requirement_type: "functional",
+    macro_requirement_id: "MR-0001",
+    decision_id: "ADR-0001",
+  };
+  const before = structuredClone(entity);
+  assert.equal(
+    evaluateFunctionalRequirementParentEligibility({
+      entity,
+      currentDocument: {
+        macro_requirement_id: "MR-0001",
+        decision_id: "ADR-0001",
+      },
+    }).eligible,
+    true,
+  );
+  assert.equal(
+    evaluateFunctionalRequirementParentEligibility({
+      entity,
+      currentDocument: {
+        macro_requirement_id: "MR-0001",
+        decision_id: "ADR-0002",
+      },
+    }).eligible,
+    false,
+  );
+  assert.deepEqual(entity, before);
+});
+
+test("Functional Requirement provider maps are fresh and immutable by consumers", () => {
+  const projection = [{
+    id: "MR-0001ADR-0001REQ-0001",
+    title: "Canonical parent",
+    requirement_type: "functional",
+    macro_requirement_id: "MR-0001",
+    decision_id: "ADR-0001",
+  }];
+  const providers = createFunctionalRequirementReferenceProviders({
+    rootDir: "synthetic-functional-root",
+    loadProjection: () => projection,
+  });
+  const source = providers.sourceProjectionProviders.get(
+    governedDocumentReferenceProviderIds.functionalRequirementSource,
+  );
+  const first = source();
+  first[0].title = "Consumer mutation";
+  assert.equal(source()[0].title, "Canonical parent");
+  assert.equal(projection[0].title, "Canonical parent");
 });

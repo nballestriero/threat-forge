@@ -22,6 +22,7 @@ import {
 import {
   commonAnalysisFindingValidatorRuleIds,
   loadValidatedCommonAnalysisFindingReferenceProjection,
+  loadValidatedCommonAnalysisFindingRelationProjection,
   validateCommonAnalysisFindingModelBoundary,
   validateCommonAnalysisFindingRepository,
 } from "../check-common-analysis-findings.mjs";
@@ -1298,4 +1299,34 @@ test("negative fixtures emit every declared stable rule", async (t) => {
       }
     });
   }
+});
+
+test("relation projection preserves Finding provenance and affected subjects", () => {
+  withTemporaryProject((rootDir) => {
+    createCanonicalSources(rootDir);
+    const findingPath = "analysis/FINDING-0001.analysis-finding.yml";
+    writeProjectFile(rootDir, findingPath, validFinding());
+    const projection = loadValidatedCommonAnalysisFindingRelationProjection({
+      rootDir,
+      findingPaths: [findingPath],
+    });
+    assert.deepEqual(projection, [
+      {
+        id: "FINDING-0001",
+        title: "Unverified requester identity",
+        analysis_record_id: "ANALYSIS-0001",
+        affected_subjects: validFinding().affected_subjects,
+        review_state: "accepted",
+        source_path: findingPath,
+      },
+    ]);
+    projection[0].affected_subjects[0].id = "consumer mutation";
+    assert.equal(
+      loadValidatedCommonAnalysisFindingRelationProjection({
+        rootDir,
+        findingPaths: [findingPath],
+      })[0].affected_subjects[0].id,
+      "BAE-0005",
+    );
+  });
 });

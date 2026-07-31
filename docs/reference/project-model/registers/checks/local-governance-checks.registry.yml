@@ -377,3 +377,17 @@ checks:
       - MR-0001ADR-0009REQ-0001GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
     description: Verify inactive scaffold loading, canonical Security Requirement structure, unique stable diagnostics and every registered negative fixture while parent and Finding resolution remain deferred to the cross-model provider boundary.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0003
+    title: Security Requirement cross-model coherence verification coverage
+    status: active
+    command: node
+    args:
+      - --test
+      - tools/MR-0001/test/security-requirement-cross-model.test.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    description: Verify exact Security Requirement provider coverage, Functional parent resolution, canonical body parent mirroring, accepted Common Finding resolution, affected-parent coherence, Analysis Record provenance and provider immutability while the model remains inactive.

@@ -23,6 +23,9 @@ import {
   loadGovernedEntityResolverRegistry,
 } from "../../MR-0001/lib/governed-entity-references.mjs";
 import {
+  createFunctionalRequirementReferenceProviders,
+} from "../../MR-0001/lib/governed-document-reference-providers.mjs";
+import {
   applyGovernedMarkdownReferenceAssistance,
 } from "./governed-markdown-reference-assistance.mjs";
 import {
@@ -509,6 +512,8 @@ function createDefaultGovernedEntityReferenceService({
         .join(" | ")}`,
     );
   }
+  const functionalRequirementProviders =
+    createFunctionalRequirementReferenceProviders({ rootDir });
   const commonFindingProviders =
     createCommonAnalysisFindingReferenceProviders({
       rootDir,
@@ -520,6 +525,7 @@ function createDefaultGovernedEntityReferenceService({
     registry,
     sourceProjectionProviders: new Map([
       ["base-analysis-registry-reference-source", () => bae.projection],
+      ...functionalRequirementProviders.sourceProjectionProviders,
       ...commonFindingProviders.sourceProjectionProviders,
     ]),
     eligibilityProviders: new Map([
@@ -532,6 +538,7 @@ function createDefaultGovernedEntityReferenceService({
             documentsByPath: recordsByPath,
           }),
       ],
+      ...functionalRequirementProviders.eligibilityProviders,
       ...commonFindingProviders.eligibilityProviders,
     ]),
   });
