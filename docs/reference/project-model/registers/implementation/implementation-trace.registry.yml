@@ -1638,3 +1638,66 @@ artifacts:
     implemented_path: tools/MR-0001/test/security-requirement-cross-model.test.mjs
     reason: Prove missing-provider failure, valid Security relation acceptance, stable diagnostics for parent Finding eligibility affected-subject and provenance failures, and immutable provider inputs through an inactive synthetic activation source set.
     verification_command: node --test tools/MR-0001/test/security-requirement-cross-model.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0007
+    title: Security Requirement activation-candidate authoring provider
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+    implemented_path: tools/MR-0001/lib/security-requirement-authoring-provider.mjs
+    reason: Project the inactive Security Requirement scaffold into an explicit authoring candidate, resolve one Functional parent and accepted Common Findings through governed providers, and delegate deterministic SEC registry and body generation to the shared transaction core without activating the canonical model.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0008
+    title: Security Requirement governed authoring runner
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+    implemented_path: tools/MR-0002/run-security-requirement-authoring.mjs
+    reason: Provide deterministic preview and future create commands for Security Requirement authoring while failing before confirmation or writes until atomic canonical activation.
+    verification_command: node --check tools/MR-0002/run-security-requirement-authoring.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0009
+    title: Security Requirement governed authoring checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+    implemented_path: tools/MR-0001/check-security-requirement-authoring.mjs
+    reason: Enforce inactive authoring candidate isolation, exact explicit provider coverage, verification count and create fail-closed behavior in the governed repository gate.
+    verification_command: node tools/MR-0001/check-security-requirement-authoring.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0010
+    title: Security Requirement governed authoring verification suite
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+    implemented_path: tools/MR-0001/test/security-requirement-authoring.test.mjs
+    reason: Prove candidate catalog isolation, canonical parent and Finding payloads, deterministic SEC generation, preview immutability, active delegation and inactive create blocking through synthetic governed boundaries.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0011
+    title: Security Requirement governed authoring negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0004GOV-0001
+    implemented_path: tools/MR-0001/fixtures/security-requirement-authoring/negative-fixtures.registry.json
+    reason: Register deterministic invalid request parent Finding provenance catalog and activation-boundary cases against every stable Security Requirement authoring rule identifier.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring.test.mjs

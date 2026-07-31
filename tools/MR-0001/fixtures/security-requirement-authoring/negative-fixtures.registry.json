@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "security-requirement-authoring-negative-fixtures",
+  "scope": "security_requirement_activation_candidate_authoring",
+  "cases": [
+    {
+      "id": "unknown-request-field",
+      "failure_kind": "request_shape",
+      "expected_rule_ids": [
+        "security-requirement.authoring.request.shape"
+      ]
+    },
+    {
+      "id": "wrong-functional-parent",
+      "failure_kind": "parent_resolution",
+      "expected_rule_ids": [
+        "security-requirement.authoring.parent"
+      ]
+    },
+    {
+      "id": "duplicate-finding-identifier",
+      "failure_kind": "finding_resolution",
+      "expected_rule_ids": [
+        "security-requirement.authoring.finding.resolution"
+      ]
+    },
+    {
+      "id": "unaccepted-or-unresolved-finding",
+      "failure_kind": "finding_resolution",
+      "expected_rule_ids": [
+        "security-requirement.authoring.finding.resolution"
+      ]
+    },
+    {
+      "id": "finding-does-not-affect-parent",
+      "failure_kind": "finding_affected_parent",
+      "expected_rule_ids": [
+        "security-requirement.authoring.finding.affected-parent"
+      ]
+    },
+    {
+      "id": "finding-missing-provenance",
+      "failure_kind": "finding_provenance",
+      "expected_rule_ids": [
+        "security-requirement.authoring.finding.provenance"
+      ]
+    },
+    {
+      "id": "catalog-coverage-divergence",
+      "failure_kind": "candidate_catalog",
+      "expected_rule_ids": [
+        "security-requirement.authoring.catalog"
+      ]
+    },
+    {
+      "id": "create-before-activation",
+      "failure_kind": "activation_boundary",
+      "expected_rule_ids": [
+        "security-requirement.authoring.activation"
+      ]
+    }
+  ]
+}

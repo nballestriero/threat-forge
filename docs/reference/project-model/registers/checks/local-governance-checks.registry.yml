@@ -391,3 +391,16 @@ checks:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     description: Verify exact Security Requirement provider coverage, Functional parent resolution, canonical body parent mirroring, accepted Common Finding resolution, affected-parent coherence, Analysis Record provenance and provider immutability while the model remains inactive.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0004
+    title: Security Requirement governed authoring consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-security-requirement-authoring.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0004REQ-0004
+      - MR-0002ADR-0004REQ-0004GOV-0001
+    description: Verify the inactive Security Requirement activation-candidate authoring catalog, exact provider coverage, Functional parent and accepted Common Finding selection, deterministic SEC registry and body planning, preview immutability, negative fixtures and create failure before canonical activation.
