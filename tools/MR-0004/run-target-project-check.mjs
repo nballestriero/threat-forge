@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { validateDecisionModel } from "../MR-0001/lib/decision-model-validation.mjs";
 import { validateFunctionalRequirementModel } from "../MR-0001/lib/functional-requirement-model-validation.mjs";
 import { validateGovernanceRequirementModel } from "../MR-0001/lib/governance-requirement-model-validation.mjs";
+import { validateSecurityRequirementModel } from "../MR-0001/lib/security-requirement-model-validation.mjs";
 import { validateGovernedDocumentModelCoherence } from "../MR-0001/lib/governed-document-model-coherence-validation.mjs";
 import {
   assertGovernedDocumentModelConsumerCoverage,
@@ -87,22 +88,71 @@ const modelCheckProviders = new Map([
     },
   ],
 ]);
+
+const activationCandidateModelCheckProviders = new Map([
+  [
+    "security-requirement",
+    {
+      id: "security-requirement-model",
+      run: (rootDir) => {
+        const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir });
+        return validateSecurityRequirementModel({
+          rootDir,
+          sourceSet,
+          activationState: "active",
+        });
+      },
+    },
+  ],
+]);
+
 const crossModelCheck = Object.freeze({
   id: "governed-document-model-coherence",
   run: (rootDir) => validateGovernedDocumentModelCoherence({ rootDir }),
 });
 
-function resolveModelChecks(rootDir) {
-  const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir });
+/**
+ * Resolves exact Target Project validator coverage for one canonical or
+ * activation-candidate source set. Dormant candidate providers are selected
+ * only when their model identifier is present in the supplied source set.
+ *
+ * @param {Record<string, unknown>} sourceSet - Governed model source set.
+ * @returns {Array<Record<string, unknown>>} Ordered validator providers.
+ */
+export function resolveTargetProjectModelValidationProviders(sourceSet) {
+  const canonicalModelIds = canonicalGovernedDocumentModelIds(sourceSet);
+  const selectedProviders = new Map(modelCheckProviders);
+  for (const modelId of canonicalModelIds) {
+    if (
+      !selectedProviders.has(modelId) &&
+      activationCandidateModelCheckProviders.has(modelId)
+    ) {
+      selectedProviders.set(
+        modelId,
+        activationCandidateModelCheckProviders.get(modelId),
+      );
+    }
+  }
   assertGovernedDocumentModelConsumerCoverage({
     consumerId: "target-project-model-validation",
     sourceSet,
-    providerModelIds: [...modelCheckProviders.keys()],
+    providerModelIds: [...selectedProviders.keys()],
   });
+  return canonicalModelIds.map((modelId) => {
+    const provider = selectedProviders.get(modelId);
+    if (!provider) {
+      throw new Error(
+        "Target Project validation provider is missing for " + modelId + ".",
+      );
+    }
+    return Object.freeze({ model_id: modelId, ...provider });
+  });
+}
+
+function resolveModelChecks(rootDir) {
+  const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir });
   return [
-    ...canonicalGovernedDocumentModelIds(sourceSet).map((modelId) =>
-      modelCheckProviders.get(modelId),
-    ),
+    ...resolveTargetProjectModelValidationProviders(sourceSet),
     crossModelCheck,
   ];
 }

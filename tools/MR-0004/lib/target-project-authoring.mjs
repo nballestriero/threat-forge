@@ -313,6 +313,7 @@ function projectTargetOwnership(targetRoot, requirementVariantDispatch) {
         status: requireString(requirement.status, `${id}.status`),
         requirement_type: requirementType,
         model_id: requirementVariant.model_id,
+        decision_id: decisionId,
         parent_requirement_id: requirement.parent_requirement_id
           ? requireString(requirement.parent_requirement_id, `${id}.parent_requirement_id`)
           : null,
@@ -415,15 +416,37 @@ export function planTargetProjectAuthoring(options = {}) {
     ...roots,
     requestPath: options.requestPath,
   });
-  const canonicalRequest = validateGovernedDocumentAuthoringRequest(request, catalog);
+  const providerOptions = options.providers === undefined
+    ? {}
+    : { providers: requireArray(options.providers, "options.providers") };
+  const canonicalRequest = validateGovernedDocumentAuthoringRequest(
+    request,
+    catalog,
+    providerOptions,
+  );
+  const activationCandidate = catalog.activation_candidate === undefined
+    ? null
+    : requireObject(
+        catalog.activation_candidate,
+        "catalog.activation_candidate",
+      );
+  const activationState = activationCandidate
+    ? requireString(
+        activationCandidate.activation_state,
+        "catalog.activation_candidate.activation_state",
+      )
+    : "active";
   const documentPlan = planGeneratedDocument(canonicalRequest, catalog, {
     rootDir: roots.targetRoot,
     today: options.today,
+    ...providerOptions,
   });
   return {
     requirement_id: targetProjectAuthoringRequirementId,
     engine_root: roots.engineRoot,
     target_root: roots.targetRoot,
+    activation_state: activationState,
+    preview_only: activationState !== "active",
     request_path: options.requestPath
       ? safeProjectPath(roots.targetRoot, options.requestPath).normalized
       : null,
@@ -450,6 +473,13 @@ export function formatTargetProjectAuthoringPlan(authoringPlan) {
 /** Applies one plan and rolls it back unless canonical target validation passes. */
 export function applyTargetProjectAuthoring(authoringPlan, options = {}) {
   const plan = requireObject(authoringPlan, "Target Project authoring plan");
+  const activationState = String(plan.activation_state ?? "active").trim() ||
+    "active";
+  if (plan.preview_only === true || activationState !== "active") {
+    throw new Error(
+      "Target Project creation is blocked for activation state " + activationState + "; the plan is preview-only.",
+    );
+  }
   const roots = validateRoots({
     engineRoot: options.engineRoot ?? plan.engine_root,
     targetRoot: options.targetRoot ?? plan.target_root,

@@ -1764,3 +1764,33 @@ artifacts:
     implemented_path: tools/MR-0001/fixtures/security-requirement-authoring-editor/negative-fixtures.registry.json
     reason: Register deterministic schema identity, parent, Finding, routing and premature create failures against stable Security Requirement editor rule identifiers.
     verification_command: node --test tools/MR-0001/test/security-requirement-authoring-editor.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0017
+    title: Security Requirement Target Project coordinated consumer checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+      - MR-0004ADR-0001REQ-0003
+      - MR-0004ADR-0001REQ-0004
+    implemented_path: tools/MR-0004/check-security-requirement-target-project-consumers.mjs
+    reason: Enforce exact active and candidate Target Project validator coverage, focused Security target authoring regression evidence and inactive create blocking in the governed repository gate.
+    verification_command: node tools/MR-0004/check-security-requirement-target-project-consumers.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0018
+    title: Security Requirement Target Project coordinated consumer verification
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+      - MR-0004ADR-0001REQ-0003
+      - MR-0004ADR-0001REQ-0004
+    implemented_path: tools/MR-0004/test/security-requirement-target-project-consumers.test.mjs
+    reason: Prove four-model active isolation, exact five-model candidate validator coverage, target-local deterministic SEC preview, provider failure boundaries, engine and target immutability and rejection of inactive Security creation.
+    verification_command: node --test tools/MR-0004/test/security-requirement-target-project-consumers.test.mjs

@@ -417,3 +417,18 @@ checks:
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
     description: Verify the dedicated inactive Security Requirement authoring schema, contextual Functional parent and accepted Common Finding completion metadata, deterministic schema materialization, VS Code schema routing, preview-only task exposure, stable negative fixtures and absence of a Security create task before canonical activation.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0006
+    title: Security Requirement Target Project coordinated consumer consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0004/check-security-requirement-target-project-consumers.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+      - MR-0004ADR-0001REQ-0003
+      - MR-0004ADR-0001REQ-0004
+    description: Verify exact active and activation-candidate Target Project validator coverage, dormant Security provider selection, target-local deterministic Security preview through the shared authoring provider boundary, engine and target immutability, missing and duplicate provider rejection and create blocking while Security Requirement remains inactive.
