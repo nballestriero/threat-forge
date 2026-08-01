@@ -1,0 +1,21 @@
+document_type: security-requirement
+title: "Verify the demonstration user's identity before processing requests"
+macro_requirement_id: MR-0001
+decision_id: ADR-0001
+parent_requirement_id: MR-0001ADR-0001REQ-0001
+finding_ids:
+  - FINDING-0002
+body:
+  intent: Prevent the accepted identity Finding from remaining unresolved in the demonstration interaction.
+  security_obligation:
+    - The demonstration service must verify the identity claimed by the demonstration user before accepting or processing the request
+  scope:
+    includes:
+      - "[BAE-0001] Demonstration user"
+      - "[BAE-0002] Demonstration service"
+      - "[BAE-0004] Service domain boundary"
+      - "[BAE-0005] Demonstration request flow"
+    excludes:
+      - Technology-specific identity-verification mechanisms
+  acceptance:
+    - the demonstration service rejects or defers requests whose claimed demonstration-user identity has not been verified

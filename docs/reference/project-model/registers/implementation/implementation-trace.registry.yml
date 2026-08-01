@@ -1117,10 +1117,11 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0003
+      - MR-0004ADR-0002REQ-0001GOV-0001
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0004/run-target-project-check.mjs
-    reason: Validate target-owned governed documents and local Base Analysis data through registry-derived complete-model validator coverage in an isolated overlay with deterministic target-local reports.
+    reason: Validate target-owned governed documents and local Base Analysis data through registry-derived complete-model coverage and expose the same isolated engine-plus-target overlay for governed authoring reference resolution.
     verification_command: node --test tools/MR-0004/test/target-project-check.test.mjs
   - id: MR-0004ADR-0001REQ-0003IMPL-0002
     title: Target Project governed-document validation verification
@@ -1171,10 +1172,11 @@ artifacts:
     status: implemented
     linked_requirement_ids:
       - MR-0004ADR-0001REQ-0004
+      - MR-0004ADR-0002REQ-0001GOV-0001
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     implemented_path: tools/MR-0004/lib/target-project-authoring.mjs
-    reason: Reuse ThreatForge-owned authoring contracts and transaction primitives with canonical Requirement variant dispatch, target-local ownership projection, identifier allocation, path confinement, deterministic preview, canonical target validation and rollback.
+    reason: Reuse ThreatForge-owned authoring contracts and transaction primitives with target-local ownership and resolve Security parent Finding Base Analysis and provenance references through a temporary engine-plus-target overlay removed after planning.
     verification_command: node --test tools/MR-0004/test/target-project-authoring.test.mjs
 
   - id: MR-0004ADR-0001REQ-0004IMPL-0002
@@ -1778,8 +1780,9 @@ artifacts:
       - MR-0001ADR-0010REQ-0002GOV-0001
       - MR-0004ADR-0001REQ-0003
       - MR-0004ADR-0001REQ-0004
+      - MR-0004ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0004/check-security-requirement-target-project-consumers.mjs
-    reason: Enforce exact active and candidate Target Project validator coverage, focused Security target authoring regression evidence and inactive create blocking in the governed repository gate.
+    reason: Enforce exact active Target Project validator coverage, real case-study Security preview through the shared reference overlay, provider failure boundaries, source immutability and active create routing in the governed repository gate.
     verification_command: node tools/MR-0004/check-security-requirement-target-project-consumers.mjs
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0018
@@ -1793,8 +1796,9 @@ artifacts:
       - MR-0001ADR-0010REQ-0002GOV-0001
       - MR-0004ADR-0001REQ-0003
       - MR-0004ADR-0001REQ-0004
+      - MR-0004ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0004/test/security-requirement-target-project-consumers.test.mjs
-    reason: Prove four-model active isolation, exact five-model candidate validator coverage, target-local deterministic SEC preview, provider failure boundaries, engine and target immutability and rejection of inactive Security creation.
+    reason: Prove exact active provider coverage, synthetic boundaries and real repository-contained Security preview with engine-owned support, target-owned findings and Base Analysis records, deterministic output and source immutability.
     verification_command: node --test tools/MR-0004/test/security-requirement-target-project-consumers.test.mjs
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0019

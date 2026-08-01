@@ -39,23 +39,34 @@ import {
  * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @implementsRequirement MR-0004ADR-0001REQ-0003
  * @implementsRequirement MR-0004ADR-0001REQ-0004
+ * @implementsRequirement MR-0004ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0009
  * @derivedFromDecision MR-0001/ADR-0010
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0004/ADR-0002
  * @macroRequirement MR-0001
  * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * Proves that Target Project validation remains exact for the active four-model
- * source set, admits the Security validator exactly once when the candidate
- * source set is selected, and can preview target-local Security Requirement
- * authoring through the shared provider boundary without exposing creation while
- * the canonical model remains inactive.
+ * Proves exact active Target Project validation and authoring coverage,
+ * including real repository-contained Security preview through the shared
+ * engine-plus-target reference overlay, deterministic provider failures,
+ * target and engine immutability and active transaction routing.
  */
 
 const testPath = fileURLToPath(import.meta.url);
 const engineRoot = path.resolve(path.dirname(testPath), "..", "..", "..");
 const today = "2026-07-31";
+
+const repositoryCaseStudyRoot = path.join(
+  engineRoot,
+  "examples",
+  "case-studies",
+  "documentation-to-base-analysis",
+);
+const repositoryCaseStudySecurityRequestPath =
+  "authoring/" +
+  "MR-0001ADR-0001REQ-0001SEC-0001.governed-document-authoring.yml";
 
 function createWorkspace() {
   const root = fs.mkdtempSync(
@@ -291,6 +302,44 @@ test("active Target Project authoring catalog exposes Security exactly once", ()
     removeWorkspace(workspace);
   }
 });
+
+test(
+  "repository-contained Security preview composes engine-owned reference support",
+  () => {
+    const engineModelRoot = path.join(
+      engineRoot,
+      "docs",
+      "reference",
+      "project-model",
+    );
+    const targetBefore = hashTree(repositoryCaseStudyRoot);
+    const engineBefore = hashTree(engineModelRoot);
+
+    const plan = planTargetProjectAuthoring({
+      engineRoot,
+      targetRoot: repositoryCaseStudyRoot,
+      requestPath: repositoryCaseStudySecurityRequestPath,
+      today,
+    });
+
+    assert.equal(
+      plan.documentPlan.id,
+      "MR-0001ADR-0001REQ-0001SEC-0001",
+    );
+    assert.equal(
+      plan.documentPlan.registryPath,
+      "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml",
+    );
+    assert.deepEqual(
+      plan.request.body.finding_derivation.finding,
+      [
+        "[FINDING-0002] Unverified demonstration user identity",
+      ],
+    );
+    assert.equal(hashTree(repositoryCaseStudyRoot), targetBefore);
+    assert.equal(hashTree(engineModelRoot), engineBefore);
+  },
+);
 
 test("active Target Project Security preview is deterministic and target-local", () => {
   const workspace = createWorkspace();

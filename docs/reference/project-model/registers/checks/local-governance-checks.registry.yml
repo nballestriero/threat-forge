@@ -433,7 +433,8 @@ checks:
       - MR-0001ADR-0010REQ-0002GOV-0001
       - MR-0004ADR-0001REQ-0003
       - MR-0004ADR-0001REQ-0004
-    description: Verify exact active Target Project validator and authoring coverage, one active Security provider, target-local deterministic Security preview and create transaction routing, optional Analysis Record and Common Finding source discovery, engine and target isolation, and missing or duplicate provider rejection.
+      - MR-0004ADR-0002REQ-0001GOV-0001
+    description: Verify exact active Target Project validator and authoring coverage, one active Security provider, real repository-contained Security preview through the shared engine-plus-target reference overlay, deterministic create routing, source immutability and missing or duplicate provider rejection.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0007
     title: Security Requirement integrated pre-activation readiness

@@ -21,9 +21,11 @@ import { loadAndValidateBaseAnalysisRegistry } from "../MR-0003/lib/base-analysi
  * @file Target Project governed-document validation runner.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0003
+ * @implementsRequirement MR-0004ADR-0002REQ-0001GOV-0001
  * @implementsRequirement MR-0001ADR-0010REQ-0002
  * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0004/ADR-0002
  * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0004
  * @implementationStatus implemented
@@ -276,7 +278,8 @@ function copyPathWithoutLinks(sourceRoot, targetRoot, projectPath) {
   copyEntry(source.absolute, destination.absolute, source.normalized);
 }
 
-function buildValidationOverlay(engineRoot, targetRoot) {
+/** Creates one isolated engine-plus-target projection owned by the caller. */
+export function createTargetProjectValidationOverlay(engineRoot, targetRoot) {
   const overlayRoot = fs.mkdtempSync(
     path.join(os.tmpdir(), "threatforge-target-project-check-"),
   );
@@ -484,7 +487,10 @@ export function runTargetProjectCheck(options) {
   let overlayRoot = "";
   let report;
   try {
-    overlayRoot = buildValidationOverlay(engineRoot, targetRoot);
+    overlayRoot = createTargetProjectValidationOverlay(
+      engineRoot,
+      targetRoot,
+    );
     const checks = [];
     for (const check of resolveModelChecks(overlayRoot)) {
       try {

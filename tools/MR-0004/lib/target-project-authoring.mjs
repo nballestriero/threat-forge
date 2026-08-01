@@ -26,15 +26,20 @@ import {
   formatGovernedDocumentAuthoringPlan,
   validateGovernedDocumentAuthoringRequest,
 } from "../../MR-0002/run-governed-document-authoring.mjs";
-import { runTargetProjectCheck } from "../run-target-project-check.mjs";
+import {
+  createTargetProjectValidationOverlay,
+  runTargetProjectCheck,
+} from "../run-target-project-check.mjs";
 
 /**
  * @file Target Project governed-document authoring application service.
  *
  * @implementsRequirement MR-0004ADR-0001REQ-0004
+ * @implementsRequirement MR-0004ADR-0002REQ-0001GOV-0001
  * @implementsRequirement MR-0001ADR-0010REQ-0002
  * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0004/ADR-0002
  * @derivedFromDecision MR-0001/ADR-0010
  * @macroRequirement MR-0004
  * @macroRequirement MR-0001
@@ -445,6 +450,58 @@ export function planTargetProjectAuthoring(options = {}) {
     ...roots,
     requestPath: options.requestPath,
   });
+  const securityRequest =
+    String(request.document_type ?? "") === "security-requirement" &&
+    Array.isArray(request.finding_ids);
+  if (securityRequest) {
+    let referenceOverlayRoot = "";
+    try {
+      const referenceService = options.referenceService ?? (() => {
+        referenceOverlayRoot = createTargetProjectValidationOverlay(
+          roots.engineRoot,
+          roots.targetRoot,
+        );
+        return createSecurityRequirementAuthoringReferenceService({
+          rootDir: referenceOverlayRoot,
+        });
+      })();
+      const providers = options.providers === undefined
+        ? resolveGovernedDocumentAuthoringProviders({
+            rootDir: roots.targetRoot,
+            catalog,
+            referenceService,
+          })
+        : requireArray(options.providers, "options.providers");
+      const securityPlan = planSecurityRequirementAuthoring(request, {
+        rootDir: roots.targetRoot,
+        activeCatalog: catalog,
+        referenceService,
+        loadedSourceSet: loadSecurityRequirementValidationSourceSet({
+          rootDir: roots.engineRoot,
+        }),
+        today: options.today,
+      });
+      return {
+        requirement_id: targetProjectAuthoringRequirementId,
+        engine_root: roots.engineRoot,
+        target_root: roots.targetRoot,
+        activation_state: securityPlan.activation_state,
+        preview_only: securityPlan.activation_state !== "active",
+        request_path: options.requestPath
+          ? safeProjectPath(roots.targetRoot, options.requestPath).normalized
+          : null,
+        request: securityPlan.request,
+        documentPlan: securityPlan.documentPlan,
+      };
+    } finally {
+      if (referenceOverlayRoot) {
+        fs.rmSync(referenceOverlayRoot, {
+          recursive: true,
+          force: true,
+        });
+      }
+    }
+  }
   const referenceService = options.referenceService ??
     createLazySecurityRequirementAuthoringReferenceService(() =>
       createSecurityRequirementAuthoringReferenceService({
@@ -459,32 +516,6 @@ export function planTargetProjectAuthoring(options = {}) {
         referenceService,
       })
     : requireArray(options.providers, "options.providers");
-  if (
-    String(request.document_type ?? "") === "security-requirement" &&
-    Array.isArray(request.finding_ids)
-  ) {
-    const securityPlan = planSecurityRequirementAuthoring(request, {
-      rootDir: roots.targetRoot,
-      activeCatalog: catalog,
-      referenceService,
-      loadedSourceSet: loadSecurityRequirementValidationSourceSet({
-        rootDir: roots.engineRoot,
-      }),
-      today: options.today,
-    });
-    return {
-      requirement_id: targetProjectAuthoringRequirementId,
-      engine_root: roots.engineRoot,
-      target_root: roots.targetRoot,
-      activation_state: securityPlan.activation_state,
-      preview_only: securityPlan.activation_state !== "active",
-      request_path: options.requestPath
-        ? safeProjectPath(roots.targetRoot, options.requestPath).normalized
-        : null,
-      request: securityPlan.request,
-      documentPlan: securityPlan.documentPlan,
-    };
-  }
   const providerOptions = { providers };
   const canonicalRequest = validateGovernedDocumentAuthoringRequest(
     request,

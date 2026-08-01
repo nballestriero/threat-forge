@@ -22,16 +22,18 @@ import {
  * @implementsRequirement MR-0001ADR-0010REQ-0002GOV-0001
  * @implementsRequirement MR-0004ADR-0001REQ-0003
  * @implementsRequirement MR-0004ADR-0001REQ-0004
+ * @implementsRequirement MR-0004ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0001/ADR-0009
  * @derivedFromDecision MR-0001/ADR-0010
  * @derivedFromDecision MR-0004/ADR-0001
+ * @derivedFromDecision MR-0004/ADR-0002
  * @macroRequirement MR-0001
  * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * Enforces active-source isolation, exact candidate validator-provider coverage,
- * target-local Security preview regression evidence and inactive create blocking
- * without activating the canonical Security Requirement model.
+ * Enforces exact active validator-provider coverage, real target-local Security
+ * preview through the engine-plus-target reference overlay, provider failure
+ * boundaries, source immutability and active create routing.
  */
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -106,7 +108,7 @@ try {
   const testCount = parseTestCount(
     `${testResult.stdout ?? ""}\n${testResult.stderr ?? ""}`,
   );
-  if (testCount < 8) {
+  if (testCount < 9) {
     throw new Error(
       `Security Target Project consumer verification count is incomplete: ${testCount}.`,
     );
@@ -119,6 +121,7 @@ try {
   console.log("Implemented requirement: MR-0001ADR-0010REQ-0002GOV-0001");
   console.log("Implemented requirement: MR-0004ADR-0001REQ-0003");
   console.log("Implemented requirement: MR-0004ADR-0001REQ-0004");
+  console.log("Implemented requirement: MR-0004ADR-0002REQ-0001GOV-0001");
   console.log(`Activation state: ${loadedCandidate.activation_state}`);
   console.log(`Active validation providers checked: ${activeProviders.length}`);
   console.log(`Candidate validation providers checked: ${candidateProviders.length}`);
