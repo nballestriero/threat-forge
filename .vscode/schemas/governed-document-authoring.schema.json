@@ -2014,7 +2014,25 @@
               "decision_id"
             ]
           },
-          "then": false
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0002REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "End-to-end common analysis-core case-study — status: draft"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0002REQ-0001",
+                    "description": "End-to-end common analysis-core case-study — status: draft"
+                  }
+                ]
+              }
+            }
+          }
         },
         {
           "if": {
@@ -2524,15 +2542,21 @@
               "decision_id": {
                 "type": "string",
                 "enum": [
-                  "ADR-0001"
+                  "ADR-0001",
+                  "ADR-0002"
                 ],
                 "markdownEnumDescriptions": [
-                  "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                  "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft",
+                  "Progressive end-to-end analysis-core case-study validation — MR-0004/ADR-0002 — status: draft"
                 ],
                 "x-threatforge-enum-metadata": [
                   {
                     "value": "ADR-0001",
                     "description": "Modello unificato dei progetti target e separazione tra motore e target — MR-0004/ADR-0001 — status: draft"
+                  },
+                  {
+                    "value": "ADR-0002",
+                    "description": "Progressive end-to-end analysis-core case-study validation — MR-0004/ADR-0002 — status: draft"
                   }
                 ]
               }
@@ -6104,6 +6128,68 @@
                   "type": "string",
                   "not": {},
                   "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0001REQ-0006 with navigable Analysis Record provenance.",
+                  "x-threatforge-enum-metadata": []
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0004"
+              },
+              "decision_id": {
+                "const": "ADR-0002"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "type": "string",
+                "enum": [
+                  "MR-0004ADR-0002REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "End-to-end common analysis-core case-study — status: draft — MR-0004/ADR-0002"
+                ],
+                "x-threatforge-enum-metadata": [
+                  {
+                    "value": "MR-0004ADR-0002REQ-0001",
+                    "description": "End-to-end common analysis-core case-study — status: draft — MR-0004/ADR-0002"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0004ADR-0002REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "not": {},
+                  "description": "No accepted Common Finding currently affects Functional Requirement MR-0004ADR-0002REQ-0001 with navigable Analysis Record provenance.",
                   "x-threatforge-enum-metadata": []
                 }
               }

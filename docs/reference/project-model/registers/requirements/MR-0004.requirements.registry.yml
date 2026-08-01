@@ -45,3 +45,18 @@ requirements:
     macro_requirement_id: MR-0004
     decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0001REQ-0006_body.md
+  - id: MR-0004ADR-0002REQ-0001
+    title: "End-to-end common analysis-core case-study"
+    status: draft
+    requirement_type: functional
+    macro_requirement_id: MR-0004
+    decision_id: ADR-0002
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0002REQ-0001_body.md
+  - id: MR-0004ADR-0002REQ-0001GOV-0001
+    title: "Phase-aware verification of the end-to-end analysis-core case study"
+    status: draft
+    requirement_type: governance
+    macro_requirement_id: MR-0004
+    decision_id: ADR-0002
+    parent_requirement_id: MR-0004ADR-0002REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0004/MR-0004ADR-0002REQ-0001GOV-0001_body.md
