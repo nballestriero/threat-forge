@@ -164,6 +164,8 @@ function withTemporaryTargetProject(callback) {
       },
     );
 
+    prepareHistoricalPhase(targetRoot);
+
     return callback({ targetRoot });
   } finally {
     fs.rmSync(root, {
@@ -196,6 +198,83 @@ function assertFailureRule(result, ruleId) {
     `Expected rule ${ruleId}; received:\n` +
       JSON.stringify(result.errors, null, 2),
   );
+}
+
+function removeCanonicalSecurityRequirement(targetRoot) {
+  const registryPath = targetPath(
+    targetRoot,
+    requirementsRegistryProjectPath,
+  );
+  const bodyPath = targetPath(
+    targetRoot,
+    securityRequirementBodyProjectPath,
+  );
+  const registryText = fs.readFileSync(registryPath, "utf8");
+  const recordMarker =
+    "\n  - id: MR-0001ADR-0001REQ-0001SEC-0001";
+  const recordStart = registryText.indexOf(recordMarker);
+  const bodyExists = fs.existsSync(bodyPath);
+
+  if (recordStart === -1 && !bodyExists) {
+    return;
+  }
+
+  if (recordStart === -1 || !bodyExists) {
+    throw new Error(
+      "Canonical Security Requirement fixture is incomplete.",
+    );
+  }
+
+  if (
+    registryText.indexOf(
+      recordMarker,
+      recordStart + recordMarker.length,
+    ) !== -1
+  ) {
+    throw new Error(
+      "Canonical Security Requirement fixture is duplicated.",
+    );
+  }
+
+  const nextRecordStart = registryText.indexOf(
+    "\n  - id:",
+    recordStart + recordMarker.length,
+  );
+  const recordEnd = nextRecordStart === -1
+    ? registryText.length
+    : nextRecordStart;
+
+  fs.writeFileSync(
+    registryPath,
+    `${(
+      registryText.slice(0, recordStart) +
+      registryText.slice(recordEnd)
+    ).trimEnd()}\n`,
+    "utf8",
+  );
+  fs.rmSync(bodyPath);
+}
+
+function prepareHistoricalPhase(targetRoot) {
+  const readmePath = targetPath(
+    targetRoot,
+    readmeProjectPath,
+  );
+  const readmeText = fs.readFileSync(readmePath, "utf8");
+
+  if (readmeText.includes(currentPhaseLine)) {
+    replaceExactlyOnce(
+      readmePath,
+      currentPhaseLine,
+      historicalPhaseLine,
+    );
+  } else if (!readmeText.includes(historicalPhaseLine)) {
+    throw new Error(
+      "Canonical phase fixture is neither current nor historical.",
+    );
+  }
+
+  removeCanonicalSecurityRequirement(targetRoot);
 }
 
 function setCurrentPhase(targetRoot) {

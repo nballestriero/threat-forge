@@ -10,3 +10,11 @@ requirements:
     macro_requirement_id: MR-0001
     decision_id: ADR-0001
     body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001_body.md
+  - id: MR-0001ADR-0001REQ-0001SEC-0001
+    title: "Verify the demonstration user's identity before processing requests"
+    status: draft
+    requirement_type: security
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0001ADR-0001REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001SEC-0001_body.md

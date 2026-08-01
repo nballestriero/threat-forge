@@ -14,7 +14,8 @@ The case study provides a small, coherent and potentially implementable service 
 6. portable VS Code assistance;
 7. one manually authored methodology-specific Analysis Record;
 8. proposed, accepted and rejected methodology-neutral Common Findings;
-9. deterministic Common Finding validation and verification coverage.
+9. one governed methodology-neutral Security Requirement derived from the accepted Finding;
+10. deterministic end-to-end analysis-core validation and verification coverage.
 
 The case study is a human-readable governed example and a registered positive validation source. Negative verification cases operate only on isolated temporary copies. It is not the source of the Target Project generator template. External Target Projects remain independently creatable in any valid explicit destination.
 
@@ -23,7 +24,7 @@ The case study is a human-readable governed example and a registered positive va
 The case study advances through explicit reproducible validation phases. The following machine-readable declaration is consumed by the phase-aware case-study verifier:
 
 ```yaml
-current_validation_phase: historical_common_finding_only
+current_validation_phase: current_end_to_end_core
 historical_common_finding_only_revision: 6897359da2e60db167ff523fc2ff67ad4f14a28b
 ```
 
@@ -48,7 +49,7 @@ The pre-analysis state is preserved by the parent repository tag:
 documentation-to-base-analysis-pre-analysis-baseline-complete
 ```
 
-The current state completes the example with five canonical Base Analysis Elements, three canonical relations, one manually authored simulated Analysis Record and three manually authored Common Findings.
+The current state completes the example with five canonical Base Analysis Elements, three canonical relations, one manually authored simulated Analysis Record, three manually authored Common Findings and one governed methodology-neutral Security Requirement.
 
 ## Implementable interaction
 
@@ -109,6 +110,16 @@ A Functional Requirement is mandatory for the accepted Finding. It is not forced
 
 The current model records the explicit review state but does not yet provide reviewer identity, an approval workflow or append-first state-transition history.
 
+## Governed Security Requirement
+
+The explicit Target Project authoring action created `MR-0001ADR-0001REQ-0001SEC-0001` in `draft` state.
+
+The Security Requirement is a methodology-neutral child of the Functional Requirement `MR-0001ADR-0001REQ-0001`. Its governed body references the accepted Common Finding `FINDING-0002`, which affects the same Functional Requirement and preserves navigable provenance to `ANALYSIS-0001`.
+
+The retained request `authoring/MR-0001ADR-0001REQ-0001SEC-0001.governed-document-authoring.yml` records the explicit target-local authoring input. The generated registry record and Markdown body are authoring outputs rather than manually inserted canonical records.
+
+This result does not claim automatic Finding derivation, automatic Security Requirement generation or an implemented STRIDE plugin.
+
 ## Demonstrated scope
 
 This case study demonstrates:
@@ -118,6 +129,8 @@ This case study demonstrates:
 - explicit `proposed`, `accepted` and `rejected` review states;
 - resolution of Base Analysis Element, relation and Functional Requirement references;
 - confinement of STRIDE-specific data to the Analysis Record `method_payload`;
+- explicit governed Security Requirement authoring;
+- accepted Finding, Functional Requirement and Analysis Record provenance;
 - deterministic human-readable evidence;
 - deterministic positive and negative verification coverage.
 
@@ -127,7 +140,8 @@ It does not demonstrate:
 - complete STRIDE methodological coverage;
 - automatic Common Finding derivation;
 - automatic review-state inference;
-- a Security Requirement model or derivation process;
+- automatic Security Requirement generation;
+- implementation or runtime enforcement of the generated Security Requirement;
 - reviewer identity certification or review-transition audit.
 
 ## Validation
@@ -146,7 +160,7 @@ node .\tools\MR-0004\materialize-target-project-vscode-workspace.mjs `
   --target-root .\examples\case-studies\documentation-to-base-analysis
 ```
 
-Validate the simulated Analysis Record and Common Findings:
+Validate the simulated Analysis Record, Common Findings and governed Security Requirement:
 
 ```powershell
 node .\tools\MR-0005\check-common-finding-case-study.mjs

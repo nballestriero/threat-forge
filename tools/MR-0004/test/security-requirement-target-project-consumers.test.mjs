@@ -324,7 +324,7 @@ test(
 
     assert.equal(
       plan.documentPlan.id,
-      "MR-0001ADR-0001REQ-0001SEC-0001",
+      "MR-0001ADR-0001REQ-0001SEC-0002",
     );
     assert.equal(
       plan.documentPlan.registryPath,
