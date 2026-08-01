@@ -5,12 +5,15 @@ const { pathToFileURL } = require("node:url");
 /**
  * @file Unified thin VS Code adapter for governed Markdown assistance.
  *
+ * @implementsRequirement MR-0002ADR-0005REQ-0003
+ * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0005
  * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
  * @implementsRequirement MR-0004ADR-0001REQ-0005
  * @implementsRequirement MR-0004ADR-0001REQ-0006
+ * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0002
@@ -37,8 +40,19 @@ const targetServiceProjectPath = path.join(
 );
 const bodyProjectPathPattern =
   /^docs\/reference\/project-model\/body\/.+_body\.md$/u;
+const governedAuthoringRequestSuffix =
+  ".governed-document-authoring.yml";
+const governedAuthoringSchemaProjectPath = path.join(
+  ".vscode",
+  "schemas",
+  "governed-document-authoring.schema.json",
+);
+const yamlExtensionId = "redhat.vscode-yaml";
+const governedAuthoringSchemaContributorScheme =
+  "threatforge-governed-authoring";
 
 const serviceCache = new Map();
+const governedAuthoringSchemaPathsByUri = new Map();
 const analysisGeneration = new Map();
 let diagnosticsCollection;
 
@@ -52,6 +66,193 @@ function isRegularFile(filePath) {
   } catch {
     return false;
   }
+}
+
+function isInside(parentPath, candidatePath) {
+  const relative = path.relative(
+    path.resolve(parentPath),
+    path.resolve(candidatePath),
+  );
+  return relative === "" ||
+    (!relative.startsWith("..") && !path.isAbsolute(relative));
+}
+
+function readJsonObject(filePath) {
+  try {
+    const value = JSON.parse(
+      fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, ""),
+    );
+    return value &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+      ? value
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function resolveDeclaredTargetSchema(resourcePath, workspaceRoot) {
+  let current = path.dirname(path.resolve(resourcePath));
+  const boundary = path.resolve(workspaceRoot);
+
+  while (isInside(boundary, current)) {
+    const settingsPath = path.join(
+      current,
+      ".vscode",
+      "settings.json",
+    );
+    const schemaPath = path.join(
+      current,
+      governedAuthoringSchemaProjectPath,
+    );
+    const settings = isRegularFile(settingsPath)
+      ? readJsonObject(settingsPath)
+      : null;
+    const engineReference = String(
+      settings?.["threatforge.engineRoot"] ?? "",
+    ).trim();
+
+    if (
+      engineReference &&
+      isRegularFile(schemaPath)
+    ) {
+      const engineRoot =
+        path.isAbsolute(engineReference) ||
+        path.win32.isAbsolute(engineReference)
+          ? path.resolve(engineReference)
+          : path.resolve(current, engineReference);
+      const schema = readJsonObject(schemaPath);
+
+      if (
+        isEngineWorkspace(engineRoot) &&
+        schema?.["x-threatforge"]?.ownership_scope ===
+          "target_project"
+      ) {
+        return schemaPath;
+      }
+    }
+
+    if (current === boundary) break;
+
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+
+  return "";
+}
+
+function resolveGovernedAuthoringSchemaPath(
+  resourcePath,
+  workspaceRoot,
+) {
+  const resource = path.resolve(String(resourcePath ?? ""));
+  const root = path.resolve(String(workspaceRoot ?? ""));
+
+  if (
+    !String(resourcePath ?? "").endsWith(
+      governedAuthoringRequestSuffix,
+    ) ||
+    !isInside(root, resource)
+  ) {
+    return "";
+  }
+
+  const targetSchema = resolveDeclaredTargetSchema(
+    resource,
+    root,
+  );
+  if (targetSchema) return targetSchema;
+
+  if (!isEngineWorkspace(root)) return "";
+
+  const engineSchema = path.join(
+    root,
+    governedAuthoringSchemaProjectPath,
+  );
+  return isRegularFile(engineSchema) ? engineSchema : "";
+}
+
+function governedAuthoringSchemaUri(schemaPath) {
+  const absolute = path.resolve(schemaPath);
+  const encoded = Buffer
+    .from(absolute, "utf8")
+    .toString("base64url");
+  const uri =
+    `${governedAuthoringSchemaContributorScheme}` +
+    `://schema/${encoded}`;
+  governedAuthoringSchemaPathsByUri.set(uri, absolute);
+  return uri;
+}
+
+function readGovernedAuthoringSchemaContent(uri) {
+  const schemaPath = governedAuthoringSchemaPathsByUri.get(
+    String(uri ?? ""),
+  );
+
+  if (!schemaPath || !isRegularFile(schemaPath)) {
+    throw new Error(
+      "ThreatForge governed authoring schema URI is unknown.",
+    );
+  }
+
+  return fs.readFileSync(schemaPath, "utf8");
+}
+
+async function registerGovernedAuthoringSchemaContributor(
+  vscode,
+) {
+  const yamlExtension = vscode.extensions.getExtension(
+    yamlExtensionId,
+  );
+
+  if (!yamlExtension) {
+    return {
+      registered: false,
+      reason: "yaml-extension-missing",
+    };
+  }
+
+  const api = await yamlExtension.activate();
+
+  if (typeof api?.registerContributor !== "function") {
+    return {
+      registered: false,
+      reason: "yaml-schema-api-unavailable",
+    };
+  }
+
+  const registered = api.registerContributor(
+    governedAuthoringSchemaContributorScheme,
+    (resource) => {
+      let uri;
+
+      try {
+        uri = vscode.Uri.parse(resource);
+      } catch {
+        return undefined;
+      }
+
+      const folder = vscode.workspace.getWorkspaceFolder(uri);
+      if (!folder) return undefined;
+
+      const schemaPath = resolveGovernedAuthoringSchemaPath(
+        uri.fsPath,
+        folder.uri.fsPath,
+      );
+
+      return schemaPath
+        ? governedAuthoringSchemaUri(schemaPath)
+        : undefined;
+    },
+    readGovernedAuthoringSchemaContent,
+  );
+
+  return {
+    registered,
+    reason: registered ? "" : "contributor-already-registered",
+  };
 }
 
 function explicitWorkspaceEngineRoot(vscode, folder) {
@@ -314,6 +515,7 @@ function republishOpenDocuments(vscode) {
 
 async function activate(context) {
   const vscode = require("vscode");
+  await registerGovernedAuthoringSchemaContributor(vscode);
   diagnosticsCollection = vscode.languages.createDiagnosticCollection(
     "threatforge-governed-markdown",
   );
@@ -390,6 +592,7 @@ async function activate(context) {
 function deactivate() {
   invalidateServices();
   analysisGeneration.clear();
+  governedAuthoringSchemaPathsByUri.clear();
 }
 
 module.exports = {
@@ -401,5 +604,8 @@ module.exports = {
   mapDiagnostics,
   mapCompletionItems,
   mapCodeActions,
+  readGovernedAuthoringSchemaContent,
+  registerGovernedAuthoringSchemaContributor,
+  resolveGovernedAuthoringSchemaPath,
   workspaceContext,
 };

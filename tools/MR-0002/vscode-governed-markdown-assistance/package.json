@@ -13,9 +13,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:markdown"
+    "onLanguage:markdown",
+    "onLanguage:yaml"
   ],
   "main": "./extension.cjs",
+  "extensionDependencies": [
+    "redhat.vscode-yaml"
+  ],
   "extensionKind": [
     "workspace"
   ],

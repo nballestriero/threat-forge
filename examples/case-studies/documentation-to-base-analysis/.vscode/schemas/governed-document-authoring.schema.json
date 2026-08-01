@@ -433,7 +433,7 @@
           "type": "object"
         },
         "decision_id": {
-          "description": "Existing Decision belonging to macro_requirement_id.",
+          "description": "decision_id is a canonical_identifier field whose canonical source kind is derived.",
           "pattern": "^ADR-\\d{4}$",
           "type": "string"
         },
@@ -597,7 +597,7 @@
           "type": "object"
         },
         "decision_id": {
-          "description": "Existing Decision belonging to macro_requirement_id.",
+          "description": "decision_id is a canonical_identifier field whose canonical source kind is derived.",
           "pattern": "^ADR-\\d{4}$",
           "type": "string"
         },
@@ -622,7 +622,7 @@
           ]
         },
         "parent_requirement_id": {
-          "description": "Existing Functional Requirement under the selected Macro-requirement and Decision.",
+          "description": "parent_requirement_id is a canonical_identifier field whose canonical source kind is authored_relation.",
           "pattern": "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
           "type": "string"
         },
@@ -642,6 +642,253 @@
         "parent_requirement_id"
       ],
       "title": "Governance Requirement",
+      "type": "object"
+    },
+    {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "decision_id": {
+                "enum": [
+                  "ADR-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Use a document-only demonstration model — MR-0001/ADR-0001 — status: draft"
+                ],
+                "type": "string",
+                "x-threatforge-enum-metadata": [
+                  {
+                    "description": "Use a document-only demonstration model — MR-0001/ADR-0001 — status: draft",
+                    "value": "ADR-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_id": {
+                "const": "ADR-0001"
+              },
+              "macro_requirement_id": {
+                "const": "MR-0001"
+              }
+            },
+            "required": [
+              "macro_requirement_id",
+              "decision_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_requirement_id": {
+                "enum": [
+                  "MR-0001ADR-0001REQ-0001"
+                ],
+                "markdownEnumDescriptions": [
+                  "Describe the demonstration interaction — status: draft — MR-0001/ADR-0001"
+                ],
+                "type": "string",
+                "x-threatforge-enum-metadata": [
+                  {
+                    "description": "Describe the demonstration interaction — status: draft — MR-0001/ADR-0001",
+                    "value": "MR-0001ADR-0001REQ-0001"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "parent_requirement_id": {
+                "const": "MR-0001ADR-0001REQ-0001"
+              }
+            },
+            "required": [
+              "parent_requirement_id"
+            ]
+          },
+          "then": {
+            "properties": {
+              "finding_ids": {
+                "items": {
+                  "enum": [
+                    "FINDING-0002"
+                  ],
+                  "markdownEnumDescriptions": [
+                    "Unverified demonstration user identity — review_state: accepted — Analysis Record: ANALYSIS-0001 — source: analysis/FINDING-0002.analysis-finding.yml"
+                  ],
+                  "type": "string",
+                  "x-threatforge-enum-metadata": [
+                    {
+                      "description": "Unverified demonstration user identity — review_state: accepted — Analysis Record: ANALYSIS-0001 — source: analysis/FINDING-0002.analysis-finding.yml",
+                      "value": "FINDING-0002"
+                    }
+                  ]
+                },
+                "minItems": 1,
+                "type": "array",
+                "uniqueItems": true
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "body": {
+          "additionalProperties": false,
+          "description": "Authored Security Requirement body inputs. Parent and Finding sections are generated from canonical relation selections.",
+          "properties": {
+            "acceptance": {
+              "description": "Acceptance uses canonical content kind acceptance_condition_list. The core adds the canonical prefix \"The requirement is accepted when \".",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "intent": {
+              "description": "Intent uses canonical content kind prose.",
+              "minLength": 1,
+              "type": "string"
+            },
+            "scope": {
+              "additionalProperties": false,
+              "anyOf": [
+                {
+                  "required": [
+                    "includes"
+                  ]
+                },
+                {
+                  "required": [
+                    "excludes"
+                  ]
+                }
+              ],
+              "description": "Scope uses canonical content kind classified_label_list.",
+              "properties": {
+                "excludes": {
+                  "description": "Items rendered with canonical prefix Excludes:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "includes": {
+                  "description": "Items rendered with canonical prefix Includes:",
+                  "items": {
+                    "minLength": 1,
+                    "pattern": "^[^\\r\\n]+$",
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "type": "array",
+                  "uniqueItems": true
+                }
+              },
+              "type": "object"
+            },
+            "security_obligation": {
+              "description": "Security obligation uses canonical content kind normative_list.",
+              "items": {
+                "minLength": 1,
+                "pattern": "^[^\\r\\n]+$",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array",
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "intent",
+            "security_obligation",
+            "scope",
+            "acceptance"
+          ],
+          "type": "object"
+        },
+        "decision_id": {
+          "description": "Canonical Decision that owns the selected Functional Requirement parent.",
+          "pattern": "^ADR-\\d{4}$",
+          "type": "string"
+        },
+        "document_type": {
+          "const": "security-requirement",
+          "description": "Methodology-independent security obligation derived from one or more accepted Common Findings, attached to exactly one Functional Requirement and represented by one shared Requirement registry record and one Markdown body."
+        },
+        "finding_ids": {
+          "description": "One or more accepted Common Findings that affect the selected Functional Requirement and preserve Analysis Record provenance.",
+          "items": {
+            "pattern": "^FINDING-\\d{4}$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "macro_requirement_id": {
+          "description": "Canonical Macro-requirement that owns the selected Functional Requirement parent.",
+          "enum": [
+            "MR-0001"
+          ],
+          "markdownEnumDescriptions": [
+            "Documentation to Base Analysis Case Study system description — status: draft"
+          ],
+          "type": "string",
+          "x-threatforge-enum-metadata": [
+            {
+              "description": "Documentation to Base Analysis Case Study system description — status: draft",
+              "value": "MR-0001"
+            }
+          ]
+        },
+        "parent_requirement_id": {
+          "description": "Exactly one Functional Requirement parent in the selected Macro-requirement and Decision chain.",
+          "pattern": "^MR-\\d{4}ADR-\\d{4}REQ-\\d{4}$",
+          "type": "string"
+        },
+        "title": {
+          "description": "Single-line title mirrored by the canonical registry record and Markdown H1.",
+          "minLength": 1,
+          "pattern": "^[^\\r\\n]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_type",
+        "title",
+        "body",
+        "macro_requirement_id",
+        "decision_id",
+        "parent_requirement_id",
+        "finding_ids"
+      ],
+      "title": "Security Requirement",
       "type": "object"
     }
   ],
@@ -704,7 +951,8 @@
       "macro-requirement",
       "decision",
       "functional-requirement",
-      "governance-requirement"
+      "governance-requirement",
+      "security-requirement"
     ]
   }
 }

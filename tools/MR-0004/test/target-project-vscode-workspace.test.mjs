@@ -169,9 +169,40 @@ test("materializes a target-local workspace whose schema and tasks use target ow
       workspace.targetRoot,
       ".vscode/schemas/governed-document-authoring.schema.json",
     );
-    assert.deepEqual(macroEnums(schema), [["MR-0001"], ["MR-0001"], ["MR-0001"]]);
-    assert.ok(decisionEnums(schema).every((values) => values.length === 1 && values[0] === "ADR-0001"));
-    assert.equal(schema["x-threatforge"].ownership_scope, "target_project");
+    assert.deepEqual(
+      macroEnums(schema),
+      [["MR-0001"], ["MR-0001"], ["MR-0001"], ["MR-0001"]],
+    );
+    assert.ok(
+      decisionEnums(schema).every(
+        (values) =>
+          values.length === 1 &&
+          values[0] === "ADR-0001",
+      ),
+    );
+    const securityBranch = schema.oneOf.find(
+      (branch) =>
+        branch.properties?.document_type?.const ===
+        "security-requirement",
+    );
+    assert.ok(securityBranch);
+    assert.deepEqual(
+      securityBranch.properties.macro_requirement_id.enum,
+      ["MR-0001"],
+    );
+    assert.deepEqual(
+      (securityBranch.allOf ?? [])
+        .map(
+          (conditional) =>
+            conditional.then?.properties?.decision_id?.enum,
+        )
+        .filter(Boolean),
+      [["ADR-0001"]],
+    );
+    assert.equal(
+      schema["x-threatforge"].ownership_scope,
+      "target_project",
+    );
 
     const settings = readJson(workspace.targetRoot, ".vscode/settings.json");
     assert.equal(settings["threatforge.engineRoot"], engineRoot);

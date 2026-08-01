@@ -18,6 +18,9 @@ import {
   mergeCommonAnalysisFindingEditorRouting,
 } from "../MR-0005/lib/common-analysis-finding-editor-routing.mjs";
 import { loadTargetProjectAuthoringCatalog } from "./lib/target-project-authoring.mjs";
+import {
+  createTargetProjectValidationOverlay,
+} from "./run-target-project-check.mjs";
 
 /**
  * @file Target Project governed VS Code workspace materializer.
@@ -404,47 +407,75 @@ function expectedWorkspaceProjection(roots) {
   const commonFindingRouting =
     buildCommonAnalysisFindingEditorRoutingProjection();
   const catalog = loadTargetProjectAuthoringCatalog(roots);
-  const referenceService = createSecurityRequirementAuthoringReferenceService({
-    rootDir: roots.targetRoot,
-    resolverRootDir: roots.engineRoot,
-  });
-  const schemaProviders = resolveSecurityRequirementAuthoringSchemaProviders({
-    catalog,
-    providers: governedDocumentAuthoringSchemaProviders,
-    referenceService,
-  });
-  const schema = buildGovernedDocumentAuthoringSchema(catalog, {
-    providers: schemaProviders,
-  });
-  schema.title = "ThreatForge Target Project governed document authoring request";
-  schema.description =
-    "Target-local request whose document rules come from ThreatForge and whose ownership candidates come from the opened Target Project.";
-  schema["x-threatforge"] = {
-    ...requireObject(schema["x-threatforge"], "schema.x-threatforge"),
-    implemented_requirement_id: targetProjectWorkspaceRequirementId,
-    ownership_scope: "target_project",
-  };
+  let referenceOverlayRoot = "";
 
-  const engineReference = workspaceEngineRootReference(roots);
-  const settings = mergeSettings(
-    readJsonc(roots.targetRoot, settingsProjectPath, {}),
-    engineReference,
-  );
-  const extensions = mergeExtensions(
-    readJsonc(roots.targetRoot, extensionsProjectPath, { recommendations: [] }),
-  );
-  const tasks = mergeTasks(
-    readJsonc(roots.targetRoot, tasksProjectPath, { version: "2.0.0", tasks: [] }),
-    roots,
-  );
-  return {
-    [schemaProjectPath]: formatJson(schema),
-    [commonFindingRouting.schemaProjectPath]:
-      commonFindingRouting.schemaText,
-    [settingsProjectPath]: formatJson(settings),
-    [extensionsProjectPath]: formatJson(extensions),
-    [tasksProjectPath]: formatTasks(tasks),
-  };
+  try {
+    referenceOverlayRoot = createTargetProjectValidationOverlay(
+      roots.engineRoot,
+      roots.targetRoot,
+    );
+    const referenceService =
+      createSecurityRequirementAuthoringReferenceService({
+        rootDir: referenceOverlayRoot,
+      });
+    const schemaProviders =
+      resolveSecurityRequirementAuthoringSchemaProviders({
+        catalog,
+        providers: governedDocumentAuthoringSchemaProviders,
+        referenceService,
+      });
+    const schema = buildGovernedDocumentAuthoringSchema(catalog, {
+      providers: schemaProviders,
+    });
+    schema.title =
+      "ThreatForge Target Project governed document authoring request";
+    schema.description =
+      "Target-local request whose document rules come from ThreatForge and whose ownership candidates come from the opened Target Project.";
+    schema["x-threatforge"] = {
+      ...requireObject(
+        schema["x-threatforge"],
+        "schema.x-threatforge",
+      ),
+      implemented_requirement_id: targetProjectWorkspaceRequirementId,
+      ownership_scope: "target_project",
+    };
+
+    const engineReference = workspaceEngineRootReference(roots);
+    const settings = mergeSettings(
+      readJsonc(roots.targetRoot, settingsProjectPath, {}),
+      engineReference,
+    );
+    const extensions = mergeExtensions(
+      readJsonc(
+        roots.targetRoot,
+        extensionsProjectPath,
+        { recommendations: [] },
+      ),
+    );
+    const tasks = mergeTasks(
+      readJsonc(
+        roots.targetRoot,
+        tasksProjectPath,
+        { version: "2.0.0", tasks: [] },
+      ),
+      roots,
+    );
+    return {
+      [schemaProjectPath]: formatJson(schema),
+      [commonFindingRouting.schemaProjectPath]:
+        commonFindingRouting.schemaText,
+      [settingsProjectPath]: formatJson(settings),
+      [extensionsProjectPath]: formatJson(extensions),
+      [tasksProjectPath]: formatTasks(tasks),
+    };
+  } finally {
+    if (referenceOverlayRoot) {
+      fs.rmSync(referenceOverlayRoot, {
+        recursive: true,
+        force: true,
+      });
+    }
+  }
 }
 
 function assertProjectionCurrent(targetRoot, projection) {

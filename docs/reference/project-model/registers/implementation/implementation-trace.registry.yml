@@ -860,6 +860,8 @@ artifacts:
       - MR-0002ADR-0006REQ-0005GOV-0001
       - MR-0004ADR-0001REQ-0005
       - MR-0004ADR-0001REQ-0006
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
     implemented_path: tools/MR-0002/vscode-governed-markdown-assistance/extension.cjs
     reason: Register one VS Code provider set and route each supported workspace folder to the engine core or Target Project composition root while ignoring unsupported workspaces and preserving canonical adapter boundaries.
     verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
@@ -888,6 +890,8 @@ artifacts:
       - MR-0002ADR-0006REQ-0005
       - MR-0002ADR-0006REQ-0005GOV-0001
       - MR-0004ADR-0001REQ-0005
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
     implemented_path: tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs
     reason: Verify engine, target and unsupported workspace classification, global-setting isolation, semantic mapping, migration commands and deterministic unified VSIX packaging.
     verification_command: node --test tools/MR-0002/tests/vscode-governed-markdown-assistance-adapter.test.mjs

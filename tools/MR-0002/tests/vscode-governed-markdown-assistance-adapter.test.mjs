@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import {
   buildVsCodeCliInvocation,
@@ -18,11 +18,14 @@ import {
 /**
  * @file Verification of unified VS Code governed Markdown routing and VSIX.
  *
+ * @implementsRequirement MR-0002ADR-0005REQ-0003
+ * @implementsRequirement MR-0002ADR-0005REQ-0003GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0002
  * @implementsRequirement MR-0002ADR-0006REQ-0002GOV-0001
  * @implementsRequirement MR-0002ADR-0006REQ-0005
  * @implementsRequirement MR-0002ADR-0006REQ-0005GOV-0001
  * @implementsRequirement MR-0004ADR-0001REQ-0005
+ * @derivedFromDecision MR-0002/ADR-0005
  * @derivedFromDecision MR-0002/ADR-0006
  * @derivedFromDecision MR-0004/ADR-0001
  * @macroRequirement MR-0002
@@ -197,6 +200,176 @@ test("adapter ignores unsupported Markdown workspaces", () => {
   );
 });
 
+test("adapter routes nested Target Project authoring to its local schema", () => {
+  const targetRoot = path.join(
+    rootDir,
+    "examples",
+    "case-studies",
+    "documentation-to-base-analysis",
+  );
+  const requestPath = path.join(
+    targetRoot,
+    "authoring",
+    "MR-0001ADR-0001REQ-0001SEC-0001.governed-document-authoring.yml",
+  );
+  const targetSchemaPath = path.join(
+    targetRoot,
+    ".vscode",
+    "schemas",
+    "governed-document-authoring.schema.json",
+  );
+  const engineRequestPath = path.join(
+    rootDir,
+    "authoring",
+    "engine.governed-document-authoring.yml",
+  );
+  const engineSchemaPath = path.join(
+    rootDir,
+    ".vscode",
+    "schemas",
+    "governed-document-authoring.schema.json",
+  );
+
+  assert.equal(
+    adapter.resolveGovernedAuthoringSchemaPath(
+      requestPath,
+      rootDir,
+    ),
+    targetSchemaPath,
+  );
+  assert.equal(
+    adapter.resolveGovernedAuthoringSchemaPath(
+      engineRequestPath,
+      rootDir,
+    ),
+    engineSchemaPath,
+  );
+
+  const schema = JSON.parse(
+    fs.readFileSync(targetSchemaPath, "utf8"),
+  );
+  const securityBranch = schema.oneOf.find(
+    (branch) =>
+      branch.properties?.document_type?.const ===
+      "security-requirement",
+  );
+  assert.ok(securityBranch);
+  assert.deepEqual(
+    (securityBranch.allOf ?? [])
+      .map(
+        (conditional) =>
+          conditional.then?.properties?.decision_id?.enum,
+      )
+      .filter(Boolean),
+    [["ADR-0001"]],
+  );
+});
+
+test("adapter registers a higher-priority YAML schema contributor", async () => {
+  const targetRoot = path.join(
+    rootDir,
+    "examples",
+    "case-studies",
+    "documentation-to-base-analysis",
+  );
+  const requestPath = path.join(
+    targetRoot,
+    "authoring",
+    "MR-0001ADR-0001REQ-0001SEC-0001.governed-document-authoring.yml",
+  );
+  let registered = null;
+  const vscode = {
+    Uri: {
+      parse(resource) {
+        return {
+          fsPath: fileURLToPath(resource),
+        };
+      },
+    },
+    workspace: {
+      getWorkspaceFolder() {
+        return {
+          uri: {
+            fsPath: rootDir,
+          },
+        };
+      },
+    },
+    extensions: {
+      getExtension(extensionId) {
+        assert.equal(extensionId, "redhat.vscode-yaml");
+        return {
+          async activate() {
+            return {
+              registerContributor(
+                scheme,
+                requestSchema,
+                requestSchemaContent,
+              ) {
+                registered = {
+                  scheme,
+                  requestSchema,
+                  requestSchemaContent,
+                };
+                return true;
+              },
+            };
+          },
+        };
+      },
+    },
+  };
+
+  const result =
+    await adapter.registerGovernedAuthoringSchemaContributor(
+      vscode,
+    );
+
+  assert.equal(result.registered, true);
+  assert.equal(
+    registered.scheme,
+    "threatforge-governed-authoring",
+  );
+
+  const schemaUri = registered.requestSchema(
+    pathToFileURL(requestPath).href,
+  );
+  assert.match(
+    schemaUri,
+    /^threatforge-governed-authoring:\/\/schema\//u,
+  );
+
+  const schema = JSON.parse(
+    registered.requestSchemaContent(schemaUri),
+  );
+  assert.equal(
+    schema["x-threatforge"].ownership_scope,
+    "target_project",
+  );
+});
+
+test("extension package activates YAML routing through vscode-yaml", () => {
+  const packageJson = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        rootDir,
+        "tools",
+        "MR-0002",
+        "vscode-governed-markdown-assistance",
+        "package.json",
+      ),
+      "utf8",
+    ),
+  );
+
+  assert.ok(
+    packageJson.activationEvents.includes("onLanguage:yaml"),
+  );
+  assert.deepEqual(
+    packageJson.extensionDependencies,
+    ["redhat.vscode-yaml"],
+  );
+});
 test("adapter preserves canonical completion ordering and identities", () => {
   const result = {
     completions: [
