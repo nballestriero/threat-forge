@@ -161,7 +161,7 @@ try {
   const testCount = parseTestCount(
     `${testResult.stdout ?? ""}\n${testResult.stderr ?? ""}`,
   );
-  if (testCount < 21) {
+  if (testCount < 24) {
     throw new Error(
       `Security Requirement editor assistance verification count is incomplete: ${testCount}.`,
     );
@@ -181,6 +181,7 @@ try {
   console.log(`Preview task: ${taskRouting.previewTask}`);
   console.log(`Expected preview task: ${securityRequirementAuthoringPreviewTaskLabel}`);
   console.log("Create while inactive: absent");
+  console.log("Schema provider boundary: cycle-free");
   console.log("Negative fixtures checked: 8");
   console.log(`Editor tests checked: ${testCount}`);
   console.log("Warnings: 0");

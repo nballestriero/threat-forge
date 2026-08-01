@@ -2,6 +2,11 @@ import {
   buildGovernedDocumentAuthoringSchema,
 } from "../../MR-0002/build-governed-document-authoring-schema.mjs";
 import {
+  createSecurityRequirementAuthoringSchemaProvider,
+  listSecurityRequirementFindingCandidates,
+  listSecurityRequirementFunctionalParents,
+} from "./security-requirement-authoring-schema-provider.mjs";
+import {
   buildSecurityRequirementAuthoringCatalog,
   createSecurityRequirementAuthoringReferenceService,
 } from "./security-requirement-authoring-provider.mjs";
@@ -50,9 +55,6 @@ export const securityRequirementAuthoringCreateTaskLabel =
   "ThreatForge: create Security Requirement authoring";
 
 const securityModelId = "security-requirement";
-const functionalModelId = "functional-requirement";
-const functionalEntityType = "functional_requirement";
-const findingEntityType = "common_analysis_finding";
 
 function compare(left, right) {
   return String(left).localeCompare(String(right), "en", {
@@ -85,339 +87,6 @@ function text(value, label, ruleId = securityRequirementAuthoringEditorRuleIds.s
   const normalized = String(value ?? "").trim();
   if (!normalized) throw failure(ruleId, `${label} must be a non-empty string.`);
   return normalized;
-}
-
-function enumProjection(entries, getValue, getDescription, ruleId) {
-  const ordered = [...entries].sort((left, right) =>
-    compare(getValue(left), getValue(right)),
-  );
-  const values = ordered.map(getValue);
-  if (new Set(values).size !== values.length) {
-    throw failure(ruleId, `Duplicate editor completion value: ${values.join(", ")}.`);
-  }
-  const descriptions = ordered.map(getDescription);
-  return {
-    type: "string",
-    enum: values,
-    markdownEnumDescriptions: descriptions,
-    "x-threatforge-enum-metadata": values.map((value, index) => ({
-      value,
-      description: descriptions[index],
-    })),
-  };
-}
-
-function eligibleCandidateProjection(
-  entries,
-  getValue,
-  getDescription,
-  ruleId,
-  emptyDescription,
-) {
-  if (entries.length === 0) {
-    return {
-      type: "string",
-      not: {},
-      description: emptyDescription,
-      "x-threatforge-enum-metadata": [],
-    };
-  }
-  return enumProjection(entries, getValue, getDescription, ruleId);
-}
-
-function fieldByName(documentType, fieldName) {
-  const field = array(
-    documentType.record_fields,
-    `${documentType.id}.record_fields`,
-  ).find((entry) => String(entry?.name ?? "") === fieldName);
-  if (!field) {
-    throw failure(
-      securityRequirementAuthoringEditorRuleIds.schema,
-      `${documentType.id} has no canonical field ${fieldName}.`,
-    );
-  }
-  return object(field, `${documentType.id}.${fieldName}`);
-}
-
-function functionalParents(macros) {
-  const parents = [];
-  const seen = new Set();
-  for (const macroValue of macros) {
-    const macro = object(macroValue, "Macro-requirement");
-    const macroId = text(macro.id, "Macro-requirement id");
-    for (const decisionValue of array(macro.decisions, `${macroId}.decisions`)) {
-      const decision = object(decisionValue, `${macroId} Decision`);
-      const decisionId = text(decision.id, `${macroId} Decision id`);
-      for (const requirementValue of array(
-        decision.requirements,
-        `${macroId}/${decisionId}.requirements`,
-      )) {
-        const requirement = object(
-          requirementValue,
-          `${macroId}/${decisionId} Requirement`,
-        );
-        if (String(requirement.model_id ?? "") !== functionalModelId) continue;
-        const id = text(
-          requirement.id,
-          "Functional Requirement id",
-          securityRequirementAuthoringEditorRuleIds.parent,
-        );
-        if (seen.has(id)) {
-          throw failure(
-            securityRequirementAuthoringEditorRuleIds.parent,
-            `Functional Requirement parent resolves more than once: ${id}.`,
-          );
-        }
-        seen.add(id);
-        parents.push({
-          ...structuredClone(requirement),
-          macro_requirement_id: macroId,
-          decision_id: decisionId,
-          macro_title: String(macro.title ?? ""),
-          decision_title: String(decision.title ?? ""),
-        });
-      }
-    }
-  }
-  return parents.sort((left, right) => compare(left.id, right.id));
-}
-
-function canonicalFindingCandidates(referenceService, parent) {
-  if (typeof referenceService?.listEligibleCandidates !== "function") {
-    throw failure(
-      securityRequirementAuthoringEditorRuleIds.finding,
-      "Security editor assistance requires governed candidate discovery.",
-    );
-  }
-  const candidates = referenceService.listEligibleCandidates({
-    allowedEntityTypes: [findingEntityType],
-    currentDocument: {
-      model_id: securityModelId,
-      macro_requirement_id: parent.macro_requirement_id,
-      decision_id: parent.decision_id,
-      parent_requirement_id: parent.id,
-    },
-    positionId: "security-requirement.body.reference.finding-derivation",
-  });
-  const accepted = [];
-  const seen = new Set();
-  for (const candidateValue of array(
-    candidates,
-    `Finding candidates for ${parent.id}`,
-    securityRequirementAuthoringEditorRuleIds.finding,
-  )) {
-    const candidate = object(
-      candidateValue,
-      `Finding candidate for ${parent.id}`,
-      securityRequirementAuthoringEditorRuleIds.finding,
-    );
-    const entity = object(
-      candidate.entity,
-      `Finding candidate ${candidate.id} entity`,
-      securityRequirementAuthoringEditorRuleIds.finding,
-    );
-    const id = text(
-      candidate.id ?? entity.id,
-      "Common Finding id",
-      securityRequirementAuthoringEditorRuleIds.finding,
-    );
-    if (seen.has(id)) {
-      throw failure(
-        securityRequirementAuthoringEditorRuleIds.finding,
-        `Common Finding candidate resolves more than once for ${parent.id}: ${id}.`,
-      );
-    }
-    seen.add(id);
-    if (String(entity.review_state ?? "") !== "accepted") {
-      throw failure(
-        securityRequirementAuthoringEditorRuleIds.finding,
-        `Governed reference service returned non-accepted Finding ${id}.`,
-      );
-    }
-    const affected = Array.isArray(entity.affected_subjects)
-      ? entity.affected_subjects
-      : [];
-    if (
-      !affected.some(
-        (subject) =>
-          String(subject?.kind ?? "") === functionalEntityType &&
-          String(subject?.id ?? "") === parent.id,
-      )
-    ) {
-      continue;
-    }
-    const analysisRecordId = String(entity.analysis_record_id ?? "").trim();
-    const sourcePath = String(entity.source_path ?? "").trim();
-    if (!/^ANALYSIS-\d{4}$/u.test(analysisRecordId) || !sourcePath) continue;
-    accepted.push({
-      id,
-      title: text(
-        candidate.title ?? entity.title,
-        `${id} title`,
-        securityRequirementAuthoringEditorRuleIds.finding,
-      ),
-      analysis_record_id: analysisRecordId,
-      source_path: sourcePath,
-    });
-  }
-  return accepted.sort((left, right) => compare(left.id, right.id));
-}
-
-function replaceGeneratedBodyInputs(properties) {
-  const body = structuredClone(object(properties.body, "body schema"));
-  const bodyProperties = object(body.properties, "body schema properties");
-  delete bodyProperties.parent_functional_requirement;
-  delete bodyProperties.finding_derivation;
-  body.required = array(body.required, "body schema required")
-    .filter(
-      (entry) =>
-        entry !== "parent_functional_requirement" &&
-        entry !== "finding_derivation",
-    );
-  body.description =
-    "Authored Security Requirement body inputs. Parent and Finding sections are generated from canonical relation selections.";
-  properties.body = body;
-}
-
-function createSecuritySchemaProvider(referenceService) {
-  return Object.freeze({
-    model_id: securityModelId,
-    project({ documentType, properties, required, allOf, macros }) {
-      replaceGeneratedBodyInputs(properties);
-      const macroValues = array(macros, "catalog Macro-requirements");
-      const parents = functionalParents(macroValues);
-      const macrosWithParents = macroValues.filter((macro) =>
-        parents.some((parent) => parent.macro_requirement_id === macro.id),
-      );
-      properties.macro_requirement_id = {
-        ...enumProjection(
-          macrosWithParents,
-          (entry) => text(entry.id, "Macro-requirement id"),
-          (entry) => `${entry.title} — status: ${entry.status}`,
-          securityRequirementAuthoringEditorRuleIds.parent,
-        ),
-        description:
-          "Canonical Macro-requirement that owns the selected Functional Requirement parent.",
-      };
-      required.push("macro_requirement_id");
-
-      const decisionField = fieldByName(documentType, "decision_id");
-      properties.decision_id = {
-        type: "string",
-        pattern: text(decisionField.pattern, "decision_id pattern"),
-        description:
-          "Canonical Decision that owns the selected Functional Requirement parent.",
-      };
-      required.push("decision_id");
-
-      const parentField = fieldByName(documentType, "parent_requirement_id");
-      properties.parent_requirement_id = {
-        type: "string",
-        pattern: text(parentField.pattern, "parent_requirement_id pattern"),
-        description:
-          "Exactly one Functional Requirement parent in the selected Macro-requirement and Decision chain.",
-      };
-      required.push("parent_requirement_id");
-
-      properties.finding_ids = {
-        type: "array",
-        minItems: 1,
-        uniqueItems: true,
-        items: {
-          type: "string",
-          pattern: "^FINDING-\\d{4}$",
-        },
-        description:
-          "One or more accepted Common Findings that affect the selected Functional Requirement and preserve Analysis Record provenance.",
-      };
-      required.push("finding_ids");
-
-      for (const macro of macrosWithParents) {
-        const decisions = array(macro.decisions, `${macro.id}.decisions`)
-          .filter((decision) =>
-            parents.some(
-              (parent) =>
-                parent.macro_requirement_id === macro.id &&
-                parent.decision_id === decision.id,
-            ),
-          );
-        allOf.push({
-          if: {
-            properties: { macro_requirement_id: { const: macro.id } },
-            required: ["macro_requirement_id"],
-          },
-          then: {
-            properties: {
-              decision_id: enumProjection(
-                decisions,
-                (entry) => text(entry.id, "Decision id"),
-                (entry) =>
-                  `${entry.title} — ${macro.id}/${entry.id} — status: ${entry.status}`,
-                securityRequirementAuthoringEditorRuleIds.parent,
-              ),
-            },
-          },
-        });
-      }
-
-      for (const parent of parents) {
-        const findingCandidates = canonicalFindingCandidates(
-          referenceService,
-          parent,
-        );
-        allOf.push({
-          if: {
-            properties: {
-              macro_requirement_id: { const: parent.macro_requirement_id },
-              decision_id: { const: parent.decision_id },
-            },
-            required: ["macro_requirement_id", "decision_id"],
-          },
-          then: {
-            properties: {
-              parent_requirement_id: enumProjection(
-                parents.filter(
-                  (candidate) =>
-                    candidate.macro_requirement_id ===
-                      parent.macro_requirement_id &&
-                    candidate.decision_id === parent.decision_id,
-                ),
-                (entry) => text(entry.id, "Functional Requirement id"),
-                (entry) =>
-                  `${entry.title} — status: ${entry.status} — ${entry.macro_requirement_id}/${entry.decision_id}`,
-                securityRequirementAuthoringEditorRuleIds.parent,
-              ),
-            },
-          },
-        });
-        allOf.push({
-          if: {
-            properties: {
-              parent_requirement_id: { const: parent.id },
-            },
-            required: ["parent_requirement_id"],
-          },
-          then: {
-            properties: {
-              finding_ids: {
-                type: "array",
-                minItems: 1,
-                uniqueItems: true,
-                items: eligibleCandidateProjection(
-                  findingCandidates,
-                  (entry) => text(entry.id, "Common Finding id"),
-                  (entry) =>
-                    `${entry.title} — review_state: accepted — Analysis Record: ${entry.analysis_record_id} — source: ${entry.source_path}`,
-                  securityRequirementAuthoringEditorRuleIds.finding,
-                  `No accepted Common Finding currently affects Functional Requirement ${parent.id} with navigable Analysis Record provenance.`,
-                ),
-              },
-            },
-          },
-        });
-      }
-    },
-  });
 }
 
 /**
@@ -463,13 +132,20 @@ export function buildSecurityRequirementAuthoringEditorSchema(input) {
     document_types: [structuredClone(candidateDocumentType)],
   };
   const schema = buildGovernedDocumentAuthoringSchema(dedicatedCatalog, {
-    providers: [createSecuritySchemaProvider(referenceService)],
+    providers: [createSecurityRequirementAuthoringSchemaProvider(referenceService)],
   });
   const branch = array(schema.oneOf, "schema.oneOf")[0];
-  const parentCount = functionalParents(dedicatedCatalog.macro_requirements).length;
+  const parentCount = listSecurityRequirementFunctionalParents(
+    dedicatedCatalog.macro_requirements,
+  ).length;
   let findingCandidateCount = 0;
-  for (const parent of functionalParents(dedicatedCatalog.macro_requirements)) {
-    findingCandidateCount += canonicalFindingCandidates(referenceService, parent).length;
+  for (const parent of listSecurityRequirementFunctionalParents(
+    dedicatedCatalog.macro_requirements,
+  )) {
+    findingCandidateCount += listSecurityRequirementFindingCandidates(
+      referenceService,
+      parent,
+    ).length;
   }
   schema.$id =
     "urn:threatforge:schema:security-requirement-authoring-request:1";

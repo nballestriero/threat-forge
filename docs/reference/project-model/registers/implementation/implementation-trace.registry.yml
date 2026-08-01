@@ -1844,3 +1844,16 @@ artifacts:
     implemented_path: tools/MR-0001/fixtures/security-requirement-activation-readiness/negative-fixtures.registry.json
     reason: Register one omission proof for every coordinated provider plus duplicate, unknown, active leakage, candidate inventory, activation state, provider readiness and provider identity failures against stable readiness rule identifiers.
     verification_command: node --test tools/MR-0001/test/security-requirement-activation-readiness.test.mjs
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0023
+    title: Security Requirement cycle-free authoring schema provider
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/lib/security-requirement-authoring-schema-provider.mjs
+    reason: Isolate the Security Requirement schema provider from both the generic schema builder and editor composition module so active provider composition remains one-way, deterministic and free from ESM import cycles without duplicating canonical projection rules.
+    verification_command: node --test tools/MR-0001/test/security-requirement-authoring-editor.test.mjs

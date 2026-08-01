@@ -5,6 +5,9 @@ import path from "node:path";
 import test from "node:test";
 
 import {
+  buildGovernedDocumentAuthoringSchema,
+} from "../../MR-0002/build-governed-document-authoring-schema.mjs";
+import {
   buildSecurityRequirementAuthoringEditorSchema,
   buildSecurityRequirementAuthoringPreviewTask,
   mergeSecurityRequirementAuthoringEditorSettings,
@@ -21,6 +24,14 @@ import {
 import {
   materializeSecurityRequirementAuthoringSchema,
 } from "../materialize-security-requirement-authoring-schema.mjs";
+import {
+  buildSecurityRequirementAuthoringCatalog,
+} from "../lib/security-requirement-authoring-provider.mjs";
+import {
+  createSecurityRequirementAuthoringSchemaProvider,
+  listSecurityRequirementFindingCandidates,
+  listSecurityRequirementFunctionalParents,
+} from "../lib/security-requirement-authoring-schema-provider.mjs";
 import {
   securityRequirementRegistryVariantExpectation,
 } from "../lib/security-requirement-model-validation.mjs";
@@ -587,3 +598,54 @@ for (const fixture of fixtureSet.cases) {
     assert.throws(action, new RegExp(expected.replaceAll(".", "\\."), "u"));
   });
 }
+
+test("cycle-free Security schema provider module has one-way imports", () => {
+  const source = fs.readFileSync(
+    new URL(
+      "../lib/security-requirement-authoring-schema-provider.mjs",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+  assert.doesNotMatch(source, /build-governed-document-authoring-schema/u);
+  assert.doesNotMatch(source, /security-requirement-authoring-editor-assistance/u);
+  assert.match(source, /createSecurityRequirementAuthoringSchemaProvider/u);
+});
+
+test("cycle-free provider composes directly with the generic schema builder", () => {
+  const catalog = activeCatalog();
+  const projected = buildSecurityRequirementAuthoringCatalog({
+    rootDir: process.cwd(),
+    activeCatalog: catalog,
+    loadedSourceSet: loadedSourceSet(),
+  });
+  const documentType = projected.catalog.document_types.find(
+    (entry) => entry.id === "security-requirement",
+  );
+  const dedicatedCatalog = {
+    ...structuredClone(projected.catalog),
+    document_types: [structuredClone(documentType)],
+  };
+  const service = referenceService();
+  const beforeCatalog = structuredClone(dedicatedCatalog);
+  const schema = buildGovernedDocumentAuthoringSchema(dedicatedCatalog, {
+    providers: [createSecurityRequirementAuthoringSchemaProvider(service)],
+  });
+  assert.deepEqual(dedicatedCatalog, beforeCatalog);
+  assert.equal(schema.oneOf.length, 1);
+  assert.equal(
+    schema.oneOf[0].properties.document_type.const,
+    "security-requirement",
+  );
+});
+
+test("cycle-free provider exports deterministic parent and Finding projections", () => {
+  const macros = activeCatalog().macro_requirements;
+  const parents = listSecurityRequirementFunctionalParents(macros);
+  assert.deepEqual(parents.map((entry) => entry.id), [parentA, parentB]);
+  const findings = listSecurityRequirementFindingCandidates(
+    referenceService(),
+    parents[0],
+  );
+  assert.deepEqual(findings.map((entry) => entry.id), ["FINDING-0001"]);
+});
