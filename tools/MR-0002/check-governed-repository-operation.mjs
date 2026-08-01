@@ -71,7 +71,10 @@ const forbiddenProjectionSpecificFragments = [
 
 /** @param {string} filePath @returns {string} */
 function readText(filePath) {
-  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "");
+  return fs
+    .readFileSync(filePath, "utf8")
+    .replace(/^\uFEFF/u, "")
+    .replace(/\r\n/gu, "\n");
 }
 
 /**

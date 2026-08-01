@@ -278,12 +278,12 @@ test("accepts a canonical synthetic Security Requirement model", () => {
   }
 });
 
-test("loads the repository scaffold without activating the canonical index", () => {
+test("loads the active repository Security Requirement model without synthetic overlay", () => {
   const loaded = loadSecurityRequirementValidationSourceSet({
     rootDir: repositoryRoot,
   });
-  assert.equal(loaded.activation_state, "inactive");
-  assert.deepEqual(loaded.scaffold_sources_checked.length, 2);
+  assert.equal(loaded.activation_state, "active");
+  assert.deepEqual(loaded.scaffold_sources_checked.length, 0);
   assert.ok(
     loaded.sourceSet.index.value.models.some(
       (entry) => entry.id === "security-requirement",

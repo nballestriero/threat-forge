@@ -6,6 +6,12 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   validateGovernedDocumentModelConsumerCoverage,
 } from "../MR-0001/lib/governed-document-model-sources.mjs";
+import {
+  resolveSecurityRequirementAuthoringSchemaProviders,
+} from "../MR-0001/lib/security-requirement-authoring-schema-provider.mjs";
+import {
+  createSecurityRequirementAuthoringReferenceService,
+} from "../MR-0001/lib/security-requirement-authoring-provider.mjs";
 
 /**
  * @file Governed document authoring JSON Schema builder.
@@ -503,7 +509,20 @@ export function buildGovernedDocumentAuthoringSchema(catalog, options = {}) {
 
 function main() {
   if (process.argv.length > 2) throw new Error(`Unsupported argument: ${process.argv[2]}`);
-  process.stdout.write(`${JSON.stringify(buildGovernedDocumentAuthoringSchema(loadCatalog()), null, 2)}\n`);
+  const catalog = loadCatalog();
+  const hasSecurityRequirement = catalog.document_types.some(
+    (entry) => entry.id === "security-requirement",
+  );
+  const providers = resolveSecurityRequirementAuthoringSchemaProviders({
+    catalog,
+    providers: defaultGovernedDocumentAuthoringSchemaProviders,
+    referenceService: hasSecurityRequirement
+      ? createSecurityRequirementAuthoringReferenceService({ rootDir })
+      : undefined,
+  });
+  process.stdout.write(
+    `${JSON.stringify(buildGovernedDocumentAuthoringSchema(catalog, { providers }), null, 2)}\n`,
+  );
 }
 
 const directExecutionUrl = process.argv[1]

@@ -18,6 +18,7 @@ import { macroRequirementModelRuleIds } from "../../MR-0001/lib/macro-requiremen
 import { decisionModelRuleIds } from "../../MR-0001/lib/decision-model-validation.mjs";
 import { functionalRequirementModelRuleIds } from "../../MR-0001/lib/functional-requirement-model-validation.mjs";
 import { governanceRequirementModelRuleIds } from "../../MR-0001/lib/governance-requirement-model-validation.mjs";
+import { securityRequirementModelRuleIds } from "../../MR-0001/lib/security-requirement-model-validation.mjs";
 import {
   createGovernedEntityReferenceService,
   loadGovernedEntityResolverRegistry,
@@ -73,11 +74,12 @@ const requirementRegistryDirectory =
 const taxonomyRegistryPath =
   "docs/reference/project-model/registers/taxonomies/documentation-field-values.registry.yml";
 
-const modelRuleSets = Object.freeze({
+export const governedMarkdownAssistanceModelRuleSets = Object.freeze({
   "macro-requirement": macroRequirementModelRuleIds,
   decision: decisionModelRuleIds,
   "functional-requirement": functionalRequirementModelRuleIds,
   "governance-requirement": governanceRequirementModelRuleIds,
+  "security-requirement": securityRequirementModelRuleIds,
 });
 
 function compare(left, right) {
@@ -568,7 +570,7 @@ function buildAssistanceResult(service, input) {
     throw new Error(`No canonical Markdown body profile applies to ${record.modelId}.`);
   }
   const profile = profileEntry.value;
-  const rules = modelRuleSets[record.modelId];
+  const rules = governedMarkdownAssistanceModelRuleSets[record.modelId];
   const parsed = parseDocument(input.text);
   const profileSections = [...profile.sections].sort(
     (left, right) => left.order - right.order,
@@ -1001,7 +1003,7 @@ export function createGovernedMarkdownAssistanceService({
   assertGovernedDocumentModelConsumerCoverage({
     consumerId: "governed-markdown-assistance-rule-sets",
     sourceSet,
-    providerModelIds: Object.keys(modelRuleSets),
+    providerModelIds: Object.keys(governedMarkdownAssistanceModelRuleSets),
   });
   const recordsByPath = loadBodyRecords(absoluteRoot, sourceSet);
   const valueSets = loadValueSets(absoluteRoot);

@@ -15,6 +15,14 @@ import {
   planGeneratedDocument,
 } from "../../MR-0002/create-governed-document.mjs";
 import {
+  createSecurityRequirementAuthoringReferenceService,
+  planSecurityRequirementAuthoring,
+  resolveGovernedDocumentAuthoringProviders,
+} from "../../MR-0001/lib/security-requirement-authoring-provider.mjs";
+import {
+  loadSecurityRequirementValidationSourceSet,
+} from "../../MR-0001/lib/security-requirement-model-validation.mjs";
+import {
   formatGovernedDocumentAuthoringPlan,
   validateGovernedDocumentAuthoringRequest,
 } from "../../MR-0002/run-governed-document-authoring.mjs";
@@ -408,6 +416,27 @@ export function readTargetProjectAuthoringRequest(options = {}) {
   return requireObject(readGovernedYamlFile(request.absolute), request.normalized);
 }
 
+/**
+ * Defers target-local Security reference loading until a Security request uses it.
+ * Non-Security authoring therefore keeps the active provider catalog complete
+ * without requiring Analysis Record and Finding sources in unrelated fixtures.
+ */
+function createLazySecurityRequirementAuthoringReferenceService(factory) {
+  let resolved = null;
+  function service() {
+    resolved ??= factory();
+    return resolved;
+  }
+  return {
+    analyzePayload(input) {
+      return service().analyzePayload(input);
+    },
+    listEligibleCandidates(input) {
+      return service().listEligibleCandidates(input);
+    },
+  };
+}
+
 /** Produces a deterministic read-only target-local authoring plan. */
 export function planTargetProjectAuthoring(options = {}) {
   const roots = validateRoots(options);
@@ -416,9 +445,47 @@ export function planTargetProjectAuthoring(options = {}) {
     ...roots,
     requestPath: options.requestPath,
   });
-  const providerOptions = options.providers === undefined
-    ? {}
-    : { providers: requireArray(options.providers, "options.providers") };
+  const referenceService = options.referenceService ??
+    createLazySecurityRequirementAuthoringReferenceService(() =>
+      createSecurityRequirementAuthoringReferenceService({
+        rootDir: roots.targetRoot,
+        resolverRootDir: roots.engineRoot,
+      }),
+    );
+  const providers = options.providers === undefined
+    ? resolveGovernedDocumentAuthoringProviders({
+        rootDir: roots.targetRoot,
+        catalog,
+        referenceService,
+      })
+    : requireArray(options.providers, "options.providers");
+  if (
+    String(request.document_type ?? "") === "security-requirement" &&
+    Array.isArray(request.finding_ids)
+  ) {
+    const securityPlan = planSecurityRequirementAuthoring(request, {
+      rootDir: roots.targetRoot,
+      activeCatalog: catalog,
+      referenceService,
+      loadedSourceSet: loadSecurityRequirementValidationSourceSet({
+        rootDir: roots.engineRoot,
+      }),
+      today: options.today,
+    });
+    return {
+      requirement_id: targetProjectAuthoringRequirementId,
+      engine_root: roots.engineRoot,
+      target_root: roots.targetRoot,
+      activation_state: securityPlan.activation_state,
+      preview_only: securityPlan.activation_state !== "active",
+      request_path: options.requestPath
+        ? safeProjectPath(roots.targetRoot, options.requestPath).normalized
+        : null,
+      request: securityPlan.request,
+      documentPlan: securityPlan.documentPlan,
+    };
+  }
+  const providerOptions = { providers };
   const canonicalRequest = validateGovernedDocumentAuthoringRequest(
     request,
     catalog,

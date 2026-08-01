@@ -172,6 +172,7 @@ test("accepts canonical governed-document cross-model coherence", () => {
       decision: 1,
       "functional-requirement": 1,
       "governance-requirement": 1,
+      "security-requirement": 0,
     });
     assert.deepEqual(result.provider_model_ids, Object.keys(result.model_counts));
     assert.equal(result.child_registries_checked, 2);

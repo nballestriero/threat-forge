@@ -12,9 +12,12 @@ import {
   materializeCommonAnalysisFindingSchema,
 } from "../MR-0005/lib/materialize-common-analysis-finding-schema.mjs";
 import {
+  buildSecurityRequirementAuthoringCreateTask,
   buildSecurityRequirementAuthoringPreviewTask,
   mergeSecurityRequirementAuthoringEditorSettings,
+  securityRequirementAuthoringCreateTaskLabel,
   securityRequirementAuthoringPreviewTaskLabel,
+  validateSecurityRequirementAuthoringEditorTasks,
   validateSecurityRequirementAuthoringEditorSettings,
 } from "../MR-0001/lib/security-requirement-authoring-editor-assistance.mjs";
 import {
@@ -79,6 +82,7 @@ const managedTaskLabels = new Set([
   previewTaskLabel,
   createTaskLabel,
   securityRequirementAuthoringPreviewTaskLabel,
+  securityRequirementAuthoringCreateTaskLabel,
   installMarkdownAssistanceTaskLabel,
 ]);
 const implementationTraceTag = ["@implements", "Requirement"].join("");
@@ -246,6 +250,9 @@ function buildManagedTask(mode) {
   if (mode === "preview-security-requirement") {
     return buildSecurityRequirementAuthoringPreviewTask();
   }
+  if (mode === "create-security-requirement") {
+    return buildSecurityRequirementAuthoringCreateTask();
+  }
   if (mode === "install-markdown-assistance") {
     return {
       label: installMarkdownAssistanceTaskLabel,
@@ -280,7 +287,10 @@ function buildManagedTask(mode) {
 }
 
 /** @param {Record<string, unknown>} existing */
-export function mergeGovernedDocumentAuthoringTasks(existing) {
+export function mergeGovernedDocumentAuthoringTasks(existing, options = {}) {
+  const securityActivationState = String(
+    options.securityActivationState ?? "inactive",
+  );
   const tasks = existing.tasks === undefined ? [] : requireArray(existing.tasks, "tasks.tasks");
   const inputs = existing.inputs === undefined ? [] : requireArray(existing.inputs, "tasks.inputs");
   const replaceable = managedTaskLabels;
@@ -298,6 +308,9 @@ export function mergeGovernedDocumentAuthoringTasks(existing) {
     buildManagedTask("preview"),
     buildManagedTask("create"),
     buildManagedTask("preview-security-requirement"),
+    ...(securityActivationState === "active"
+      ? [buildManagedTask("create-security-requirement")]
+      : []),
     buildManagedTask("install-markdown-assistance"),
   );
   inputs.forEach((value, index) => requireObject(value, `tasks.inputs[${index}]`));
@@ -361,7 +374,10 @@ function runCommonAnalysisFindingSchemaMaterializer(mode) {
 }
 
 /** @param {Record<string, unknown>} tasks */
-export function validateGovernedDocumentAuthoringTasks(tasks) {
+export function validateGovernedDocumentAuthoringTasks(tasks, options = {}) {
+  const securityActivationState = String(
+    options.securityActivationState ?? "inactive",
+  );
   if (requireString(tasks.version, "tasks.version") !== "2.0.0") throw new Error("VS Code tasks.version must be 2.0.0.");
   const byLabel = new Map();
   for (const [index, value] of requireArray(tasks.tasks, "tasks.tasks").entries()) {
@@ -374,6 +390,9 @@ export function validateGovernedDocumentAuthoringTasks(tasks) {
     "preview",
     "create",
     "preview-security-requirement",
+    ...(securityActivationState === "active"
+      ? ["create-security-requirement"]
+      : []),
     "install-markdown-assistance",
   ]) {
     const expected = buildManagedTask(mode);
@@ -422,7 +441,10 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
     materializeSecurityRequirementAuthoringSchema({ rootDir, mode });
   const settings = mergeSettings(readJsoncFile(settingsProjectPath, {}));
   const extensions = mergeExtensions(readJsoncFile(extensionsProjectPath, { recommendations: [] }));
-  const tasks = mergeGovernedDocumentAuthoringTasks(readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] }));
+  const tasks = mergeGovernedDocumentAuthoringTasks(
+    readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] }),
+    { securityActivationState: securityRequirementSchema.activationState },
+  );
   const expected = {
     settings: formatJson(settings),
     extensions: formatJson(extensions),
@@ -438,7 +460,12 @@ export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
   const actualTasks = readJsoncFile(tasksProjectPath, { version: "2.0.0", tasks: [] });
   const editorRouting = validateSettings(actualSettings);
   validateExtensions(actualExtensions);
-  validateGovernedDocumentAuthoringTasks(actualTasks);
+  validateGovernedDocumentAuthoringTasks(actualTasks, {
+    securityActivationState: securityRequirementSchema.activationState,
+  });
+  validateSecurityRequirementAuthoringEditorTasks(actualTasks, {
+    activationState: securityRequirementSchema.activationState,
+  });
   if (formatJson(actualSettings) !== expected.settings) throw new Error(`${settingsProjectPath} is stale.`);
   if (formatJson(actualExtensions) !== expected.extensions) throw new Error(`${extensionsProjectPath} is stale.`);
   if (formatTasks(actualTasks) !== expected.tasks) throw new Error(`${tasksProjectPath} is stale.`);

@@ -145,7 +145,9 @@ try {
   const tasks = readJsonc(".vscode/tasks.json");
   const settingsRouting =
     validateSecurityRequirementAuthoringEditorSettings(settings);
-  const taskRouting = validateSecurityRequirementAuthoringEditorTasks(tasks);
+  const taskRouting = validateSecurityRequirementAuthoringEditorTasks(tasks, {
+    activationState: materialized.activationState,
+  });
 
   const testResult = spawnSync(process.execPath, ["--test", testPath], {
     cwd: rootDir,
@@ -180,7 +182,7 @@ try {
   console.log(`Request glob: ${settingsRouting.fileGlob}`);
   console.log(`Preview task: ${taskRouting.previewTask}`);
   console.log(`Expected preview task: ${securityRequirementAuthoringPreviewTaskLabel}`);
-  console.log("Create while inactive: absent");
+  console.log(`Create while active: ${taskRouting.createTaskPresent ? "present" : "missing"}`);
   console.log("Schema provider boundary: cycle-free");
   console.log("Negative fixtures checked: 8");
   console.log(`Editor tests checked: ${testCount}`);

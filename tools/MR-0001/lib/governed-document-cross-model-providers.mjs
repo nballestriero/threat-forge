@@ -4,6 +4,12 @@ import {
   canonicalGovernedDocumentModelIds,
   matchesGovernedRequirementVariantIdentity,
 } from "./governed-document-model-sources.mjs";
+import {
+  createSecurityRequirementCrossModelProvider,
+} from "./security-requirement-cross-model-provider.mjs";
+import {
+  createSecurityRequirementAuthoringReferenceService,
+} from "./security-requirement-authoring-provider.mjs";
 
 /**
  * @file Explicit provider catalog for governed-document cross-model relations.
@@ -213,4 +219,37 @@ export function buildGovernedDocumentCrossModelProviderCatalog(
     ),
     requirement_dispatch: buildGovernedRequirementVariantDispatch(sourceSet),
   });
+}
+
+/**
+ * Resolves the exact active cross-model provider catalog for one source set.
+ * Security reference sources are loaded only when a Security Requirement record
+ * is actually validated. Empty active repositories and synthetic non-Security
+ * fixtures therefore do not require Base Analysis or Common Finding sources.
+ */
+export function resolveGovernedDocumentCrossModelProviders({
+  rootDir,
+  sourceSet,
+  referenceService,
+}) {
+  const canonicalModelIds = canonicalGovernedDocumentModelIds(sourceSet);
+  if (!canonicalModelIds.includes("security-requirement")) {
+    return [...governedDocumentCrossModelProviders];
+  }
+  let resolvedReferenceService = referenceService ?? null;
+  const lazyReferenceService = referenceService ?? Object.freeze({
+    analyzePayload(input) {
+      resolvedReferenceService ??=
+        createSecurityRequirementAuthoringReferenceService({ rootDir });
+      return resolvedReferenceService.analyzePayload(input);
+    },
+  });
+  return [
+    ...governedDocumentCrossModelProviders.filter(
+      (provider) => provider.model_id !== "security-requirement",
+    ),
+    createSecurityRequirementCrossModelProvider({
+      referenceService: lazyReferenceService,
+    }),
+  ];
 }

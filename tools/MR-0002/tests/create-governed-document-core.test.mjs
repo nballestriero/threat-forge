@@ -10,8 +10,11 @@ import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-documen
 import {
   applyGeneratedDocument,
   governedDocumentAuthoringProviders,
-  planGeneratedDocument,
+  planGeneratedDocument as planGeneratedDocumentCore,
 } from "../create-governed-document.mjs";
+import {
+  resolveGovernedDocumentAuthoringProviders,
+} from "../../MR-0001/lib/security-requirement-authoring-provider.mjs";
 
 /**
  * @file Verification of the importable governed-document transaction core.
@@ -30,6 +33,19 @@ import {
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "..", "..", "..");
 const catalog = buildGovernedDocumentAuthoringCatalog();
+
+function planGeneratedDocument(request, catalogValue, options = {}) {
+  const operationRoot = options.rootDir ?? rootDir;
+  const providers = options.providers ??
+    resolveGovernedDocumentAuthoringProviders({
+      rootDir: operationRoot,
+      catalog: catalogValue,
+    });
+  return planGeneratedDocumentCore(request, catalogValue, {
+    ...options,
+    providers,
+  });
+}
 
 function createFixtureRoot() {
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "threatforge-governed-document-core-"));

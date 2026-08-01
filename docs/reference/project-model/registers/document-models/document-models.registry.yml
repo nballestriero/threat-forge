@@ -27,6 +27,12 @@ models:
     registry_profile_id: requirement-registry
     body_profile_id: governance-requirement-body
 
+  - id: security-requirement
+    title: Security Requirement
+    definition_path: docs/reference/project-model/registers/document-models/models/security-requirement.model.yml
+    registry_profile_id: requirement-registry
+    body_profile_id: security-requirement-body
+
 representation_profiles:
   - id: macro-requirement-registry
     title: Macro-requirement YAML registry
@@ -63,6 +69,7 @@ representation_profiles:
     applies_to_model_ids:
       - functional-requirement
       - governance-requirement
+      - security-requirement
 
   - id: functional-requirement-body
     title: Functional Requirement Markdown body
@@ -77,3 +84,10 @@ representation_profiles:
     profile_path: docs/reference/project-model/registers/document-models/profiles/governance-requirement-body.profile.yml
     applies_to_model_ids:
       - governance-requirement
+
+  - id: security-requirement-body
+    title: Security Requirement Markdown body
+    representation_kind: markdown_body
+    profile_path: docs/reference/project-model/registers/document-models/profiles/security-requirement-body.profile.yml
+    applies_to_model_ids:
+      - security-requirement

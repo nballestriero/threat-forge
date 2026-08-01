@@ -15,8 +15,8 @@ import { validateSecurityRequirementModel } from "./lib/security-requirement-mod
  * @macroRequirement MR-0001
  * @implementationStatus implemented
  *
- * Validates the inactive Security Requirement scaffold and any authored Security
- * Requirement sources in blocking mode, then writes deterministic evidence.
+ * Validates the active Security Requirement model or its retained synthetic
+ * scaffold in blocking mode, then writes deterministic evidence.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);

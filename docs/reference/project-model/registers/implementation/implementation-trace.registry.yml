@@ -1857,3 +1857,53 @@ artifacts:
     implemented_path: tools/MR-0001/lib/security-requirement-authoring-schema-provider.mjs
     reason: Isolate the Security Requirement schema provider from both the generic schema builder and editor composition module so active provider composition remains one-way, deterministic and free from ESM import cycles without duplicating canonical projection rules.
     verification_command: node --test tools/MR-0001/test/security-requirement-authoring-editor.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0024
+    title: Security Requirement atomic activation verification core
+    artifact_type: source_module
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/lib/security-requirement-atomic-activation.mjs
+    reason: Build one read-only active snapshot across canonical sources and every coordinated runtime consumer after atomic Security Requirement activation.
+    verification_command: node --test tools/MR-0001/test/security-requirement-atomic-activation.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0025
+    title: Security Requirement atomic activation checker
+    artifact_type: tool
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/check-security-requirement-atomic-activation.mjs
+    reason: Enforce active model profile taxonomy provider schema task and Target Project coordination in the governed repository gate.
+    verification_command: node tools/MR-0001/check-security-requirement-atomic-activation.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0026
+    title: Security Requirement atomic activation verification suite
+    artifact_type: verification_artifact
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/test/security-requirement-atomic-activation.test.mjs
+    reason: Prove deterministic active coordination and fail-closed behavior for missing duplicated or divergent activation members.
+    verification_command: node --test tools/MR-0001/test/security-requirement-atomic-activation.test.mjs
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001IMPL-0027
+    title: Security Requirement atomic activation negative fixtures
+    artifact_type: fixture
+    status: implemented
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    implemented_path: tools/MR-0001/fixtures/security-requirement-atomic-activation/negative-fixtures.registry.json
+    reason: Register deterministic provider omission duplicate unknown source profile variant and taxonomy activation failures against stable rule identifiers.
+    verification_command: node --test tools/MR-0001/test/security-requirement-atomic-activation.test.mjs

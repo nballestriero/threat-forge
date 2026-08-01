@@ -73,6 +73,7 @@ const modelBodyPathProviders = new Map([
     "governance-requirement",
     "docs/reference/project-model/body/requirements/MR-0002/MR-0002ADR-0006REQ-0001GOV-0001_body.md",
   ],
+  ["security-requirement", null],
 ]);
 const forbiddenAdapterFragments = [
   '"Status"',
@@ -150,6 +151,10 @@ function verifyModels() {
   const models = new Set();
   for (const modelId of canonicalModelIds) {
     const projectPath = modelBodyPathProviders.get(modelId);
+    if (!projectPath) {
+      models.add(modelId);
+      continue;
+    }
     const text = fs.readFileSync(resolveProjectPath(projectPath), "utf8");
     const result = service.analyze({
       projectPath,

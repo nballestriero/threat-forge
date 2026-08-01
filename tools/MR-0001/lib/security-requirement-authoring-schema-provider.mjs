@@ -419,3 +419,37 @@ export function createSecurityRequirementAuthoringSchemaProvider(
     },
   });
 }
+
+/**
+ * Resolves the exact schema-provider catalog for the active authoring catalog.
+ *
+ * The caller supplies the generic providers and the governed reference service,
+ * keeping this module independent from both the generic builder and editor.
+ *
+ * @param {{
+ *   catalog: Record<string, unknown>,
+ *   providers: Array<Record<string, unknown>>,
+ *   referenceService?: Record<string, unknown>
+ * }} input Composition context.
+ * @returns {Array<Record<string, unknown>>} Detached exact provider catalog.
+ */
+export function resolveSecurityRequirementAuthoringSchemaProviders(input) {
+  const documentTypes = array(
+    input?.catalog?.document_types,
+    "catalog.document_types",
+  );
+  const providers = array(input?.providers, "schema providers");
+  if (!documentTypes.some((entry) => entry?.id === securityModelId)) {
+    return [...providers];
+  }
+  if (typeof input?.referenceService?.listEligibleCandidates !== "function") {
+    throw failure(
+      ruleIds.finding,
+      "Active Security Requirement schema composition requires the governed reference service.",
+    );
+  }
+  return [
+    ...providers.filter((provider) => provider?.model_id !== securityModelId),
+    createSecurityRequirementAuthoringSchemaProvider(input.referenceService),
+  ];
+}

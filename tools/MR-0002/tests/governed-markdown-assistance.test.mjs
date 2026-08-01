@@ -40,7 +40,9 @@ const bodyPaths = Object.freeze({
 });
 
 function read(projectPath) {
-  return fs.readFileSync(path.join(rootDir, ...projectPath.split("/")), "utf8");
+  return fs
+    .readFileSync(path.join(rootDir, ...projectPath.split("/")), "utf8")
+    .replace(/\r\n/gu, "\n");
 }
 
 function analyze(projectPath, text, position = { line: 0, character: 0 }) {

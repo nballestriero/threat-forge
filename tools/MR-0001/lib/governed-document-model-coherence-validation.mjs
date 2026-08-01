@@ -14,7 +14,7 @@ import {
 } from "./governed-document-model-sources.mjs";
 import {
   buildGovernedDocumentCrossModelProviderCatalog,
-  governedDocumentCrossModelProviders,
+  resolveGovernedDocumentCrossModelProviders,
 } from "./governed-document-cross-model-providers.mjs";
 
 /**
@@ -166,11 +166,13 @@ function addRecord(context, entry) {
 export function validateGovernedDocumentModelCoherence({
   rootDir,
   sourceSet = loadGovernedDocumentModelSourceSet({ rootDir }),
-  providers = governedDocumentCrossModelProviders,
+  providers,
 }) {
+  const resolvedProviders = providers ??
+    resolveGovernedDocumentCrossModelProviders({ rootDir, sourceSet });
   const providerCatalog = buildGovernedDocumentCrossModelProviderCatalog(
     sourceSet,
-    providers,
+    resolvedProviders,
   );
   const diagnostics = [];
   const macroRegistry = readYaml(rootDir, macroRegistryPath);

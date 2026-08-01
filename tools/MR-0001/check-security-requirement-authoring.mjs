@@ -52,23 +52,27 @@ function parseTestCount(output) {
 try {
   const activeCatalog = loadGovernedDocumentAuthoringCatalog({ rootDir });
   const activeDocumentTypes = activeCatalog.document_types.length;
-  if (activeDocumentTypes !== 4) {
+  if (
+    activeCatalog.document_types.filter(
+      (entry) => entry.id === "security-requirement",
+    ).length !== 1
+  ) {
     throw new Error(
-      `Expected four active authoring document types before Security activation; found ${activeDocumentTypes}.`,
+      "Active authoring catalog must expose Security Requirement exactly once.",
     );
   }
   const projected = buildSecurityRequirementAuthoringCatalog({
     rootDir,
     activeCatalog,
   });
-  if (projected.activation_state !== "inactive") {
+  if (projected.activation_state !== "active") {
     throw new Error(
-      `Expected inactive Security Requirement activation state; found ${projected.activation_state}.`,
+      `Expected active Security Requirement activation state; found ${projected.activation_state}.`,
     );
   }
-  if (projected.catalog.document_types.length !== 5) {
+  if (projected.catalog.document_types.length !== activeDocumentTypes) {
     throw new Error(
-      `Expected five candidate authoring document types; found ${projected.catalog.document_types.length}.`,
+      `Active Security authoring projection diverges from the canonical catalog: ${projected.catalog.document_types.length} versus ${activeDocumentTypes}.`,
     );
   }
   const referenceService =
@@ -77,7 +81,9 @@ try {
     referenceService,
   });
   const providers = [
-    ...governedDocumentAuthoringProviders,
+    ...governedDocumentAuthoringProviders.filter(
+      (provider) => provider.model_id !== "security-requirement",
+    ),
     securityProvider,
   ];
   const coverage = validateGovernedDocumentAuthoringProviderCoverage(
@@ -126,7 +132,7 @@ try {
   console.log(`Authoring providers checked: ${providers.length}`);
   console.log(`Negative fixtures checked: 8`);
   console.log(`Authoring tests checked: ${testCount}`);
-  console.log("Create while inactive: blocked");
+  console.log("Create while active: enabled");
   console.log("Warnings: 0");
   console.log("Errors: 0");
 } catch (error) {

@@ -363,7 +363,7 @@ checks:
     linked_requirement_ids:
       - MR-0001ADR-0009REQ-0001
       - MR-0001ADR-0009REQ-0001GOV-0001
-    description: Validate the inactive Security Requirement source scaffold, SEC identity, canonical registry and body structure, syntactic parent mirror, governed Finding reference placement and methodology neutrality without activating the canonical model index.
+    description: Validate the active Security Requirement model, SEC identity, canonical registry and body structure, syntactic parent mirror, governed Finding reference placement and methodology neutrality while accepting an empty active Security corpus.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0002
     title: Security Requirement complete-model verification coverage
@@ -376,7 +376,7 @@ checks:
       - MR-0001ADR-0009REQ-0001
       - MR-0001ADR-0009REQ-0001GOV-0001
       - MR-0002ADR-0004REQ-0002GOV-0002
-    description: Verify inactive scaffold loading, canonical Security Requirement structure, unique stable diagnostics and every registered negative fixture while parent and Finding resolution remain deferred to the cross-model provider boundary.
+    description: Verify active repository loading without synthetic overlay, canonical Security Requirement structure, unique stable diagnostics, synthetic scaffold compatibility and every registered negative fixture while parent and Finding resolution remain owned by the cross-model provider boundary.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0003
     title: Security Requirement cross-model coherence verification coverage
@@ -390,7 +390,7 @@ checks:
       - MR-0001ADR-0009REQ-0001GOV-0001
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
-    description: Verify exact Security Requirement provider coverage, Functional parent resolution, canonical body parent mirroring, accepted Common Finding resolution, affected-parent coherence, Analysis Record provenance and provider immutability while the model remains inactive.
+    description: Verify exact active Security Requirement provider coverage, Functional parent resolution, canonical body parent mirroring, accepted Common Finding resolution, affected-parent coherence, Analysis Record provenance, missing-provider failure and provider immutability.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0004
     title: Security Requirement governed authoring consistency
@@ -403,7 +403,7 @@ checks:
       - MR-0001ADR-0009REQ-0001GOV-0001
       - MR-0002ADR-0004REQ-0004
       - MR-0002ADR-0004REQ-0004GOV-0001
-    description: Verify the inactive Security Requirement activation-candidate authoring catalog, exact provider coverage, Functional parent and accepted Common Finding selection, deterministic SEC registry and body planning, preview immutability, negative fixtures and create failure before canonical activation.
+    description: Verify the active Security Requirement authoring catalog, exact provider coverage, Functional parent and accepted Common Finding selection, deterministic SEC registry and body planning, preview immutability, negative fixtures and create delegation only in the active canonical state.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0005
     title: Security Requirement authoring editor assistance consistency
@@ -416,7 +416,7 @@ checks:
       - MR-0001ADR-0009REQ-0001GOV-0001
       - MR-0002ADR-0005REQ-0003
       - MR-0002ADR-0005REQ-0003GOV-0001
-    description: Verify the dedicated inactive Security Requirement authoring schema, contextual Functional parent and accepted Common Finding completion metadata, deterministic schema materialization, VS Code schema routing, preview-only task exposure, stable negative fixtures and absence of a Security create task before canonical activation.
+    description: Verify the dedicated active Security Requirement authoring schema, contextual Functional parent and accepted Common Finding completion metadata, deterministic schema materialization, VS Code schema routing, preview and create task exposure, and retained inactive-state negative fixtures.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0006
     title: Security Requirement Target Project coordinated consumer consistency
@@ -431,11 +431,11 @@ checks:
       - MR-0001ADR-0010REQ-0002GOV-0001
       - MR-0004ADR-0001REQ-0003
       - MR-0004ADR-0001REQ-0004
-    description: Verify exact active and activation-candidate Target Project validator coverage, dormant Security provider selection, target-local deterministic Security preview through the shared authoring provider boundary, engine and target immutability, missing and duplicate provider rejection and create blocking while Security Requirement remains inactive.
+    description: Verify exact active Target Project validator and authoring coverage, one active Security provider, target-local deterministic Security preview and create transaction routing, optional Analysis Record and Common Finding source discovery, engine and target isolation, and missing or duplicate provider rejection.
 
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0007
     title: Security Requirement integrated pre-activation readiness
-    status: active
+    status: disabled
     command: node
     args:
       - tools/MR-0001/check-security-requirement-activation-readiness.mjs
@@ -445,3 +445,16 @@ checks:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     description: Verify one detached integrated Security Requirement activation-candidate snapshot across complete-model validation, cross-model coherence, governed references, runtime authoring, editor schema and Target Project validation and authoring; require exact coordinated provider coverage, prove deterministic failure when any provider is missing, duplicated, unknown, divergent or not ready, preserve the active model inventory and perform no atomic activation.
+
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0008
+    title: Security Requirement atomic canonical activation
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-security-requirement-atomic-activation.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0001ADR-0010REQ-0002
+      - MR-0001ADR-0010REQ-0002GOV-0001
+    description: Verify active canonical source registration, shared Requirement dispatch, exact complete-model cross-model reference authoring editor Target Project and Markdown consumer coverage, active create routing and absence of any Security Requirement record created merely by activation.

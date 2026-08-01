@@ -9,13 +9,19 @@ import {
   loadGovernedDocumentModelSourceSet,
 } from "../MR-0001/lib/governed-document-model-sources.mjs";
 import {
-  governedDocumentAuthoringProviderModelIds,
   validateGovernedDocumentAuthoringProviderCoverage,
 } from "./create-governed-document.mjs";
 import {
-  governedDocumentAuthoringSchemaProviderModelIds,
+  createSecurityRequirementAuthoringReferenceService,
+  resolveGovernedDocumentAuthoringProviders,
+} from "../MR-0001/lib/security-requirement-authoring-provider.mjs";
+import {
+  governedDocumentAuthoringSchemaProviders,
   validateGovernedDocumentAuthoringSchemaProviderCoverage,
 } from "./build-governed-document-authoring-schema.mjs";
+import {
+  resolveSecurityRequirementAuthoringSchemaProviders,
+} from "../MR-0001/lib/security-requirement-authoring-schema-provider.mjs";
 
 /**
  * @file Governed document authoring contract checker.
@@ -198,10 +204,21 @@ export function validateGovernedDocumentAuthoringContract(catalog, schema) {
     errors.push(`schema document types diverge from the canonical model index: ${schemaCoverage}`);
   }
 
+  const runtimeProviders = resolveGovernedDocumentAuthoringProviders({
+    rootDir,
+    catalog,
+  });
+  const schemaProviders = resolveSecurityRequirementAuthoringSchemaProviders({
+    catalog,
+    providers: governedDocumentAuthoringSchemaProviders,
+    referenceService: createSecurityRequirementAuthoringReferenceService({
+      rootDir,
+    }),
+  });
   const runtimeProviderDiagnostics =
-    validateGovernedDocumentAuthoringProviderCoverage(catalog);
+    validateGovernedDocumentAuthoringProviderCoverage(catalog, runtimeProviders);
   const schemaProviderDiagnostics =
-    validateGovernedDocumentAuthoringSchemaProviderCoverage(catalog);
+    validateGovernedDocumentAuthoringSchemaProviderCoverage(catalog, schemaProviders);
   if (runtimeProviderDiagnostics.length > 0) {
     errors.push(
       `runtime authoring providers diverge from the canonical catalog: ${runtimeProviderDiagnostics
@@ -224,7 +241,16 @@ export function validateGovernedDocumentAuthoringContract(catalog, schema) {
       documentType.body_sections,
       `${documentType.id}.body_sections`,
     )
-      .filter((section) => section.content_kind !== "controlled_scalar_label")
+      .filter(
+        (section) =>
+          section.content_kind !== "controlled_scalar_label" &&
+          !(
+            documentType.id === "security-requirement" &&
+            ["parent_functional_requirement", "finding_derivation"].includes(
+              section.input_name,
+            )
+          ),
+      )
       .map((section) => section.input_name)
       .sort(compare);
     const actualBody = Object.keys(branch.properties?.body?.properties ?? {}).sort(compare);
@@ -288,7 +314,7 @@ export function validateGovernedDocumentAuthoringContract(catalog, schema) {
   }
   if (
     JSON.stringify([...metadata.supported_document_types].sort(compare)) !==
-    JSON.stringify([...governedDocumentAuthoringSchemaProviderModelIds].sort(compare))
+    JSON.stringify(schemaProviders.map((provider) => provider.model_id).sort(compare))
   ) {
     errors.push("schema supported_document_types diverge from its provider catalog.");
   }
@@ -444,8 +470,19 @@ function main() {
   console.log("Implemented requirement: MR-0002ADR-0005REQ-0003GOV-0001");
   console.log(`Catalog sources checked: ${firstCatalog.value.sources.length}`);
   console.log(`Document types checked: ${firstCatalog.value.document_types.length}`);
-  console.log(`Runtime authoring providers checked: ${governedDocumentAuthoringProviderModelIds.length}`);
-  console.log(`Schema authoring providers checked: ${governedDocumentAuthoringSchemaProviderModelIds.length}`);
+  const runtimeProviders = resolveGovernedDocumentAuthoringProviders({
+    rootDir,
+    catalog: firstCatalog.value,
+  });
+  const schemaProviders = resolveSecurityRequirementAuthoringSchemaProviders({
+    catalog: firstCatalog.value,
+    providers: governedDocumentAuthoringSchemaProviders,
+    referenceService: createSecurityRequirementAuthoringReferenceService({
+      rootDir,
+    }),
+  });
+  console.log(`Runtime authoring providers checked: ${runtimeProviders.length}`);
+  console.log(`Schema authoring providers checked: ${schemaProviders.length}`);
   console.log(`Macro-requirements checked: ${firstCatalog.value.macro_requirements.length}`);
   console.log(`Negative fixtures checked: ${fixtures.length}`);
   const match = testOutput.match(/(?:#|ℹ)\s*tests\s+(\d+)/u);

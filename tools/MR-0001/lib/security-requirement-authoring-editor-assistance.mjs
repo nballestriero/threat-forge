@@ -27,11 +27,11 @@ import {
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * Projects one dedicated YAML authoring schema and one preview-only VS Code task
- * from the inactive Security Requirement authoring candidate. Functional parent
- * and accepted Common Finding proposals are obtained through the same canonical
- * catalog and governed reference service used by the authoring provider. No
- * Security Requirement create task is exposed before canonical activation.
+ * Projects one dedicated YAML authoring schema and activation-aware VS Code
+ * tasks for Security Requirement. Functional parent and accepted Common Finding
+ * proposals are obtained through the same canonical catalog and governed
+ * reference service used by the authoring provider. Create is exposed only in
+ * the active canonical state.
  */
 
 export const securityRequirementAuthoringEditorRuleIds = Object.freeze({
@@ -150,8 +150,9 @@ export function buildSecurityRequirementAuthoringEditorSchema(input) {
   schema.$id =
     "urn:threatforge:schema:security-requirement-authoring-request:1";
   schema.title = "ThreatForge Security Requirement authoring request";
-  schema.description =
-    "Activation-candidate request for previewing one methodology-neutral Security Requirement. Create remains unavailable until atomic canonical activation.";
+  schema.description = projected.activation_state === "active"
+    ? "Active request for previewing and creating one methodology-neutral Security Requirement through governed providers."
+    : "Activation-candidate request for previewing one methodology-neutral Security Requirement. Create remains unavailable until atomic canonical activation.";
   branch.title = "Security Requirement";
   schema["x-threatforge"] = {
     ...schema["x-threatforge"],
@@ -327,14 +328,23 @@ export function validateSecurityRequirementAuthoringEditorSettings(settings) {
  *
  * @returns {Readonly<Record<string, unknown>>} Generated task.
  */
-export function buildSecurityRequirementAuthoringPreviewTask() {
+export function buildSecurityRequirementAuthoringTask(mode = "preview") {
+  if (mode !== "preview" && mode !== "create") {
+    throw failure(
+      securityRequirementAuthoringEditorRuleIds.activation,
+      `Unsupported Security Requirement task mode: ${mode}.`,
+    );
+  }
+  const preview = mode === "preview";
   return Object.freeze({
-    label: securityRequirementAuthoringPreviewTaskLabel,
+    label: preview
+      ? securityRequirementAuthoringPreviewTaskLabel
+      : securityRequirementAuthoringCreateTaskLabel,
     type: "process",
     command: "node",
     args: Object.freeze([
       "tools/MR-0002/run-security-requirement-authoring.mjs",
-      "--preview",
+      preview ? "--preview" : "--create",
       "--request",
       "${relativeFile}",
     ]),
@@ -349,13 +359,22 @@ export function buildSecurityRequirementAuthoringPreviewTask() {
   });
 }
 
+export function buildSecurityRequirementAuthoringPreviewTask() {
+  return buildSecurityRequirementAuthoringTask("preview");
+}
+
+export function buildSecurityRequirementAuthoringCreateTask() {
+  return buildSecurityRequirementAuthoringTask("create");
+}
+
 /**
- * Validates preview-only routing and absence of premature create exposure.
+ * Validates activation-aware Security Requirement task routing.
  *
  * @param {Record<string, unknown>} tasks VS Code task document.
  * @returns {{previewTask: string, createTaskAbsent: boolean}}
  */
-export function validateSecurityRequirementAuthoringEditorTasks(tasks) {
+export function validateSecurityRequirementAuthoringEditorTasks(tasks, options = {}) {
+  const activationState = String(options.activationState ?? "inactive").trim();
   const values = array(
     object(
       tasks,
@@ -393,7 +412,16 @@ export function validateSecurityRequirementAuthoringEditorTasks(tasks) {
       "Security Requirement preview task is missing or stale.",
     );
   }
-  if (byLabel.has(securityRequirementAuthoringCreateTaskLabel)) {
+  const createExpected = buildSecurityRequirementAuthoringCreateTask();
+  const create = byLabel.get(createExpected.label);
+  if (activationState === "active") {
+    if (!create || JSON.stringify(create) !== JSON.stringify(createExpected)) {
+      throw failure(
+        securityRequirementAuthoringEditorRuleIds.activation,
+        "Active Security Requirement create task is missing or stale.",
+      );
+    }
+  } else if (create) {
     throw failure(
       securityRequirementAuthoringEditorRuleIds.activation,
       "Security Requirement create task must not be exposed while the model is inactive.",
@@ -401,6 +429,7 @@ export function validateSecurityRequirementAuthoringEditorTasks(tasks) {
   }
   return {
     previewTask: expected.label,
-    createTaskAbsent: true,
+    createTaskPresent: activationState === "active",
+    createTaskAbsent: activationState !== "active",
   };
 }

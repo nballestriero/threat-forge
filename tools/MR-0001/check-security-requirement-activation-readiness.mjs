@@ -8,6 +8,7 @@ import {
   assertSecurityRequirementActivationReadiness,
   buildSecurityRequirementActivationReadinessSnapshot,
   securityRequirementActivationReadinessProviderIds,
+  validateSecurityRequirementActivationReadiness,
 } from "./lib/security-requirement-activation-readiness.mjs";
 
 /**
@@ -50,7 +51,17 @@ async function main() {
   const snapshot = await buildSecurityRequirementActivationReadinessSnapshot({
     rootDir,
   });
-  const report = assertSecurityRequirementActivationReadiness(snapshot);
+  const report = snapshot.activation_state === "active"
+    ? validateSecurityRequirementActivationReadiness(snapshot)
+    : assertSecurityRequirementActivationReadiness(snapshot);
+  if (
+    snapshot.activation_state === "active" &&
+    report.pre_activation_ready !== false
+  ) {
+    throw new Error(
+      "Historical pre-activation readiness must reject the active repository.",
+    );
+  }
   if (snapshot.atomic_activation_performed !== false) {
     throw new Error("Pre-activation readiness must not perform atomic activation.");
   }
@@ -93,7 +104,7 @@ async function main() {
     );
   }
 
-  console.log("Security Requirement pre-activation readiness check passed.");
+  console.log("Security Requirement historical pre-activation readiness check passed.");
   console.log("Implemented requirement: MR-0001ADR-0009REQ-0001");
   console.log("Implemented requirement: MR-0001ADR-0009REQ-0001GOV-0001");
   console.log("Implemented requirement: MR-0001ADR-0010REQ-0002");

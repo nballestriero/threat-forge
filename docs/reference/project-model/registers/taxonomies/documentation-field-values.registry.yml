@@ -197,6 +197,12 @@ field_value_sets:
         requires_parent_requirement: true
         allowed_parent_requirement_types:
           - functional
+      - value: security
+        meaning: Concrete specialized requirement type that defines one independently testable methodology-neutral security obligation derived from accepted Common Findings for exactly one existing Functional Requirement.
+        is_specialized: true
+        requires_parent_requirement: true
+        allowed_parent_requirement_types:
+          - functional
 
   - id: FIELD-VALUE-SET-0011
     name: repository_materializer_status

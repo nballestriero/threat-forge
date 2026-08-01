@@ -43,11 +43,11 @@ import {
  * @macroRequirement MR-0002
  * @implementationStatus implemented
  *
- * Projects the inactive Security Requirement scaffold into an explicit
- * activation-candidate authoring catalog, resolves one Functional parent and
- * one or more accepted Common Findings, and delegates deterministic registry
- * and Markdown generation to the shared governed-document transaction core.
- * Creation remains fail-closed while the canonical model is inactive.
+ * Resolves the canonical or retained activation-candidate Security Requirement
+ * authoring catalog, one Functional parent and one or more accepted Common
+ * Findings, then delegates deterministic registry and Markdown generation to
+ * the shared governed-document transaction core. Creation remains fail-closed
+ * unless the canonical model is active.
  */
 
 export const securityRequirementAuthoringRuleIds = Object.freeze({
@@ -350,6 +350,9 @@ export function buildSecurityRequirementAuthoringCatalog(input) {
  */
 export function createSecurityRequirementAuthoringReferenceService(input) {
   const rootDir = path.resolve(text(input?.rootDir, "rootDir"));
+  const resolverRootDir = path.resolve(
+    String(input?.resolverRootDir ?? rootDir),
+  );
   const bae = loadAndValidateBaseAnalysisRegistry({ rootDir });
   if (!bae.valid) {
     throw failure(
@@ -369,7 +372,7 @@ export function createSecurityRequirementAuthoringReferenceService(input) {
   const functionalProviders =
     createFunctionalRequirementReferenceProviders({ rootDir });
   return createGovernedEntityReferenceService({
-    registry: loadGovernedEntityResolverRegistry({ rootDir }),
+    registry: loadGovernedEntityResolverRegistry({ rootDir: resolverRootDir }),
     sourceProjectionProviders: new Map([
       ["base-analysis-registry-reference-source", () => bae.projection],
       ...commonFindingProviders.sourceProjectionProviders,
@@ -760,15 +763,11 @@ export function planSecurityRequirementAuthoring(request, options) {
       referenceService,
     },
   );
-  const provider = createSecurityRequirementAuthoringProvider({
+  const providers = resolveGovernedDocumentAuthoringProviders({
+    rootDir,
+    catalog: projected.catalog,
     referenceService,
   });
-  const providers = [
-    ...governedDocumentAuthoringProviders.filter(
-      (entry) => entry.model_id !== securityModelId,
-    ),
-    provider,
-  ];
   const coverage = validateGovernedDocumentAuthoringProviderCoverage(
     projected.catalog,
     providers,
@@ -814,4 +813,24 @@ export function assertSecurityRequirementCreationAllowed(plan) {
     );
   }
   return true;
+}
+
+/** Resolves the exact runtime authoring provider catalog for an active catalog. */
+export function resolveGovernedDocumentAuthoringProviders({
+  rootDir,
+  catalog,
+  referenceService,
+}) {
+  const documentTypes = array(catalog?.document_types, "catalog.document_types");
+  if (!documentTypes.some((entry) => entry.id === securityModelId)) {
+    return [...governedDocumentAuthoringProviders];
+  }
+  const service = referenceService ??
+    createSecurityRequirementAuthoringReferenceService({ rootDir });
+  return [
+    ...governedDocumentAuthoringProviders.filter(
+      (provider) => provider.model_id !== securityModelId,
+    ),
+    createSecurityRequirementAuthoringProvider({ referenceService: service }),
+  ];
 }

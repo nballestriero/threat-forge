@@ -230,6 +230,27 @@
       }
     },
     {
+      "label": "ThreatForge: create Security Requirement authoring",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "tools/MR-0002/run-security-requirement-authoring.mjs",
+        "--create",
+        "--request",
+        "${relativeFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true,
+        "focus": true
+      }
+    },
+    {
       "label": "ThreatForge: install governed Markdown assistance",
       "type": "process",
       "command": "node",

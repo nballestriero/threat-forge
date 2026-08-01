@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "urn:threatforge:schema:security-requirement-authoring-request:1",
   "title": "ThreatForge Security Requirement authoring request",
-  "description": "Activation-candidate request for previewing one methodology-neutral Security Requirement. Create remains unavailable until atomic canonical activation.",
+  "description": "Active request for previewing and creating one methodology-neutral Security Requirement through governed providers.",
   "oneOf": [
     {
       "title": "Security Requirement",
@@ -4546,13 +4546,10 @@
       "security-requirement"
     ],
     "model_id": "security-requirement",
-    "activation_state": "inactive",
-    "create_available": false,
+    "activation_state": "active",
+    "create_available": true,
     "preview_available": true,
-    "scaffold_sources_checked": [
-      "docs/reference/project-model/registers/document-models/models/security-requirement.model.yml",
-      "docs/reference/project-model/registers/document-models/profiles/security-requirement-body.profile.yml"
-    ],
+    "scaffold_sources_checked": [],
     "functional_parent_candidates": 52,
     "accepted_finding_candidates": 0,
     "completion_sources": [

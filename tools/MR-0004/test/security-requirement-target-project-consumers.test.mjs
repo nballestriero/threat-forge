@@ -214,6 +214,7 @@ function securityCandidateContext(targetRoot) {
     projected,
     parent,
     request,
+    referenceService: service,
     securityProvider,
     providers: [...governedDocumentAuthoringProviders, securityProvider],
   };
@@ -225,12 +226,13 @@ function planCandidate(targetRoot, context, providers = context.providers) {
     targetRoot,
     catalog: context.projected.catalog,
     request: context.request,
+    referenceService: context.referenceService,
     providers,
     today,
   });
 }
 
-test("active Target Project validation providers remain exact and Security-free", () => {
+test("active Target Project validation providers include Security exactly once", () => {
   const sourceSet = loadGovernedDocumentModelSourceSet({ rootDir: engineRoot });
   const providers = resolveTargetProjectModelValidationProviders(sourceSet);
   assert.deepEqual(
@@ -240,6 +242,7 @@ test("active Target Project validation providers remain exact and Security-free"
       "decision",
       "functional-requirement",
       "governance-requirement",
+      "security-requirement",
     ],
   );
 });
@@ -248,7 +251,7 @@ test("candidate Target Project validation adds exactly one Security provider", (
   const loaded = loadSecurityRequirementValidationSourceSet({
     rootDir: engineRoot,
   });
-  assert.equal(loaded.activation_state, "inactive");
+  assert.equal(loaded.activation_state, "active");
   const providers = resolveTargetProjectModelValidationProviders(
     loaded.sourceSet,
   );
@@ -270,7 +273,7 @@ test("candidate Target Project validation adds exactly one Security provider", (
   );
 });
 
-test("active Target Project authoring catalog does not expose Security", () => {
+test("active Target Project authoring catalog exposes Security exactly once", () => {
   const workspace = createWorkspace();
   try {
     const catalog = loadTargetProjectAuthoringCatalog({
@@ -278,10 +281,10 @@ test("active Target Project authoring catalog does not expose Security", () => {
       targetRoot: workspace.targetRoot,
     });
     assert.equal(
-      catalog.document_types.some(
+      catalog.document_types.filter(
         (entry) => entry.id === "security-requirement",
-      ),
-      false,
+      ).length,
+      1,
     );
     assert.equal(catalog.activation_candidate, undefined);
   } finally {
@@ -289,15 +292,15 @@ test("active Target Project authoring catalog does not expose Security", () => {
   }
 });
 
-test("candidate Target Project Security preview is deterministic and target-local", () => {
+test("active Target Project Security preview is deterministic and target-local", () => {
   const workspace = createWorkspace();
   try {
     const context = securityCandidateContext(workspace.targetRoot);
     const first = planCandidate(workspace.targetRoot, context);
     const second = planCandidate(workspace.targetRoot, context);
     assert.deepEqual(second, first);
-    assert.equal(first.activation_state, "inactive");
-    assert.equal(first.preview_only, true);
+    assert.equal(first.activation_state, "active");
+    assert.equal(first.preview_only, false);
     assert.equal(
       first.documentPlan.id,
       `${context.parent.id}SEC-0001`,
@@ -318,7 +321,7 @@ test("candidate Target Project Security preview is deterministic and target-loca
   }
 });
 
-test("candidate Target Project Security preview leaves both roots unchanged", () => {
+test("active Target Project Security preview leaves both roots unchanged", () => {
   const workspace = createWorkspace();
   try {
     const targetBefore = hashTree(workspace.targetRoot);
@@ -337,7 +340,7 @@ test("candidate Target Project Security preview leaves both roots unchanged", ()
   }
 });
 
-test("candidate Target Project Security preview fails without its explicit provider", () => {
+test("active Target Project Security preview fails without its explicit provider", () => {
   const workspace = createWorkspace();
   try {
     const context = securityCandidateContext(workspace.targetRoot);
@@ -355,7 +358,7 @@ test("candidate Target Project Security preview fails without its explicit provi
   }
 });
 
-test("candidate Target Project Security preview rejects duplicate providers", () => {
+test("active Target Project Security preview rejects duplicate providers", () => {
   const workspace = createWorkspace();
   try {
     const context = securityCandidateContext(workspace.targetRoot);
@@ -372,21 +375,18 @@ test("candidate Target Project Security preview rejects duplicate providers", ()
   }
 });
 
-test("inactive Target Project Security plan cannot be applied", () => {
+test("active Target Project Security plan enters the target transaction", () => {
   const workspace = createWorkspace();
   try {
     const context = securityCandidateContext(workspace.targetRoot);
     const plan = planCandidate(workspace.targetRoot, context);
-    const before = hashTree(workspace.targetRoot);
-    assert.throws(
-      () =>
-        applyTargetProjectAuthoring(plan, {
-          engineRoot,
-          targetRoot: workspace.targetRoot,
-        }),
-      /inactive|preview-only|activation/u,
-    );
-    assert.equal(hashTree(workspace.targetRoot), before);
+    const result = applyTargetProjectAuthoring(plan, {
+      engineRoot,
+      targetRoot: workspace.targetRoot,
+      verify: () => ({ status: "pass" }),
+    });
+    assert.equal(result.id.endsWith("SEC-0001"), true);
+    assert.equal(result.verification.status, "pass");
   } finally {
     removeWorkspace(workspace);
   }

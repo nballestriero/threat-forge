@@ -146,27 +146,23 @@ function mutateSnapshot(source, mutation) {
   return snapshot;
 }
 
-test("repository providers form one read-only pre-activation readiness snapshot", async () => {
+test("historical pre-activation readiness rejects the active repository without mutation", async () => {
   const before = digestCanonicalSources();
   const snapshot = await buildSecurityRequirementActivationReadinessSnapshot({
     rootDir,
   });
-  const report = assertSecurityRequirementActivationReadiness(snapshot);
+  const report = validateSecurityRequirementActivationReadiness(snapshot);
   const after = digestCanonicalSources();
 
-  assert.equal(report.pre_activation_ready, true);
-  assert.equal(report.activation_state, "inactive");
+  assert.equal(report.pre_activation_ready, false);
+  assert.equal(report.activation_state, "active");
   assert.equal(snapshot.atomic_activation_performed, false);
-  assert.equal(snapshot.active_model_ids.includes("security-requirement"), false);
-  assert.equal(
-    snapshot.candidate_model_ids.filter(
-      (value) => value === "security-requirement",
-    ).length,
-    1,
-  );
-  assert.deepEqual(
-    snapshot.providers.map((entry) => entry.provider_id).sort(compare),
-    [...securityRequirementActivationReadinessProviderIds].sort(compare),
+  assert.equal(snapshot.active_model_ids.includes("security-requirement"), true);
+  assert.ok(
+    report.diagnostics.some(
+      (entry) =>
+        entry.rule_id === securityRequirementActivationReadinessRuleIds.state,
+    ),
   );
   assert.equal(after, before);
 });

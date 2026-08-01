@@ -3,7 +3,16 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { buildGovernedDocumentAuthoringSchema } from "../MR-0002/build-governed-document-authoring-schema.mjs";
+import {
+  buildGovernedDocumentAuthoringSchema,
+  governedDocumentAuthoringSchemaProviders,
+} from "../MR-0002/build-governed-document-authoring-schema.mjs";
+import {
+  resolveSecurityRequirementAuthoringSchemaProviders,
+} from "../MR-0001/lib/security-requirement-authoring-schema-provider.mjs";
+import {
+  createSecurityRequirementAuthoringReferenceService,
+} from "../MR-0001/lib/security-requirement-authoring-provider.mjs";
 import {
   buildCommonAnalysisFindingEditorRoutingProjection,
   mergeCommonAnalysisFindingEditorRouting,
@@ -395,7 +404,18 @@ function expectedWorkspaceProjection(roots) {
   const commonFindingRouting =
     buildCommonAnalysisFindingEditorRoutingProjection();
   const catalog = loadTargetProjectAuthoringCatalog(roots);
-  const schema = buildGovernedDocumentAuthoringSchema(catalog);
+  const referenceService = createSecurityRequirementAuthoringReferenceService({
+    rootDir: roots.targetRoot,
+    resolverRootDir: roots.engineRoot,
+  });
+  const schemaProviders = resolveSecurityRequirementAuthoringSchemaProviders({
+    catalog,
+    providers: governedDocumentAuthoringSchemaProviders,
+    referenceService,
+  });
+  const schema = buildGovernedDocumentAuthoringSchema(catalog, {
+    providers: schemaProviders,
+  });
   schema.title = "ThreatForge Target Project governed document authoring request";
   schema.description =
     "Target-local request whose document rules come from ThreatForge and whose ownership candidates come from the opened Target Project.";

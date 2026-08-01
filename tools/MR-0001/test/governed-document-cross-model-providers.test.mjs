@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url";
 
 import {
   buildGovernedDocumentCrossModelProviderCatalog,
-  governedDocumentCrossModelProviderModelIds,
   governedDocumentCrossModelProviders,
+  resolveGovernedDocumentCrossModelProviders,
 } from "../lib/governed-document-cross-model-providers.mjs";
 import {
   canonicalGovernedDocumentModelIds,
@@ -173,14 +173,17 @@ test("covers the current canonical inventory exactly", () => {
   const sourceSet = loadGovernedDocumentModelSourceSet({
     rootDir: repositoryRoot,
   });
-  const catalog = buildGovernedDocumentCrossModelProviderCatalog(sourceSet);
-  assert.deepEqual(
-    catalog.provider_model_ids,
-    canonicalGovernedDocumentModelIds(sourceSet),
+  const providers = resolveGovernedDocumentCrossModelProviders({
+    rootDir: repositoryRoot,
+    sourceSet,
+  });
+  const catalog = buildGovernedDocumentCrossModelProviderCatalog(
+    sourceSet,
+    providers,
   );
   assert.deepEqual(
     catalog.provider_model_ids,
-    governedDocumentCrossModelProviderModelIds,
+    canonicalGovernedDocumentModelIds(sourceSet),
   );
 });
 
@@ -188,11 +191,15 @@ test("a coherent model extension exposes the missing cross-model provider", () =
   const sourceSet = loadGovernedDocumentModelSourceSet({
     rootDir: repositoryRoot,
   });
+  const activeProviders = resolveGovernedDocumentCrossModelProviders({
+    rootDir: repositoryRoot,
+    sourceSet,
+  });
   const extended = extendSourceSet(sourceSet);
   const before = structuredClone(extended);
   assert.deepEqual(validateGovernedDocumentModelSourceSet(extended), []);
   assert.throws(
-    () => buildGovernedDocumentCrossModelProviderCatalog(extended),
+    () => buildGovernedDocumentCrossModelProviderCatalog(extended, activeProviders),
     /document-model\.consumer\.provider\.missing: Consumer governed-document-cross-model-coherence has no provider for canonical model synthetic-extension\./u,
   );
   assert.deepEqual(extended, before);
@@ -202,13 +209,17 @@ test("the same extension is accepted after one explicit provider is supplied", (
   const sourceSet = loadGovernedDocumentModelSourceSet({
     rootDir: repositoryRoot,
   });
+  const activeProviders = resolveGovernedDocumentCrossModelProviders({
+    rootDir: repositoryRoot,
+    sourceSet,
+  });
   const extended = extendSourceSet(sourceSet);
   const syntheticProvider = Object.freeze({
     model_id: "synthetic-extension",
     collect() {},
     validate() {},
   });
-  const providers = [...governedDocumentCrossModelProviders, syntheticProvider];
+  const providers = [...activeProviders, syntheticProvider];
   const originalProviders = [...providers];
   const catalog = buildGovernedDocumentCrossModelProviderCatalog(
     extended,
@@ -225,18 +236,22 @@ test("duplicate and unregistered cross-model providers fail deterministically", 
   const sourceSet = loadGovernedDocumentModelSourceSet({
     rootDir: repositoryRoot,
   });
+  const activeProviders = resolveGovernedDocumentCrossModelProviders({
+    rootDir: repositoryRoot,
+    sourceSet,
+  });
   assert.throws(
     () =>
       buildGovernedDocumentCrossModelProviderCatalog(sourceSet, [
-        ...governedDocumentCrossModelProviders,
-        governedDocumentCrossModelProviders[0],
+        ...activeProviders,
+        activeProviders[0],
       ]),
     /document-model\.consumer\.provider\.duplicate/u,
   );
   assert.throws(
     () =>
       buildGovernedDocumentCrossModelProviderCatalog(sourceSet, [
-        ...governedDocumentCrossModelProviders,
+        ...activeProviders,
         { model_id: "unregistered", collect() {}, validate() {} },
       ]),
     /document-model\.consumer\.provider\.unregistered/u,

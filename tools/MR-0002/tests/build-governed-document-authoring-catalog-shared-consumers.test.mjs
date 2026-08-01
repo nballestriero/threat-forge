@@ -11,15 +11,20 @@ import {
 import { buildGovernedDocumentAuthoringCatalog } from "../build-governed-document-authoring-catalog.mjs";
 import {
   governedDocumentAuthoringProviders,
-  governedDocumentAuthoringProviderModelIds,
   validateGovernedDocumentAuthoringProviderCoverage,
 } from "../create-governed-document.mjs";
 import {
+  createSecurityRequirementAuthoringReferenceService,
+  resolveGovernedDocumentAuthoringProviders,
+} from "../../MR-0001/lib/security-requirement-authoring-provider.mjs";
+import {
   buildGovernedDocumentAuthoringSchema,
   governedDocumentAuthoringSchemaProviders,
-  governedDocumentAuthoringSchemaProviderModelIds,
   validateGovernedDocumentAuthoringSchemaProviderCoverage,
 } from "../build-governed-document-authoring-schema.mjs";
+import {
+  resolveSecurityRequirementAuthoringSchemaProviders,
+} from "../../MR-0001/lib/security-requirement-authoring-schema-provider.mjs";
 
 /**
  * @file Verification of the shared governed-document authoring catalog.
@@ -114,23 +119,31 @@ test("catalog generation is deterministic", () => {
 test("runtime and schema authoring providers cover the canonical catalog exactly", () => {
   const catalog = buildGovernedDocumentAuthoringCatalog();
   const canonicalIds = catalog.document_types.map((entry) => entry.id).sort();
+  const runtimeProviders = resolveGovernedDocumentAuthoringProviders({
+    rootDir: process.cwd(),
+    catalog,
+  });
+  const schemaProviders = resolveSecurityRequirementAuthoringSchemaProviders({
+    catalog,
+    providers: governedDocumentAuthoringSchemaProviders,
+    referenceService: createSecurityRequirementAuthoringReferenceService({
+      rootDir: process.cwd(),
+    }),
+  });
+  assert.deepEqual(runtimeProviders.map((entry) => entry.model_id).sort(), canonicalIds);
+  assert.deepEqual(schemaProviders.map((entry) => entry.model_id).sort(), canonicalIds);
   assert.deepEqual(
-    [...governedDocumentAuthoringProviderModelIds].sort(),
-    canonicalIds,
-  );
-  assert.deepEqual(
-    [...governedDocumentAuthoringSchemaProviderModelIds].sort(),
-    canonicalIds,
-  );
-  assert.deepEqual(
-    validateGovernedDocumentAuthoringProviderCoverage(catalog),
+    validateGovernedDocumentAuthoringProviderCoverage(catalog, runtimeProviders),
     [],
   );
   assert.deepEqual(
-    validateGovernedDocumentAuthoringSchemaProviderCoverage(catalog),
+    validateGovernedDocumentAuthoringSchemaProviderCoverage(catalog, schemaProviders),
     [],
   );
-  assert.equal(buildGovernedDocumentAuthoringSchema(catalog).oneOf.length, canonicalIds.length);
+  assert.equal(
+    buildGovernedDocumentAuthoringSchema(catalog, { providers: schemaProviders }).oneOf.length,
+    canonicalIds.length,
+  );
 });
 
 test("additional canonical models fail closed until runtime and schema providers exist", () => {
@@ -141,8 +154,25 @@ test("additional canonical models fail closed until runtime and schema providers
     id: "synthetic-authoring-model",
     title: "Synthetic authoring model",
   });
-  const runtimeDiagnostics = validateGovernedDocumentAuthoringProviderCoverage(extended);
-  const schemaDiagnostics = validateGovernedDocumentAuthoringSchemaProviderCoverage(extended);
+  const runtimeProviders = resolveGovernedDocumentAuthoringProviders({
+    rootDir: process.cwd(),
+    catalog,
+  });
+  const schemaProviders = resolveSecurityRequirementAuthoringSchemaProviders({
+    catalog,
+    providers: governedDocumentAuthoringSchemaProviders,
+    referenceService: createSecurityRequirementAuthoringReferenceService({
+      rootDir: process.cwd(),
+    }),
+  });
+  const runtimeDiagnostics = validateGovernedDocumentAuthoringProviderCoverage(
+    extended,
+    runtimeProviders,
+  );
+  const schemaDiagnostics = validateGovernedDocumentAuthoringSchemaProviderCoverage(
+    extended,
+    schemaProviders,
+  );
   assert.deepEqual(
     runtimeDiagnostics.map((entry) => entry.rule_id),
     ["document-model.consumer.provider.missing"],
@@ -152,7 +182,7 @@ test("additional canonical models fail closed until runtime and schema providers
     ["document-model.consumer.provider.missing"],
   );
   assert.throws(
-    () => buildGovernedDocumentAuthoringSchema(extended),
+    () => buildGovernedDocumentAuthoringSchema(extended, { providers: schemaProviders }),
     /document-model\.consumer\.provider\.missing/u,
   );
 });

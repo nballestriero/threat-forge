@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "fixture_set_id": "security-requirement-atomic-activation-negative-fixtures",
+  "cases": [
+    {
+      "id": "missing-complete-model-validator",
+      "mutation": "remove-provider:complete-model-validator",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-cross-model-provider",
+      "mutation": "remove-provider:cross-model-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-governed-reference-service",
+      "mutation": "remove-provider:governed-reference-service",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-runtime-authoring-provider",
+      "mutation": "remove-provider:runtime-authoring-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-editor-schema-provider",
+      "mutation": "remove-provider:editor-schema-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-target-project-validator-provider",
+      "mutation": "remove-provider:target-project-validator-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-target-project-authoring-provider",
+      "mutation": "remove-provider:target-project-authoring-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-markdown-assistance-provider",
+      "mutation": "remove-provider:governed-markdown-assistance-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "duplicate-runtime-provider",
+      "mutation": "duplicate-provider:runtime-authoring-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "unknown-provider",
+      "mutation": "add-unknown-provider",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.provider-coverage"
+      ]
+    },
+    {
+      "id": "missing-active-model",
+      "mutation": "remove-active-security-model",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.inventory"
+      ]
+    },
+    {
+      "id": "missing-active-profile",
+      "mutation": "remove-active-security-profile",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.inventory"
+      ]
+    },
+    {
+      "id": "missing-registry-variant",
+      "mutation": "remove-security-variant",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.registry-variant"
+      ]
+    },
+    {
+      "id": "missing-taxonomy-value",
+      "mutation": "remove-security-taxonomy",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.taxonomy"
+      ]
+    },
+    {
+      "id": "security-record-created",
+      "mutation": "create-security-record",
+      "expected_rule_ids": [
+        "security-requirement.activation.atomic.record-creation"
+      ]
+    }
+  ]
+}

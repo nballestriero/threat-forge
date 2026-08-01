@@ -47,6 +47,7 @@ export const engineOwnedProjectPaths = Object.freeze([
   "docs/reference/project-model/contracts",
   "docs/reference/project-model/registers/document-models",
   "docs/reference/project-model/registers/taxonomies",
+  "docs/reference/project-model/registers/references",
   "docs/reference/project-model/registers/base-analysis/base-analysis-taxonomies.registry.yml",
 ]);
 
@@ -57,6 +58,52 @@ export const targetOwnedProjectPaths = Object.freeze([
   "docs/reference/project-model/registers/base-analysis/base-analysis-elements.registry.yml",
   "docs/reference/project-model/body",
 ]);
+
+const targetAnalysisSourceSuffixes = Object.freeze([
+  ".analysis-record.yml",
+  ".analysis-finding.yml",
+]);
+const ignoredTargetAnalysisDirectoryNames = new Set([
+  ".git",
+  ".threat-forge",
+  "artifacts",
+  "examples",
+  "node_modules",
+  "old",
+]);
+
+/** Discovers optional Target Project Analysis Record and Common Finding sources. */
+export function discoverTargetProjectAnalysisSourcePaths(targetRoot) {
+  const root = path.resolve(String(targetRoot));
+  const discovered = [];
+  function visit(directory) {
+    for (const entry of fs
+      .readdirSync(directory, { withFileTypes: true })
+      .sort((left, right) => compare(left.name, right.name))) {
+      if (entry.isDirectory() && ignoredTargetAnalysisDirectoryNames.has(entry.name)) {
+        continue;
+      }
+      const absolute = path.join(directory, entry.name);
+      if (entry.isSymbolicLink()) {
+        throw new Error(
+          `Symbolic links are not allowed in Target Project analysis input: ${absolute}`,
+        );
+      }
+      if (entry.isDirectory()) {
+        visit(absolute);
+        continue;
+      }
+      if (
+        entry.isFile() &&
+        targetAnalysisSourceSuffixes.some((suffix) => entry.name.endsWith(suffix))
+      ) {
+        discovered.push(path.relative(root, absolute).replaceAll("\\", "/"));
+      }
+    }
+  }
+  visit(root);
+  return discovered.sort(compare);
+}
 
 const modelCheckProviders = new Map([
   [
@@ -238,6 +285,9 @@ function buildValidationOverlay(engineRoot, targetRoot) {
       copyPathWithoutLinks(engineRoot, overlayRoot, projectPath);
     }
     for (const projectPath of targetOwnedProjectPaths) {
+      copyPathWithoutLinks(targetRoot, overlayRoot, projectPath);
+    }
+    for (const projectPath of discoverTargetProjectAnalysisSourcePaths(targetRoot)) {
       copyPathWithoutLinks(targetRoot, overlayRoot, projectPath);
     }
     return overlayRoot;

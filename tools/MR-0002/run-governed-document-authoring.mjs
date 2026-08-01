@@ -9,12 +9,16 @@ import { readGovernedYamlFile } from "../MR-0001/lib/governed-yaml.mjs";
 import {
   applyGeneratedDocument,
   planGeneratedDocument,
-  validateGovernedDocumentAuthoringRequest,
+  validateGovernedDocumentAuthoringRequest as validateGovernedDocumentAuthoringRequestCore,
 } from "./create-governed-document.mjs";
-export { validateGovernedDocumentAuthoringRequest };
 import {
   createRepositoryProjectionMaterializationSession,
 } from "./lib/repository-projection-materialization.mjs";
+import {
+  assertSecurityRequirementCreationAllowed,
+  planSecurityRequirementAuthoring,
+  resolveGovernedDocumentAuthoringProviders,
+} from "../MR-0001/lib/security-requirement-authoring-provider.mjs";
 
 /**
  * @file Governed document authoring request runner.
@@ -74,6 +78,23 @@ function requireString(value, label) {
 function resolveRootDir(options = {}) {
   return options.rootDir ? path.resolve(String(options.rootDir)) : configuredRootDir;
 }
+
+/** Validates one request through the exact active runtime provider catalog. */
+export function validateGovernedDocumentAuthoringRequest(
+  request,
+  catalog,
+  options = {},
+) {
+  const providers = options.providers ??
+    resolveGovernedDocumentAuthoringProviders({
+      rootDir: resolveRootDir(options),
+      catalog,
+      referenceService: options.referenceService,
+    });
+  return validateGovernedDocumentAuthoringRequestCore(request, catalog, {
+    providers,
+  });
+}
 /** @param {string} projectPath @param {string} rootDir */
 function resolveProjectPath(projectPath, rootDir) {
   const normalized = String(projectPath ?? "").replaceAll("\\", "/").trim();
@@ -129,7 +150,7 @@ function parseArgs(argv) {
 }
 
 function helpText() {
-  return `Usage:\n  node tools/MR-0002/run-governed-document-authoring.mjs --preview --request path/to/file.governed-document-authoring.yml\n  node tools/MR-0002/run-governed-document-authoring.mjs --create --request path/to/file.governed-document-authoring.yml\n\nThe request document supports Macro-requirement, Decision, Functional Requirement and Governance Requirement authoring. Preview never writes. Create prints the same plan and requires the exact confirmation token create before the atomic transaction and complete repository gate.`;
+  return `Usage:\n  node tools/MR-0002/run-governed-document-authoring.mjs --preview --request path/to/file.governed-document-authoring.yml\n  node tools/MR-0002/run-governed-document-authoring.mjs --create --request path/to/file.governed-document-authoring.yml\n\nThe request document supports Macro-requirement, Decision, Functional Requirement, Governance Requirement and Security Requirement authoring. Preview never writes. Create prints the same plan and requires the exact confirmation token create before the atomic transaction and complete repository gate.`;
 }
 
 /** @param {{rootDir?: string}} [options] */
@@ -162,12 +183,32 @@ export function readGovernedDocumentAuthoringRequest(requestProjectPath, options
 export function planGovernedDocumentAuthoring(request, catalog, options = {}) {
   const mode = options.mode ?? "preview";
   if (mode !== "preview" && mode !== "create") throw new Error(`Unsupported authoring mode: ${mode}`);
-  const canonicalRequest = validateGovernedDocumentAuthoringRequest(request, catalog);
+  const rootDir = resolveRootDir(options);
+  if (String(request?.document_type ?? "") === "security-requirement") {
+    return planSecurityRequirementAuthoring(request, {
+      rootDir,
+      activeCatalog: catalog,
+      referenceService: options.referenceService,
+      today: options.today,
+    });
+  }
+  const providers = resolveGovernedDocumentAuthoringProviders({
+    rootDir,
+    catalog,
+    referenceService: options.referenceService,
+  });
+  const canonicalRequest = validateGovernedDocumentAuthoringRequest(
+    request,
+    catalog,
+    { providers },
+  );
   return {
+    activation_state: "active",
     request: canonicalRequest,
     documentPlan: planGeneratedDocument(canonicalRequest, catalog, {
-      rootDir: resolveRootDir(options),
+      rootDir,
       today: options.today,
+      providers,
     }),
   };
 }
@@ -227,6 +268,9 @@ function runRepositoryCheck(rootDir) {
 export function applyGovernedDocumentAuthoring(authoringPlan, options = {}) {
   const plan = requireObject(authoringPlan, "Governed document authoring plan");
   const rootDir = resolveRootDir(options);
+  if (plan.request?.document_type === "security-requirement") {
+    assertSecurityRequirementCreationAllowed(plan);
+  }
   let verification;
   const applied = applyGeneratedDocument(requireObject(plan.documentPlan, "document plan"), {
     rootDir,

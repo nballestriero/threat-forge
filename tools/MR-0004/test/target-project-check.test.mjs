@@ -7,6 +7,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  discoverTargetProjectAnalysisSourcePaths,
   runTargetProjectCheck,
   targetOwnedProjectPaths,
   targetProjectReportProjectPath,
@@ -100,7 +101,7 @@ test("valid target corpus passes deterministically without governed-source mutat
 
     assert.equal(first.status, "pass");
     assert.equal(first.error_count, 0);
-    assert.equal(first.checks.length, 6);
+    assert.equal(first.checks.length, 7);
     assert.deepEqual(second, first);
     assert.equal(secondReport, firstReport);
     assert.equal(
@@ -281,6 +282,37 @@ test("unsafe target-owned paths are rejected by canonical validation", () => {
           item.check_id === "macro-requirement-model" &&
           item.severity === "error",
       ),
+    );
+  } finally {
+    removeTarget(targetRoot);
+  }
+});
+
+test("optional Target Project analysis sources are discovered recursively", () => {
+  const targetRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), "threatforge-target-analysis-discovery-"),
+  );
+  try {
+    const sources = [
+      "analysis/ANALYSIS-0001.analysis-record.yml",
+      "nested/findings/FINDING-0001.analysis-finding.yml",
+    ];
+    for (const projectPath of sources) {
+      const absolute = path.join(targetRoot, ...projectPath.split("/"));
+      fs.mkdirSync(path.dirname(absolute), { recursive: true });
+      fs.writeFileSync(absolute, "schema_version: 1\n", "utf8");
+    }
+    const ignored = path.join(
+      targetRoot,
+      "artifacts",
+      "FINDING-9999.analysis-finding.yml",
+    );
+    fs.mkdirSync(path.dirname(ignored), { recursive: true });
+    fs.writeFileSync(ignored, "schema_version: 1\n", "utf8");
+
+    assert.deepEqual(
+      discoverTargetProjectAnalysisSourcePaths(targetRoot),
+      sources,
     );
   } finally {
     removeTarget(targetRoot);

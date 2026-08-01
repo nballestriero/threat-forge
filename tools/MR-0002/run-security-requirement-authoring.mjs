@@ -27,10 +27,9 @@ import {
  * @implementationStatus implemented
  *
  * Provides an IDE-independent preview/create surface for the Security
- * Requirement activation-candidate provider. Preview is read-only. Create fails
- * before confirmation or writes while the canonical model remains inactive;
- * after atomic activation it delegates to the shared rollback-capable authoring
- * transaction and complete repository gate.
+ * Requirement provider. Preview is read-only. Create remains fail-closed unless
+ * the canonical model is active, then delegates to the shared rollback-capable
+ * authoring transaction and complete repository gate.
  */
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -111,7 +110,7 @@ function helpText() {
     "  node tools/MR-0002/run-security-requirement-authoring.mjs --create --request path/to/file.security-requirement-authoring.yml",
     "",
     "Preview derives one SEC identity, canonical parent reference and accepted Finding references without writing.",
-    "Create remains unavailable while the Security Requirement model is inactive.",
+    "Create is available only while the Security Requirement model is canonically active and still requires explicit confirmation.",
   ].join("\n");
 }
 

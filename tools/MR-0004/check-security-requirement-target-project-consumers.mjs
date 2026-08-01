@@ -63,29 +63,32 @@ try {
       loadedCandidate.sourceSet,
     );
 
-  if (loadedCandidate.activation_state !== "inactive") {
+  if (loadedCandidate.activation_state !== "active") {
     throw new Error(
-      `Security Requirement activation state must remain inactive; found ${loadedCandidate.activation_state}.`,
+      `Security Requirement activation state must be active; found ${loadedCandidate.activation_state}.`,
     );
   }
+  const activeModelCount = activeSourceSet.index.value.models.length;
   if (
-    activeProviders.length !== 4 ||
-    activeProviders.some(
+    activeProviders.length !== activeModelCount ||
+    activeProviders.filter(
       (provider) => provider.model_id === "security-requirement",
-    )
+    ).length !== 1
   ) {
     throw new Error(
-      "Active Target Project validation must remain limited to the four canonical models.",
+      "Active Target Project validation requires exact canonical coverage and exactly one Security provider.",
     );
   }
+  const candidateModelCount =
+    loadedCandidate.sourceSet.index.value.models.length;
   if (
-    candidateProviders.length !== 5 ||
+    candidateProviders.length !== candidateModelCount ||
     candidateProviders.filter(
       (provider) => provider.model_id === "security-requirement",
     ).length !== 1
   ) {
     throw new Error(
-      "Security activation-candidate Target Project validation requires exactly one Security provider.",
+      "Security Target Project validation requires exact canonical coverage and exactly one Security provider.",
     );
   }
 
@@ -119,9 +122,9 @@ try {
   console.log(`Activation state: ${loadedCandidate.activation_state}`);
   console.log(`Active validation providers checked: ${activeProviders.length}`);
   console.log(`Candidate validation providers checked: ${candidateProviders.length}`);
-  console.log("Security validator provider: registered activation-candidate");
+  console.log("Security validator provider: active");
   console.log("Target Security authoring preview: enabled");
-  console.log("Target Security create while inactive: blocked");
+  console.log("Target Security create: enabled");
   console.log(`Consumer tests checked: ${testCount}`);
   console.log("Warnings: 0");
   console.log("Errors: 0");
