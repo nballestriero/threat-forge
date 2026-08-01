@@ -11,3 +11,11 @@ decisions:
     date: 2026-07-20
     macro_requirement_id: MR-0004
     body_path: docs/reference/project-model/body/decisions/MR-0004/ADR-0001_body.md
+  - id: ADR-0002
+    title: "Progressive end-to-end analysis-core case-study validation"
+    status: draft
+    decision_type: structural
+    author: "Nicolo Ballestriero"
+    date: 2026-08-01
+    macro_requirement_id: MR-0004
+    body_path: docs/reference/project-model/body/decisions/MR-0004/ADR-0002_body.md
