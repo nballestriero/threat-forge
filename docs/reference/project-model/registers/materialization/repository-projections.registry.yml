@@ -44,6 +44,47 @@ materializers:
       - MR-0002ADR-0002REQ-0002GOV-0001
       - MR-0002ADR-0002REQ-0002GOV-0002
 
+  - id: common-analysis-finding-schema
+    title: Common analysis Finding editor schema projection
+    status: active
+    write_command: node
+    write_args:
+      - tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+      - --write
+    check_command: node
+    check_args:
+      - tools/MR-0005/lib/materialize-common-analysis-finding-schema.mjs
+      - --check
+    generated_paths:
+      - .vscode/schemas/common-analysis-finding.schema.json
+    linked_requirement_ids:
+      - MR-0005ADR-0002REQ-0001GOV-0002
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+
+  - id: security-requirement-authoring-schema
+    title: Security Requirement authoring schema projection
+    status: active
+    write_command: node
+    write_args:
+      - tools/MR-0001/materialize-security-requirement-authoring-schema.mjs
+      - --write
+    check_command: node
+    check_args:
+      - tools/MR-0001/materialize-security-requirement-authoring-schema.mjs
+      - --check
+    generated_paths:
+      - .vscode/schemas/security-requirement-authoring.schema.json
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+      - MR-0002ADR-0005REQ-0003
+      - MR-0002ADR-0005REQ-0003GOV-0001
+      - MR-0002ADR-0002REQ-0002
+      - MR-0002ADR-0002REQ-0002GOV-0001
+      - MR-0002ADR-0002REQ-0002GOV-0002
+
   - id: vscode-governed-document-authoring-adapter
     title: VS Code governed document authoring adapter projection
     status: active

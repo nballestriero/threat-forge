@@ -47,8 +47,9 @@ import {
  *
  * Side effects:
  * - --write updates only managed fragments in .vscode/settings.json,
- *   .vscode/extensions.json and .vscode/tasks.json and materializes the current
- *   schema;
+ *   .vscode/extensions.json and .vscode/tasks.json;
+ * - both modes require the separately registered governed-document, Common
+ *   Finding and Security Requirement schema projections to be current;
  * - --check fails when any managed projection is missing, stale or unsafe;
  * - neither mode changes canonical registries or governed Markdown bodies.
  */
@@ -435,10 +436,13 @@ function validateExtensions(extensions) {
 /** @param {"write"|"check"} mode */
 export function materializeVsCodeGovernedDocumentAuthoringAdapter(mode) {
   if (mode !== "write" && mode !== "check") throw new Error(`Unsupported materialization mode: ${mode}`);
-  runSchemaMaterializer(mode);
-  runCommonAnalysisFindingSchemaMaterializer(mode);
+  runSchemaMaterializer("check");
+  runCommonAnalysisFindingSchemaMaterializer("check");
   const securityRequirementSchema =
-    materializeSecurityRequirementAuthoringSchema({ rootDir, mode });
+    materializeSecurityRequirementAuthoringSchema({
+      rootDir,
+      mode: "check",
+    });
   const settings = mergeSettings(readJsoncFile(settingsProjectPath, {}));
   const extensions = mergeExtensions(readJsoncFile(extensionsProjectPath, { recommendations: [] }));
   const tasks = mergeGovernedDocumentAuthoringTasks(

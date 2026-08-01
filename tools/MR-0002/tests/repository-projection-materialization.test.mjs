@@ -38,6 +38,49 @@ const fixtureSourceDir = path.join(
   "repository-materialization",
 );
 
+test("production registry assigns one owner to each editor projection", () => {
+  const registry = loadRepositoryProjectionMaterializers({
+    rootDir: projectRoot,
+  });
+  assert.deepEqual(
+    registry.materializers.map((entry) => entry.id),
+    [
+      "base-analysis-reference-occurrences",
+      "governed-document-authoring-schema",
+      "common-analysis-finding-schema",
+      "security-requirement-authoring-schema",
+      "vscode-governed-document-authoring-adapter",
+    ],
+  );
+  const byId = new Map(
+    registry.materializers.map((entry) => [entry.id, entry]),
+  );
+  assert.deepEqual(
+    byId.get("governed-document-authoring-schema").generatedPaths,
+    [".vscode/schemas/governed-document-authoring.schema.json"],
+  );
+  assert.deepEqual(
+    byId.get("common-analysis-finding-schema").generatedPaths,
+    [".vscode/schemas/common-analysis-finding.schema.json"],
+  );
+  assert.deepEqual(
+    byId.get("security-requirement-authoring-schema").generatedPaths,
+    [".vscode/schemas/security-requirement-authoring.schema.json"],
+  );
+  assert.deepEqual(
+    byId.get("vscode-governed-document-authoring-adapter").generatedPaths,
+    [
+      ".vscode/settings.json",
+      ".vscode/extensions.json",
+      ".vscode/tasks.json",
+    ],
+  );
+  const generatedPaths = registry.materializers.flatMap(
+    (entry) => entry.generatedPaths,
+  );
+  assert.equal(new Set(generatedPaths).size, generatedPaths.length);
+});
+
 /** @param {string} root @param {string[]} args @returns {string} */
 function runGit(root, args) {
   const result = spawnSync("git", args, {
