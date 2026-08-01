@@ -18,6 +18,17 @@ The case study provides a small, coherent and potentially implementable service 
 
 The case study is a human-readable governed example and a registered positive validation source. Negative verification cases operate only on isolated temporary copies. It is not the source of the Target Project generator template. External Target Projects remain independently creatable in any valid explicit destination.
 
+## Validation phases
+
+The case study advances through explicit reproducible validation phases. The following machine-readable declaration is consumed by the phase-aware case-study verifier:
+
+```yaml
+current_validation_phase: historical_common_finding_only
+historical_common_finding_only_revision: 6897359da2e60db167ff523fc2ff67ad4f14a28b
+```
+
+The `historical_common_finding_only` phase preserves the published Common Finding-only capability claim at the identified repository revision. The `current_end_to_end_core` phase is activated only when the current Target Project contains one governed methodology-neutral Security Requirement with complete Finding and Analysis Record provenance. Neither phase claims that a production STRIDE or STRIDE-AI plugin is implemented.
+
 ## Generation provenance
 
 The initial Target Project structure was created on 2026-07-21 with the maintained ThreatForge generator:

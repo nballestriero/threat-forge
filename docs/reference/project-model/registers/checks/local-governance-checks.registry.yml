@@ -335,17 +335,18 @@ checks:
     description: Verify deterministic Common Finding editor schema materialization, write and check behavior, canonical-source immutability and implementation traceability.
 
   - id: MR-0005ADR-0002REQ-0001GOV-0003CHECK-0001
-    title: Repository-contained Common Finding case-study consistency
+    title: Repository-contained phase-aware analysis-core case-study consistency
     status: active
     command: node
     args:
       - tools/MR-0005/check-common-finding-case-study.mjs
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0003
-    description: Validate exactly one simulated STRIDE-labelled Analysis Record and one proposed one accepted and one rejected methodology-neutral Common Finding against engine-owned canonical rules and target-owned governed sources without implying an implemented STRIDE plugin automatic Finding derivation or a Security Requirement.
+      - MR-0004ADR-0002REQ-0001GOV-0001
+    description: Validate the explicit historical Common Finding-only phase or current end-to-end common-core phase together with one simulated non-plugin STRIDE-labelled Analysis Record explicit proposed accepted and rejected methodology-neutral Common Findings and phase-consistent Security Requirement provenance through canonical Target Project rules.
 
   - id: MR-0005ADR-0002REQ-0001GOV-0003CHECK-0002
-    title: Repository-contained Common Finding case-study verification coverage
+    title: Repository-contained phase-aware analysis-core verification coverage
     status: active
     command: node
     args:
@@ -353,7 +354,8 @@ checks:
       - tools/MR-0005/test/common-finding-case-study.test.mjs
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0003
-    description: Verify deterministic case-study evidence and isolated failures for implemented plugin claims automatic Finding derivation method-specific fields in Common Findings omitted review state unresolved governed subjects accepted Findings without Functional Requirements and implied Security Requirements.
+      - MR-0004ADR-0002REQ-0001GOV-0001
+    description: Verify deterministic historical and synthetic end-to-end phase evidence plus isolated failures for phase declarations historical revision identity non-accepted Analysis Record derivation implemented plugin claims automatic Finding derivation method-specific leakage explicit Finding review states unresolved governed subjects Security Requirement phase consistency accepted Finding eligibility parent alignment and Analysis Record provenance.
   - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0001
     title: Security Requirement model consistency
     status: active

@@ -5,8 +5,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  resolveSafeProjectPath,
+} from "../MR-0001/lib/governed-document-model-validation.mjs";
+import {
   readGovernedYamlFile,
 } from "../MR-0001/lib/governed-yaml.mjs";
+import {
+  runTargetProjectCheck,
+} from "../MR-0004/run-target-project-check.mjs";
 import {
   validateMethodologySpecificAnalysisRecordRepository,
 } from "./check-methodology-specific-analysis-records.mjs";
@@ -15,21 +21,23 @@ import {
 } from "./check-common-analysis-findings.mjs";
 
 /**
- * @file Repository-contained Common Finding case-study verifier.
+ * @file Phase-aware repository-contained analysis-core case-study verifier.
  *
  * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0003
+ * @implementsRequirement MR-0004ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0005/ADR-0002
+ * @derivedFromDecision MR-0004/ADR-0002
  * @macroRequirement MR-0005
+ * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * Verifies the repository-contained Target Project demonstration by composing
- * engine-owned canonical reference rules with target-owned governed sources.
- * The demonstration uses a manually authored STRIDE-labelled Analysis Record
- * and manually authored methodology-neutral Common Findings. It does not
- * implement a STRIDE plugin, automatic Finding derivation or a Security
- * Requirement.
+ * Verifies the historical Common Finding-only phase and the current end-to-end
+ * common-core phase without implementing a STRIDE plugin, automatic Finding
+ * derivation or automatic Security Requirement generation. Canonical Target
+ * Project validation owns governed-document and cross-model Security Requirement
+ * semantics; this verifier owns the deterministic case-study phase contract.
  *
- * Side effects: creates and removes one temporary validation overlay and writes
+ * Side effects: creates and removes temporary validation overlays and writes
  * deterministic evidence to stdout or diagnostics to stderr. Repository files
  * are never modified.
  */
@@ -41,6 +49,15 @@ const defaultRootDir = path.resolve(scriptDirectory, "..", "..");
 const defaultTargetProjectPath =
   "examples/case-studies/documentation-to-base-analysis";
 
+export const historicalCommonFindingOnlyRevision =
+  "6897359da2e60db167ff523fc2ff67ad4f14a28b";
+
+export const caseStudyValidationPhases = Object.freeze({
+  historical: "historical_common_finding_only",
+  current: "current_end_to_end_core",
+});
+
+const readmePath = "README.md";
 const analysisRecordPath =
   "analysis/ANALYSIS-0001.analysis-record.yml";
 
@@ -58,6 +75,9 @@ const expectedFindingStates = Object.freeze({
 
 const expectedFunctionalRequirementId =
   "MR-0001ADR-0001REQ-0001";
+
+const expectedSecurityRequirementId =
+  "MR-0001ADR-0001REQ-0001SEC-0001";
 
 const methodSpecificFindingMembers = new Set([
   "method_payload",
@@ -95,13 +115,6 @@ const affirmativeClaimValues = new Set([
   "required",
 ]);
 
-/**
- * Compares values deterministically.
- *
- * @param {unknown} left - Left value.
- * @param {unknown} right - Right value.
- * @returns {number} Stable comparison result.
- */
 function compare(left, right) {
   return String(left).localeCompare(String(right), "en", {
     numeric: true,
@@ -109,27 +122,12 @@ function compare(left, right) {
   });
 }
 
-/**
- * Returns true when a value is a mapping.
- *
- * @param {unknown} value - Candidate value.
- * @returns {boolean} Whether the value is a mapping.
- */
 function isRecord(value) {
   return Boolean(value) &&
     typeof value === "object" &&
     !Array.isArray(value);
 }
 
-/**
- * Creates one deterministic case-study diagnostic.
- *
- * @param {string} ruleId - Stable local rule identifier.
- * @param {string} message - Human-readable diagnostic.
- * @param {string} [context] - Evidence context.
- * @returns {{rule_id: string, message: string, context: string}}
- *   Diagnostic record.
- */
 function problem(ruleId, message, context = "") {
   return {
     rule_id: ruleId,
@@ -138,12 +136,6 @@ function problem(ruleId, message, context = "") {
   };
 }
 
-/**
- * Returns deterministic diagnostic ordering.
- *
- * @param {Array<Record<string, string>>} diagnostics - Diagnostics.
- * @returns {Array<Record<string, string>>} Sorted diagnostics.
- */
 function stableProblems(diagnostics) {
   return [...diagnostics].sort((left, right) =>
     compare(
@@ -153,24 +145,10 @@ function stableProblems(diagnostics) {
   );
 }
 
-/**
- * Converts an absolute path to repository notation.
- *
- * @param {string} rootDir - Repository root.
- * @param {string} absolutePath - Absolute path.
- * @returns {string} Repository-relative path.
- */
 function projectPath(rootDir, absolutePath) {
   return path.relative(rootDir, absolutePath).replaceAll("\\", "/");
 }
 
-/**
- * Discovers files with one suffix below a directory.
- *
- * @param {string} rootDir - Discovery root.
- * @param {string} suffix - Required filename suffix.
- * @returns {string[]} Deterministically sorted relative paths.
- */
 function discoverPaths(rootDir, suffix) {
   const discovered = [];
 
@@ -200,13 +178,6 @@ function discoverPaths(rootDir, suffix) {
   return discovered.sort(compare);
 }
 
-/**
- * Collects all mapping keys recursively.
- *
- * @param {unknown} value - Source value.
- * @param {Set<string>} [keys] - Accumulator.
- * @returns {Set<string>} Collected keys.
- */
 function collectKeys(value, keys = new Set()) {
   if (Array.isArray(value)) {
     for (const item of value) {
@@ -228,13 +199,6 @@ function collectKeys(value, keys = new Set()) {
   return keys;
 }
 
-/**
- * Determines whether an authored value makes an affirmative implementation
- * or requirement claim.
- *
- * @param {unknown} value - Authored claim value.
- * @returns {boolean} Whether the value is affirmative.
- */
 function isAffirmativeClaim(value) {
   if (value === true) {
     return true;
@@ -245,12 +209,6 @@ function isAffirmativeClaim(value) {
   );
 }
 
-/**
- * Reads one governed YAML source.
- *
- * @param {string} absolutePath - YAML source path.
- * @returns {Record<string, unknown>} Parsed mapping.
- */
 function readMapping(absolutePath) {
   const value = readGovernedYamlFile(absolutePath);
 
@@ -263,19 +221,11 @@ function readMapping(absolutePath) {
   return value;
 }
 
-/**
- * Creates the temporary engine-plus-target validation overlay.
- *
- * @param {string} rootDir - Engine repository root.
- * @param {string} targetRoot - Target Project root.
- * @param {string} temporaryParent - Temporary parent directory.
- * @returns {string} Temporary overlay root.
- */
 function createOverlay(rootDir, targetRoot, temporaryParent) {
   const overlayRoot = fs.mkdtempSync(
     path.join(
       temporaryParent,
-      "threat-forge-common-finding-case-study-",
+      "threat-forge-analysis-core-case-study-",
     ),
   );
 
@@ -334,13 +284,6 @@ function createOverlay(rootDir, targetRoot, temporaryParent) {
   return overlayRoot;
 }
 
-/**
- * Produces deterministic evidence for one Common Finding.
- *
- * @param {string} sourcePath - Target-owned source path.
- * @param {Record<string, unknown>} finding - Parsed Finding.
- * @returns {Record<string, unknown>} Evidence projection.
- */
 function findingEvidence(sourcePath, finding) {
   const affectedSubjects = Array.isArray(finding.affected_subjects)
     ? finding.affected_subjects
@@ -359,6 +302,7 @@ function findingEvidence(sourcePath, finding) {
 
   return {
     id: String(finding.id ?? "").trim(),
+    title: String(finding.title ?? "").trim(),
     source_path: sourcePath,
     analysis_record_id:
       String(finding.analysis_record_id ?? "").trim(),
@@ -375,12 +319,135 @@ function findingEvidence(sourcePath, finding) {
   };
 }
 
+function singleMatch(text, pattern) {
+  const values = [...String(text).matchAll(pattern)]
+    .map((match) => String(match[1] ?? "").trim());
+  return {
+    count: values.length,
+    value: values.length === 1 ? values[0] : "",
+  };
+}
+
+function readPhaseDeclaration(targetRoot) {
+  const absolute = path.join(targetRoot, readmePath);
+  const text = fs.readFileSync(absolute, "utf8");
+  const phase = singleMatch(
+    text,
+    /^current_validation_phase:\s*([a-z0-9_]+)\s*$/gmu,
+  );
+  const historicalRevision = singleMatch(
+    text,
+    /^historical_common_finding_only_revision:\s*([0-9a-f]{40})\s*$/gmu,
+  );
+
+  return {
+    source_path: readmePath,
+    phase,
+    historical_revision: historicalRevision,
+  };
+}
+
+function loadSecurityRequirementRecords(targetRoot) {
+  const directory = path.join(
+    targetRoot,
+    "docs",
+    "reference",
+    "project-model",
+    "registers",
+    "requirements",
+  );
+  const records = [];
+
+  for (const entry of fs
+    .readdirSync(directory, { withFileTypes: true })
+    .filter(
+      (item) =>
+        item.isFile() &&
+        /^MR-\d{4}\.requirements\.registry\.yml$/u.test(item.name),
+    )
+    .sort((left, right) => compare(left.name, right.name))) {
+    const registry = readMapping(path.join(directory, entry.name));
+    for (const record of registry.requirements ?? []) {
+      const id = String(record?.id ?? "").trim();
+      if (
+        record?.requirement_type === "security" ||
+        /^MR-\d{4}ADR-\d{4}REQ-\d{4}SEC-\d{4}$/u.test(id)
+      ) {
+        records.push({
+          ...structuredClone(record),
+          registry_path:
+            `docs/reference/project-model/registers/requirements/${entry.name}`,
+        });
+      }
+    }
+  }
+
+  return records.sort((left, right) => compare(left.id, right.id));
+}
+
+function classifiedReferences(bodyText, prefix, idPattern) {
+  const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  const matcher = new RegExp(
+    `^\\s*-\\s*${escaped}:\\s*\\[(${idPattern})\\]\\s+(.+?)\\s*$`,
+    "gmu",
+  );
+
+  return [...String(bodyText).matchAll(matcher)].map((match) => ({
+    id: String(match[1]).trim(),
+    title: String(match[2]).trim(),
+  }));
+}
+
+function securityRequirementEvidence(targetRoot, record) {
+  const bodyPath = String(record.body_path ?? "")
+    .replaceAll("\\", "/")
+    .trim();
+  const bodyText = bodyPath
+    ? fs.readFileSync(
+      resolveSafeProjectPath(targetRoot, bodyPath).absolute,
+      "utf8",
+    )
+    : "";
+
+  return {
+    id: String(record.id ?? "").trim(),
+    title: String(record.title ?? "").trim(),
+    registry_path: record.registry_path,
+    body_path: bodyPath,
+    parent_requirement_id:
+      String(record.parent_requirement_id ?? "").trim(),
+    parent_references: classifiedReferences(
+      bodyText,
+      "Parent",
+      "MR-\\d{4}ADR-\\d{4}REQ-\\d{4}",
+    ),
+    finding_references: classifiedReferences(
+      bodyText,
+      "Finding",
+      "FINDING-\\d{4}",
+    ),
+  };
+}
+
+function targetProjectErrorEvidence(report) {
+  return (report.diagnostics ?? [])
+    .filter((diagnostic) => diagnostic.severity === "error")
+    .map((diagnostic) =>
+      problem(
+        `common-finding-case-study.target-project.${diagnostic.rule_id}`,
+        diagnostic.message,
+        `${diagnostic.source_path}:${diagnostic.location}`,
+      ),
+    );
+}
+
 /**
- * Verifies the repository-contained Common Finding case study.
+ * Verifies the repository-contained phase-aware analysis-core case study.
  *
  * @param {{
  *   rootDir?: string,
  *   targetProjectPath?: string,
+ *   targetRoot?: string,
  *   temporaryParent?: string
  * }} [input] - Verification context.
  * @returns {{
@@ -400,8 +467,11 @@ export function verifyCommonFindingCaseStudy(input = {}) {
   ).replaceAll("\\", "/");
 
   const targetRoot = path.resolve(
-    rootDir,
-    ...targetProjectPath.split("/"),
+    input.targetRoot ??
+      path.join(
+        rootDir,
+        ...targetProjectPath.split("/"),
+      ),
   );
 
   const temporaryParent = path.resolve(
@@ -412,6 +482,18 @@ export function verifyCommonFindingCaseStudy(input = {}) {
   let overlayRoot = "";
   let analysisRecord = {};
   let findings = [];
+  let phaseDeclaration = {
+    source_path: readmePath,
+    phase: { count: 0, value: "" },
+    historical_revision: { count: 0, value: "" },
+  };
+  let securityRequirements = [];
+  let securityRequirementEvidenceRecords = [];
+  let targetProjectReport = {
+    status: "fail",
+    checks: [],
+    diagnostics: [],
+  };
   let pluginImplementationClaimed = false;
   let automaticFindingDerivationClaimed = false;
   let securityRequirementClaimed = false;
@@ -437,6 +519,36 @@ export function verifyCommonFindingCaseStudy(input = {}) {
   };
 
   try {
+    phaseDeclaration = readPhaseDeclaration(targetRoot);
+    const currentPhase = phaseDeclaration.phase.value;
+
+    if (
+      phaseDeclaration.phase.count !== 1 ||
+      !Object.values(caseStudyValidationPhases).includes(currentPhase)
+    ) {
+      errors.push(
+        problem(
+          "common-finding-case-study.phase-declaration",
+          "The case study README must declare exactly one supported current_validation_phase.",
+          readmePath,
+        ),
+      );
+    }
+
+    if (
+      phaseDeclaration.historical_revision.count !== 1 ||
+      phaseDeclaration.historical_revision.value !==
+        historicalCommonFindingOnlyRevision
+    ) {
+      errors.push(
+        problem(
+          "common-finding-case-study.historical-revision",
+          `The historical Common Finding-only revision must be ${historicalCommonFindingOnlyRevision}.`,
+          readmePath,
+        ),
+      );
+    }
+
     const targetAnalysisDirectory = path.join(
       targetRoot,
       "analysis",
@@ -655,8 +767,6 @@ export function verifyCommonFindingCaseStudy(input = {}) {
 
     for (const member of securityRequirementMembers) {
       if (analysisRecordKeys.has(member)) {
-        securityRequirementClaimed = true;
-
         errors.push(
           problem(
             "common-finding-case-study.security-requirement-boundary",
@@ -738,8 +848,6 @@ export function verifyCommonFindingCaseStudy(input = {}) {
 
       for (const member of securityRequirementMembers) {
         if (keys.has(member)) {
-          securityRequirementClaimed = true;
-
           errors.push(
             problem(
               "common-finding-case-study.security-requirement-boundary",
@@ -817,21 +925,112 @@ export function verifyCommonFindingCaseStudy(input = {}) {
       );
     }
 
-    const securityRequirementArtifacts = discoverPaths(
-      targetAnalysisDirectory,
-      ".security-requirement.yml",
-    );
+    securityRequirements =
+      loadSecurityRequirementRecords(targetRoot);
+    securityRequirementClaimed =
+      securityRequirements.length > 0;
+    securityRequirementEvidenceRecords =
+      securityRequirements.map((record) =>
+        securityRequirementEvidence(targetRoot, record),
+      );
 
-    if (securityRequirementArtifacts.length !== 0) {
-      securityRequirementClaimed = true;
-
+    if (
+      currentPhase === caseStudyValidationPhases.historical &&
+      securityRequirements.length !== 0
+    ) {
       errors.push(
         problem(
-          "common-finding-case-study.security-requirement-artifact",
-          "The simulation must not create a Security Requirement artifact.",
-          securityRequirementArtifacts.join(", "),
+          "common-finding-case-study.security-requirement-phase",
+          "The historical Common Finding-only phase must not contain a Security Requirement.",
+          securityRequirements.map(({ id }) => id).join(", "),
         ),
       );
+    }
+
+    if (
+      currentPhase === caseStudyValidationPhases.current &&
+      securityRequirements.length !== 1
+    ) {
+      errors.push(
+        problem(
+          "common-finding-case-study.security-requirement-phase",
+          "The current end-to-end core phase must contain exactly one Security Requirement.",
+          `count:${securityRequirements.length}`,
+        ),
+      );
+    }
+
+    if (
+      currentPhase === caseStudyValidationPhases.current &&
+      securityRequirements.length === 1
+    ) {
+      const securityRequirement =
+        securityRequirementEvidenceRecords[0];
+
+      if (
+        securityRequirement.id !== expectedSecurityRequirementId ||
+        securityRequirement.parent_requirement_id !==
+          expectedFunctionalRequirementId ||
+        securityRequirement.parent_references.length !== 1 ||
+        securityRequirement.parent_references[0].id !==
+          expectedFunctionalRequirementId
+      ) {
+        errors.push(
+          problem(
+            "common-finding-case-study.security-requirement-identity",
+            `The end-to-end Security Requirement must be ${expectedSecurityRequirementId} under ${expectedFunctionalRequirementId}.`,
+            securityRequirement.id,
+          ),
+        );
+      }
+
+      const referencedFindings =
+        securityRequirement.finding_references;
+      const findingsById = new Map(
+        findings.map(({ value }) => [
+          String(value.id ?? "").trim(),
+          value,
+        ]),
+      );
+      const provenanceValid =
+        referencedFindings.length >= 1 &&
+        referencedFindings.every(({ id }) => {
+          const finding = findingsById.get(id);
+          const affectedSubjects =
+            Array.isArray(finding?.affected_subjects)
+              ? finding.affected_subjects
+              : [];
+          return Boolean(finding) &&
+            finding.review_state === "accepted" &&
+            finding.analysis_record_id === "ANALYSIS-0001" &&
+            affectedSubjects.some(
+              (subject) =>
+                subject?.kind === "functional_requirement" &&
+                subject?.id === expectedFunctionalRequirementId,
+            );
+        });
+
+      if (!provenanceValid) {
+        errors.push(
+          problem(
+            "common-finding-case-study.security-requirement-provenance",
+            "Every Security Requirement Finding reference must resolve to an accepted Finding affecting its parent and preserving ANALYSIS-0001 provenance.",
+            securityRequirement.body_path,
+          ),
+        );
+      }
+    }
+
+    targetProjectReport = runTargetProjectCheck({
+      engineRoot: rootDir,
+      targetRoot,
+      writeReports: false,
+    });
+
+    if (targetProjectReport.status !== "pass") {
+      errors.push(...targetProjectErrorEvidence(
+        targetProjectReport,
+      ));
     }
   } catch (error) {
     errors.push(
@@ -878,13 +1077,47 @@ export function verifyCommonFindingCaseStudy(input = {}) {
     ? Object.keys(analysisRecord.method_payload).sort(compare)
     : [];
 
+  const currentPhase = phaseDeclaration.phase.value;
+  const phaseDeclared =
+    phaseDeclaration.phase.count === 1 &&
+    Object.values(caseStudyValidationPhases).includes(
+      currentPhase,
+    );
+  const historicalRevisionIdentified =
+    phaseDeclaration.historical_revision.count === 1 &&
+    phaseDeclaration.historical_revision.value ===
+      historicalCommonFindingOnlyRevision;
+  const phaseSecurityRequirementConsistent =
+    currentPhase === caseStudyValidationPhases.historical
+      ? securityRequirements.length === 0
+      : currentPhase === caseStudyValidationPhases.current
+        ? securityRequirements.length === 1
+        : false;
+  const securityRequirementProvenanceValid =
+    currentPhase === caseStudyValidationPhases.historical
+      ? securityRequirements.length === 0
+      : currentPhase === caseStudyValidationPhases.current &&
+        securityRequirements.length === 1 &&
+        !errors.some(
+          ({ rule_id: ruleId }) =>
+            ruleId ===
+              "common-finding-case-study.security-requirement-provenance" ||
+            ruleId.includes("security-requirement.cross-model"),
+        );
+
   const valid = errors.length === 0;
 
   const report = {
-    schema_version: 1,
+    schema_version: 2,
     case_study_id:
-      "documentation-to-base-analysis-common-finding",
+      "documentation-to-base-analysis-analysis-core",
     target_project: targetProjectPath,
+    phase: {
+      current: currentPhase,
+      declaration_source: readmePath,
+      historical_common_finding_only_revision:
+        phaseDeclaration.historical_revision.value,
+    },
     simulation: {
       method_id:
         String(analysisRecord.method_id ?? "").trim(),
@@ -908,15 +1141,31 @@ export function verifyCommonFindingCaseStudy(input = {}) {
       },
     ],
     findings: findingEvidenceRecords,
+    security_requirements:
+      securityRequirementEvidenceRecords,
     review_state_counts: reviewStateCounts,
+    target_project_check: {
+      status: targetProjectReport.status,
+      checks: targetProjectReport.checks ?? [],
+      warning_count:
+        Number(targetProjectReport.warning_count ?? 0),
+      error_count:
+        Number(targetProjectReport.error_count ?? 0),
+    },
     validation: {
+      phase_declared: phaseDeclared,
+      historical_revision_identified:
+        historicalRevisionIdentified,
       canonical_analysis_record_valid:
         analysisValidation.valid === true,
       canonical_common_findings_valid:
         findingValidation.valid === true,
+      target_project_valid:
+        targetProjectReport.status === "pass",
       governed_references_resolved:
         analysisValidation.valid === true &&
-        findingValidation.valid === true,
+        findingValidation.valid === true &&
+        targetProjectReport.status === "pass",
       method_specific_data_confined:
         !errors.some(
           ({ rule_id: ruleId }) =>
@@ -929,6 +1178,10 @@ export function verifyCommonFindingCaseStudy(input = {}) {
             ruleId ===
             "common-finding-case-study.explicit-review-state",
         ),
+      security_requirement_phase_consistent:
+        phaseSecurityRequirementConsistent,
+      security_requirement_provenance_valid:
+        securityRequirementProvenanceValid,
     },
   };
 
@@ -939,11 +1192,6 @@ export function verifyCommonFindingCaseStudy(input = {}) {
   };
 }
 
-/**
- * Executes the repository-contained case-study verifier.
- *
- * @returns {void}
- */
 function run() {
   const result = verifyCommonFindingCaseStudy();
 
@@ -959,7 +1207,7 @@ function run() {
     }
 
     console.error(
-      `Common Finding case-study validation failed with ` +
+      `Analysis-core case-study validation failed with ` +
       `${result.errors.length} error(s).`,
     );
 
@@ -968,7 +1216,7 @@ function run() {
   }
 
   console.log(
-    "Common Finding case-study validation passed.",
+    "Analysis-core case-study validation passed.",
   );
   console.log(JSON.stringify(result.report, null, 2));
 }

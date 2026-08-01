@@ -6,20 +6,25 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import {
+  caseStudyValidationPhases,
+  historicalCommonFindingOnlyRevision,
   verifyCommonFindingCaseStudy,
 } from "../check-common-finding-case-study.mjs";
 
 /**
- * @file Repository-contained Common Finding case-study verification suite.
+ * @file Phase-aware end-to-end analysis-core case-study verification suite.
  *
  * @implementsRequirement MR-0005ADR-0002REQ-0001GOV-0003
+ * @implementsRequirement MR-0004ADR-0002REQ-0001GOV-0001
  * @derivedFromDecision MR-0005/ADR-0002
+ * @derivedFromDecision MR-0004/ADR-0002
  * @macroRequirement MR-0005
+ * @macroRequirement MR-0004
  * @implementationStatus implemented
  *
- * Verifies deterministic positive evidence and isolated failure conditions for
- * the repository-contained Common Finding case study. Each negative case works
- * on a temporary copy and never modifies the canonical Target Project.
+ * Verifies deterministic historical and end-to-end phase evidence plus isolated
+ * failure conditions. Every mutation operates on a temporary Target Project and
+ * never modifies the canonical repository-contained case study.
  *
  * Side effects: creates and removes isolated operating-system temporary
  * directories. Repository files are never modified.
@@ -41,31 +46,69 @@ const canonicalTargetRoot = path.join(
   ...targetProjectPath.split("/"),
 );
 
-const canonicalReferencesRoot = path.join(
-  repositoryRoot,
-  "docs",
-  "reference",
-  "project-model",
-  "registers",
-  "references",
-);
-
+const readmeProjectPath = "README.md";
 const analysisRecordProjectPath =
   "analysis/ANALYSIS-0001.analysis-record.yml";
-
 const proposedFindingProjectPath =
   "analysis/FINDING-0001.analysis-finding.yml";
-
 const acceptedFindingProjectPath =
   "analysis/FINDING-0002.analysis-finding.yml";
+const requirementsRegistryProjectPath =
+  "docs/reference/project-model/registers/requirements/MR-0001.requirements.registry.yml";
+const securityRequirementBodyProjectPath =
+  "docs/reference/project-model/body/requirements/MR-0001/" +
+  "MR-0001ADR-0001REQ-0001SEC-0001_body.md";
 
-/**
- * Resolves one path inside the copied Target Project.
- *
- * @param {string} targetRoot - Temporary Target Project root.
- * @param {string} projectPath - Target-relative project path.
- * @returns {string} Absolute path.
- */
+const historicalPhaseLine =
+  `current_validation_phase: ${caseStudyValidationPhases.historical}`;
+const currentPhaseLine =
+  `current_validation_phase: ${caseStudyValidationPhases.current}`;
+const historicalRevisionLine =
+  `historical_common_finding_only_revision: ` +
+  historicalCommonFindingOnlyRevision;
+
+const securityRequirementRecord = `
+  - id: MR-0001ADR-0001REQ-0001SEC-0001
+    title: "Verify demonstration user identity"
+    status: draft
+    requirement_type: security
+    macro_requirement_id: MR-0001
+    decision_id: ADR-0001
+    parent_requirement_id: MR-0001ADR-0001REQ-0001
+    body_path: docs/reference/project-model/body/requirements/MR-0001/MR-0001ADR-0001REQ-0001SEC-0001_body.md
+`;
+
+const securityRequirementBody = `# MR-0001ADR-0001REQ-0001SEC-0001 — Verify demonstration user identity
+
+## Intent
+
+Prevent the accepted identity Finding from remaining unresolved in the demonstration interaction.
+
+## Parent Functional Requirement
+
+- Parent: [MR-0001ADR-0001REQ-0001] Describe the demonstration interaction
+
+## Finding derivation
+
+- Finding: [FINDING-0002] Unverified demonstration user identity
+
+## Security obligation
+
+- The demonstration service must verify the identity claimed by the demonstration user before accepting or processing the request.
+
+## Scope
+
+- Includes: [BAE-0001] Demonstration user
+- Includes: [BAE-0002] Demonstration service
+- Includes: [BAE-0004] Service domain boundary
+- Includes: [BAE-0005] Demonstration request flow
+- Excludes: Technology-specific identity-verification mechanisms
+
+## Acceptance
+
+- The requirement is accepted when the demonstration service rejects or defers requests whose claimed demonstration-user identity has not been verified.
+`;
+
 function targetPath(targetRoot, projectPath) {
   return path.join(
     targetRoot,
@@ -73,14 +116,6 @@ function targetPath(targetRoot, projectPath) {
   );
 }
 
-/**
- * Replaces exactly one text fragment.
- *
- * @param {string} filePath - Source file.
- * @param {string} oldText - Required current fragment.
- * @param {string} newText - Replacement fragment.
- * @returns {void}
- */
 function replaceExactlyOnce(filePath, oldText, newText) {
   const sourceText = fs.readFileSync(filePath, "utf8");
   const firstIndex = sourceText.indexOf(oldText);
@@ -109,48 +144,19 @@ function replaceExactlyOnce(filePath, oldText, newText) {
   );
 }
 
-/**
- * Creates one isolated engine-plus-target repository root.
- *
- * @param {(context: {
- *   rootDir: string,
- *   targetRoot: string
- * }) => unknown} callback - Test operation.
- * @returns {unknown} Callback result.
- */
-function withTemporaryRepository(callback) {
-  const rootDir = fs.mkdtempSync(
+function withTemporaryTargetProject(callback) {
+  const root = fs.mkdtempSync(
     path.join(
       os.tmpdir(),
-      "threat-forge-common-finding-case-study-test-",
+      "threat-forge-analysis-core-case-study-test-",
     ),
   );
-
-  const temporaryTargetRoot = path.join(
-    rootDir,
-    ...targetProjectPath.split("/"),
-  );
-
-  const temporaryReferencesRoot = path.join(
-    rootDir,
-    "docs",
-    "reference",
-    "project-model",
-    "registers",
-    "references",
-  );
+  const targetRoot = path.join(root, "target-project");
 
   try {
-    fs.mkdirSync(
-      path.dirname(temporaryTargetRoot),
-      {
-        recursive: true,
-      },
-    );
-
     fs.cpSync(
       canonicalTargetRoot,
-      temporaryTargetRoot,
+      targetRoot,
       {
         recursive: true,
         force: false,
@@ -158,57 +164,23 @@ function withTemporaryRepository(callback) {
       },
     );
 
-    fs.mkdirSync(
-      path.dirname(temporaryReferencesRoot),
-      {
-        recursive: true,
-      },
-    );
-
-    fs.cpSync(
-      canonicalReferencesRoot,
-      temporaryReferencesRoot,
-      {
-        recursive: true,
-        force: false,
-        errorOnExist: true,
-      },
-    );
-
-    return callback({
-      rootDir,
-      targetRoot: temporaryTargetRoot,
-    });
+    return callback({ targetRoot });
   } finally {
-    fs.rmSync(rootDir, {
+    fs.rmSync(root, {
       recursive: true,
       force: true,
     });
   }
 }
 
-/**
- * Executes the verifier against one temporary repository.
- *
- * @param {string} rootDir - Temporary repository root.
- * @returns {ReturnType<typeof verifyCommonFindingCaseStudy>}
- *   Verification result.
- */
-function verify(rootDir) {
+function verify(targetRoot) {
   return verifyCommonFindingCaseStudy({
-    rootDir,
+    rootDir: repositoryRoot,
+    targetRoot,
     targetProjectPath,
   });
 }
 
-/**
- * Asserts one expected failure rule.
- *
- * @param {ReturnType<typeof verifyCommonFindingCaseStudy>} result
- *   Verification result.
- * @param {string} ruleId - Expected diagnostic rule.
- * @returns {void}
- */
 function assertFailureRule(result, ruleId) {
   assert.equal(
     result.valid,
@@ -226,25 +198,74 @@ function assertFailureRule(result, ruleId) {
   );
 }
 
+function setCurrentPhase(targetRoot) {
+  replaceExactlyOnce(
+    targetPath(targetRoot, readmeProjectPath),
+    historicalPhaseLine,
+    currentPhaseLine,
+  );
+}
+
+function appendSecurityRequirement(targetRoot) {
+  const registryPath = targetPath(
+    targetRoot,
+    requirementsRegistryProjectPath,
+  );
+  const current = fs.readFileSync(registryPath, "utf8");
+  fs.writeFileSync(
+    registryPath,
+    `${current.trimEnd()}\n${securityRequirementRecord}`,
+    "utf8",
+  );
+
+  const bodyPath = targetPath(
+    targetRoot,
+    securityRequirementBodyProjectPath,
+  );
+  fs.mkdirSync(path.dirname(bodyPath), {
+    recursive: true,
+  });
+  fs.writeFileSync(
+    bodyPath,
+    securityRequirementBody,
+    "utf8",
+  );
+}
+
+function prepareCurrentPhase(targetRoot) {
+  setCurrentPhase(targetRoot);
+  appendSecurityRequirement(targetRoot);
+}
+
 test(
-  "canonical case study produces deterministic evidence",
+  "canonical historical phase produces deterministic evidence",
   () => {
-    withTemporaryRepository(({ rootDir }) => {
-      const first = verify(rootDir);
-      const second = verify(rootDir);
+    withTemporaryTargetProject(({ targetRoot }) => {
+      const first = verify(targetRoot);
+      const second = verify(targetRoot);
 
       assert.equal(
         first.valid,
         true,
         JSON.stringify(first.errors, null, 2),
       );
-
       assert.deepEqual(first.errors, []);
       assert.deepEqual(second, first);
 
+      assert.deepEqual(
+        first.report.phase,
+        {
+          current:
+            caseStudyValidationPhases.historical,
+          declaration_source: "README.md",
+          historical_common_finding_only_revision:
+            historicalCommonFindingOnlyRevision,
+        },
+      );
+
       assert.equal(
-        first.report.analysis_records.length,
-        1,
+        first.report.security_requirements.length,
+        0,
       );
 
       assert.deepEqual(
@@ -257,39 +278,6 @@ test(
       );
 
       assert.deepEqual(
-        first.report.findings.map(
-          ({ id, review_state: reviewState }) => ({
-            id,
-            review_state: reviewState,
-          }),
-        ),
-        [
-          {
-            id: "FINDING-0001",
-            review_state: "proposed",
-          },
-          {
-            id: "FINDING-0002",
-            review_state: "accepted",
-          },
-          {
-            id: "FINDING-0003",
-            review_state: "rejected",
-          },
-        ],
-      );
-
-      const acceptedFinding =
-        first.report.findings.find(
-          ({ id }) => id === "FINDING-0002",
-        );
-
-      assert.deepEqual(
-        acceptedFinding.functional_requirement_ids,
-        ["MR-0001ADR-0001REQ-0001"],
-      );
-
-      assert.deepEqual(
         first.report.simulation,
         {
           method_id: "stride",
@@ -299,14 +287,23 @@ test(
         },
       );
 
+      assert.equal(
+        first.report.target_project_check.status,
+        "pass",
+      );
       assert.deepEqual(
         first.report.validation,
         {
+          phase_declared: true,
+          historical_revision_identified: true,
           canonical_analysis_record_valid: true,
           canonical_common_findings_valid: true,
+          target_project_valid: true,
           governed_references_resolved: true,
           method_specific_data_confined: true,
           review_states_explicit: true,
+          security_requirement_phase_consistent: true,
+          security_requirement_provenance_valid: true,
         },
       );
     });
@@ -314,205 +311,471 @@ test(
 );
 
 test(
+  "synthetic current phase proves the complete common-core chain",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      prepareCurrentPhase(targetRoot);
+
+      const first = verify(targetRoot);
+      const second = verify(targetRoot);
+
+      assert.equal(
+        first.valid,
+        true,
+        JSON.stringify(first.errors, null, 2),
+      );
+      assert.deepEqual(second, first);
+      assert.equal(
+        first.report.phase.current,
+        caseStudyValidationPhases.current,
+      );
+      assert.equal(
+        first.report.security_requirements.length,
+        1,
+      );
+      assert.deepEqual(
+        first.report.security_requirements[0],
+        {
+          id: "MR-0001ADR-0001REQ-0001SEC-0001",
+          title: "Verify demonstration user identity",
+          registry_path:
+            requirementsRegistryProjectPath,
+          body_path:
+            securityRequirementBodyProjectPath,
+          parent_requirement_id:
+            "MR-0001ADR-0001REQ-0001",
+          parent_references: [
+            {
+              id: "MR-0001ADR-0001REQ-0001",
+              title:
+                "Describe the demonstration interaction",
+            },
+          ],
+          finding_references: [
+            {
+              id: "FINDING-0002",
+              title:
+                "Unverified demonstration user identity",
+            },
+          ],
+        },
+      );
+      assert.equal(
+        first.report.simulation.security_requirement_created,
+        true,
+      );
+      assert.equal(
+        first.report.target_project_check.status,
+        "pass",
+      );
+      assert.equal(
+        first.report.validation
+          .security_requirement_provenance_valid,
+        true,
+      );
+    });
+  },
+);
+
+test(
+  "missing phase declaration is rejected",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(targetRoot, readmeProjectPath),
+        `${historicalPhaseLine}\n`,
+        "",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.phase-declaration",
+      );
+    });
+  },
+);
+
+test(
+  "unknown phase declaration is rejected",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(targetRoot, readmeProjectPath),
+        historicalPhaseLine,
+        "current_validation_phase: unknown_phase",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.phase-declaration",
+      );
+    });
+  },
+);
+
+test(
+  "divergent historical revision is rejected",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(targetRoot, readmeProjectPath),
+        historicalRevisionLine,
+        "historical_common_finding_only_revision: " +
+          "0000000000000000000000000000000000000000",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.historical-revision",
+      );
+    });
+  },
+);
+
+test(
+  "historical phase rejects a Security Requirement",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      appendSecurityRequirement(targetRoot);
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.security-requirement-phase",
+      );
+    });
+  },
+);
+
+test(
+  "current phase requires exactly one Security Requirement",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      setCurrentPhase(targetRoot);
+
+      const result = verify(targetRoot);
+
+      assertFailureRule(
+        result,
+        "common-finding-case-study.security-requirement-phase",
+      );
+      assert.equal(
+        result.report.validation
+          .security_requirement_provenance_valid,
+        false,
+      );
+    });
+  },
+);
+
+test(
+  "current phase rejects a mismatched Security Requirement parent",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      prepareCurrentPhase(targetRoot);
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          requirementsRegistryProjectPath,
+        ),
+        "    parent_requirement_id: MR-0001ADR-0001REQ-0001\n",
+        "    parent_requirement_id: MR-0001ADR-0001REQ-9999\n",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.security-requirement-identity",
+      );
+    });
+  },
+);
+
+test(
+  "current phase rejects an unresolved Finding derivation",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      prepareCurrentPhase(targetRoot);
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          securityRequirementBodyProjectPath,
+        ),
+        "- Finding: [FINDING-0002] " +
+          "Unverified demonstration user identity",
+        "- Finding: [FINDING-9999] " +
+          "Missing demonstration Finding",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.security-requirement-provenance",
+      );
+    });
+  },
+);
+test(
+  "current phase rejects a proposed Finding derivation",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      prepareCurrentPhase(targetRoot);
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          securityRequirementBodyProjectPath,
+        ),
+        "- Finding: [FINDING-0002] " +
+          "Unverified demonstration user identity",
+        "- Finding: [FINDING-0001] " +
+          "Replayable demonstration request",
+      );
+
+      const result = verify(targetRoot);
+
+      assert.equal(result.valid, false);
+      assert.ok(
+        result.errors.some(
+          ({ rule_id: ruleId }) =>
+            ruleId ===
+              "common-finding-case-study.security-requirement-provenance" ||
+            ruleId.includes(
+              "security-requirement.cross-model.finding.accepted",
+            ),
+        ),
+        JSON.stringify(result.errors, null, 2),
+      );
+    });
+  },
+);
+
+test(
+  "current phase rejects methodology leakage in Security content",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      prepareCurrentPhase(targetRoot);
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          securityRequirementBodyProjectPath,
+        ),
+        "Prevent the accepted identity Finding from remaining unresolved in the demonstration interaction.",
+        "Prevent method_id stride evidence from remaining unresolved in the demonstration interaction.",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.target-project." +
+          "security-requirement.body.methodology-neutrality",
+      );
+    });
+  },
+);
+
+test(
+  "accepted Analysis Record derivation state is rejected",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          analysisRecordProjectPath,
+        ),
+        "derivation_state: not_accepted\n",
+        "derivation_state: accepted\n",
+      );
+
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.derivation-state",
+      );
+    });
+  },
+);
+test(
   "implemented STRIDE plugin claim is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            analysisRecordProjectPath,
-          ),
-          "  implementation_status: not_implemented\n",
-          "  implementation_status: not_implemented\n" +
-            "  plugin_implemented: true\n",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          analysisRecordProjectPath,
+        ),
+        "  implementation_status: not_implemented\n",
+        "  implementation_status: not_implemented\n" +
+          "  plugin_implemented: true\n",
+      );
 
-        const result = verify(rootDir);
+      const result = verify(targetRoot);
 
-        assertFailureRule(
-          result,
-          "common-finding-case-study.implemented-plugin-claim",
-        );
-
-        assert.equal(
-          result.report.simulation.plugin_implemented,
-          true,
-        );
-      },
-    );
+      assertFailureRule(
+        result,
+        "common-finding-case-study.implemented-plugin-claim",
+      );
+      assert.equal(
+        result.report.simulation.plugin_implemented,
+        true,
+      );
+    });
   },
 );
 
 test(
   "automatic Finding derivation claim is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            analysisRecordProjectPath,
-          ),
-          "  implementation_status: not_implemented\n",
-          "  implementation_status: not_implemented\n" +
-            "  automatic_finding_derivation: true\n",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          analysisRecordProjectPath,
+        ),
+        "  implementation_status: not_implemented\n",
+        "  implementation_status: not_implemented\n" +
+          "  automatic_finding_derivation: true\n",
+      );
 
-        const result = verify(rootDir);
+      const result = verify(targetRoot);
 
-        assertFailureRule(
-          result,
-          "common-finding-case-study.automatic-derivation-claim",
-        );
-
-        assert.equal(
-          result.report.simulation
-            .automatic_finding_derivation,
-          true,
-        );
-      },
-    );
+      assertFailureRule(
+        result,
+        "common-finding-case-study.automatic-derivation-claim",
+      );
+      assert.equal(
+        result.report.simulation
+          .automatic_finding_derivation,
+        true,
+      );
+    });
   },
 );
 
 test(
   "STRIDE-specific classification in a Finding is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            proposedFindingProjectPath,
-          ),
-          "analysis_record_id: ANALYSIS-0001\n",
-          "analysis_record_id: ANALYSIS-0001\n" +
-            "category: spoofing\n",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          proposedFindingProjectPath,
+        ),
+        "analysis_record_id: ANALYSIS-0001\n",
+        "analysis_record_id: ANALYSIS-0001\n" +
+          "category: spoofing\n",
+      );
 
-        const result = verify(rootDir);
-
-        assertFailureRule(
-          result,
-          "common-finding-case-study.method-data-boundary",
-        );
-      },
-    );
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.method-data-boundary",
+      );
+    });
   },
 );
 
 test(
   "omitted Finding review state is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            proposedFindingProjectPath,
-          ),
-          "review_state: proposed\n",
-          "",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          proposedFindingProjectPath,
+        ),
+        "review_state: proposed\n",
+        "",
+      );
 
-        const result = verify(rootDir);
-
-        assertFailureRule(
-          result,
-          "common-finding-case-study.explicit-review-state",
-        );
-      },
-    );
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.explicit-review-state",
+      );
+    });
   },
 );
 
 test(
   "unresolved affected subject is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            proposedFindingProjectPath,
-          ),
-          "    id: BAE-0005\n",
-          "    id: BAE-9999\n",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          proposedFindingProjectPath,
+        ),
+        "    id: BAE-0005\n",
+        "    id: BAE-9999\n",
+      );
 
-        const result = verify(rootDir);
+      const result = verify(targetRoot);
 
-        assert.equal(result.valid, false);
-
-        assert.ok(
-          result.errors.some(
-            ({ rule_id: ruleId }) =>
-              ruleId.includes(
-                "unresolved-affected-subject",
-              ),
-          ),
-          JSON.stringify(result.errors, null, 2),
-        );
-      },
-    );
+      assert.equal(result.valid, false);
+      assert.ok(
+        result.errors.some(
+          ({ rule_id: ruleId }) =>
+            ruleId.includes("unresolved-affected-subject"),
+        ),
+        JSON.stringify(result.errors, null, 2),
+      );
+    });
   },
 );
-
 test(
   "accepted Finding without Functional Requirement is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            acceptedFindingProjectPath,
-          ),
-          "  - kind: functional_requirement\n" +
-            "    id: MR-0001ADR-0001REQ-0001\n",
-          "",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          acceptedFindingProjectPath,
+        ),
+        "  - kind: functional_requirement\n" +
+          "    id: MR-0001ADR-0001REQ-0001\n",
+        "",
+      );
 
-        const result = verify(rootDir);
-
-        assertFailureRule(
-          result,
-          "common-finding-case-study.accepted-functional-requirement",
-        );
-      },
-    );
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.accepted-functional-requirement",
+      );
+    });
   },
 );
 
 test(
-  "Security Requirement implication is rejected",
+  "Finding without its originating Analysis Record is rejected",
   () => {
-    withTemporaryRepository(
-      ({ rootDir, targetRoot }) => {
-        replaceExactlyOnce(
-          targetPath(
-            targetRoot,
-            proposedFindingProjectPath,
-          ),
-          "review_state: proposed\n",
-          "review_state: proposed\n" +
-            "security_requirement_id: SR-0001\n",
-        );
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          acceptedFindingProjectPath,
+        ),
+        "analysis_record_id: ANALYSIS-0001\n",
+        "analysis_record_id: ANALYSIS-9999\n",
+      );
 
-        const result = verify(rootDir);
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.analysis-reference",
+      );
+    });
+  },
+);
+test(
+  "Security Requirement implication inside a Finding is rejected",
+  () => {
+    withTemporaryTargetProject(({ targetRoot }) => {
+      replaceExactlyOnce(
+        targetPath(
+          targetRoot,
+          proposedFindingProjectPath,
+        ),
+        "review_state: proposed\n",
+        "review_state: proposed\n" +
+          "security_requirement_id: " +
+          "MR-0001ADR-0001REQ-0001SEC-0001\n",
+      );
 
-        assertFailureRule(
-          result,
-          "common-finding-case-study.security-requirement-boundary",
-        );
-
-        assert.equal(
-          result.report.simulation
-            .security_requirement_created,
-          true,
-        );
-      },
-    );
+      assertFailureRule(
+        verify(targetRoot),
+        "common-finding-case-study.security-requirement-boundary",
+      );
+    });
   },
 );

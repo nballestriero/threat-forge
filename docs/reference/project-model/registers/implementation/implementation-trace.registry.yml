@@ -1508,23 +1508,25 @@ artifacts:
     verification_command: node --test tools/MR-0002/tests/promote-governed-planned-artifact.test.mjs
 
   - id: MR-0005ADR-0002REQ-0001GOV-0003IMPL-0001
-    title: "Repository-contained Common Finding case-study verifier"
+    title: "Repository-contained phase-aware analysis-core case-study verifier"
     artifact_type: tool
     status: implemented
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0003
+      - MR-0004ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0005/check-common-finding-case-study.mjs
-    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0003IMPL-0001 after source completeness checks and governed verification succeeded."
+    reason: "Extended the existing governed verifier to implement phase-aware analysis-core validation while preserving the historical Common Finding-only contract."
     verification_command: node --check tools/MR-0005/check-common-finding-case-study.mjs
 
   - id: MR-0005ADR-0002REQ-0001GOV-0003IMPL-0002
-    title: "Repository-contained Common Finding case-study verification suite"
+    title: "Repository-contained phase-aware analysis-core case-study verification suite"
     artifact_type: verification_artifact
     status: implemented
     linked_requirement_ids:
       - MR-0005ADR-0002REQ-0001GOV-0003
+      - MR-0004ADR-0002REQ-0001GOV-0001
     implemented_path: tools/MR-0005/test/common-finding-case-study.test.mjs
-    reason: "Promoted MR-0005ADR-0002REQ-0001GOV-0003IMPL-0002 after source completeness checks and governed verification succeeded."
+    reason: "Extended the existing governed verification artifact with historical regression coverage and synthetic current-phase Security Requirement provenance checks."
     verification_command: node --test tools/MR-0005/test/common-finding-case-study.test.mjs
 
   - id: MR-0005ADR-0002REQ-0001GOV-0004IMPL-0001
