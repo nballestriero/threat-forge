@@ -461,3 +461,13 @@ checks:
       - MR-0001ADR-0010REQ-0002
       - MR-0001ADR-0010REQ-0002GOV-0001
     description: Verify active canonical source registration, shared Requirement dispatch, exact complete-model cross-model reference authoring editor Target Project and Markdown consumer coverage, active create routing and absence of any Security Requirement record created merely by activation.
+  - id: MR-0001ADR-0009REQ-0001GOV-0001CHECK-0009
+    title: Security Requirement Finding reverse traceability consistency
+    status: active
+    command: node
+    args:
+      - tools/MR-0001/check-security-requirement-finding-traceability.mjs
+    linked_requirement_ids:
+      - MR-0001ADR-0009REQ-0001
+      - MR-0001ADR-0009REQ-0001GOV-0001
+    description: Verify the deterministic read-only reverse projection from validated Common Findings to governed Security Requirements, including Analysis Record provenance, Target Project composition, source immutability and focused failure coverage without creating a second canonical inventory.
