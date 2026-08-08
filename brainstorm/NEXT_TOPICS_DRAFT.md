@@ -22,16 +22,23 @@ Branch:
 master
 ```
 
-ThreatForge product/planning parent baseline for this update:
+ThreatForge current planning baseline before this update:
+
+```text
+fdca725f1722e69adb4062f1dbacbb31776c8dd8
+docs: align ThreatForge plan with portable DDTA scope
+```
+
+ThreatForge product-semantic baseline:
 
 ```text
 cae0f7b6b37f430ac4e857aabf6ef9f87c89dbb1
 docs: record engineering audit and thesis literature plan
 ```
 
-The commit that publishes this file is intentionally planning-only. After publication,
-that descendant commit becomes the repository planning baseline while product semantics
-remain anchored to the unchanged governed sources it contains.
+The commit that publishes this planning refinement is also planning-only. Its descendant
+commit becomes the new repository planning baseline while product semantics remain
+anchored to the unchanged governed sources carried forward from `cae0f7b6`.
 
 The engineering audit in `brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md` remains
 historical evidence against its intentionally immutable baseline:
@@ -218,66 +225,36 @@ the same common core; they are not evidence that every methodology is supported.
 Status:
 
 ```text
-current microstep
+completed at fdca725f1722e69adb4062f1dbacbb31776c8dd8
 ```
 
-Change only:
+The portable-by-construction scope, future-work boundary for generic/legacy migration,
+and separation between research observations and product authority are published.
+`brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md` remains unchanged historical evidence.
+
+### Phase B — inventory governed documentation and common model semantics
+
+Status:
 
 ```text
-brainstorm/NEXT_TOPICS_DRAFT.md
+current evidence microstep
 ```
 
-Do not modify:
+Use the planning-only descendant commit as the repository snapshot while treating
+`cae0f7b6` as the unchanged product-semantic baseline. Inspect first; do not alter
+canonical semantics, Decisions, Requirements, schemas, validators or implementation.
+
+Inventory the complete governed-document hierarchy and its analytical boundary:
 
 ```text
-brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md
-```
-
-because its baseline and observations are historical audit evidence.
-
-Exit criteria:
-
-- product/planning parent baseline for this update is recorded as `cae0f7b6...`;
-- research baseline is recorded as `a804653...`;
-- portable-by-construction-only thesis scope is explicit;
-- generic/legacy migration is explicitly future work;
-- no canonical product authority changes;
-- full repository gate passes;
-- publication occurs only through the governed repository operation runner.
-
-### Phase B — close the targeted STRIDE research dependency
-
-Repository:
-
-```text
-documentation-driven-threat-analysis
-```
-
-Action:
-
-```text
-select authoritative STRIDE method/reference material
--> verify identity
--> read completely
--> record exact method semantics, assumptions and limitations
--> identify a defensible reference case / expected-result oracle
-```
-
-No ThreatForge implementation starts merely because a STRIDE source is selected.
-
-### Phase C — inventory ThreatForge model semantics against product baseline `cae0f7b6`
-
-Use the planning-only descendant commit for the actual repository snapshot after this
-file is published, while treating `cae0f7b6` as the unchanged product-semantic baseline.
-
-Inspect without changing product semantics first.
-
-Minimum inventory:
-
-```text
+Macro-requirement
+Decision / ADR
+Functional Requirement
+Governance Requirement
+Security Requirement
+specialized Requirement relationships
+registry record <-> Markdown body
 Base Analysis types and relations
-document-model registries and body models
-Functional Requirement and Security Requirement structures
 methodology plugin contract
 Analysis Record model
 Common Finding envelope
@@ -290,33 +267,76 @@ Target Project authoring overlays
 extension mechanisms
 ```
 
-For every relevant concept record at least:
+For every registry field, body section, relation and controlled concept record at least:
 
 ```text
-concept
-current semantic meaning
-canonical owner
-repository path
-governed authority
-common project knowledge?
-method-owned semantics?
-implementation-only convenience?
-provenance/version behavior
+model and field/section/relation
+mandatory / optional / derived / materialized
+exact current semantic meaning
+why it exists in the current governed model
+governed authority and canonical owner
+authoring source of truth
+allowed values or target kinds
+parent / child / reference constraints
+consumer(s)
+duplication or derivation from another source
+provenance / baseline behavior
 editor representation
 validator/checker representation
 extension behavior
 ```
 
-This phase produces an inventory, not a refactor.
+For every document model also state its positive responsibility and its negative boundary:
+what content belongs there and what content must remain in another layer. Reconstruct the
+exact hierarchy from Macro-requirement -> Decision/ADR -> Functional Requirement ->
+specialized Requirements without assuming that current separation is already optimal.
+
+This phase is descriptive. It must expose current semantics before STRIDE or another
+methodology is used to judge them; it does not yet classify concepts as neutral or biased.
+
+### Phase C — assemble the methodology-neutrality challenge set
+
+Repository:
+
+```text
+documentation-driven-threat-analysis
+```
+
+The neutrality audit must not be challenged only by the two methods that will later be
+implemented. Build a bounded source-backed challenge set with materially different
+analytical viewpoints.
+
+Required evidence:
+
+```text
+authoritative STRIDE method/reference case
+Mauri/Damiani STRIDE-AI reference (full reading already completed)
+LINDDUN as a privacy-oriented challenge candidate already present in the research registry
+one further structurally different methodology only if needed to test a remaining
+risk-, goal-, process-, attacker- or other organizing assumption exposed by Phase B
+```
+
+`SRC-0008` LINDDUN is currently only partially verified in the research registry. It
+cannot be used as neutrality evidence until the needed method semantics are read and
+recorded citation-ready.
+
+Select challenge methods for semantic contrast, explicit input/model assumptions and
+authoritative evidence, not for popularity or for maximizing the number of methods.
+
+Only STRIDE and STRIDE-AI remain implementation/evaluation demonstrators for RQ2.
+Challenge-only methodologies are not plugin commitments, do not add thesis RQs and do
+not create ThreatForge product obligations.
 
 ### Phase D — literature-to-model neutrality audit
 
-Compare the Phase C inventory with:
+Compare the Phase B inventory with:
 
 ```text
 completed central literature corpus
 authoritative STRIDE reference
 Mauri/Damiani STRIDE-AI reference
+completed LINDDUN challenge evidence
+any additional challenge methodology selected under the Phase C criterion
 ```
 
 Classify every relevant concept as:
@@ -329,6 +349,10 @@ move to methodology extension/plugin
 implementation-only
 insufficiently supported
 ```
+
+A concept is not methodology-neutral merely because two methods can consume it.
+The audit must distinguish common project knowledge from a convenient intersection
+or union of method inputs and preserve method-owned semantics outside the core.
 
 The audit must explicitly challenge the working proposition in the research
 repository that every Functional Requirement has exactly one primary Base
@@ -419,7 +443,7 @@ checks and editor assistance, while allowing adapter-specific delivery logic.
 
 ### Phase H — select the smallest governed product changes
 
-Only after Phases C-G:
+Only after Phases B-G:
 
 1. inspect existing Decisions and Requirements for sufficient authority;
 2. decide whether no change, clarification, new Requirement or new Decision is
@@ -541,19 +565,24 @@ node .\tools\MR-0002\run-governed-repository-operation.mjs --commit-push "docs: 
 
 ## 11. Next exact action after plan publication
 
-Return to the DDTA research repository and close the authoritative STRIDE
-reference dependency.
+Perform Phase B first: a read-only, field-by-field and body-section-by-body-section
+inventory of the current governed documentation and common analysis models. Do not
+change product semantics while constructing that inventory.
 
-After that source is fully read and recorded, return to ThreatForge baseline
-`cae0f7b6...` (or the planning-only descendant commit) and perform the model
-semantics inventory before proposing any canonical product change.
+After the inventory is explicit, move to the research repository to complete the
+Phase C methodology-neutrality challenge evidence, then perform the source-backed
+neutrality audit before freezing the DDTA writing/input contract.
 
 ## 12. Continuation prompt
 
 ```text
 We are continuing two strictly separated workstreams.
 
-ThreatForge product/planning parent baseline for this update:
+ThreatForge planning parent before the current planning refinement:
+fdca725f1722e69adb4062f1dbacbb31776c8dd8
+docs: align ThreatForge plan with portable DDTA scope
+
+ThreatForge product-semantic baseline:
 cae0f7b6b37f430ac4e857aabf6ef9f87c89dbb1
 docs: record engineering audit and thesis literature plan
 
@@ -575,17 +604,26 @@ portability / analysis-readiness contract. Generic/arbitrary/legacy documentatio
 migration is future work and must not become a current ThreatForge product
 obligation.
 
-Next research dependency:
-Select and fully read an authoritative STRIDE method/reference case.
+Current evidence action:
+Inventory ThreatForge governed document models field-by-field, body-section-by-body-
+section and relation-by-relation, including exact MR -> ADR -> Functional Requirement
+-> specialized Requirement responsibilities and negative content boundaries. This is
+descriptive inventory only; do not alter product semantics yet.
 
-Next ThreatForge evidence work:
-Inventory model semantics on an immutable baseline, then perform a literature-to-
-model neutrality audit before freezing the DDTA writing method or creating
-canonical product changes.
+Neutrality challenge:
+After the inventory, use a bounded set broader than the two demonstrator plugins:
+authoritative STRIDE, the completed Mauri/Damiani STRIDE-AI reference, completed
+LINDDUN evidence, and one further structurally different methodology only if needed
+to challenge a remaining assumption. Challenge-only methods are not plugin or RQ
+commitments.
+
+Neutrality gate:
+Only after that evidence compare the current model with the literature, classify
+common versus method-owned semantics, challenge primary-analysis-focus and other
+fixed assumptions, and then derive/freeze the DDTA writing/input contract.
 
 Demonstrator methods:
-STRIDE and STRIDE-AI over the same methodology-neutral Base Analysis. Two methods
-demonstrate the plugin boundary; they do not prove universal methodology support.
+Only STRIDE and STRIDE-AI are implemented/evaluated as plugins for RQ2.
 
 Language:
 Italian.
