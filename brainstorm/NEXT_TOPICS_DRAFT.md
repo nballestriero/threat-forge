@@ -1,4 +1,4 @@
-# Next topics draft — engineering audit and thesis literature phase
+# Next topics draft — DDTA portability and ThreatForge neutrality phase
 
 This file is a temporary planning and handoff note.
 
@@ -6,11 +6,11 @@ It is not a Macro-requirement, Decision, Requirement, registry, governed body or
 canonical source. It may be edited, replaced or deleted when the corresponding
 governed work or research records exist.
 
-Last updated: 2026-08-03.
+Last updated: 2026-08-08.
 
-## 1. Repository baseline
+## 1. Repository baselines
 
-Repository:
+ThreatForge repository:
 
 ```text
 https://github.com/nballestriero/threat-forge.git
@@ -22,33 +22,54 @@ Branch:
 master
 ```
 
-Current published baseline:
+ThreatForge product/planning parent baseline for this update:
+
+```text
+cae0f7b6b37f430ac4e857aabf6ef9f87c89dbb1
+docs: record engineering audit and thesis literature plan
+```
+
+The commit that publishes this file is intentionally planning-only. After publication,
+that descendant commit becomes the repository planning baseline while product semantics
+remain anchored to the unchanged governed sources it contains.
+
+The engineering audit in `brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md` remains
+historical evidence against its intentionally immutable baseline:
 
 ```text
 3a875b21b174a2175f82aeb164c3067d243b5961
-fix: route Target Project authoring to local VS Code schema
-```
-
-Tag:
-
-```text
 project-model-target-project-vscode-schema-routing-complete
 ```
 
-Expected local state before this documentation microstep:
+Do not rewrite that audit baseline merely because the planning baseline advanced.
+
+DDTA research repository:
+
+```text
+https://github.com/nballestriero/documentation-driven-threat-analysis.git
+```
+
+Current published research baseline:
+
+```text
+a8046536ac9e8c49a9ce317466d5afcf5ac56672
+research: constrain DDTA evaluation to portable documentation
+```
+
+Expected local ThreatForge state before any new planning or audit microstep:
 
 ```text
 ## master...origin/master
 ```
 
-with no working-tree changes.
+with no working-tree, staged or untracked changes.
 
 The operational project lives at repository root. `old/` is reference-only legacy
 material and is not an operational canonical source.
 
-## 2. Repository separation
+## 2. Repository separation and authority
 
-Two repositories have different authority:
+The two repositories keep different authority:
 
 ```text
 threat-forge
@@ -58,10 +79,117 @@ documentation-driven-threat-analysis
 = literature, research methodology, baselines, observations, evidence, claims and thesis projection
 ```
 
-Research observations do not create ThreatForge product obligations. Statements
-about ThreatForge in the thesis must refer to immutable commits or tags.
+Research observations do not automatically create ThreatForge product obligations.
+Statements about ThreatForge in the thesis must refer to immutable ThreatForge
+commits or tags.
 
-## 3. Working rules
+The current planning work is deliberately non-canonical. No product ADR,
+Requirement, schema, tool, validator, fixture or implementation follows merely
+from this file.
+
+## 3. Frozen thesis scope that ThreatForge planning must respect
+
+The current thesis evaluates one input mode only:
+
+```text
+portable-by-construction governed documentation
+-> DDTA portability / analysis-readiness contract satisfied
+-> methodology-neutral Base Analysis
+-> methodology-specific overlay/plugin
+-> method-specific Analysis Record
+-> methodology-neutral Common Finding
+-> human review
+-> accepted Finding(s)
+-> governed Security Requirement
+-> change-aware re-analysis
+```
+
+The current thesis does not evaluate:
+
+```text
+arbitrary / generic / legacy documentation
+-> migration into DDTA-portable documentation
+```
+
+That migration problem is future work. ThreatForge must not acquire a current
+thesis obligation to implement a best-effort generic-document migration or LLM
+extraction path.
+
+Portable-by-construction also does not mean embedding STRIDE, STRIDE-AI or another
+methodology into project documentation. The common project model must remain
+methodology-neutral.
+
+## 4. Current research status
+
+The central literature corpus is complete at 21/21.
+
+Standalone thesis milestones exist for:
+
+```text
+Chapter 2 — Background
+Chapter 3 — State of the art and research gap
+```
+
+The research scope, RQ1, H1, CLM-0001, terminology, outline and working research
+ledger are aligned to the portable-by-construction input boundary.
+
+The targeted STRIDE-AI source has been read in full:
+
+```text
+Mauri, Lara; Damiani, Ernesto.
+Modeling Threats to AI-ML Systems Using STRIDE.
+Sensors 22(17), 6662, 2022.
+DOI 10.3390/s22176662
+```
+
+Its role is a STRIDE-AI method definition and asset-centered reference. It does
+not prove controlled superiority or universal coverage.
+
+One targeted research dependency remains before the neutrality audit can be
+treated as complete:
+
+```text
+select and fully read an authoritative STRIDE method/reference case
+with enough explicit method semantics and expected results to support the
+STRIDE plugin oracle/evaluation
+```
+
+This targeted source does not change the 21/21 central-corpus count.
+
+## 5. Current ThreatForge capabilities relevant to the thesis
+
+At product-semantic baseline `cae0f7b6`, ThreatForge already has governed concepts and
+supporting implementation for:
+
+```text
+governed document models and authoring
+Base Analysis Elements and relations
+Target Project lifecycle
+methodology-specific Analysis Records
+Common Findings and review states
+Security Requirement model and authoring boundary
+complete simulated analysis-core case-study chain
+unified governed Markdown assistance for VS Code and Target Projects
+versioned methodology-plugin boundary
+provenance and reverse traceability across the demonstrated chain
+```
+
+The current case study remains a controlled simulation. It does not demonstrate:
+
+```text
+a production STRIDE plugin
+a production STRIDE-AI plugin
+automatic Finding acceptance
+automatic Security Requirement acceptance
+universal methodology support
+generic/legacy documentation migration
+```
+
+The two real methodology plugins required by the thesis are STRIDE and STRIDE-AI.
+Their purpose is to demonstrate that two distinct method semantics can consume
+the same common core; they are not evidence that every methodology is supported.
+
+## 6. Working rules
 
 - Continue through small verified microsteps.
 - Do not create code, tools, schemas, fixtures or gates before sufficient governed
@@ -77,231 +205,320 @@ about ThreatForge in the thesis must refer to immutable commits or tags.
 - Keep methodology-specific semantics outside the common analysis core.
 - Downstream Analysis, Finding and Security Requirement work must not mutate
   upstream canonical sources.
-- Treat architecture review comments as hypotheses until verified against the
-  immutable repository baseline.
+- Treat architecture and neutrality observations as hypotheses until verified
+  against immutable repository baselines and the research literature.
+- Keep scientific DDTA evidence distinct from general software-quality evidence.
+- Do not introduce generic/legacy migration as a current thesis product
+  requirement.
 
-## 4. Current capabilities relevant to the handoff
+## 7. Current priority order
 
-At the current baseline, ThreatForge already has governed models and supporting
-implementation for:
-
-```text
-governed document models and authoring
-Base Analysis Elements and relations
-Target Project lifecycle
-methodology-specific Analysis Records
-Common Findings and review states
-Security Requirement model and authoring boundary
-complete simulated case-study chain
-unified governed Markdown assistance for VS Code and Target Projects
-```
-
-The current case study is still a controlled simulation. It does not demonstrate
-a production STRIDE plugin, automatic Finding derivation, automatic review or
-automatic Security Requirement generation.
-
-## 5. Engineering review checkpoint
-
-The external review identified two broad implementation shapes:
-
-```text
-importable and injectable behavior
-versus
-module-configured command/checker behavior with mixed effects
-```
-
-The first verified audit is stored in:
-
-```text
-brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md
-```
-
-Verified corrections include:
-
-- Security Requirement authoring already has direct tests for its injectable
-  execution boundary;
-- scaffold promotion already has positive and negative disposable-workspace
-  verification;
-- the remaining promotion gap is deterministic injection of failures inside
-  transaction steps;
-- the Base Analysis registry checker does combine module-load configuration,
-  calculation, nested verification, report writing, presentation and process
-  status;
-- file size is a triage signal, not a refactoring rule.
-
-## 6. Current priority order
-
-### Phase A — publish the audit checkpoint
+### Phase A — align the non-canonical ThreatForge plan with the frozen thesis scope
 
 Status:
 
 ```text
-in progress
+current microstep
 ```
 
-Artifacts:
+Change only:
 
 ```text
-brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md
 brainstorm/NEXT_TOPICS_DRAFT.md
 ```
 
-Exit criteria:
-
-- matrix distinguishes direct, subprocess and gate-indirect verification;
-- inaccurate review statements are corrected with repository evidence;
-- no canonical Decision, Requirement or implementation is changed;
-- full repository gate passes;
-- documentation-only change is published through the governed runner.
-
-### Phase B — thesis literature workstream
-
-Status:
+Do not modify:
 
 ```text
-next
+brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md
 ```
+
+because its baseline and observations are historical audit evidence.
+
+Exit criteria:
+
+- product/planning parent baseline for this update is recorded as `cae0f7b6...`;
+- research baseline is recorded as `a804653...`;
+- portable-by-construction-only thesis scope is explicit;
+- generic/legacy migration is explicitly future work;
+- no canonical product authority changes;
+- full repository gate passes;
+- publication occurs only through the governed repository operation runner.
+
+### Phase B — close the targeted STRIDE research dependency
 
 Repository:
 
 ```text
-https://github.com/nballestriero/documentation-driven-threat-analysis.git
+documentation-driven-threat-analysis
 ```
 
-No ThreatForge code development occurs during the initial literature workstream.
-The research sequence is:
+Action:
 
 ```text
-verify corpus identity
-→ retrieve and read sources
-→ write one source note per source
-→ collect citable excerpts with exact locations
-→ record faithful paraphrases separately from quotations
-→ map source propositions to thesis topics and candidate claims
-→ synthesize by research area
-→ write Chapter 2
-→ rewrite Chapter 3 from source-specific evidence
+select authoritative STRIDE method/reference material
+-> verify identity
+-> read completely
+-> record exact method semantics, assumptions and limitations
+-> identify a defensible reference case / expected-result oracle
 ```
 
-Required research artifacts are expected to include:
+No ThreatForge implementation starts merely because a STRIDE source is selected.
+
+### Phase C — inventory ThreatForge model semantics against product baseline `cae0f7b6`
+
+Use the planning-only descendant commit for the actual repository snapshot after this
+file is published, while treating `cae0f7b6` as the unchanged product-semantic baseline.
+
+Inspect without changing product semantics first.
+
+Minimum inventory:
 
 ```text
-one structured summary per registered source
-one citable excerpt ledger per source or one normalized shared ledger
-source-specific support / contradiction / open-question records
-cross-source comparison tables
-chapter-oriented synthesis notes
+Base Analysis types and relations
+document-model registries and body models
+Functional Requirement and Security Requirement structures
+methodology plugin contract
+Analysis Record model
+Common Finding envelope
+taxonomies and controlled vocabularies
+reference/provenance records
+baseline/staleness records
+materialization and projection rules
+VS Code authoring schemas/diagnostics
+Target Project authoring overlays
+extension mechanisms
 ```
 
-The exact filenames and schemas must be decided in the research repository after
-inspecting its current source-note template and governance conventions.
-
-Minimum fields for each citable excerpt entry:
+For every relevant concept record at least:
 
 ```text
-source_id
-citation_key
-source version or stable identifier
-page, section or paragraph location
-verbatim excerpt
-faithful paraphrase
-local interpretation
-candidate thesis chapter or subsection
-candidate supported proposition
-quotation or paraphrase usage
-verification status
+concept
+current semantic meaning
+canonical owner
+repository path
+governed authority
+common project knowledge?
+method-owned semantics?
+implementation-only convenience?
+provenance/version behavior
+editor representation
+validator/checker representation
+extension behavior
 ```
 
-The verbatim excerpt, paraphrase and researcher interpretation must remain
-separate fields so that the final thesis does not accidentally present an
-interpretation as an author quotation.
+This phase produces an inventory, not a refactor.
 
-Exit criteria for Chapter 2:
+### Phase D — literature-to-model neutrality audit
 
-- every substantive statement is traceable to at least one completed source note;
-- source identity is verified sufficiently for citation;
-- quotations have exact locations;
-- source results and author-stated limitations are distinguished from DDTA
-  interpretation;
-- the five research areas are covered with source-specific evidence.
-
-Exit criteria for Chapter 3:
-
-- the generic comparison matrix is replaced by source-specific rows;
-- each comparison cell cites a source and location or is explicitly unknown;
-- concrete tools are compared without treating project documentation as
-  peer-reviewed evidence;
-- the DDTA research gap is an inference from the reviewed corpus, not a claim of
-  novelty asserted without evidence;
-- contradictory or tension-producing sources are retained, not silently merged.
-
-### Phase C — return to ThreatForge engineering governance
-
-Status:
+Compare the Phase C inventory with:
 
 ```text
-deferred until the first literature and state-of-the-art milestone
+completed central literature corpus
+authoritative STRIDE reference
+Mauri/Damiani STRIDE-AI reference
 ```
 
-Before implementation hardening:
-
-1. expand the audit to representative large checker, renderer and mutation tools;
-2. reproduce coverage from a recorded command and retain its artifact;
-3. inspect whether existing ADR-0007 and requirements already provide sufficient
-   authority;
-4. decide whether the smallest change is an ADR clarification, new requirements
-   under an existing Decision or a new Decision;
-5. define regression evidence before editing implementation.
-
-No ADR identifier is reserved by this working plan.
-
-### Phase D — technical explanation and UML
-
-Status:
+Classify every relevant concept as:
 
 ```text
-deferred until architecture observations and hardening direction are stable
+retain as common
+revise/generalize
+make optional
+move to methodology extension/plugin
+implementation-only
+insufficiently supported
 ```
 
-Planned documentation topics:
+The audit must explicitly challenge the working proposition in the research
+repository that every Functional Requirement has exactly one primary Base
+Analysis focus selected from:
 
 ```text
-logical document model ↔ YAML registry ↔ Markdown body ↔ representation profiles
-Base Analysis ↔ Analysis Record ↔ Common Finding ↔ Security Requirement
-application service ↔ port ↔ adapter ↔ composition root
-VS Code adapter ↔ shared governed Markdown assistance core ↔ canonical sources
-MR → ADR → Functional Requirement → Base Analysis → analysis → Finding → Security Requirement
-rollback-capable mutation and verification boundaries
+actor
+component
+asset
+boundary
+data_flow
 ```
 
-Technical explanations belong primarily to ThreatForge. The thesis will use a
-baseline-bound synthesis rather than maintain an independent duplicate of the
-product documentation.
+That proposition may survive, be generalized, become optional or be rejected.
+Existing implementation is not evidence of methodological neutrality.
 
-## 7. Deferred product work
+The primary output is a source-backed neutrality matrix in the research
+workstream. It does not automatically mutate ThreatForge.
 
-The following work remains relevant but is not the next action:
+### Phase E — derive and freeze the DDTA portability / analysis-readiness contract
+
+Only after the neutrality audit, define the documentation writing/input method in
+the research repository.
+
+The contract must define:
 
 ```text
-real methodology plugin infrastructure
-real STRIDE plugin
-real STRIDE-AI plugin
-web editor adapter
-additional Target Project studies
-staleness evaluation
-engineering hardening implementation
+minimum common documentary knowledge
+stable identity rules
+relation-writing rules
+source/provenance rules
+baseline/version rules
+controlled vocabulary and extension rules
+uncertainty / contradiction / missing-information representation
+human-review boundary
+portable-by-construction conformance criteria
 ```
 
-The methodology plugin contract is specified, but production plugin
-infrastructure and a real STRIDE implementation are not demonstrated by the
-current simulated case study.
+The contract must be frozen before evaluation cases are assessed and must not
+encode case-specific expected Base Analysis elements or methodology-specific
+expected results.
 
-## 8. Current exact action
+A research contract does not automatically become a ThreatForge product
+requirement. Product changes require a separate governance decision.
 
-Apply and review the documentation replacement drop-in containing:
+### Phase F — freeze the evaluation protocol
+
+Freeze RQ1-RQ4 cases, reference models, expected-result oracles, measures and
+acceptance criteria before implementation is tuned to the cases.
+
+Required evaluation coverage includes:
 
 ```text
-ADD     brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md
+portable documentation -> reviewed Base Analysis
+same Base Analysis -> STRIDE and STRIDE-AI
+method-specific semantics remain plugin-owned
+method outputs -> Common Finding
+accepted Findings -> governed Security Requirements
+controlled changes -> stale/re-analysis behavior
+```
+
+Cost, ROI and broad adoption are not primary evaluation measures.
+
+### Phase G — expand the engineering and authoring audit
+
+Continue the existing non-canonical engineering audit without rewriting its
+historical baseline.
+
+Cover:
+
+```text
+responsibility cohesion
+import safety
+deterministic callable cores
+effect isolation
+structured diagnostics
+rollback/failure injection
+direct/integration/negative verification
+coverage evidence
+canonical-value duplication
+VS Code model authorability
+Target Project authoring round trips
+shared editor/checker validation semantics
+```
+
+Prefer one canonical source of syntax/structural validity shared by repository
+checks and editor assistance, while allowing adapter-specific delivery logic.
+
+### Phase H — select the smallest governed product changes
+
+Only after Phases C-G:
+
+1. inspect existing Decisions and Requirements for sufficient authority;
+2. decide whether no change, clarification, new Requirement or new Decision is
+   actually needed;
+3. write expected regression/evaluation evidence before implementation;
+4. follow the canonical governance flow for every product change.
+
+Do not reserve ADR identifiers in this plan.
+
+### Phase I — implement the real two-plugin vertical slice
+
+Implement only the governed changes required to demonstrate:
+
+```text
+one canonical Base Analysis
+-> real STRIDE plugin
+-> STRIDE Analysis Record / candidate results
+-> Common Finding boundary
+
+same canonical Base Analysis
+-> real STRIDE-AI plugin
+-> STRIDE-AI Analysis Record / candidate results
+-> same Common Finding boundary
+```
+
+Then demonstrate reviewed Finding -> governed Security Requirement and controlled
+stale/re-analysis behavior.
+
+Do not generalize this demonstration into universal methodology support.
+
+### Phase J — usability, guides and diagrams
+
+Before the artifact is considered complete, audit or create the minimum
+documentation needed by a new user and maintainer:
+
+```text
+tutorial
+how-to
+reference
+explanation
+```
+
+Prepare baseline-bound diagrams for:
+
+```text
+ThreatForge architecture
+registry/body/schema/validator relationships
+VS Code integration and shared validation
+Base Analysis -> plugin -> Analysis Record -> Common Finding -> Security Requirement
+provenance and stale propagation
+ThreatForge / Target Project boundaries
+```
+
+The documentation must explain both normal usage and the governed development
+workflow.
+
+## 8. Engineering audit checkpoint retained unchanged
+
+`brainstorm/ENGINEERING_AUDIT_MATRIX_DRAFT.md` remains the starting engineering
+observation.
+
+Its previously recorded high-priority areas remain hypotheses to verify, notably:
+
+```text
+promotion transaction failure injection
+Base Analysis checker separation of deterministic rules and effects
+representative renderer/checker/mutation-tool audit
+reproducible coverage evidence
+```
+
+Do not reinterpret the matrix as evidence that every large module must be
+refactored. File size remains only a triage signal.
+
+## 9. Product-governance gate
+
+No research or audit item automatically creates a ThreatForge requirement.
+
+For every candidate product change:
+
+```text
+research/audit observation
+-> inspect existing governed authority
+-> decide smallest governance change
+-> ADR when a real decision is required
+-> Requirement before implementation
+-> graph/trace updates
+-> implementation with JSDoc authority
+-> verification
+-> governed repository operation
+```
+
+The common analysis core must remain free of STRIDE/STRIDE-AI classifications.
+Method-owned semantics stay in method-owned extensions/plugins.
+
+## 10. Current exact action
+
+Apply and review a non-canonical planning-only replacement containing:
+
+```text
 REPLACE brainstorm/NEXT_TOPICS_DRAFT.md
 ```
 
@@ -314,59 +531,67 @@ git status --short
 git diff --stat
 ```
 
-Publish only through:
+Do not stage, commit or push during the review gate.
+
+After explicit diff approval, publish only through:
 
 ```powershell
-node .\tools\MR-0002\run-governed-repository-operation.mjs --commit-push "docs: record engineering audit and thesis literature plan"
+node .\tools\MR-0002\run-governed-repository-operation.mjs --commit-push "docs: align ThreatForge plan with portable DDTA scope"
 ```
 
-## 9. Next exact action after publication
+## 11. Next exact action after plan publication
 
-Switch to the DDTA research repository and inspect, without modifying first:
+Return to the DDTA research repository and close the authoritative STRIDE
+reference dependency.
 
-```text
-literature/README.md
-literature/literature.registry.yml
-literature/templates/source-note.template.md
-literature/reading-order.md
-literature/research-gap-map.md
-literature/approach-comparison-matrix.md
-thesis/bibliography/references.bib
-```
+After that source is fully read and recorded, return to ThreatForge baseline
+`cae0f7b6...` (or the planning-only descendant commit) and perform the model
+semantics inventory before proposing any canonical product change.
 
-Then propose one research microstep that creates the source-summary and citable
-excerpt workflow before writing new Chapter 2 or Chapter 3 prose.
-
-## 10. Continuation prompt
+## 12. Continuation prompt
 
 ```text
 We are continuing two strictly separated workstreams.
 
-ThreatForge baseline:
+ThreatForge product/planning parent baseline for this update:
+cae0f7b6b37f430ac4e857aabf6ef9f87c89dbb1
+docs: record engineering audit and thesis literature plan
+
+ThreatForge planning baseline after publication:
+the planning-only descendant commit containing this file; do not reinterpret that
+documentation-only commit as a product-semantic change.
+
+Historical engineering-audit baseline:
 3a875b21b174a2175f82aeb164c3067d243b5961
 project-model-target-project-vscode-schema-routing-complete
 
-ThreatForge state:
-An initial non-canonical engineering audit matrix has been published. Product
-feature development and hardening code are paused. Do not create ADRs,
-Requirements or implementation until the audit is expanded and the smallest
-governance change is selected.
+Research baseline:
+a8046536ac9e8c49a9ce317466d5afcf5ac56672
+research: constrain DDTA evaluation to portable documentation
 
-Research repository:
-https://github.com/nballestriero/documentation-driven-threat-analysis.git
+Thesis scope:
+Evaluate portable-by-construction governed documentation satisfying the DDTA
+portability / analysis-readiness contract. Generic/arbitrary/legacy documentation
+migration is future work and must not become a current ThreatForge product
+obligation.
 
-Research next step:
-Inspect the literature registry, source-note template, reading order, research-gap
-map, comparison matrix and bibliography. Design a workflow that produces one
-faithful summary per source and a citation-ready excerpt ledger with exact page or
-section locations. Then complete the background and state-of-the-art chapters from
-source-specific evidence.
+Next research dependency:
+Select and fully read an authoritative STRIDE method/reference case.
+
+Next ThreatForge evidence work:
+Inventory model semantics on an immutable baseline, then perform a literature-to-
+model neutrality audit before freezing the DDTA writing method or creating
+canonical product changes.
+
+Demonstrator methods:
+STRIDE and STRIDE-AI over the same methodology-neutral Base Analysis. Two methods
+demonstrate the plugin boundary; they do not prove universal methodology support.
 
 Language:
 Italian.
 
 Working style:
-Small verified microsteps. Distinguish source facts, researcher inference and
-missing evidence. Never transfer research observations into ThreatForge product
-requirements automatically.
+Small verified microsteps. Never transfer research observations into ThreatForge
+product requirements automatically. Never use direct git add/commit/push in
+ThreatForge; publish only through the governed repository operation runner.
 ```
